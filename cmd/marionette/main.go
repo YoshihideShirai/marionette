@@ -23,6 +23,8 @@ func main() {
 		{ID: 2, Name: "Ren Sato", Email: "ren@example.com", Role: "Editor"},
 		{ID: 3, Name: "Mina Suzuki", Email: "mina@example.com", Role: "Viewer"},
 	})
+	app.Set("deleteModalOpen", false)
+	app.Set("deleteTargetID", 0)
 
 	app.Page("/", func(ctx *marionette.Context) marionette.Node {
 		return renderUsersPage(ctx)
@@ -45,7 +47,20 @@ func main() {
 		return renderUsersWorkspace(ctx)
 	})
 
-	app.Action("users/delete", func(ctx *marionette.Context) marionette.Node {
+	app.Action("users/delete/prompt", func(ctx *marionette.Context) marionette.Node {
+		id, _ := strconv.Atoi(ctx.FormValue("id"))
+		ctx.Set("deleteTargetID", id)
+		ctx.Set("deleteModalOpen", true)
+		return renderUsersWorkspace(ctx)
+	})
+
+	app.Action("users/delete/cancel", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("deleteModalOpen", false)
+		ctx.Set("deleteTargetID", 0)
+		return renderUsersWorkspace(ctx)
+	})
+
+	app.Action("users/delete/confirm", func(ctx *marionette.Context) marionette.Node {
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
 		users := getUsers(ctx)
 		next := users[:0]
@@ -55,6 +70,8 @@ func main() {
 			}
 		}
 		ctx.Set("users", next)
+		ctx.Set("deleteModalOpen", false)
+		ctx.Set("deleteTargetID", 0)
 		return renderUsersWorkspace(ctx)
 	})
 
@@ -95,9 +112,12 @@ func renderSidebar() marionette.Node {
 }
 
 func renderUsersWorkspace(ctx *marionette.Context) marionette.Node {
-	return marionette.DivClass("users-workspace", "grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
-		renderUsersTable(ctx),
-		renderCreateUserForm(),
+	return marionette.DivClass("users-workspace", "space-y-4",
+		marionette.DivClass("", "grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
+			renderUsersTable(ctx),
+			renderCreateUserForm(),
+		),
+		renderDeleteModal(ctx),
 	)
 }
 
@@ -136,9 +156,9 @@ func renderUserRow(u user) marionette.TableRowData {
 		marionette.DivClass("", "font-medium", marionette.Text(u.Name)),
 		marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(u.Email)),
 		marionette.DivClass("", "badge badge-ghost", marionette.Text(u.Role)),
-		marionette.Form("users/delete",
+		marionette.Form("users/delete/prompt",
 			marionette.HiddenInput("id", strconv.Itoa(u.ID)),
-			marionette.Submit("Delete"),
+			marionette.ComponentSubmitButton("Delete", marionette.ComponentProps{Variant: "danger", Size: "sm"}),
 		).Target("#users-workspace"),
 	)
 }
@@ -160,4 +180,33 @@ func renderCreateUserForm() marionette.Node {
 			marionette.DivClass("", "pt-2", marionette.ComponentButton("Preview (disabled)", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true})),
 		),
 	)
+}
+
+func renderDeleteModal(ctx *marionette.Context) marionette.Node {
+	targetID, _ := ctx.Get("deleteTargetID").(int)
+	targetName := ""
+	for _, u := range getUsers(ctx) {
+		if u.ID == targetID {
+			targetName = u.Name
+			break
+		}
+	}
+
+	return marionette.ComponentModal(marionette.ModalProps{
+		Title: "Delete user",
+		Body: marionette.DivClass("", "space-y-2",
+			marionette.Text("Are you sure you want to delete this user?"),
+			marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(targetName)),
+		),
+		Actions: marionette.DivClass("", "flex w-full justify-end gap-2",
+			marionette.Form("users/delete/cancel",
+				marionette.ComponentSubmitButton("Cancel", marionette.ComponentProps{Variant: "ghost", Size: "sm"}),
+			).Target("#users-workspace"),
+			marionette.Form("users/delete/confirm",
+				marionette.HiddenInput("id", strconv.Itoa(targetID)),
+				marionette.ComponentSubmitButton("Delete", marionette.ComponentProps{Variant: "danger", Size: "sm"}),
+			).Target("#users-workspace"),
+		),
+		Open: ctx.Get("deleteModalOpen") == true,
+	})
 }

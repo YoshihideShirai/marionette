@@ -1,0 +1,7 @@
+{{define "components/select" -}}
+<select class="{{.Class}}" name="{{.Name}}"{{if .Disabled}} disabled{{end}}>
+  {{range .Options -}}
+  <option value="{{.Value}}"{{if .Selected}} selected{{end}}>{{.Label}}</option>
+  {{end -}}
+</select>
+{{- end}}

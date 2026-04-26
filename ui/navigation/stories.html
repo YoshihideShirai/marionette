@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Navigation stories</title>
+    <link rel="stylesheet" href="./tokens.css" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; background: #f8fafc; }
+      h1,h2 { margin: 0; }
+      .stack { display: grid; gap: 16px; max-width: 920px; }
+      .caption { color: #475569; font-size: 14px; }
+      .view { display: none; }
+      .view.is-active { display: block; }
+      .route-switch { display: flex; gap: 8px; }
+      .route-switch button { border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; padding: 6px 10px; cursor: pointer; }
+      .log { font-size: 13px; color: #334155; background: #fff; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px; }
+    </style>
+  </head>
+  <body>
+    <main class="stack ui-nav-shell">
+      <h1>ui/navigation stories</h1>
+      <p class="caption">Props contract: <code>href</code> for route targets, <code>onNavigate</code> callback for interception, <code>isActive</code> for selection state.</p>
+
+      <section class="ui-nav-card">
+        <div class="route-switch" aria-label="demo page switch">
+          <button type="button" data-route="list">一覧画面</button>
+          <button type="button" data-route="detail">詳細画面</button>
+        </div>
+      </section>
+
+      <section class="ui-nav-card view is-active" id="view-list" aria-label="list page">
+        <h2>一覧画面 (List)</h2>
+        <p class="caption">情報設計: 一覧の軸を Tabs で分割し、ページ送りは詳細導線の前段として簡潔に。</p>
+        <div id="list-tabs"></div>
+        <div id="list-breadcrumb"></div>
+        <div id="list-pagination"></div>
+      </section>
+
+      <section class="ui-nav-card view" id="view-detail" aria-label="detail page">
+        <h2>詳細画面 (Detail)</h2>
+        <p class="caption">情報設計: Breadcrumb で現在地を明示。関連情報タブは矢印キーで移動。</p>
+        <div id="detail-breadcrumb"></div>
+        <div id="detail-tabs"></div>
+        <div id="detail-pagination"></div>
+      </section>
+
+      <aside class="log" id="event-log" aria-live="polite">onNavigate: (none)</aside>
+    </main>
+
+    <script>
+      function announce(msg) {
+        document.getElementById('event-log').textContent = 'onNavigate: ' + msg;
+      }
+
+      function buildTabs(el, props) {
+        const root = document.createElement('div');
+        root.className = 'ui-tabs';
+        root.setAttribute('role', 'tablist');
+
+        props.items.forEach((item, i) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'ui-tab';
+          b.textContent = item.label;
+          b.setAttribute('role', 'tab');
+          b.dataset.href = item.href;
+          b.dataset.index = i;
+          b.tabIndex = item.isActive ? 0 : -1;
+          b.setAttribute('aria-selected', String(Boolean(item.isActive)));
+          b.addEventListener('click', () => props.onNavigate?.({ href: item.href, source: 'tabs' }));
+          root.appendChild(b);
+        });
+
+        root.addEventListener('keydown', (e) => {
+          const tabs = [...root.querySelectorAll('[role="tab"]')];
+          const current = document.activeElement;
+          const idx = tabs.indexOf(current);
+          if (idx < 0) return;
+          let next = idx;
+          if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+          if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
+          if (e.key === 'Home') next = 0;
+          if (e.key === 'End') next = tabs.length - 1;
+          if (next !== idx) {
+            e.preventDefault();
+            tabs.forEach((t) => { t.tabIndex = -1; t.setAttribute('aria-selected', 'false'); });
+            tabs[next].tabIndex = 0;
+            tabs[next].setAttribute('aria-selected', 'true');
+            tabs[next].focus();
+          }
+        });
+
+        el.appendChild(root);
+      }
+
+      function buildBreadcrumb(el, props) {
+        const nav = document.createElement('nav');
+        nav.className = 'ui-breadcrumb';
+        nav.setAttribute('aria-label', props.ariaLabel || 'breadcrumb');
+
+        const items = props.items;
+        const mobileItems = items.length > 4
+          ? [items[0], { label: '…', href: '', isEllipsis: true }, ...items.slice(-2)]
+          : items;
+
+        function renderItem(item, idx, mode) {
+          const wrap = document.createElement('span');
+          wrap.className = 'ui-breadcrumb__item';
+          wrap.dataset.overflow = mode;
+          if (item.isEllipsis) {
+            wrap.textContent = '…';
+          } else {
+            const a = document.createElement('a');
+            a.href = item.href || '#';
+            a.className = 'ui-breadcrumb__link';
+            a.textContent = item.label;
+            if (item.isActive) a.setAttribute('aria-current', 'page');
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              props.onNavigate?.({ href: item.href, source: 'breadcrumb' });
+            });
+            wrap.appendChild(a);
+          }
+          if (idx < (mode === 'mobile' ? mobileItems.length : items.length) - 1) {
+            const sep = document.createElement('span');
+            sep.className = 'ui-breadcrumb__sep';
+            sep.textContent = '/';
+            wrap.appendChild(sep);
+          }
+          return wrap;
+        }
+
+        items.forEach((item, idx) => nav.appendChild(renderItem(item, idx, 'desktop')));
+        mobileItems.forEach((item, idx) => nav.appendChild(renderItem(item, idx, 'mobile')));
+        el.appendChild(nav);
+      }
+
+      function buildPagination(el, props) {
+        const nav = document.createElement('nav');
+        nav.className = 'ui-pagination';
+        nav.setAttribute('aria-label', props.ariaLabel || 'pagination');
+
+        const pages = [];
+        for (let i = 1; i <= props.totalPages; i += 1) pages.push(i);
+
+        function pageLink(p, label = String(p)) {
+          const a = document.createElement('a');
+          a.className = 'ui-pagination__item';
+          a.href = `${props.hrefBase}${p}`;
+          a.textContent = label;
+          if (p === props.page) a.setAttribute('aria-current', 'page');
+          a.addEventListener('click', (e) => {
+            e.preventDefault();
+            props.onNavigate?.({ href: a.href, source: 'pagination' });
+          });
+          return a;
+        }
+
+        const prev = pageLink(Math.max(1, props.page - 1), 'Prev');
+        if (props.page === 1) prev.setAttribute('aria-disabled', 'true');
+        nav.appendChild(prev);
+
+        pages.forEach((p) => {
+          const item = pageLink(p);
+          if (Math.abs(p - props.page) > 1) item.dataset.mobile = 'hide';
+          nav.appendChild(item);
+        });
+
+        const next = pageLink(Math.min(props.totalPages, props.page + 1), 'Next');
+        if (props.page === props.totalPages) next.setAttribute('aria-disabled', 'true');
+        nav.appendChild(next);
+
+        nav.addEventListener('keydown', (e) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          const items = [...nav.querySelectorAll('.ui-pagination__item')];
+          const idx = items.indexOf(document.activeElement);
+          if (idx < 0) return;
+          e.preventDefault();
+          const delta = e.key === 'ArrowRight' ? 1 : -1;
+          const nextIdx = Math.min(items.length - 1, Math.max(0, idx + delta));
+          items[nextIdx].focus();
+        });
+
+        el.appendChild(nav);
+      }
+
+      const onNavigate = ({ href, source }) => announce(`${source} -> ${href}`);
+
+      buildTabs(document.getElementById('list-tabs'), {
+        onNavigate,
+        items: [
+          { label: 'すべて', href: '/users', isActive: true },
+          { label: 'アクティブ', href: '/users?status=active', isActive: false },
+          { label: '停止中', href: '/users?status=paused', isActive: false },
+        ],
+      });
+
+      buildBreadcrumb(document.getElementById('list-breadcrumb'), {
+        onNavigate,
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Users', href: '/users', isActive: true },
+        ],
+      });
+
+      buildPagination(document.getElementById('list-pagination'), {
+        page: 3,
+        totalPages: 8,
+        hrefBase: '/users?page=',
+        onNavigate,
+      });
+
+      buildBreadcrumb(document.getElementById('detail-breadcrumb'), {
+        onNavigate,
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Users', href: '/users' },
+          { label: 'Engineering', href: '/users?team=eng' },
+          { label: 'Aiko Tanaka', href: '/users/1', isActive: true },
+        ],
+      });
+
+      buildTabs(document.getElementById('detail-tabs'), {
+        onNavigate,
+        items: [
+          { label: 'プロフィール', href: '/users/1', isActive: true },
+          { label: '権限', href: '/users/1/permissions' },
+          { label: 'アクティビティ', href: '/users/1/activity' },
+        ],
+      });
+
+      buildPagination(document.getElementById('detail-pagination'), {
+        page: 1,
+        totalPages: 2,
+        hrefBase: '/users/1/activity?page=',
+        onNavigate,
+      });
+
+      document.querySelectorAll('[data-route]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const route = btn.dataset.route;
+          document.querySelectorAll('.view').forEach((v) => v.classList.remove('is-active'));
+          document.getElementById(`view-${route}`).classList.add('is-active');
+        });
+      });
+    </script>
+  </body>
+</html>

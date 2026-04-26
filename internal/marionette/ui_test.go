@@ -2,6 +2,7 @@ package marionette
 
 import (
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -157,6 +158,30 @@ func TestTemplatePartialsRenderSharedProps(t *testing.T) {
 				t.Fatalf("%s expected %q in %q", tc.name, want, tc.html)
 			}
 		}
+	}
+}
+
+func TestLoadComponentTemplatesCachesParsedTemplates(t *testing.T) {
+	cachedTemplates = nil
+	cachedTemplatesErr = nil
+	componentTemplatesOnce = sync.Once{}
+
+	first, err := loadComponentTemplates()
+	if err != nil {
+		t.Fatalf("first load failed: %v", err)
+	}
+	second, err := loadComponentTemplates()
+	if err != nil {
+		t.Fatalf("second load failed: %v", err)
+	}
+	if first == nil {
+		t.Fatal("expected first template set to be non-nil")
+	}
+	if second == nil {
+		t.Fatal("expected second template set to be non-nil")
+	}
+	if first != second {
+		t.Fatalf("expected cached template pointer reuse, got %p and %p", first, second)
 	}
 }
 

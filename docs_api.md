@@ -1,8 +1,32 @@
 # API Documentation
 
-This document is a direct API reference for the public surface in `marionette`, reorganized by runtime layer.
+This document is a direct API reference for the current runtime surface in
+`internal/marionette`, reorganized by runtime layer.
 
-## 1. App
+## Import paths and scope (important)
+
+### 1) In-repository demos/tests (same module)
+
+Use:
+
+```go
+import marionette "github.com/example/marionette/internal/marionette"
+```
+
+Reason: this API currently lives under `internal/`, so Go restricts imports to
+the same module/repository tree.
+
+### 2) External consumers (different module)
+
+There is currently **no public package path** in this repository that exposes
+the same API as `internal/marionette`.
+
+- If you copy snippets from this file into another repository as-is, they will
+  fail at import resolution due to the `internal` boundary.
+- Therefore, references below describe the **current internal runtime API**, not
+  a publicly importable API contract yet.
+
+## 2. App
 
 ### `New() *App`
 - Returns a new `*App`.
@@ -71,7 +95,7 @@ This document is a direct API reference for the public surface in `marionette`, 
 
 ---
 
-## 2. Context
+## 3. Context
 
 `Context` is passed to each handler as `func(*Context) Node` and provides request/state access.
 
@@ -129,7 +153,7 @@ Flash lifecycle on next request:
 
 ---
 
-## 3. Core Node
+## 4. Core Node
 
 ### `type Node interface { Render() (template.HTML, error) }`
 - Every UI node renders itself to safe HTML.
@@ -167,7 +191,7 @@ Flash lifecycle on next request:
 
 ---
 
-## 4. Form APIs
+## 5. Form APIs
 
 ### `FormRow(props FormRowProps) Node`
 - Required:
@@ -215,7 +239,7 @@ Flash lifecycle on next request:
 
 ---
 
-## 5. Component APIs
+## 6. Component APIs
 
 Template-backed component constructors (`templates/components/*`).
 
@@ -253,7 +277,7 @@ Template-backed component constructors (`templates/components/*`).
 
 ---
 
-## 6. Flash APIs
+## 7. Flash APIs
 
 ### Types / constants
 - `type FlashLevel string`
@@ -275,7 +299,7 @@ Template-backed component constructors (`templates/components/*`).
 
 ---
 
-## 7. Runtime
+## 8. Runtime
 
 ### Handler type
 ```go

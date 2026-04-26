@@ -269,3 +269,21 @@ func TestComponentTableRendersSortHeadersAndEmptyState(t *testing.T) {
 		}
 	}
 }
+
+func TestComponentPaginationRendersState(t *testing.T) {
+	html, err := ComponentPagination(PaginationProps{
+		Page:       2,
+		TotalPages: 4,
+		PrevHref:   "/?page=1&per_page=10",
+		NextHref:   "/?page=3&per_page=10",
+	}).Render()
+	if err != nil {
+		t.Fatalf("pagination render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{"Page 2 / 4", `href="/?page=1&amp;per_page=10"`, `href="/?page=3&amp;per_page=10"`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}

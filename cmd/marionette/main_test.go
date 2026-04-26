@@ -49,7 +49,8 @@ func TestCreateUserStartDateValidationErrors(t *testing.T) {
 }
 
 func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
-	loadingHTML, err := renderUsersTableBody(nil, true, "").Render()
+	pg := pagination{Page: 1, PerPage: 5, TotalPages: 1}
+	loadingHTML, err := renderUsersTableBody(nil, true, "", pg).Render()
 	if err != nil {
 		t.Fatalf("loading state render failed: %v", err)
 	}
@@ -57,7 +58,7 @@ func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
 		t.Fatalf("expected loading skeleton markup, got %q", loadingHTML)
 	}
 
-	emptyHTML, err := renderUsersTableBody(nil, false, "").Render()
+	emptyHTML, err := renderUsersTableBody(nil, false, "", pg).Render()
 	if err != nil {
 		t.Fatalf("empty state render failed: %v", err)
 	}
@@ -65,7 +66,7 @@ func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
 		t.Fatalf("expected empty state title, got %q", emptyHTML)
 	}
 
-	dataHTML, err := renderUsersTableBody([]user{{ID: 1, Name: "Aiko", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-01-01"}}, false, "").Render()
+	dataHTML, err := renderUsersTableBody([]user{{ID: 1, Name: "Aiko", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-01-01"}}, false, "", pg).Render()
 	if err != nil {
 		t.Fatalf("data state render failed: %v", err)
 	}
@@ -75,10 +76,11 @@ func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
 }
 
 func TestRenderUsersTableBodySortsByQueryColumn(t *testing.T) {
+	pg := pagination{Page: 1, PerPage: 5, TotalPages: 1}
 	dataHTML, err := renderUsersTableBody([]user{
 		{ID: 1, Name: "Ren", Email: "ren@example.com", Role: "Editor", StartDate: "2024-07-01"},
 		{ID: 2, Name: "Aiko", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-03-18"},
-	}, false, "name").Render()
+	}, false, "name", pg).Render()
 	if err != nil {
 		t.Fatalf("data state render failed: %v", err)
 	}
@@ -88,5 +90,33 @@ func TestRenderUsersTableBodySortsByQueryColumn(t *testing.T) {
 	}
 	if strings.Index(got, "Aiko") > strings.Index(got, "Ren") {
 		t.Fatalf("expected name-sorted rows, got %q", got)
+	}
+}
+
+func TestUsersPaginationNavigation(t *testing.T) {
+	app := buildApp()
+	req := httptest.NewRequest(http.MethodGet, "/?page=2&per_page=2", nil)
+	rr := httptest.NewRecorder()
+
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	if !strings.Contains(body, "Page 2 / 2") {
+		t.Fatalf("expected page indicator, got %q", body)
+	}
+	if !strings.Contains(body, `href="/?page=1&amp;per_page=2"`) {
+		t.Fatalf("expected prev link, got %q", body)
+	}
+	if strings.Contains(body, `href="/?page=3&amp;per_page=2"`) {
+		t.Fatalf("did not expect next link on last page, got %q", body)
+	}
+	if !strings.Contains(body, "Mina Suzuki") {
+		t.Fatalf("expected second-page user entry, got %q", body)
+	}
+	if strings.Contains(body, "Aiko Tanaka") {
+		t.Fatalf("did not expect first-page user entry on page 2, got %q", body)
 	}
 }

@@ -71,6 +71,13 @@ type TableProps struct {
 	EmptyDescription string
 }
 
+type PaginationProps struct {
+	Page       int
+	TotalPages int
+	PrevHref   string
+	NextHref   string
+}
+
 type templateNode struct {
 	name string
 	data any
@@ -268,6 +275,31 @@ func ComponentTable(props TableProps) Node {
 			Rows:             rows,
 			EmptyTitle:       strings.TrimSpace(props.EmptyTitle),
 			EmptyDescription: strings.TrimSpace(props.EmptyDescription),
+		},
+	}
+}
+
+func ComponentPagination(props PaginationProps) Node {
+	page := props.Page
+	if page < 1 {
+		page = 1
+	}
+	totalPages := props.TotalPages
+	if totalPages < 1 {
+		totalPages = 1
+	}
+	return templateNode{
+		name: "components/pagination",
+		data: struct {
+			Page       int
+			TotalPages int
+			PrevHref   string
+			NextHref   string
+		}{
+			Page:       page,
+			TotalPages: totalPages,
+			PrevHref:   strings.TrimSpace(props.PrevHref),
+			NextHref:   strings.TrimSpace(props.NextHref),
 		},
 	}
 }

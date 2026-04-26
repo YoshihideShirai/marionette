@@ -85,11 +85,27 @@ func TestRenderUsersTableBodySortsByQueryColumn(t *testing.T) {
 		t.Fatalf("data state render failed: %v", err)
 	}
 	got := string(dataHTML)
-	if !strings.Contains(got, `href="/?sort=name"`) {
+	if !strings.Contains(got, `href="/?page=1&amp;per_page=5&amp;sort=name"`) {
 		t.Fatalf("expected sortable header link, got %q", got)
 	}
 	if strings.Index(got, "Aiko") > strings.Index(got, "Ren") {
 		t.Fatalf("expected name-sorted rows, got %q", got)
+	}
+}
+
+func TestUsersTableSortLinksKeepPerPageQuery(t *testing.T) {
+	app := buildApp()
+	req := httptest.NewRequest(http.MethodGet, "/?page=2&per_page=2", nil)
+	rr := httptest.NewRecorder()
+
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	if !strings.Contains(body, `href="/?page=2&amp;per_page=2&amp;sort=name"`) {
+		t.Fatalf("expected sort link to keep current page/per_page query, got %q", body)
 	}
 }
 

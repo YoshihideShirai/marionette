@@ -2,7 +2,10 @@ package marionette
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
+	"regexp"
+	"sort"
 )
 
 // Node is a declarative UI element that can render itself as safe HTML.
@@ -17,9 +20,13 @@ type element struct {
 	Text     string
 }
 
-var elementTmpl = template.Must(template.New("element").Parse(`<{{.Tag}}{{range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end}}>{{.Text}}{{.ChildrenHTML}}</{{.Tag}}>`))
+var tagPattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9-]*$`)
 
 func (e element) Render() (template.HTML, error) {
+	if !tagPattern.MatchString(e.Tag) {
+		return "", fmt.Errorf("invalid tag: %q", e.Tag)
+	}
+
 	children := make([]template.HTML, 0, len(e.Children))
 	for _, child := range e.Children {
 		r, err := child.Render()
@@ -29,22 +36,29 @@ func (e element) Render() (template.HTML, error) {
 		children = append(children, r)
 	}
 
-	view := struct {
-		Tag          string
-		Attrs        map[string]string
-		Text         string
-		ChildrenHTML template.HTML
-	}{
-		Tag:          e.Tag,
-		Attrs:        e.Attrs,
-		Text:         e.Text,
-		ChildrenHTML: joinHTML(children),
-	}
-
 	var b bytes.Buffer
-	if err := elementTmpl.Execute(&b, view); err != nil {
-		return "", err
+	b.WriteString("<")
+	b.WriteString(e.Tag)
+
+	keys := make([]string, 0, len(e.Attrs))
+	for k := range e.Attrs {
+		keys = append(keys, k)
 	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		b.WriteString(" ")
+		b.WriteString(template.HTMLEscapeString(k))
+		b.WriteString(`="`)
+		b.WriteString(template.HTMLEscapeString(e.Attrs[k]))
+		b.WriteString(`"`)
+	}
+	b.WriteString(">")
+	b.WriteString(template.HTMLEscapeString(e.Text))
+	b.WriteString(string(joinHTML(children)))
+	b.WriteString("</")
+	b.WriteString(e.Tag)
+	b.WriteString(">")
+
 	return template.HTML(b.String()), nil
 }
 

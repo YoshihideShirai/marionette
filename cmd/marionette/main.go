@@ -148,11 +148,16 @@ func renderCreateUserForm() marionette.Node {
 		marionette.DivClass("", "card-body",
 			marionette.DivClass("", "text-xl font-semibold", marionette.Text("Create user")),
 			marionette.Form("users/create",
-				marionette.Input("name", ""),
-				marionette.Input("email", ""),
-				marionette.Input("role", "Viewer"),
-				marionette.Submit("Create"),
+				marionette.ComponentInput("name", "", marionette.ComponentProps{Variant: "default", Size: "sm"}),
+				marionette.ComponentInput("email", "", marionette.ComponentProps{Variant: "default", Size: "sm"}),
+				marionette.ComponentSelect("role", []marionette.SelectOption{
+					{Label: "Admin", Value: "Admin"},
+					{Label: "Editor", Value: "Editor"},
+					{Label: "Viewer", Value: "Viewer", Selected: true},
+				}, marionette.ComponentProps{Variant: "default", Size: "sm"}),
+				marionette.ComponentSubmitButton("Create", marionette.ComponentProps{Variant: "primary", Size: "sm"}),
 			).Target("#users-workspace"),
+			marionette.DivClass("", "pt-2", marionette.ComponentButton("Preview (disabled)", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true})),
 		),
 	)
 }

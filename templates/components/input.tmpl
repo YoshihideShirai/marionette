@@ -1,0 +1,3 @@
+{{define "components/input" -}}
+<input class="{{.Class}}" name="{{.Name}}" type="text" value="{{.Value}}"{{if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}{{if .Disabled}} disabled{{end}} />
+{{- end}}

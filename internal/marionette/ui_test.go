@@ -128,3 +128,34 @@ func TestElementRenderEscapesText(t *testing.T) {
 		t.Fatalf("expected escaped content, got %q", got)
 	}
 }
+
+func TestTemplatePartialsRenderSharedProps(t *testing.T) {
+	buttonHTML, err := ComponentButton("Send", ComponentProps{Class: "tracking-wide", Variant: "secondary", Size: "sm", Disabled: true}).Render()
+	if err != nil {
+		t.Fatalf("button render failed: %v", err)
+	}
+	inputHTML, err := ComponentInput("email", "demo@example.com", ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	if err != nil {
+		t.Fatalf("input render failed: %v", err)
+	}
+	selectHTML, err := ComponentSelect("role", []SelectOption{{Label: "Viewer", Value: "viewer", Selected: true}}, ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	if err != nil {
+		t.Fatalf("select render failed: %v", err)
+	}
+
+	for _, tc := range []struct {
+		name string
+		html string
+		want []string
+	}{
+		{name: "button", html: string(buttonHTML), want: []string{`btn-secondary`, `btn-sm`, `tracking-wide`, `disabled`}},
+		{name: "input", html: string(inputHTML), want: []string{`input-ghost`, `input-sm`, `name="email"`, `disabled`}},
+		{name: "select", html: string(selectHTML), want: []string{`select-ghost`, `select-sm`, `name="role"`, `selected`, `disabled`}},
+	} {
+		for _, want := range tc.want {
+			if !strings.Contains(tc.html, want) {
+				t.Fatalf("%s expected %q in %q", tc.name, want, tc.html)
+			}
+		}
+	}
+}

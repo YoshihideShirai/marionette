@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Form stories</title>
+    <link rel="stylesheet" href="./tokens.css" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; display: grid; gap: 12px; max-width: 540px; }
+      fieldset { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>ui/form stories</h1>
+
+    <div class="ui-form-row">
+      <label for="name" class="ui-form-label">TextField</label>
+      <input id="name" name="name" value="Aiko" class="ui-form-control" aria-describedby="name-description" />
+      <p id="name-description" class="ui-form-description">default / focus state</p>
+    </div>
+
+    <div class="ui-form-row">
+      <label for="bio" class="ui-form-label">Textarea</label>
+      <textarea id="bio" name="bio" class="ui-form-control" aria-describedby="bio-description">Long form value</textarea>
+      <p id="bio-description" class="ui-form-description">Supports helper text.</p>
+    </div>
+
+    <div class="ui-form-row">
+      <label for="role" class="ui-form-label">Select</label>
+      <select id="role" name="role" class="ui-form-control" aria-describedby="role-description"><option>Admin</option></select>
+      <p id="role-description" class="ui-form-description">Select description.</p>
+    </div>
+
+    <fieldset>
+      <legend>Checkbox / Switch / RadioGroup</legend>
+      <label><input type="checkbox" class="ui-form-control" style="width:auto" /> Checkbox</label>
+      <label><input type="checkbox" role="switch" class="ui-form-control" style="width:auto" /> Switch</label>
+      <label><input type="radio" name="r" class="ui-form-control" style="width:auto" /> A</label>
+      <label><input type="radio" name="r" class="ui-form-control" style="width:auto" /> B</label>
+    </fieldset>
+
+    <div class="ui-form-row">
+      <label for="email" class="ui-form-label">FieldError</label>
+      <input id="email" name="email" class="ui-form-control" aria-invalid="true" aria-describedby="email-error" />
+      <p id="email-error" class="ui-field-error">Email is required.</p>
+    </div>
+  </body>
+</html>

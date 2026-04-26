@@ -225,6 +225,91 @@ func TestComponentFormFieldRendersLabelHintAndError(t *testing.T) {
 	}
 }
 
+func TestFormRowAndTextFieldWireA11yAttributes(t *testing.T) {
+	html, err := FormRow(FormRowProps{
+		ID:          "email",
+		Label:       "Email",
+		Description: "Used for notifications.",
+		Error:       "Email is required.",
+		Required:    true,
+		Control: TextField(TextFieldProps{
+			ID:          "email",
+			Name:        "email",
+			Value:       "",
+			Description: "Used for notifications.",
+			Error:       "Email is required.",
+			Required:    true,
+			Ref:         "register-email",
+		}),
+	}).Render()
+	if err != nil {
+		t.Fatalf("form row render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`for="email"`,
+		`id="email-description"`,
+		`id="email-error"`,
+		`aria-describedby="email-description email-error"`,
+		`aria-invalid="true"`,
+		`name="email"`,
+		`data-ref="register-email"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestSelectCheckboxRadioAndSwitchExposeState(t *testing.T) {
+	selectHTML, err := Select(SelectFieldProps{
+		ID:          "role",
+		Name:        "role",
+		Options:     []SelectOption{{Label: "Admin", Value: "admin", Selected: true}},
+		Description: "Role selection",
+		Disabled:    true,
+	}).Render()
+	if err != nil {
+		t.Fatalf("select render failed: %v", err)
+	}
+	for _, want := range []string{`id="role"`, `name="role"`, `disabled="disabled"`, `selected="selected"`} {
+		if !strings.Contains(string(selectHTML), want) {
+			t.Fatalf("expected %q in %q", want, selectHTML)
+		}
+	}
+
+	radioHTML, err := RadioGroup(RadioGroupProps{
+		ID:      "access",
+		Name:    "access",
+		Value:   "write",
+		Options: []RadioOption{{Label: "Read", Value: "read"}, {Label: "Write", Value: "write"}},
+	}).Render()
+	if err != nil {
+		t.Fatalf("radio render failed: %v", err)
+	}
+	if !strings.Contains(string(radioHTML), `checked="checked"`) {
+		t.Fatalf("expected checked state in %q", radioHTML)
+	}
+
+	switchHTML, err := Switch(SwitchProps{ID: "enabled", Name: "enabled", Label: "Enabled", Checked: true, ReadOnly: true}).Render()
+	if err != nil {
+		t.Fatalf("switch render failed: %v", err)
+	}
+	for _, want := range []string{`class="toggle`, `readonly="readonly"`, `checked="checked"`} {
+		if !strings.Contains(string(switchHTML), want) {
+			t.Fatalf("expected %q in %q", want, switchHTML)
+		}
+	}
+
+	checkboxHTML, err := Checkbox(CheckboxProps{ID: "tos", Name: "tos", Label: "Accept", Error: "Required"}).Render()
+	if err != nil {
+		t.Fatalf("checkbox render failed: %v", err)
+	}
+	if !strings.Contains(string(checkboxHTML), `aria-invalid="true"`) {
+		t.Fatalf("expected invalid checkbox in %q", checkboxHTML)
+	}
+}
+
 func TestComponentModalRendersSSRState(t *testing.T) {
 	closedHTML, err := ComponentModal(ModalProps{
 		Title:   "Delete user",

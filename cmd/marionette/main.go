@@ -366,58 +366,77 @@ func sortUsers(users []user, sortKey string) []user {
 }
 
 func renderCreateUserForm(form createUserFormState) marionette.Node {
-	fieldProps := func(fieldName string) marionette.ComponentProps {
-		className := "text-sm"
-		if form.Errors[fieldName] != "" {
-			className += " input-error"
-		}
-		return marionette.ComponentProps{Variant: "default", Size: "sm", Class: className}
-	}
-	selectProps := marionette.ComponentProps{Variant: "default", Size: "sm", Class: "text-sm"}
-	if form.Errors["role"] != "" {
-		selectProps.Class += " select-error"
-	}
-
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body",
 			marionette.DivClass("", "text-xl font-semibold", marionette.Text("Create user")),
 			marionette.Form("users/create",
-				marionette.ComponentFormField(
-					marionette.ComponentInputWithOptions("name", form.Name, marionette.InputOptions{
-						Type:        "text",
+				marionette.FormRow(marionette.FormRowProps{
+					ID:          "name",
+					Label:       "Name",
+					Description: "Enter the display name.",
+					Error:       form.Errors["name"],
+					Required:    true,
+					Control: marionette.TextField(marionette.TextFieldProps{
+						ID:          "name",
+						Name:        "name",
+						Value:       form.Name,
 						Placeholder: "name",
+						Description: "Enter the display name.",
+						Error:       form.Errors["name"],
 						Required:    true,
-						Props:       fieldProps("name"),
 					}),
-					marionette.FormFieldProps{Label: "Name", Required: true, Hint: "Enter the display name.", Error: form.Errors["name"]},
-				),
-				marionette.ComponentFormField(
-					marionette.ComponentInputWithOptions("email", form.Email, marionette.InputOptions{
-						Type:        "text",
+				}),
+				marionette.FormRow(marionette.FormRowProps{
+					ID:          "email",
+					Label:       "Email",
+					Description: "Used for notifications.",
+					Error:       form.Errors["email"],
+					Required:    true,
+					Control: marionette.TextField(marionette.TextFieldProps{
+						ID:          "email",
+						Name:        "email",
+						Value:       form.Email,
 						Placeholder: "email",
+						Description: "Used for notifications.",
+						Error:       form.Errors["email"],
 						Required:    true,
-						Props:       fieldProps("email"),
 					}),
-					marionette.FormFieldProps{Label: "Email", Required: true, Hint: "Used for notifications.", Error: form.Errors["email"]},
-				),
-				marionette.ComponentFormField(
-					marionette.ComponentInputWithOptions("start_date", form.StartDate, marionette.InputOptions{
-						Type:     "date",
-						Min:      startDateMin,
-						Max:      startDateMax,
-						Required: true,
-						Props:    fieldProps("start_date"),
+				}),
+				marionette.FormRow(marionette.FormRowProps{
+					ID:          "start_date",
+					Label:       "Start date",
+					Description: "Select a date in the active fiscal window.",
+					Error:       form.Errors["start_date"],
+					Required:    true,
+					Control: marionette.TextField(marionette.TextFieldProps{
+						ID:          "start_date",
+						Name:        "start_date",
+						Value:       form.StartDate,
+						Type:        "date",
+						Description: "Select a date in the active fiscal window.",
+						Error:       form.Errors["start_date"],
+						Required:    true,
 					}),
-					marionette.FormFieldProps{Label: "Start date", Required: true, Hint: "Select a date in the active fiscal window.", Error: form.Errors["start_date"]},
-				),
-				marionette.ComponentFormField(
-					marionette.ComponentSelect("role", []marionette.SelectOption{
-						{Label: "Admin", Value: "Admin", Selected: form.Role == "Admin"},
-						{Label: "Editor", Value: "Editor", Selected: form.Role == "Editor"},
-						{Label: "Viewer", Value: "Viewer", Selected: form.Role == "" || form.Role == "Viewer"},
-					}, selectProps),
-					marionette.FormFieldProps{Label: "Role", Required: true, Hint: "Choose permission scope for this user.", Error: form.Errors["role"]},
-				),
+				}),
+				marionette.FormRow(marionette.FormRowProps{
+					ID:          "role",
+					Label:       "Role",
+					Description: "Choose permission scope for this user.",
+					Error:       form.Errors["role"],
+					Required:    true,
+					Control: marionette.Select(marionette.SelectFieldProps{
+						ID:   "role",
+						Name: "role",
+						Options: []marionette.SelectOption{
+							{Label: "Admin", Value: "Admin", Selected: form.Role == "Admin"},
+							{Label: "Editor", Value: "Editor", Selected: form.Role == "Editor"},
+							{Label: "Viewer", Value: "Viewer", Selected: form.Role == "" || form.Role == "Viewer"},
+						},
+						Description: "Choose permission scope for this user.",
+						Error:       form.Errors["role"],
+						Required:    true,
+					}),
+				}),
 				marionette.ComponentSubmitButton("Create", marionette.ComponentProps{Variant: "primary", Size: "sm"}),
 			).Target("#users-workspace"),
 			marionette.DivClass("", "pt-2", marionette.ComponentButton("Preview (disabled)", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true})),

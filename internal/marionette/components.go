@@ -52,6 +52,28 @@ type EmptyStateProps struct {
 	Description string
 	Skeleton    bool
 	Rows        int
+	Icon        string
+	Props       ComponentProps
+}
+
+type AlertProps struct {
+	Title       string
+	Description string
+	Icon        string
+	Props       ComponentProps
+}
+
+type ToastProps struct {
+	Title       string
+	Description string
+	Icon        string
+	Props       ComponentProps
+	Live        string
+}
+
+type SkeletonProps struct {
+	Rows  int
+	Props ComponentProps
 }
 
 type TableColumn struct {
@@ -231,6 +253,63 @@ func ComponentModal(props ModalProps) Node {
 	}
 }
 
+func ComponentToast(props ToastProps) Node {
+	live := strings.TrimSpace(props.Live)
+	if live == "" {
+		live = "polite"
+	}
+	return templateNode{
+		name: "components/toast",
+		data: struct {
+			Class       string
+			Title       string
+			Description string
+			Icon        string
+			Live        string
+		}{
+			Class:       feedbackClass("toast", props.Props),
+			Title:       strings.TrimSpace(props.Title),
+			Description: strings.TrimSpace(props.Description),
+			Icon:        strings.TrimSpace(props.Icon),
+			Live:        live,
+		},
+	}
+}
+
+func ComponentAlert(props AlertProps) Node {
+	return templateNode{
+		name: "components/alert",
+		data: struct {
+			Class       string
+			Title       string
+			Description string
+			Icon        string
+		}{
+			Class:       feedbackClass("alert", props.Props),
+			Title:       strings.TrimSpace(props.Title),
+			Description: strings.TrimSpace(props.Description),
+			Icon:        strings.TrimSpace(props.Icon),
+		},
+	}
+}
+
+func ComponentSkeleton(props SkeletonProps) Node {
+	rows := props.Rows
+	if rows <= 0 {
+		rows = 3
+	}
+	return templateNode{
+		name: "components/skeleton",
+		data: struct {
+			Class string
+			Rows  []int
+		}{
+			Class: feedbackClass("skeleton", props.Props),
+			Rows:  make([]int, rows),
+		},
+	}
+}
+
 func ComponentEmptyState(props EmptyStateProps) Node {
 	rows := props.Rows
 	if rows <= 0 {
@@ -239,15 +318,19 @@ func ComponentEmptyState(props EmptyStateProps) Node {
 	return templateNode{
 		name: "components/empty_state",
 		data: struct {
+			Class       string
 			Title       string
 			Description string
 			Skeleton    bool
 			Rows        []int
+			Icon        string
 		}{
+			Class:       feedbackClass("empty-state", props.Props),
 			Title:       strings.TrimSpace(props.Title),
 			Description: strings.TrimSpace(props.Description),
 			Skeleton:    props.Skeleton,
 			Rows:        make([]int, rows),
+			Icon:        strings.TrimSpace(props.Icon),
 		},
 	}
 }
@@ -429,6 +512,32 @@ func selectSizeClass(size string) string {
 		return "select-lg"
 	default:
 		return ""
+	}
+}
+
+func feedbackClass(component string, props ComponentProps) string {
+	base := []string{"ui-feedback", "ui-feedback-" + component, feedbackVariantClass(props.Variant), feedbackSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func feedbackVariantClass(variant string) string {
+	switch variant {
+	case "success", "info", "warning", "error":
+		return "ui-feedback-" + variant
+	default:
+		return "ui-feedback-info"
+	}
+}
+
+func feedbackSizeClass(size string) string {
+	switch size {
+	case "sm", "lg":
+		return "ui-feedback-" + size
+	default:
+		return "ui-feedback-md"
 	}
 }
 

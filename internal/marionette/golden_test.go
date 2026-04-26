@@ -52,6 +52,19 @@ func TestTemplateRenderingGolden(t *testing.T) {
 				Open:    true,
 			}),
 		},
+
+		{
+			name: "toast",
+			node: ComponentToast(ToastProps{Title: "Saved", Description: "All changes were synced.", Icon: "✓", Props: ComponentProps{Variant: "success", Size: "sm"}}),
+		},
+		{
+			name: "alert",
+			node: ComponentAlert(AlertProps{Title: "Request failed", Description: "Try again later.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}),
+		},
+		{
+			name: "skeleton",
+			node: ComponentSkeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}),
+		},
 		{
 			name: "empty_state",
 			node: ComponentEmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}),

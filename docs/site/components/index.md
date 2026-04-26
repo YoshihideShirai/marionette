@@ -16,6 +16,7 @@ This page lists Marionette UI components. The target component set is managed in
 6. [ComponentTable](#componenttable)
 7. [ComponentPagination](#componentpagination)
 8. [ComponentFormField](#componentformfield)
+9. [Feedback Demo](#feedback-demo)
 
 ---
 
@@ -175,6 +176,26 @@ Form wrapper that combines label, input, hint text, and error text.
 - Template: [`templates/components/form_field.html`](../../../templates/components/form_field.html)
 
 ---
+
+
+## Feedback Demo
+
+### Purpose
+
+Unified demo for `Toast`, `Alert`, `EmptyState`, and `Skeleton` added under `ui/feedback/`.
+
+- Variant: `success` / `info` / `warning` / `error`
+- Size: `sm` / `md` / `lg`
+- Accessibility: `role`, `aria-live`, `aria-busy`
+- Tokens: `ui/feedback/tokens.css`
+
+### Visual
+
+<iframe src="./examples/feedback.html" title="Feedback components demo" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+- Demo source: [`ui/feedback/stories.html`](../../../ui/feedback/stories.html)
+- Tokens: [`ui/feedback/tokens.css`](../../../ui/feedback/tokens.css)
+- Templates: `templates/components/{toast,alert,empty_state,skeleton}.html`
 
 ## Optional demo screenshot
 

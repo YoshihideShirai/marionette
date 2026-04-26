@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feedback Stories</title>
+    <link rel="stylesheet" href="./tokens.css" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; }
+      .story-grid { display: grid; gap: 16px; }
+      .mobile { max-width: 375px; border: 1px dashed #94a3b8; padding: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>Feedback stories</h1>
+    <div class="story-grid">
+      <div class="ui-feedback ui-feedback-toast ui-feedback-success ui-feedback-md" role="status" aria-live="polite">
+        <span class="ui-feedback__icon" aria-hidden="true">✓</span><div><p class="ui-feedback__title">Default</p><p class="ui-feedback__description">Saved successfully.</p></div>
+      </div>
+      <div class="ui-feedback ui-feedback-alert ui-feedback-warning ui-feedback-lg" role="alert" aria-live="assertive">
+        <span class="ui-feedback__icon" aria-hidden="true">⚠</span><div><p class="ui-feedback__title">Long content</p><p class="ui-feedback__description">This message validates long multi-line content, spacing, and readability in constrained layouts.</p></div>
+      </div>
+      <section class="ui-feedback ui-feedback-empty-state ui-feedback-info ui-feedback-md" role="region" aria-live="polite" aria-busy="false">
+        <span class="ui-feedback__icon" aria-hidden="true">ℹ</span><div><p class="ui-feedback__title">EmptyState with icon</p><p class="ui-feedback__description">No data is available yet.</p></div>
+      </section>
+      <div class="mobile">
+        <div class="ui-feedback ui-feedback-skeleton ui-feedback-error ui-feedback-sm ui-feedback-loading" role="status" aria-live="polite" aria-busy="true">
+          <div style="width:100%"><div class="ui-feedback__skeleton-line"></div><div class="ui-feedback__skeleton-line"></div></div>
+        </div>
+        <p>Mobile width (375px)</p>
+      </div>
+    </div>
+  </body>
+</html>

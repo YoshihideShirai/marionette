@@ -312,3 +312,40 @@ func TestComponentPaginationRendersState(t *testing.T) {
 		}
 	}
 }
+
+func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
+	toastHTML, err := ComponentToast(ToastProps{
+		Title:       "Saved",
+		Description: "All changes were synced.",
+		Icon:        "✓",
+		Props:       ComponentProps{Variant: "success", Size: "sm"},
+	}).Render()
+	if err != nil {
+		t.Fatalf("toast render failed: %v", err)
+	}
+	for _, want := range []string{`ui-feedback-success`, `ui-feedback-sm`, `role="status"`, `aria-live="polite"`} {
+		if !strings.Contains(string(toastHTML), want) {
+			t.Fatalf("expected %q in %q", want, toastHTML)
+		}
+	}
+
+	alertHTML, err := ComponentAlert(AlertProps{Title: "Failed", Description: "Try again.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}).Render()
+	if err != nil {
+		t.Fatalf("alert render failed: %v", err)
+	}
+	for _, want := range []string{`ui-feedback-error`, `ui-feedback-md`, `role="alert"`, `aria-live="assertive"`} {
+		if !strings.Contains(string(alertHTML), want) {
+			t.Fatalf("expected %q in %q", want, alertHTML)
+		}
+	}
+
+	skeletonHTML, err := ComponentSkeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}).Render()
+	if err != nil {
+		t.Fatalf("skeleton render failed: %v", err)
+	}
+	for _, want := range []string{`ui-feedback-warning`, `ui-feedback-lg`, `aria-busy="true"`} {
+		if !strings.Contains(string(skeletonHTML), want) {
+			t.Fatalf("expected %q in %q", want, skeletonHTML)
+		}
+	}
+}

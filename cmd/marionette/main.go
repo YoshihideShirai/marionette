@@ -102,17 +102,8 @@ func renderUsersWorkspace(ctx *marionette.Context) marionette.Node {
 }
 
 func renderUsersTable(ctx *marionette.Context) marionette.Node {
-	rows := []marionette.Node{
-		marionette.Raw(`<div class="grid grid-cols-[1fr_1.4fr_.8fr_auto] gap-3 border-b border-base-300 px-4 py-3 text-sm font-semibold text-base-content/70">
-<span>Name</span><span>Email</span><span>Role</span><span></span>
-</div>`),
-	}
-	for _, u := range getUsers(ctx) {
-		rows = append(rows, renderUserRow(u))
-	}
-	if len(rows) == 1 {
-		rows = append(rows, marionette.DivClass("", "px-4 py-8 text-center text-base-content/60", marionette.Text("No users yet.")))
-	}
+	users := getUsers(ctx)
+	tableBody := renderUsersTableBody(users)
 
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body gap-4",
@@ -123,21 +114,33 @@ func renderUsersTable(ctx *marionette.Context) marionette.Node {
 				),
 				marionette.DivClass("", "badge badge-outline", marionette.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
 			),
-			marionette.DivClass("", "overflow-hidden rounded-box border border-base-300", rows...),
+			marionette.DivClass("", "overflow-hidden rounded-box border border-base-300", tableBody),
 		),
 	)
 }
 
-func renderUserRow(u user) marionette.Node {
-	return marionette.Raw(`<div class="grid grid-cols-[1fr_1.4fr_.8fr_auto] items-center gap-3 border-b border-base-200 px-4 py-3 last:border-b-0">
-<div class="font-medium">` + escape(u.Name) + `</div>
-<div class="text-sm text-base-content/70">` + escape(u.Email) + `</div>
-<div><span class="badge badge-ghost">` + escape(u.Role) + `</span></div>
-<form hx-post="/users/delete" hx-target="#users-workspace" hx-swap="outerHTML">
-  <input type="hidden" name="id" value="` + strconv.Itoa(u.ID) + `" />
-  <button class="btn btn-ghost btn-sm text-error" type="submit">Delete</button>
-</form>
-</div>`)
+func renderUsersTableBody(users []user) marionette.Node {
+	if len(users) == 0 {
+		return marionette.DivClass("", "px-4 py-8 text-center text-base-content/60", marionette.Text("No users yet."))
+	}
+
+	rows := make([]marionette.TableRowData, 0, len(users))
+	for _, u := range users {
+		rows = append(rows, renderUserRow(u))
+	}
+	return marionette.Table([]string{"Name", "Email", "Role", ""}, rows...)
+}
+
+func renderUserRow(u user) marionette.TableRowData {
+	return marionette.TableRow(
+		marionette.DivClass("", "font-medium", marionette.Text(u.Name)),
+		marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(u.Email)),
+		marionette.DivClass("", "badge badge-ghost", marionette.Text(u.Role)),
+		marionette.Form("users/delete",
+			marionette.HiddenInput("id", strconv.Itoa(u.ID)),
+			marionette.Submit("Delete"),
+		).Target("#users-workspace"),
+	)
 }
 
 func renderCreateUserForm() marionette.Node {
@@ -152,15 +155,4 @@ func renderCreateUserForm() marionette.Node {
 			).Target("#users-workspace"),
 		),
 	)
-}
-
-func escape(v string) string {
-	replacer := strings.NewReplacer(
-		"&", "&amp;",
-		"<", "&lt;",
-		">", "&gt;",
-		`"`, "&#34;",
-		"'", "&#39;",
-	)
-	return replacer.Replace(v)
 }

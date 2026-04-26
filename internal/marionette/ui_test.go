@@ -78,6 +78,46 @@ func TestSidebarRendersNavigationAndEscapesText(t *testing.T) {
 	}
 }
 
+func TestTableRendersHeadersRowsAndEscapesCells(t *testing.T) {
+	html, err := Table([]string{"Name", "Role"},
+		TableRow(Text(`<Aiko>`), DivClass("", "badge", Text("Admin"))),
+	).Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`<table class="table">`,
+		`<th>Name</th>`,
+		`<td><span>&lt;Aiko&gt;</span></td>`,
+		`class="badge"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+	if strings.Contains(got, `<Aiko>`) {
+		t.Fatalf("expected table cell text to be escaped, got %q", got)
+	}
+}
+
+func TestHiddenInputRenderEscapesValue(t *testing.T) {
+	html, err := HiddenInput("id", `"42"`).Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`name="id"`,
+		`type="hidden"`,
+		`value="&#34;42&#34;"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
 func TestElementRenderEscapesText(t *testing.T) {
 	html, err := Text(`<script>alert(1)</script>`).Render()
 	if err != nil {

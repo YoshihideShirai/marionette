@@ -91,6 +91,53 @@ func Column(children ...Node) Node {
 	return element{Tag: "div", Attrs: map[string]string{"class": "flex flex-col gap-3"}, Children: children}
 }
 
+type table struct {
+	Headers []string
+	Rows    []TableRowData
+}
+
+type TableRowData struct {
+	Cells []Node
+}
+
+func Table(headers []string, rows ...TableRowData) Node {
+	return table{Headers: headers, Rows: rows}
+}
+
+func TableRow(cells ...Node) TableRowData {
+	return TableRowData{Cells: cells}
+}
+
+func (t table) Render() (template.HTML, error) {
+	headerCells := make([]Node, 0, len(t.Headers))
+	for _, header := range t.Headers {
+		headerCells = append(headerCells, element{Tag: "th", Text: header})
+	}
+
+	bodyRows := make([]Node, 0, len(t.Rows))
+	for _, row := range t.Rows {
+		cells := make([]Node, 0, len(row.Cells))
+		for _, cell := range row.Cells {
+			cells = append(cells, element{Tag: "td", Children: []Node{cell}})
+		}
+		bodyRows = append(bodyRows, element{Tag: "tr", Children: cells})
+	}
+
+	return element{
+		Tag:   "table",
+		Attrs: map[string]string{"class": "table"},
+		Children: []Node{
+			element{
+				Tag: "thead",
+				Children: []Node{
+					element{Tag: "tr", Children: headerCells},
+				},
+			},
+			element{Tag: "tbody", Children: bodyRows},
+		},
+	}.Render()
+}
+
 type sidebar struct {
 	Brand     string
 	Title     string
@@ -223,6 +270,17 @@ func Input(name, value string) Node {
 			"class": "input input-bordered w-full",
 			"name":  name,
 			"type":  "text",
+			"value": value,
+		},
+	}
+}
+
+func HiddenInput(name, value string) Node {
+	return element{
+		Tag: "input",
+		Attrs: map[string]string{
+			"name":  name,
+			"type":  "hidden",
 			"value": value,
 		},
 	}

@@ -349,3 +349,29 @@ func joinHTML(parts []template.HTML) template.HTML {
 	}
 	return template.HTML(b.String())
 }
+
+func FlashAlerts(flashes []FlashMessage) Node {
+	if len(flashes) == 0 {
+		return DivClass("flash-alerts", "hidden")
+	}
+
+	children := make([]Node, 0, len(flashes))
+	for _, flash := range flashes {
+		children = append(children, DivClass("", "alert "+flashLevelClass(flash.Level), Text(flash.Message)))
+	}
+
+	return DivClass("flash-alerts", "space-y-2", children...)
+}
+
+func flashLevelClass(level FlashLevel) string {
+	switch level {
+	case FlashSuccess:
+		return "alert-success"
+	case FlashError:
+		return "alert-error"
+	case FlashWarn:
+		return "alert-warning"
+	default:
+		return "alert-info"
+	}
+}

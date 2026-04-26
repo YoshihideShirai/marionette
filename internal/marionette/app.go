@@ -1,6 +1,8 @@
 package marionette
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,7 +13,24 @@ type Context struct {
 	Writer  http.ResponseWriter
 	Request *http.Request
 	State   map[string]any
+	flashes []FlashMessage
 }
+
+type FlashLevel string
+
+const (
+	FlashSuccess FlashLevel = "success"
+	FlashError   FlashLevel = "error"
+	FlashInfo    FlashLevel = "info"
+	FlashWarn    FlashLevel = "warn"
+)
+
+type FlashMessage struct {
+	Level   FlashLevel `json:"level"`
+	Message string     `json:"message"`
+}
+
+const flashCookieName = "marionette_flash"
 
 func (c *Context) Param(name string) string {
 	if c.Request == nil {
@@ -48,6 +67,39 @@ func (c *Context) GetInt(key string) int {
 		return 0
 	}
 	return v
+}
+
+func (c *Context) AddFlash(level FlashLevel, message string) {
+	trimmed := strings.TrimSpace(message)
+	if trimmed == "" {
+		return
+	}
+	c.flashes = append(c.flashes, FlashMessage{Level: level, Message: trimmed})
+	encoded, err := encodeFlashes(c.flashes)
+	if err != nil {
+		return
+	}
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     flashCookieName,
+		Value:    encoded,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
+func (c *Context) FlashSuccess(message string) { c.AddFlash(FlashSuccess, message) }
+func (c *Context) FlashError(message string)   { c.AddFlash(FlashError, message) }
+func (c *Context) FlashInfo(message string)    { c.AddFlash(FlashInfo, message) }
+func (c *Context) FlashWarn(message string)    { c.AddFlash(FlashWarn, message) }
+
+func (c *Context) Flashes() []FlashMessage {
+	if len(c.flashes) == 0 {
+		return nil
+	}
+	out := make([]FlashMessage, len(c.flashes))
+	copy(out, c.flashes)
+	return out
 }
 
 // Handler transforms state into a UI node in response to a user event.
@@ -138,7 +190,56 @@ func (a *App) Handler() http.Handler {
 }
 
 func (a *App) newContext(w http.ResponseWriter, r *http.Request) *Context {
-	return &Context{Writer: w, Request: r, State: a.state}
+	flashes := decodeFlashes(r)
+	if len(flashes) > 0 {
+		clearFlashCookie(w)
+	}
+	return &Context{Writer: w, Request: r, State: a.state, flashes: flashes}
+}
+
+func clearFlashCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     flashCookieName,
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
+func decodeFlashes(r *http.Request) []FlashMessage {
+	cookie, err := r.Cookie(flashCookieName)
+	if err != nil || cookie.Value == "" {
+		return nil
+	}
+	raw, err := base64.RawURLEncoding.DecodeString(cookie.Value)
+	if err != nil {
+		return nil
+	}
+	var flashes []FlashMessage
+	if err := json.Unmarshal(raw, &flashes); err != nil {
+		return nil
+	}
+	out := make([]FlashMessage, 0, len(flashes))
+	for _, f := range flashes {
+		if strings.TrimSpace(f.Message) == "" {
+			continue
+		}
+		switch f.Level {
+		case FlashSuccess, FlashError, FlashInfo, FlashWarn:
+			out = append(out, f)
+		}
+	}
+	return out
+}
+
+func encodeFlashes(flashes []FlashMessage) (string, error) {
+	encodedJSON, err := json.Marshal(flashes)
+	if err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(encodedJSON), nil
 }
 
 func (a *App) handleMissingIndex(w http.ResponseWriter, r *http.Request) {

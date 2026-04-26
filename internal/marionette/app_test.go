@@ -119,3 +119,50 @@ func TestContextQueryAndStateHelpers(t *testing.T) {
 		t.Fatalf("expected query and state helper output, got %q", rr.Body.String())
 	}
 }
+
+func TestFlashPersistsForNextRequestAndAutoClears(t *testing.T) {
+	app := New()
+	app.Action("save", func(ctx *Context) Node {
+		ctx.FlashSuccess("saved")
+		return Div("app", Text("ok"))
+	})
+	app.Page("/", func(ctx *Context) Node {
+		return FlashAlerts(ctx.Flashes())
+	})
+
+	actionReq := httptest.NewRequest(http.MethodPost, "/save", strings.NewReader(""))
+	actionReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	actionRes := httptest.NewRecorder()
+	app.Handler().ServeHTTP(actionRes, actionReq)
+
+	var flashCookie *http.Cookie
+	for _, c := range actionRes.Result().Cookies() {
+		if c.Name == flashCookieName {
+			flashCookie = c
+			break
+		}
+	}
+	if flashCookie == nil {
+		t.Fatalf("expected %q cookie to be set", flashCookieName)
+	}
+
+	firstGet := httptest.NewRequest(http.MethodGet, "/", nil)
+	firstGet.AddCookie(flashCookie)
+	firstRes := httptest.NewRecorder()
+	app.Handler().ServeHTTP(firstRes, firstGet)
+	if !strings.Contains(firstRes.Body.String(), "saved") {
+		t.Fatalf("expected flash message in first GET response, got %q", firstRes.Body.String())
+	}
+
+	secondGet := httptest.NewRequest(http.MethodGet, "/", nil)
+	for _, c := range firstRes.Result().Cookies() {
+		if c.Name == flashCookieName {
+			secondGet.AddCookie(c)
+		}
+	}
+	secondRes := httptest.NewRecorder()
+	app.Handler().ServeHTTP(secondRes, secondGet)
+	if strings.Contains(secondRes.Body.String(), "saved") {
+		t.Fatalf("expected flash message to be auto-cleared, got %q", secondRes.Body.String())
+	}
+}

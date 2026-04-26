@@ -43,6 +43,9 @@ func main() {
 			users = append(users, user{ID: nextID, Name: name, Email: email, Role: role})
 			ctx.Set("users", users)
 			ctx.Set("nextUserID", nextID+1)
+			ctx.FlashSuccess("User was saved successfully.")
+		} else {
+			ctx.FlashError("Save failed. Name and email are required.")
 		}
 		return renderUsersWorkspace(ctx)
 	})
@@ -92,6 +95,7 @@ func renderUsersPage(ctx *marionette.Context) marionette.Node {
 	return marionette.DivClass("app", "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]",
 		renderSidebar(),
 		marionette.DivClass("", "min-w-0 space-y-6",
+			marionette.FlashAlerts(ctx.Flashes()),
 			marionette.DivClass("", "space-y-2",
 				marionette.DivClass("", "text-3xl font-bold tracking-tight", marionette.Text("Marionette Admin UI")),
 				marionette.DivClass("", "text-base-content/70",
@@ -113,6 +117,7 @@ func renderSidebar() marionette.Node {
 
 func renderUsersWorkspace(ctx *marionette.Context) marionette.Node {
 	return marionette.DivClass("users-workspace", "space-y-4",
+		marionette.FlashAlerts(ctx.Flashes()),
 		marionette.DivClass("", "grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
 			renderUsersTable(ctx),
 			renderCreateUserForm(),

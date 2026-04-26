@@ -17,12 +17,32 @@ Only consider adding a new component when all of the following are true:
 
 ## 2. Naming Conventions
 
-### 2.1 Prefix
+### 2.1 Component and Type Names (Current Standard)
 
-- Component names must use the `Ui` prefix.
-  - Examples: `UiButton`, `UiInput`, `UiModal`
+- Align names with existing public API patterns.
+- The current accepted naming examples are:
+  - Component entry points: `ComponentButton`, `ComponentInput`, `ComponentModal`
+  - Props types: `ComponentProps`, `TextFieldProps`, `FormRowProps`
+  - Form primitives: `FormRow`, `TextField`
+- `Ui` prefix names are **not required** by the current standard.
 
-### 2.2 Variant Names
+### 2.2 New API Compatibility Policy (Single Rule)
+
+- For newly added public components, use the `Component*` prefix as the default.
+  - Example: `ComponentDatePicker`, `ComponentTabs`
+- Keep existing non-`Component*` APIs (for example `FormRow`, `TextField`) as-is for backward compatibility.
+- Do not introduce new prefixes in the same layer (`Ui*`, `Base*`, `Core*` etc.) unless an approved RFC explicitly updates this guideline.
+
+#### Review checklist (naming decision criteria)
+
+When reviewing PRs that add or rename APIs, approve naming only when all checks pass:
+
+1. **Consistency**: New public component names follow `Component*`.
+2. **Compatibility**: Existing exported names are not renamed without a staged deprecation plan.
+3. **Predictability**: Related props are named `*Props` and stay discoverable next to the component.
+4. **No mixed policy**: The same API surface does not mix multiple prefix strategies without explicit design approval.
+
+### 2.3 Variant Names
 
 - Name variants by meaning, not by visual appearance.
 - Recommended format:
@@ -33,7 +53,7 @@ Only consider adding a new component when all of the following are true:
   - Color-based names (`blue`, `red`)
   - Ambiguous abbreviations (`normal2`, `typeA`)
 
-### 2.3 Parameter Naming
+### 2.4 Parameter Naming
 
 - Use the `is` / `has` prefix for boolean parameters.
   - Examples: `isDisabled`, `isLoading`, `hasIcon`
@@ -41,6 +61,11 @@ Only consider adding a new component when all of the following are true:
   - Examples: `onClick`, `onClose`, `onChange`
 - Use clear nouns for value parameters.
   - Examples: `label`, `helperText`, `errorMessage`, `ariaLabel`
+
+### 2.5 Future Direction (Optional)
+
+- If the project decides to standardize on `Ui*` in the future, define it via RFC and migration plan first.
+- Until such approval, treat `Ui*` as a future option, not an enforcement rule.
 
 ## 3. Handling Breaking Changes
 
@@ -90,22 +115,27 @@ The following checks are mandatory for every component-related PR.
 <p id="email-help" class="ui-helper-text">Use your work email.</p>
 ```
 
-### 5.2 Prohibited Examples
+### 5.2 Good / Bad Naming Examples
 
-- Appearance-based variant naming:
+- Good (current rule: `Component*`, `*Props`, existing API names remain intact):
 
-```html
-<button class="ui-button ui-button--blue">Submit</button>
+```go
+button := ComponentButton("Save", ComponentProps{Variant: "primary", Size: "sm"})
+row := FormRow(FormRowProps{
+    Label: "Email",
+    Control: TextField(TextFieldProps{Name: "email", Type: "email"}),
+})
 ```
 
-- Unclear parameter names in component API docs:
+- Bad (mixed or non-standard prefix policy):
+
+```go
+button := UiButton("Save", UiButtonProps{Tone: "primary"})
+input := BaseTextField(BaseInputOptions{Kind: "email"})
+```
+
+- Bad (unclear parameter names):
 
 ```text
 typeA=true, normal2="x"
-```
-
-- Missing accessibility labeling:
-
-```html
-<input type="email" />
 ```

@@ -58,15 +58,22 @@ func Text(v string) Node {
 }
 
 func Div(id string, children ...Node) Node {
+	return DivClass(id, "", children...)
+}
+
+func DivClass(id, className string, children ...Node) Node {
 	attrs := map[string]string{}
 	if id != "" {
 		attrs["id"] = id
+	}
+	if className != "" {
+		attrs["class"] = className
 	}
 	return element{Tag: "div", Attrs: attrs, Children: children}
 }
 
 func Column(children ...Node) Node {
-	return element{Tag: "div", Attrs: map[string]string{"style": "display:flex;flex-direction:column;gap:12px;"}, Children: children}
+	return element{Tag: "div", Attrs: map[string]string{"class": "flex flex-col gap-3"}, Children: children}
 }
 
 type button struct {
@@ -75,7 +82,7 @@ type button struct {
 	TargetQ string
 }
 
-var buttonTmpl = template.Must(template.New("button").Parse(`<button hx-post="/{{.Action}}" hx-target="{{.TargetQ}}" hx-swap="outerHTML">{{.Label}}</button>`))
+var buttonTmpl = template.Must(template.New("button").Parse(`<button class="btn btn-primary w-fit" hx-post="/{{.Action}}" hx-target="{{.TargetQ}}" hx-swap="outerHTML">{{.Label}}</button>`))
 
 func Button(label string) *button {
 	return &button{Label: label, TargetQ: "#app"}

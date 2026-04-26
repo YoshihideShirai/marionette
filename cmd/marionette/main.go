@@ -27,11 +27,13 @@ func main() {
 }
 
 func renderCounter(count int) marionette.Node {
-	return marionette.Div("app",
-		marionette.Column(
-			marionette.Text("Counter Demo"),
-			marionette.Text("Count: "+strconv.Itoa(count)),
-			marionette.Button("Increment").OnClick("counter/increment").TargetSelector("#app"),
+	return marionette.DivClass("app", "card bg-base-100 shadow-xl max-w-md",
+		marionette.DivClass("", "card-body",
+			marionette.Column(
+				marionette.DivClass("", "text-2xl font-bold", marionette.Text("Counter Demo")),
+				marionette.DivClass("", "text-base", marionette.Text("Count: "+strconv.Itoa(count))),
+				marionette.Button("Increment").OnClick("counter/increment").TargetSelector("#app"),
+			),
 		),
 	)
 }

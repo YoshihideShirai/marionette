@@ -7,15 +7,17 @@ import (
 )
 
 var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
-<html lang="en">
+<html lang="en" data-theme="corporate">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Marionette</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </head>
-  <body>
-    <main id="app">{{.Content}}</main>
+  <body class="bg-base-200 min-h-screen">
+    <main id="app" class="container mx-auto p-6">{{.Content}}</main>
   </body>
 </html>`))
 

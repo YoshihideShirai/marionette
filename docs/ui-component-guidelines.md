@@ -33,13 +33,13 @@ Only consider adding a new component when all of the following are true:
   - Color-based names (`blue`, `red`)
   - Ambiguous abbreviations (`normal2`, `typeA`)
 
-### 2.3 Props Naming
+### 2.3 Parameter Naming
 
-- Use the `is` / `has` prefix for booleans.
+- Use the `is` / `has` prefix for boolean parameters.
   - Examples: `isDisabled`, `isLoading`, `hasIcon`
-- Use the `on` prefix for events.
+- Use the `on` prefix for event parameters.
   - Examples: `onClick`, `onClose`, `onChange`
-- Use clear nouns for value props.
+- Use clear nouns for value parameters.
   - Examples: `label`, `helperText`, `errorMessage`, `ariaLabel`
 
 ## 3. Handling Breaking Changes
@@ -53,8 +53,8 @@ Breaking changes (API-incompatible changes) must be rolled out in stages.
 
 ### 3.1 Migration Template
 
-- Target: `old props / old variant`
-- Replacement: `new props / new variant`
+- Target: `old parameters / old variant`
+- Replacement: `new parameters / new variant`
 - Replacement rule: whether it is a one-to-one mechanical replacement or requires manual updates
 - Impact: expected affected screens/features
 - Verification: re-check accessibility, responsiveness, and theme compatibility
@@ -74,48 +74,38 @@ The following checks are mandatory for every component-related PR.
   - Acceptable readability in light/dark (or all defined themes)
   - No obvious contrast problems
 
-## 5. Sample Code and Anti-Patterns
+## 5. Sample Markup and Anti-Patterns
 
 ### 5.1 Recommended Samples
 
-```tsx
-<UiButton
-  variant="primary"
-  size="md"
-  isLoading={false}
-  onClick={handleSubmit}
-  ariaLabel="Save"
->
+```html
+<button class="ui-button ui-button--primary ui-button--md" aria-label="Save">
   Save
-</UiButton>
+</button>
 ```
 
-```tsx
-<UiInput
-  label="Email address"
-  value={email}
-  onChange={setEmail}
-  isDisabled={false}
-  errorMessage={emailError}
-/>
+```html
+<label for="email">Email address</label>
+<input id="email" type="email" aria-describedby="email-help" />
+<p id="email-help" class="ui-helper-text">Use your work email.</p>
 ```
 
 ### 5.2 Prohibited Examples
 
 - Appearance-based variant naming:
 
-```tsx
-<UiButton variant="blue">Submit</UiButton>
+```html
+<button class="ui-button ui-button--blue">Submit</button>
 ```
 
-- Unclear prop names:
+- Unclear parameter names in component API docs:
 
-```tsx
-<UiInput typeA={true} normal2="x" />
+```text
+typeA=true, normal2="x"
 ```
 
 - Missing accessibility labeling:
 
-```tsx
-<UiInput value={email} onChange={setEmail} />
+```html
+<input type="email" />
 ```

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Components Gallery</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 2rem auto;
+        max-width: 880px;
+        line-height: 1.65;
+        padding: 0 1rem;
+      }
+      a { color: #2563eb; }
+      pre {
+        background: color-mix(in oklab, canvas 92%, black 8%);
+        border-radius: 10px;
+        overflow-x: auto;
+        padding: 0.75rem;
+      }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      iframe { background: white; }
+    </style>
+  </head>
+  <body>
+    <h1 id="components-gallery">Components Gallery</h1>
+<p>This page lists Marionette UI components. The target component set is managed in one place via <code>docs/site/components/_index.json</code>.</p>
+<ul>
+<li>Source of truth: <a href="./_index.json"><code>_index.json</code></a></li>
+<li>Golden source files: <code>internal/marionette/testdata/golden/*.golden.html</code></li>
+<li>Generated sample output: <code>docs/site/components/examples/*.html</code></li>
+</ul>
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#componentbutton">ComponentButton</a></li>
+<li><a href="#componentinput">ComponentInput</a></li>
+<li><a href="#componentselect">ComponentSelect</a></li>
+<li><a href="#componentmodal">ComponentModal</a></li>
+<li><a href="#componentemptystate">ComponentEmptyState</a></li>
+<li><a href="#componenttable">ComponentTable</a></li>
+<li><a href="#componentpagination">ComponentPagination</a></li>
+<li><a href="#componentformfield">ComponentFormField</a></li>
+</ol>
+<hr>
+<h2 id="componentbutton">ComponentButton</h2>
+<h3 id="purpose">Purpose</h3>
+<p>Clickable button for primary and secondary actions.</p>
+<h3 id="key-props">Key props</h3>
+<ul>
+<li><code>Variant</code> (<code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>error</code>, etc.)</li>
+<li><code>Size</code> (<code>sm</code>, <code>md</code>, <code>lg</code>)</li>
+<li><code>Disabled</code></li>
+</ul>
+<h3 id="visual">Visual</h3>
+<iframe src="./examples/button.html" title="ComponentButton example" style="width:100%;min-height:160px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/button.golden.html"><code>button.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/button.tmpl"><code>templates/components/button.tmpl</code></a></li>
+</ul>
+<h2 id="componentinput">ComponentInput</h2>
+<h3 id="purpose-1">Purpose</h3>
+<p>Single-value input field for text, date, and similar values.</p>
+<h3 id="key-props-1">Key props</h3>
+<ul>
+<li><code>name</code>, <code>value</code>, <code>type</code>, <code>placeholder</code></li>
+<li><code>min</code>, <code>max</code>, <code>required</code>, <code>disabled</code></li>
+<li><code>Props</code> (<code>Variant</code>, <code>Size</code>)</li>
+</ul>
+<h3 id="visual-1">Visual</h3>
+<iframe src="./examples/input.html" title="ComponentInput example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/input.golden.html"><code>input.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/input.tmpl"><code>templates/components/input.tmpl</code></a></li>
+</ul>
+<h2 id="componentselect">ComponentSelect</h2>
+<h3 id="purpose-2">Purpose</h3>
+<p>Dropdown input for selecting one option from a list.</p>
+<h3 id="key-props-2">Key props</h3>
+<ul>
+<li><code>name</code></li>
+<li><code>options</code> (<code>label</code>, <code>value</code>, <code>selected</code>)</li>
+<li><code>Props</code> (<code>Variant</code>, <code>Size</code>)</li>
+</ul>
+<h3 id="visual-2">Visual</h3>
+<iframe src="./examples/select.html" title="ComponentSelect example" style="width:100%;min-height:200px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/select.golden.html"><code>select.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/select.tmpl"><code>templates/components/select.tmpl</code></a></li>
+</ul>
+<h2 id="componentmodal">ComponentModal</h2>
+<h3 id="purpose-3">Purpose</h3>
+<p>Overlay dialog for confirmations and detail views.</p>
+<h3 id="key-props-3">Key props</h3>
+<ul>
+<li><code>Title</code></li>
+<li><code>Body</code></li>
+<li><code>Actions</code></li>
+<li><code>Open</code></li>
+</ul>
+<h3 id="visual-3">Visual</h3>
+<iframe src="./examples/modal.html" title="ComponentModal example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/modal_open.golden.html"><code>modal_open.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/modal.html"><code>templates/components/modal.html</code></a></li>
+</ul>
+<h2 id="componentemptystate">ComponentEmptyState</h2>
+<h3 id="purpose-4">Purpose</h3>
+<p>Empty-state UI for no-data and initial states.</p>
+<h3 id="key-props-4">Key props</h3>
+<ul>
+<li><code>Title</code></li>
+<li><code>Description</code></li>
+<li><code>Skeleton</code>, <code>Rows</code></li>
+</ul>
+<h3 id="visual-4">Visual</h3>
+<iframe src="./examples/empty_state.html" title="ComponentEmptyState example" style="width:100%;min-height:260px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/empty_state.golden.html"><code>empty_state.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/empty_state.html"><code>templates/components/empty_state.html</code></a></li>
+</ul>
+<h2 id="componenttable">ComponentTable</h2>
+<h3 id="purpose-5">Purpose</h3>
+<p>Tabular list UI rendered from column and row definitions.</p>
+<h3 id="key-props-5">Key props</h3>
+<ul>
+<li><code>Columns</code> (<code>Label</code>, <code>SortKey</code>, <code>Sorted</code>, <code>Direction</code>)</li>
+<li><code>Rows</code></li>
+<li><code>EmptyTitle</code>, <code>EmptyDescription</code></li>
+</ul>
+<h3 id="visual-5">Visual</h3>
+<iframe src="./examples/table.html" title="ComponentTable example" style="width:100%;min-height:300px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/table.golden.html"><code>table.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/table.html"><code>templates/components/table.html</code></a></li>
+</ul>
+<h2 id="componentpagination">ComponentPagination</h2>
+<h3 id="purpose-6">Purpose</h3>
+<p>Pagination controls for previous/next navigation and current page display.</p>
+<h3 id="key-props-6">Key props</h3>
+<ul>
+<li><code>Page</code></li>
+<li><code>TotalPages</code></li>
+<li><code>PrevHref</code>, <code>NextHref</code></li>
+</ul>
+<h3 id="visual-6">Visual</h3>
+<iframe src="./examples/pagination.html" title="ComponentPagination example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/pagination.golden.html"><code>pagination.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/pagination.tmpl"><code>templates/components/pagination.tmpl</code></a></li>
+</ul>
+<h2 id="componentformfield">ComponentFormField</h2>
+<h3 id="purpose-7">Purpose</h3>
+<p>Form wrapper that combines label, input, hint text, and error text.</p>
+<h3 id="key-props-7">Key props</h3>
+<ul>
+<li><code>Label</code></li>
+<li><code>Required</code></li>
+<li><code>Hint</code></li>
+<li><code>Error</code></li>
+<li><code>Child</code> (nested input/select, etc.)</li>
+</ul>
+<h3 id="visual-7">Visual</h3>
+<iframe src="./examples/form_field.html" title="ComponentFormField example" style="width:100%;min-height:260px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../internal/marionette/testdata/golden/form_field.golden.html"><code>form_field.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/form_field.html"><code>templates/components/form_field.html</code></a></li>
+</ul>
+<hr>
+<h2 id="optional-demo-screenshot">Optional demo screenshot</h2>
+<p>Place a demo screenshot from <code>cmd/marionette/main.go</code> under <code>docs/site/assets/</code> when browser-capture tooling is available.</p>
+
+  </body>
+</html>

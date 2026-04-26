@@ -4,63 +4,105 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/example/marionette/internal/marionette"
 )
 
 type user struct {
-	ID    int
-	Name  string
-	Email string
-	Role  string
+	ID        int
+	Name      string
+	Email     string
+	Role      string
+	StartDate string
+}
+
+const (
+	startDateMin = "2024-01-01"
+	startDateMax = "2026-12-31"
+)
+
+type createUserFormState struct {
+	Name      string
+	Email     string
+	Role      string
+	StartDate string
+	Errors    map[string]string
+}
+
+func defaultCreateUserFormState() createUserFormState {
+	return createUserFormState{Role: "Viewer", Errors: map[string]string{}}
 }
 
 func main() {
+	app := buildApp()
+	if err := app.Run("127.0.0.1:8080"); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func buildApp() *marionette.App {
 	app := marionette.New()
 	app.Set("nextUserID", 4)
 	app.Set("users", []user{
-		{ID: 1, Name: "Aiko Tanaka", Email: "aiko@example.com", Role: "Admin"},
-		{ID: 2, Name: "Ren Sato", Email: "ren@example.com", Role: "Editor"},
-		{ID: 3, Name: "Mina Suzuki", Email: "mina@example.com", Role: "Viewer"},
+		{ID: 1, Name: "Aiko Tanaka", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-03-18"},
+		{ID: 2, Name: "Ren Sato", Email: "ren@example.com", Role: "Editor", StartDate: "2024-07-01"},
+		{ID: 3, Name: "Mina Suzuki", Email: "mina@example.com", Role: "Viewer", StartDate: "2025-01-10"},
 	})
 	app.Set("deleteModalOpen", false)
 	app.Set("deleteTargetID", 0)
 
 	app.Page("/", func(ctx *marionette.Context) marionette.Node {
-		return renderUsersPage(ctx)
+		return renderUsersPage(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/create", func(ctx *marionette.Context) marionette.Node {
-		name := strings.TrimSpace(ctx.FormValue("name"))
-		email := strings.TrimSpace(ctx.FormValue("email"))
-		role := strings.TrimSpace(ctx.FormValue("role"))
-		if name != "" && email != "" {
-			if role == "" {
-				role = "Viewer"
-			}
+		form := createUserFormState{
+			Name:      strings.TrimSpace(ctx.FormValue("name")),
+			Email:     strings.TrimSpace(ctx.FormValue("email")),
+			Role:      strings.TrimSpace(ctx.FormValue("role")),
+			StartDate: strings.TrimSpace(ctx.FormValue("start_date")),
+			Errors:    map[string]string{},
+		}
+		if form.Role == "" {
+			form.Role = "Viewer"
+		}
+
+		if strings.TrimSpace(form.Name) == "" {
+			form.Errors["name"] = "Name is required."
+		}
+		if strings.TrimSpace(form.Email) == "" {
+			form.Errors["email"] = "Email is required."
+		}
+		if errMsg := validateStartDate(form.StartDate); errMsg != "" {
+			form.Errors["start_date"] = errMsg
+		}
+
+		if len(form.Errors) == 0 {
 			users := getUsers(ctx)
 			nextID := ctx.GetInt("nextUserID")
-			users = append(users, user{ID: nextID, Name: name, Email: email, Role: role})
+			users = append(users, user{ID: nextID, Name: form.Name, Email: form.Email, Role: form.Role, StartDate: form.StartDate})
 			ctx.Set("users", users)
 			ctx.Set("nextUserID", nextID+1)
 			ctx.FlashSuccess("User was saved successfully.")
-		} else {
-			ctx.FlashError("Save failed. Name and email are required.")
+			return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 		}
-		return renderUsersWorkspace(ctx)
+
+		ctx.FlashError("Save failed. Please fix the highlighted fields.")
+		return renderUsersWorkspace(ctx, form)
 	})
 
 	app.Action("users/delete/prompt", func(ctx *marionette.Context) marionette.Node {
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
 		ctx.Set("deleteTargetID", id)
 		ctx.Set("deleteModalOpen", true)
-		return renderUsersWorkspace(ctx)
+		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/delete/cancel", func(ctx *marionette.Context) marionette.Node {
 		ctx.Set("deleteModalOpen", false)
 		ctx.Set("deleteTargetID", 0)
-		return renderUsersWorkspace(ctx)
+		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/delete/confirm", func(ctx *marionette.Context) marionette.Node {
@@ -75,12 +117,26 @@ func main() {
 		ctx.Set("users", next)
 		ctx.Set("deleteModalOpen", false)
 		ctx.Set("deleteTargetID", 0)
-		return renderUsersWorkspace(ctx)
+		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
-	if err := app.Run("127.0.0.1:8080"); err != nil {
-		log.Fatal(err)
+	return app
+}
+
+func validateStartDate(raw string) string {
+	if strings.TrimSpace(raw) == "" {
+		return "Start date is required."
 	}
+	selected, err := time.Parse("2006-01-02", raw)
+	if err != nil {
+		return "Enter a valid date (YYYY-MM-DD)."
+	}
+	minDate, _ := time.Parse("2006-01-02", startDateMin)
+	maxDate, _ := time.Parse("2006-01-02", startDateMax)
+	if selected.Before(minDate) || selected.After(maxDate) {
+		return "Start date must be between " + startDateMin + " and " + startDateMax + "."
+	}
+	return ""
 }
 
 func getUsers(ctx *marionette.Context) []user {
@@ -91,7 +147,7 @@ func getUsers(ctx *marionette.Context) []user {
 	return users
 }
 
-func renderUsersPage(ctx *marionette.Context) marionette.Node {
+func renderUsersPage(ctx *marionette.Context, formState createUserFormState) marionette.Node {
 	return marionette.DivClass("app", "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]",
 		renderSidebar(),
 		marionette.DivClass("", "min-w-0 space-y-6",
@@ -102,7 +158,7 @@ func renderUsersPage(ctx *marionette.Context) marionette.Node {
 					marionette.Text("Go handlers, htmx actions, and daisyUI components for small admin tools."),
 				),
 			),
-			renderUsersWorkspace(ctx),
+			renderUsersWorkspace(ctx, formState),
 		),
 	)
 }
@@ -115,12 +171,12 @@ func renderSidebar() marionette.Node {
 	).Note("Demo workspace", "In-memory data for admin UI prototyping.")
 }
 
-func renderUsersWorkspace(ctx *marionette.Context) marionette.Node {
+func renderUsersWorkspace(ctx *marionette.Context, formState createUserFormState) marionette.Node {
 	return marionette.DivClass("users-workspace", "space-y-4",
 		marionette.FlashAlerts(ctx.Flashes()),
 		marionette.DivClass("", "grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
 			renderUsersTable(ctx),
-			renderCreateUserForm(),
+			renderCreateUserForm(formState),
 		),
 		renderDeleteModal(ctx),
 	)
@@ -153,7 +209,7 @@ func renderUsersTableBody(users []user) marionette.Node {
 	for _, u := range users {
 		rows = append(rows, renderUserRow(u))
 	}
-	return marionette.Table([]string{"Name", "Email", "Role", ""}, rows...)
+	return marionette.Table([]string{"Name", "Email", "Role", "Start date", ""}, rows...)
 }
 
 func renderUserRow(u user) marionette.TableRowData {
@@ -161,6 +217,7 @@ func renderUserRow(u user) marionette.TableRowData {
 		marionette.DivClass("", "font-medium", marionette.Text(u.Name)),
 		marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(u.Email)),
 		marionette.DivClass("", "badge badge-ghost", marionette.Text(u.Role)),
+		marionette.DivClass("", "text-sm", marionette.Text(u.StartDate)),
 		marionette.Form("users/delete/prompt",
 			marionette.HiddenInput("id", strconv.Itoa(u.ID)),
 			marionette.ComponentSubmitButton("Delete", marionette.ComponentProps{Variant: "danger", Size: "sm"}),
@@ -168,17 +225,37 @@ func renderUserRow(u user) marionette.TableRowData {
 	)
 }
 
-func renderCreateUserForm() marionette.Node {
+func renderCreateUserForm(form createUserFormState) marionette.Node {
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body",
 			marionette.DivClass("", "text-xl font-semibold", marionette.Text("Create user")),
 			marionette.Form("users/create",
-				marionette.ComponentInput("name", "", marionette.ComponentProps{Variant: "default", Size: "sm"}),
-				marionette.ComponentInput("email", "", marionette.ComponentProps{Variant: "default", Size: "sm"}),
+				marionette.ComponentInputWithOptions("name", form.Name, marionette.InputOptions{
+					Type:        "text",
+					Placeholder: "name",
+					Required:    true,
+					Error:       form.Errors["name"],
+					Props:       marionette.ComponentProps{Variant: "default", Size: "sm"},
+				}),
+				marionette.ComponentInputWithOptions("email", form.Email, marionette.InputOptions{
+					Type:        "text",
+					Placeholder: "email",
+					Required:    true,
+					Error:       form.Errors["email"],
+					Props:       marionette.ComponentProps{Variant: "default", Size: "sm"},
+				}),
+				marionette.ComponentInputWithOptions("start_date", form.StartDate, marionette.InputOptions{
+					Type:     "date",
+					Min:      startDateMin,
+					Max:      startDateMax,
+					Required: true,
+					Error:    form.Errors["start_date"],
+					Props:    marionette.ComponentProps{Variant: "default", Size: "sm"},
+				}),
 				marionette.ComponentSelect("role", []marionette.SelectOption{
-					{Label: "Admin", Value: "Admin"},
-					{Label: "Editor", Value: "Editor"},
-					{Label: "Viewer", Value: "Viewer", Selected: true},
+					{Label: "Admin", Value: "Admin", Selected: form.Role == "Admin"},
+					{Label: "Editor", Value: "Editor", Selected: form.Role == "Editor"},
+					{Label: "Viewer", Value: "Viewer", Selected: form.Role == "" || form.Role == "Viewer"},
 				}, marionette.ComponentProps{Variant: "default", Size: "sm"}),
 				marionette.ComponentSubmitButton("Create", marionette.ComponentProps{Variant: "primary", Size: "sm"}),
 			).Target("#users-workspace"),

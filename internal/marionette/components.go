@@ -30,6 +30,16 @@ type ModalProps struct {
 	Open    bool
 }
 
+type InputOptions struct {
+	Type        string
+	Placeholder string
+	Min         string
+	Max         string
+	Required    bool
+	Error       string
+	Props       ComponentProps
+}
+
 type templateNode struct {
 	name string
 	data any
@@ -73,20 +83,42 @@ func componentButton(label, buttonType string, props ComponentProps) Node {
 }
 
 func ComponentInput(name, value string, props ComponentProps) Node {
+	return ComponentInputWithOptions(name, value, InputOptions{
+		Type:        "text",
+		Placeholder: strings.TrimSpace(name),
+		Props:       props,
+	})
+}
+
+func ComponentInputWithOptions(name, value string, options InputOptions) Node {
+	inputType := strings.TrimSpace(options.Type)
+	if inputType == "" {
+		inputType = "text"
+	}
 	return templateNode{
 		name: "components/input",
 		data: struct {
 			Class       string
 			Name        string
+			Type        string
 			Value       string
 			Placeholder string
+			Min         string
+			Max         string
+			Required    bool
 			Disabled    bool
+			Error       string
 		}{
-			Class:       inputClass(props),
+			Class:       inputClass(options.Props),
 			Name:        name,
+			Type:        inputType,
 			Value:       value,
-			Placeholder: strings.TrimSpace(name),
-			Disabled:    props.Disabled,
+			Placeholder: options.Placeholder,
+			Min:         strings.TrimSpace(options.Min),
+			Max:         strings.TrimSpace(options.Max),
+			Required:    options.Required,
+			Disabled:    options.Props.Disabled,
+			Error:       strings.TrimSpace(options.Error),
 		},
 	}
 }

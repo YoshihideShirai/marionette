@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 // Context gives handlers controlled access to application state and request data.
@@ -13,6 +14,7 @@ type Context struct {
 	Writer  http.ResponseWriter
 	Request *http.Request
 	State   map[string]any
+	app     *App
 	flashes []FlashMessage
 }
 
@@ -54,15 +56,26 @@ func (c *Context) Query(name string) string {
 }
 
 func (c *Context) Set(key string, value any) {
-	c.State[key] = value
+	if c.app == nil {
+		c.State[key] = value
+		return
+	}
+	c.app.mu.Lock()
+	defer c.app.mu.Unlock()
+	c.app.state[key] = value
 }
 
 func (c *Context) Get(key string) any {
-	return c.State[key]
+	if c.app == nil {
+		return c.State[key]
+	}
+	c.app.mu.RLock()
+	defer c.app.mu.RUnlock()
+	return c.app.state[key]
 }
 
 func (c *Context) GetInt(key string) int {
-	v, ok := c.State[key].(int)
+	v, ok := c.Get(key).(int)
 	if !ok {
 		return 0
 	}
@@ -107,6 +120,7 @@ type Handler func(*Context) Node
 
 // App is a minimal Go-only UI runtime for htmx driven desktop/web views.
 type App struct {
+	mu      sync.RWMutex
 	state   map[string]any
 	pages   map[string]Handler
 	actions map[string]Handler
@@ -120,9 +134,15 @@ func New() *App {
 	}
 }
 
-func (a *App) Set(key string, value any) { a.state[key] = value }
+func (a *App) Set(key string, value any) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.state[key] = value
+}
 
 func (a *App) GetInt(key string) int {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	v, ok := a.state[key].(int)
 	if !ok {
 		return 0
@@ -194,7 +214,7 @@ func (a *App) newContext(w http.ResponseWriter, r *http.Request) *Context {
 	if len(flashes) > 0 {
 		clearFlashCookie(w)
 	}
-	return &Context{Writer: w, Request: r, State: a.state, flashes: flashes}
+	return &Context{Writer: w, Request: r, State: a.state, app: a, flashes: flashes}
 }
 
 func clearFlashCookie(w http.ResponseWriter) {

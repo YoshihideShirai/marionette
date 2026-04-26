@@ -5,23 +5,203 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Marionette Documentation</title>
     <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2rem; color: #0f172a; }
-      .card { max-width: 760px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; }
+      :root { color-scheme: light dark; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 2rem auto;
+        max-width: 880px;
+        line-height: 1.65;
+        padding: 0 1rem;
+      }
       a { color: #2563eb; }
-      ul { line-height: 1.8; }
+      pre {
+        background: color-mix(in oklab, canvas 92%, black 8%);
+        border-radius: 10px;
+        overflow-x: auto;
+        padding: 0.75rem;
+      }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      iframe { background: white; }
     </style>
   </head>
   <body>
-    <div class="card">
-      <h1>Marionette Documentation</h1>
-      <p>
-        This repository currently maintains primary docs in Markdown files.
-        Use the links below when browsing via GitHub Pages.
-      </p>
-      <ul>
-        <li><a href="./index.md">Framework overview (Markdown)</a></li>
-        <li><a href="./components/index.md">Components gallery (Markdown)</a></li>
-      </ul>
-    </div>
+    <h1 id="marionette-documentation">Marionette Documentation</h1>
+<h2 id="framework-overview">Framework Overview</h2>
+<p>Marionette is a Go-first UI framework for building admin interfaces. Application developers compose screens in Go, while htmx handles partial updates in the browser. The runtime is also designed to work in a WebView host for desktop use cases.</p>
+<ul>
+<li><strong>Goals (summary)</strong>
+<ul>
+<li>Define UI using Go only.</li>
+<li>Compose admin screens from pages, actions, forms, and partial updates.</li>
+<li>Keep browser-side interaction simple with htmx.</li>
+<li>Support desktop-oriented deployment via WebView hosting.</li>
+</ul>
+</li>
+<li><strong>Architecture (summary)</strong>
+<ul>
+<li><strong>Backend (Go):</strong> routing, state updates, and event handling.</li>
+<li><strong>Frontend (htmx):</strong> transport and incremental HTML swaps.</li>
+<li><strong>Styling:</strong> Tailwind CSS + daisyUI (CDN).</li>
+<li><strong>UI DSL (Go):</strong> build Nodes declaratively and render via <code>html/template</code>.</li>
+</ul>
+</li>
+</ul>
+<p>Related documentation:</p>
+<ul>
+<li>API reference: <a href="../../docs_api.html"><code>docs_api.md</code></a></li>
+<li>UI policy: <a href="../architecture/ui.html"><code>docs/architecture/ui.md</code></a></li>
+<li>Components gallery: <a href="./components/index.html"><code>docs/site/components/index.md</code></a></li>
+</ul>
+<hr>
+<h2 id="core-ui-component-list">Core UI Component List</h2>
+<p>The following is the fixed list of core Marionette UI components.</p>
+<ol>
+<li><a href="#componentbutton">ComponentButton</a></li>
+<li><a href="#componentinput">ComponentInput</a></li>
+<li><a href="#componentformfield">ComponentFormField</a></li>
+<li><a href="#componentselect">ComponentSelect</a></li>
+<li><a href="#componentmodal">ComponentModal</a></li>
+<li><a href="#componentemptystate">ComponentEmptyState</a></li>
+<li><a href="#componenttable">ComponentTable</a></li>
+<li><a href="#componentpagination">ComponentPagination</a></li>
+</ol>
+<hr>
+<h2 id="examples">Examples</h2>
+<blockquote>
+<p>Each section includes: (1) Go usage code and (2) a rendered sample preview.</p>
+</blockquote>
+<h3 id="componentbutton">ComponentButton</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">saveButton := marionette.ComponentButton(&quot;Save&quot;, marionette.ComponentProps{
+    Variant: &quot;secondary&quot;,
+    Size:    &quot;sm&quot;,
+})
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<div style="margin:8px 0 16px;">
+  <button type="button" style="padding:6px 12px;border-radius:8px;border:1px solid #7c3aed;background:#8b5cf6;color:white;font-size:14px;">Save</button>
+</div>
+<h3 id="componentinput">ComponentInput</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">nameInput := marionette.ComponentInputWithOptions(&quot;name&quot;, &quot;&quot;, marionette.InputOptions{
+    Type:        &quot;text&quot;,
+    Placeholder: &quot;Username&quot;,
+    Required:    true,
+    Props:       marionette.ComponentProps{Size: &quot;lg&quot;},
+})
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<div style="margin:8px 0 16px;max-width:360px;">
+  <input type="text" placeholder="Username" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+</div>
+<h3 id="componentformfield">ComponentFormField</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">field := marionette.ComponentFormField(
+    marionette.ComponentInput(&quot;email&quot;, &quot;&quot;, marionette.ComponentProps{}),
+    marionette.FormFieldProps{
+        Label:    &quot;Email address&quot;,
+        Required: true,
+        Hint:     &quot;Used for notifications&quot;,
+    },
+)
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<div style="margin:8px 0 16px;max-width:420px;display:grid;gap:6px;">
+  <label style="font-weight:600;font-size:14px;">Email address <span style="color:#dc2626;">*</span></label>
+  <input type="email" placeholder="name@example.com" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+  <small style="color:#64748b;">Used for notifications</small>
+</div>
+<h3 id="componentselect">ComponentSelect</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">statusSelect := marionette.ComponentSelect(&quot;status&quot;, []marionette.SelectOption{
+    {Label: &quot;Active&quot;, Value: &quot;active&quot;, Selected: true},
+    {Label: &quot;Inactive&quot;, Value: &quot;inactive&quot;},
+}, marionette.ComponentProps{})
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<div style="margin:8px 0 16px;max-width:240px;">
+  <select style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;">
+    <option selected>Active</option>
+    <option>Inactive</option>
+  </select>
+</div>
+<h3 id="componentmodal">ComponentModal</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">confirmModal := marionette.ComponentModal(marionette.ModalProps{
+    Title: &quot;Confirm deletion&quot;,
+    Body:  marionette.Text(&quot;This action cannot be undone.&quot;),
+    Actions: marionette.ComponentButton(&quot;Close&quot;, marionette.ComponentProps{
+        Variant: &quot;ghost&quot;,
+    }),
+    Open: true,
+})
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<div style="margin:8px 0 16px;max-width:460px;border:1px solid #e2e8f0;border-radius:12px;padding:16px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.08);">
+  <div style="font-weight:700;font-size:18px;">Confirm deletion</div>
+  <p style="margin:8px 0 14px;color:#475569;">This action cannot be undone.</p>
+  <div style="display:flex;gap:8px;justify-content:flex-end;">
+    <button type="button" style="padding:6px 12px;border:1px solid #cbd5e1;border-radius:8px;background:white;">Close</button>
+    <button type="button" style="padding:6px 12px;border:1px solid #b91c1c;border-radius:8px;background:#dc2626;color:white;">Delete</button>
+  </div>
+</div>
+<h3 id="componentemptystate">ComponentEmptyState</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">empty := marionette.ComponentEmptyState(marionette.EmptyStateProps{
+    Title:       &quot;No data available&quot;,
+    Description: &quot;Try changing your filter criteria.&quot;,
+    Skeleton:    false,
+})
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<section style="margin:8px 0 16px;padding:24px;border:1px solid #e2e8f0;border-radius:12px;text-align:center;max-width:480px;background:#f8fafc;">
+  <h4 style="margin:0 0 8px;font-size:18px;">No data available</h4>
+  <p style="margin:0;color:#64748b;">Try changing your filter criteria.</p>
+</section>
+<h3 id="componenttable">ComponentTable</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">table := marionette.ComponentTable(marionette.TableProps{
+    Columns: []marionette.TableColumn{
+        {Label: &quot;Name&quot;},
+        {Label: &quot;Role&quot;},
+    },
+    Rows: []marionette.TableComponentRow{
+        {Cells: []marionette.Node{marionette.Text(&quot;Alice&quot;), marionette.Text(&quot;Admin&quot;)}},
+    },
+    EmptyTitle:       &quot;No users&quot;,
+    EmptyDescription: &quot;Create your first user.&quot;,
+})
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<table style="margin:8px 0 16px;border-collapse:collapse;min-width:320px;">
+  <thead>
+    <tr>
+      <th style="text-align:left;padding:8px 10px;border-bottom:1px solid #cbd5e1;">Name</th>
+      <th style="text-align:left;padding:8px 10px;border-bottom:1px solid #cbd5e1;">Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;">Alice</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;">Admin</td>
+    </tr>
+  </tbody>
+</table>
+<h3 id="componentpagination">ComponentPagination</h3>
+<p><strong>Go code</strong></p>
+<pre><code class="language-go">pager := marionette.ComponentPagination(marionette.PaginationProps{
+    Page:       2,
+    TotalPages: 10,
+    PrevHref:   &quot;?page=1&quot;,
+    NextHref:   &quot;?page=3&quot;,
+})
+</code></pre>
+<p><strong>Rendered sample</strong></p>
+<nav aria-label="Pagination" style="margin:8px 0 16px;display:flex;gap:8px;align-items:center;">
+  <a href="?page=1" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px;text-decoration:none;color:#0f172a;">Previous</a>
+  <span style="padding:6px 10px;border:1px solid #2563eb;border-radius:8px;background:#eff6ff;color:#1d4ed8;">2 / 10</span>
+  <a href="?page=3" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px;text-decoration:none;color:#0f172a;">Next</a>
+</nav>
+
   </body>
 </html>

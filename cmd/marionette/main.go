@@ -254,7 +254,7 @@ func renderUsersTableBody(users []user, loading bool, sortKey string, pg paginat
 	}
 
 	return marionette.ComponentTable(marionette.TableProps{
-		Columns:          usersTableColumns(sortKey),
+		Columns:          usersTableColumns(sortKey, pg),
 		Rows:             rows,
 		EmptyTitle:       "No users yet",
 		EmptyDescription: "Create a user from the form to populate this table.",
@@ -328,10 +328,12 @@ func renderUserRow(u user) marionette.TableComponentRow {
 	}
 }
 
-func usersTableColumns(activeSort string) []marionette.TableColumn {
+func usersTableColumns(activeSort string, pg pagination) []marionette.TableColumn {
 	sortedQuery := func(key string) string {
 		query := url.Values{}
 		query.Set("sort", key)
+		query.Set("page", strconv.Itoa(pg.Page))
+		query.Set("per_page", strconv.Itoa(pg.PerPage))
 		return "/?" + query.Encode()
 	}
 	return []marionette.TableColumn{

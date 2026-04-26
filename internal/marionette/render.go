@@ -17,7 +17,7 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </head>
   <body class="bg-base-200 min-h-screen">
-    <main id="app" class="container mx-auto p-6">{{.Content}}</main>
+    <main id="marionette-root" class="container mx-auto p-6">{{.Content}}</main>
   </body>
 </html>`))
 

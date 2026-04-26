@@ -32,6 +32,12 @@ type createUserFormState struct {
 	Errors    map[string]string
 }
 
+type pagination struct {
+	Page       int
+	PerPage    int
+	TotalPages int
+}
+
 func defaultCreateUserFormState() createUserFormState {
 	return createUserFormState{Role: "Viewer", Errors: map[string]string{}}
 }
@@ -202,7 +208,8 @@ func renderUsersWorkspace(ctx *marionette.Context, formState createUserFormState
 func renderUsersTable(ctx *marionette.Context) marionette.Node {
 	users := getUsers(ctx)
 	loading := isLoading(ctx)
-	tableBody := renderUsersTableBody(users, loading, ctx.Query("sort"))
+	pg := parsePagination(ctx.Query("page"), ctx.Query("per_page"), len(users))
+	tableBody := renderUsersTableBody(users, loading, ctx.Query("sort"), pg)
 
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body gap-4",
@@ -222,11 +229,17 @@ func renderUsersTable(ctx *marionette.Context) marionette.Node {
 				),
 			),
 			marionette.DivClass("", "overflow-hidden rounded-box border border-base-300", tableBody),
+			marionette.ComponentPagination(marionette.PaginationProps{
+				Page:       pg.Page,
+				TotalPages: pg.TotalPages,
+				PrevHref:   pageLink(pg.Page-1, pg.PerPage, ctx.Query("sort"), pg.TotalPages),
+				NextHref:   pageLink(pg.Page+1, pg.PerPage, ctx.Query("sort"), pg.TotalPages),
+			}),
 		),
 	)
 }
 
-func renderUsersTableBody(users []user, loading bool, sortKey string) marionette.Node {
+func renderUsersTableBody(users []user, loading bool, sortKey string, pg pagination) marionette.Node {
 	if loading {
 		return marionette.ComponentEmptyState(marionette.EmptyStateProps{
 			Skeleton: true,
@@ -234,7 +247,7 @@ func renderUsersTableBody(users []user, loading bool, sortKey string) marionette
 		})
 	}
 
-	sorted := sortUsers(users, sortKey)
+	sorted := paginateUsers(sortUsers(users, sortKey), pg)
 	rows := make([]marionette.TableComponentRow, 0, len(sorted))
 	for _, u := range sorted {
 		rows = append(rows, renderUserRow(u))
@@ -246,6 +259,53 @@ func renderUsersTableBody(users []user, loading bool, sortKey string) marionette
 		EmptyTitle:       "No users yet",
 		EmptyDescription: "Create a user from the form to populate this table.",
 	})
+}
+
+func parsePagination(pageRaw, perPageRaw string, total int) pagination {
+	page := 1
+	if p, err := strconv.Atoi(strings.TrimSpace(pageRaw)); err == nil && p > 0 {
+		page = p
+	}
+	perPage := 5
+	if pp, err := strconv.Atoi(strings.TrimSpace(perPageRaw)); err == nil && pp > 0 {
+		perPage = pp
+	}
+	totalPages := total / perPage
+	if total%perPage != 0 {
+		totalPages++
+	}
+	if totalPages == 0 {
+		totalPages = 1
+	}
+	if page > totalPages {
+		page = totalPages
+	}
+	return pagination{Page: page, PerPage: perPage, TotalPages: totalPages}
+}
+
+func paginateUsers(users []user, pg pagination) []user {
+	start := (pg.Page - 1) * pg.PerPage
+	if start >= len(users) {
+		return nil
+	}
+	end := start + pg.PerPage
+	if end > len(users) {
+		end = len(users)
+	}
+	return users[start:end]
+}
+
+func pageLink(page, perPage int, sortKey string, totalPages int) string {
+	if page < 1 || page > totalPages {
+		return ""
+	}
+	query := url.Values{}
+	query.Set("page", strconv.Itoa(page))
+	query.Set("per_page", strconv.Itoa(perPage))
+	if strings.TrimSpace(sortKey) != "" {
+		query.Set("sort", sortKey)
+	}
+	return "/?" + query.Encode()
 }
 
 func isLoading(ctx *marionette.Context) bool {

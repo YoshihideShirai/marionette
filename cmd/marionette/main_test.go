@@ -49,7 +49,7 @@ func TestCreateUserStartDateValidationErrors(t *testing.T) {
 }
 
 func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
-	loadingHTML, err := renderUsersTableBody(nil, true).Render()
+	loadingHTML, err := renderUsersTableBody(nil, true, "").Render()
 	if err != nil {
 		t.Fatalf("loading state render failed: %v", err)
 	}
@@ -57,7 +57,7 @@ func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
 		t.Fatalf("expected loading skeleton markup, got %q", loadingHTML)
 	}
 
-	emptyHTML, err := renderUsersTableBody(nil, false).Render()
+	emptyHTML, err := renderUsersTableBody(nil, false, "").Render()
 	if err != nil {
 		t.Fatalf("empty state render failed: %v", err)
 	}
@@ -65,11 +65,28 @@ func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
 		t.Fatalf("expected empty state title, got %q", emptyHTML)
 	}
 
-	dataHTML, err := renderUsersTableBody([]user{{ID: 1, Name: "Aiko", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-01-01"}}, false).Render()
+	dataHTML, err := renderUsersTableBody([]user{{ID: 1, Name: "Aiko", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-01-01"}}, false, "").Render()
 	if err != nil {
 		t.Fatalf("data state render failed: %v", err)
 	}
 	if !strings.Contains(string(dataHTML), "<table") {
 		t.Fatalf("expected data table, got %q", dataHTML)
+	}
+}
+
+func TestRenderUsersTableBodySortsByQueryColumn(t *testing.T) {
+	dataHTML, err := renderUsersTableBody([]user{
+		{ID: 1, Name: "Ren", Email: "ren@example.com", Role: "Editor", StartDate: "2024-07-01"},
+		{ID: 2, Name: "Aiko", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-03-18"},
+	}, false, "name").Render()
+	if err != nil {
+		t.Fatalf("data state render failed: %v", err)
+	}
+	got := string(dataHTML)
+	if !strings.Contains(got, `href="/?sort=name"`) {
+		t.Fatalf("expected sortable header link, got %q", got)
+	}
+	if strings.Index(got, "Aiko") > strings.Index(got, "Ren") {
+		t.Fatalf("expected name-sorted rows, got %q", got)
 	}
 }

@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -200,7 +202,7 @@ func renderUsersWorkspace(ctx *marionette.Context, formState createUserFormState
 func renderUsersTable(ctx *marionette.Context) marionette.Node {
 	users := getUsers(ctx)
 	loading := isLoading(ctx)
-	tableBody := renderUsersTableBody(users, loading)
+	tableBody := renderUsersTableBody(users, loading, ctx.Query("sort"))
 
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body gap-4",
@@ -224,7 +226,7 @@ func renderUsersTable(ctx *marionette.Context) marionette.Node {
 	)
 }
 
-func renderUsersTableBody(users []user, loading bool) marionette.Node {
+func renderUsersTableBody(users []user, loading bool, sortKey string) marionette.Node {
 	if loading {
 		return marionette.ComponentEmptyState(marionette.EmptyStateProps{
 			Skeleton: true,
@@ -232,18 +234,18 @@ func renderUsersTableBody(users []user, loading bool) marionette.Node {
 		})
 	}
 
-	if len(users) == 0 {
-		return marionette.ComponentEmptyState(marionette.EmptyStateProps{
-			Title:       "No users yet",
-			Description: "Create a user from the form to populate this table.",
-		})
-	}
-
-	rows := make([]marionette.TableRowData, 0, len(users))
-	for _, u := range users {
+	sorted := sortUsers(users, sortKey)
+	rows := make([]marionette.TableComponentRow, 0, len(sorted))
+	for _, u := range sorted {
 		rows = append(rows, renderUserRow(u))
 	}
-	return marionette.Table([]string{"Name", "Email", "Role", "Start date", ""}, rows...)
+
+	return marionette.ComponentTable(marionette.TableProps{
+		Columns:          usersTableColumns(sortKey),
+		Rows:             rows,
+		EmptyTitle:       "No users yet",
+		EmptyDescription: "Create a user from the form to populate this table.",
+	})
 }
 
 func isLoading(ctx *marionette.Context) bool {
@@ -251,17 +253,54 @@ func isLoading(ctx *marionette.Context) bool {
 	return v
 }
 
-func renderUserRow(u user) marionette.TableRowData {
-	return marionette.TableRow(
-		marionette.DivClass("", "font-medium", marionette.Text(u.Name)),
-		marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(u.Email)),
-		marionette.DivClass("", "badge badge-ghost", marionette.Text(u.Role)),
-		marionette.DivClass("", "text-sm", marionette.Text(u.StartDate)),
-		marionette.Form("users/delete/prompt",
-			marionette.HiddenInput("id", strconv.Itoa(u.ID)),
-			marionette.ComponentSubmitButton("Delete", marionette.ComponentProps{Variant: "danger", Size: "sm"}),
-		).Target("#users-workspace"),
-	)
+func renderUserRow(u user) marionette.TableComponentRow {
+	return marionette.TableComponentRow{
+		Cells: []marionette.Node{
+			marionette.DivClass("", "font-medium", marionette.Text(u.Name)),
+			marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(u.Email)),
+			marionette.DivClass("", "badge badge-ghost", marionette.Text(u.Role)),
+			marionette.DivClass("", "text-sm", marionette.Text(u.StartDate)),
+			marionette.Form("users/delete/prompt",
+				marionette.HiddenInput("id", strconv.Itoa(u.ID)),
+				marionette.ComponentSubmitButton("Delete", marionette.ComponentProps{Variant: "danger", Size: "sm"}),
+			).Target("#users-workspace"),
+		},
+	}
+}
+
+func usersTableColumns(activeSort string) []marionette.TableColumn {
+	sortedQuery := func(key string) string {
+		query := url.Values{}
+		query.Set("sort", key)
+		return "/?" + query.Encode()
+	}
+	return []marionette.TableColumn{
+		{Label: "Name", SortKey: "name", SortHref: sortedQuery("name"), SortActive: activeSort == "name"},
+		{Label: "Email", SortKey: "email", SortHref: sortedQuery("email"), SortActive: activeSort == "email"},
+		{Label: "Role", SortKey: "role", SortHref: sortedQuery("role"), SortActive: activeSort == "role"},
+		{Label: "Start date", SortKey: "start_date", SortHref: sortedQuery("start_date"), SortActive: activeSort == "start_date"},
+		{Label: ""},
+	}
+}
+
+func sortUsers(users []user, sortKey string) []user {
+	sorted := make([]user, len(users))
+	copy(sorted, users)
+
+	less := func(i, j int) bool { return sorted[i].ID < sorted[j].ID }
+	switch sortKey {
+	case "name":
+		less = func(i, j int) bool { return sorted[i].Name < sorted[j].Name }
+	case "email":
+		less = func(i, j int) bool { return sorted[i].Email < sorted[j].Email }
+	case "role":
+		less = func(i, j int) bool { return sorted[i].Role < sorted[j].Role }
+	case "start_date":
+		less = func(i, j int) bool { return sorted[i].StartDate < sorted[j].StartDate }
+	}
+
+	sort.SliceStable(sorted, less)
+	return sorted
 }
 
 func renderCreateUserForm(form createUserFormState) marionette.Node {

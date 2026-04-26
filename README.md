@@ -26,7 +26,21 @@ Open http://127.0.0.1:8080 and try the users admin demo.
 
 ## Example API
 
+### Import path guidance
+
+- **Repository-internal demo/examples (this repo only):**
+  use `github.com/example/marionette/internal/marionette`.
+  This package is under Go's `internal/` rule, so it is intentionally limited to
+  code in the same module/repository.
+- **External usage (other repositories):**
+  there is currently **no public import path** exported by this repository for the
+  runtime API shown below.
+  In other words, `github.com/example/marionette` does not currently provide a
+  copy-paste-ready public package for external consumers.
+
 ```go
+import marionette "github.com/example/marionette/internal/marionette"
+
 app := marionette.New()
 app.Set("users", []User{})
 
@@ -44,6 +58,9 @@ app.Action("users/create", func(ctx *marionette.Context) marionette.Node {
 `Page` handlers return full pages wrapped in the Marionette shell. `Action`
 handlers are POST-only htmx endpoints and return HTML fragments for partial
 swaps. The older `Render` and `Handle` APIs still work for small examples.
+
+> Note: this snippet is for in-repo demos/tests. Because it imports an
+> `internal` package, it will not build when copied into a different module.
 
 ## API Documentation
 

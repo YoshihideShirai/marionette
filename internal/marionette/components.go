@@ -40,6 +40,13 @@ type InputOptions struct {
 	Props       ComponentProps
 }
 
+type EmptyStateProps struct {
+	Title       string
+	Description string
+	Skeleton    bool
+	Rows        int
+}
+
 type templateNode struct {
 	name string
 	data any
@@ -161,6 +168,27 @@ func ComponentModal(props ModalProps) Node {
 			Body:    bodyHTML,
 			Actions: actionsHTML,
 			Open:    props.Open,
+		},
+	}
+}
+
+func ComponentEmptyState(props EmptyStateProps) Node {
+	rows := props.Rows
+	if rows <= 0 {
+		rows = 3
+	}
+	return templateNode{
+		name: "components/empty_state",
+		data: struct {
+			Title       string
+			Description string
+			Skeleton    bool
+			Rows        []int
+		}{
+			Title:       strings.TrimSpace(props.Title),
+			Description: strings.TrimSpace(props.Description),
+			Skeleton:    props.Skeleton,
+			Rows:        make([]int, rows),
 		},
 	}
 }

@@ -47,3 +47,29 @@ func TestCreateUserStartDateValidationErrors(t *testing.T) {
 		})
 	}
 }
+
+func TestRenderUsersTableBodySwitchesBetweenLoadingEmptyAndData(t *testing.T) {
+	loadingHTML, err := renderUsersTableBody(nil, true).Render()
+	if err != nil {
+		t.Fatalf("loading state render failed: %v", err)
+	}
+	if !strings.Contains(string(loadingHTML), `aria-busy="true"`) {
+		t.Fatalf("expected loading skeleton markup, got %q", loadingHTML)
+	}
+
+	emptyHTML, err := renderUsersTableBody(nil, false).Render()
+	if err != nil {
+		t.Fatalf("empty state render failed: %v", err)
+	}
+	if !strings.Contains(string(emptyHTML), "No users yet") {
+		t.Fatalf("expected empty state title, got %q", emptyHTML)
+	}
+
+	dataHTML, err := renderUsersTableBody([]user{{ID: 1, Name: "Aiko", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-01-01"}}, false).Render()
+	if err != nil {
+		t.Fatalf("data state render failed: %v", err)
+	}
+	if !strings.Contains(string(dataHTML), "<table") {
+		t.Fatalf("expected data table, got %q", dataHTML)
+	}
+}

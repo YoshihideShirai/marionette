@@ -209,3 +209,23 @@ func TestComponentModalRendersSSRState(t *testing.T) {
 		}
 	}
 }
+
+func TestComponentEmptyStateRendersSkeletonAndCopy(t *testing.T) {
+	skeletonHTML, err := ComponentEmptyState(EmptyStateProps{Skeleton: true, Rows: 2}).Render()
+	if err != nil {
+		t.Fatalf("skeleton render failed: %v", err)
+	}
+	if !strings.Contains(string(skeletonHTML), `aria-busy="true"`) {
+		t.Fatalf("expected skeleton aria-busy state, got %q", skeletonHTML)
+	}
+
+	emptyHTML, err := ComponentEmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}).Render()
+	if err != nil {
+		t.Fatalf("empty render failed: %v", err)
+	}
+	for _, want := range []string{"No users", "Create one first."} {
+		if !strings.Contains(string(emptyHTML), want) {
+			t.Fatalf("expected %q in %q", want, emptyHTML)
+		}
+	}
+}

@@ -51,12 +51,14 @@ func buildApp() *marionette.App {
 	})
 	app.Set("deleteModalOpen", false)
 	app.Set("deleteTargetID", 0)
+	app.Set("loading", false)
 
 	app.Page("/", func(ctx *marionette.Context) marionette.Node {
 		return renderUsersPage(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/create", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("loading", false)
 		form := createUserFormState{
 			Name:      strings.TrimSpace(ctx.FormValue("name")),
 			Email:     strings.TrimSpace(ctx.FormValue("email")),
@@ -93,6 +95,7 @@ func buildApp() *marionette.App {
 	})
 
 	app.Action("users/delete/prompt", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("loading", false)
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
 		ctx.Set("deleteTargetID", id)
 		ctx.Set("deleteModalOpen", true)
@@ -100,12 +103,14 @@ func buildApp() *marionette.App {
 	})
 
 	app.Action("users/delete/cancel", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("loading", false)
 		ctx.Set("deleteModalOpen", false)
 		ctx.Set("deleteTargetID", 0)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/delete/confirm", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("loading", false)
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
 		users := getUsers(ctx)
 		next := users[:0]
@@ -117,6 +122,16 @@ func buildApp() *marionette.App {
 		ctx.Set("users", next)
 		ctx.Set("deleteModalOpen", false)
 		ctx.Set("deleteTargetID", 0)
+		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
+	})
+
+	app.Action("users/loading/start", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("loading", true)
+		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
+	})
+
+	app.Action("users/loading/stop", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("loading", false)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
@@ -184,7 +199,8 @@ func renderUsersWorkspace(ctx *marionette.Context, formState createUserFormState
 
 func renderUsersTable(ctx *marionette.Context) marionette.Node {
 	users := getUsers(ctx)
-	tableBody := renderUsersTableBody(users)
+	loading := isLoading(ctx)
+	tableBody := renderUsersTableBody(users, loading)
 
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body gap-4",
@@ -193,16 +209,34 @@ func renderUsersTable(ctx *marionette.Context) marionette.Node {
 					marionette.DivClass("", "text-xl font-semibold", marionette.Text("Users")),
 					marionette.DivClass("", "text-sm text-base-content/60", marionette.Text("Create and remove users with htmx-backed actions.")),
 				),
-				marionette.DivClass("", "badge badge-outline", marionette.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
+				marionette.DivClass("", "flex items-center gap-2",
+					marionette.DivClass("", "badge badge-outline", marionette.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
+					marionette.Form("users/loading/start",
+						marionette.ComponentSubmitButton("Show loading", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
+					).Target("#users-workspace"),
+					marionette.Form("users/loading/stop",
+						marionette.ComponentSubmitButton("Show data", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: !loading}),
+					).Target("#users-workspace"),
+				),
 			),
 			marionette.DivClass("", "overflow-hidden rounded-box border border-base-300", tableBody),
 		),
 	)
 }
 
-func renderUsersTableBody(users []user) marionette.Node {
+func renderUsersTableBody(users []user, loading bool) marionette.Node {
+	if loading {
+		return marionette.ComponentEmptyState(marionette.EmptyStateProps{
+			Skeleton: true,
+			Rows:     5,
+		})
+	}
+
 	if len(users) == 0 {
-		return marionette.DivClass("", "px-4 py-8 text-center text-base-content/60", marionette.Text("No users yet."))
+		return marionette.ComponentEmptyState(marionette.EmptyStateProps{
+			Title:       "No users yet",
+			Description: "Create a user from the form to populate this table.",
+		})
 	}
 
 	rows := make([]marionette.TableRowData, 0, len(users))
@@ -210,6 +244,11 @@ func renderUsersTableBody(users []user) marionette.Node {
 		rows = append(rows, renderUserRow(u))
 	}
 	return marionette.Table([]string{"Name", "Email", "Role", "Start date", ""}, rows...)
+}
+
+func isLoading(ctx *marionette.Context) bool {
+	v, _ := ctx.Get("loading").(bool)
+	return v
 }
 
 func renderUserRow(u user) marionette.TableRowData {

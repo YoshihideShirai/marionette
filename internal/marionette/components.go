@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 )
 
 // ComponentProps defines shared style knobs for template components.
@@ -82,6 +83,12 @@ type templateNode struct {
 	name string
 	data any
 }
+
+var (
+	cachedTemplates        *template.Template
+	cachedTemplatesErr     error
+	componentTemplatesOnce sync.Once
+)
 
 func (n templateNode) Render() (template.HTML, error) {
 	tmpl, err := loadComponentTemplates()
@@ -305,24 +312,31 @@ func ComponentPagination(props PaginationProps) Node {
 }
 
 func loadComponentTemplates() (*template.Template, error) {
-	_, currentFile, _, ok := runtime.Caller(0)
-	if !ok {
-		return nil, fmt.Errorf("failed to resolve component template path")
-	}
-	componentsDir := filepath.Join(filepath.Dir(currentFile), "..", "..", "templates", "components")
-	tmplFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.tmpl"))
-	if err != nil {
-		return nil, err
-	}
-	htmlFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.html"))
-	if err != nil {
-		return nil, err
-	}
-	files := append(tmplFiles, htmlFiles...)
-	if len(files) == 0 {
-		return nil, fmt.Errorf("no component templates found in %s", componentsDir)
-	}
-	return template.ParseFiles(files...)
+	componentTemplatesOnce.Do(func() {
+		_, currentFile, _, ok := runtime.Caller(0)
+		if !ok {
+			cachedTemplatesErr = fmt.Errorf("failed to resolve component template path")
+			return
+		}
+		componentsDir := filepath.Join(filepath.Dir(currentFile), "..", "..", "templates", "components")
+		tmplFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.tmpl"))
+		if err != nil {
+			cachedTemplatesErr = err
+			return
+		}
+		htmlFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.html"))
+		if err != nil {
+			cachedTemplatesErr = err
+			return
+		}
+		files := append(tmplFiles, htmlFiles...)
+		if len(files) == 0 {
+			cachedTemplatesErr = fmt.Errorf("no component templates found in %s", componentsDir)
+			return
+		}
+		cachedTemplates, cachedTemplatesErr = template.ParseFiles(files...)
+	})
+	return cachedTemplates, cachedTemplatesErr
 }
 
 func renderNode(node Node) (template.HTML, error) {

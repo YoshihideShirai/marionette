@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  go-test-and-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Check for newly added TypeScript files
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            ./.ci/check_no_new_ts.sh "${{ github.event.pull_request.base.sha }}"
+          else
+            ./.ci/check_no_new_ts.sh "${{ github.event.before }}"
+          fi

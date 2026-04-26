@@ -182,7 +182,7 @@ Form wrapper that combines label, input, hint text, and error text.
 
 ### Purpose
 
-`ui/feedback/` に追加した `Toast`, `Alert`, `EmptyState`, `Skeleton` の統一仕様デモ。
+Unified demo for `Toast`, `Alert`, `EmptyState`, and `Skeleton` added under `ui/feedback/`.
 
 - Variant: `success` / `info` / `warning` / `error`
 - Size: `sm` / `md` / `lg`

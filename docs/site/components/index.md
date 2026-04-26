@@ -200,3 +200,25 @@ Unified demo for `Toast`, `Alert`, `EmptyState`, and `Skeleton` added under `ui/
 ## Optional demo screenshot
 
 Place a demo screenshot from `cmd/marionette/main.go` under `docs/site/assets/` when browser-capture tooling is available.
+
+
+## Overlay System Demo
+
+### Purpose
+
+A demo that validates `Modal`, `Drawer`, `Popover`, and `Tooltip` in `ui/overlay/`, powered by shared `overlay-core` logic.
+
+- Esc-key close
+- Configurable backdrop-click close
+- Focus trap and focus restoration
+- Unified portal target (`#ui-overlay-root`)
+- Reusable z-index / scroll-lock rules
+
+### Visual
+
+<iframe src="../../../ui/overlay/stories.html" title="Overlay system demo" style="width:100%;min-height:560px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+- Demo source: [`ui/overlay/stories.html`](../../../ui/overlay/stories.html)
+- Core logic: [`ui/overlay/overlay-core.js`](../../../ui/overlay/overlay-core.js)
+- Tokens: [`ui/overlay/tokens.css`](../../../ui/overlay/tokens.css)
+- Overlay docs: [`ui/overlay/README.md`](../../../ui/overlay/README.md)

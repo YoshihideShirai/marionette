@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"regexp"
 	"sort"
+	"strings"
 )
 
 // Node is a declarative UI element that can render itself as safe HTML.
@@ -90,6 +91,212 @@ func Column(children ...Node) Node {
 	return element{Tag: "div", Attrs: map[string]string{"class": "flex flex-col gap-3"}, Children: children}
 }
 
+type table struct {
+	Headers []string
+	Rows    []TableRowData
+}
+
+type TableRowData struct {
+	Cells []Node
+}
+
+func Table(headers []string, rows ...TableRowData) Node {
+	return table{Headers: headers, Rows: rows}
+}
+
+func TableRow(cells ...Node) TableRowData {
+	return TableRowData{Cells: cells}
+}
+
+func (t table) Render() (template.HTML, error) {
+	headerCells := make([]Node, 0, len(t.Headers))
+	for _, header := range t.Headers {
+		headerCells = append(headerCells, element{Tag: "th", Text: header})
+	}
+
+	bodyRows := make([]Node, 0, len(t.Rows))
+	for _, row := range t.Rows {
+		cells := make([]Node, 0, len(row.Cells))
+		for _, cell := range row.Cells {
+			cells = append(cells, element{Tag: "td", Children: []Node{cell}})
+		}
+		bodyRows = append(bodyRows, element{Tag: "tr", Children: cells})
+	}
+
+	return element{
+		Tag:   "table",
+		Attrs: map[string]string{"class": "table"},
+		Children: []Node{
+			element{
+				Tag: "thead",
+				Children: []Node{
+					element{Tag: "tr", Children: headerCells},
+				},
+			},
+			element{Tag: "tbody", Children: bodyRows},
+		},
+	}.Render()
+}
+
+type sidebar struct {
+	Brand     string
+	Title     string
+	Items     []SidebarItem
+	NoteTitle string
+	NoteText  string
+}
+
+type SidebarItem struct {
+	Label   string
+	Href    string
+	Current bool
+}
+
+func Sidebar(brand, title string, items ...SidebarItem) *sidebar {
+	return &sidebar{Brand: brand, Title: title, Items: items}
+}
+
+func SidebarLink(label, href string) SidebarItem {
+	return SidebarItem{Label: label, Href: href}
+}
+
+func (i SidebarItem) Active() SidebarItem {
+	i.Current = true
+	return i
+}
+
+func (s *sidebar) Note(title, text string) *sidebar {
+	s.NoteTitle = title
+	s.NoteText = text
+	return s
+}
+
+func (s *sidebar) Render() (template.HTML, error) {
+	children := []Node{
+		element{
+			Tag: "div",
+			Attrs: map[string]string{
+				"class": "mb-6",
+			},
+			Children: []Node{
+				element{
+					Tag:   "div",
+					Attrs: map[string]string{"class": "text-sm font-semibold uppercase tracking-wide text-base-content/50"},
+					Text:  s.Brand,
+				},
+				element{
+					Tag:   "div",
+					Attrs: map[string]string{"class": "text-lg font-bold"},
+					Text:  s.Title,
+				},
+			},
+		},
+		s.renderNav(),
+	}
+	if s.NoteTitle != "" || s.NoteText != "" {
+		children = append(children, element{
+			Tag:   "div",
+			Attrs: map[string]string{"class": "mt-6 rounded-box bg-base-200 p-3 text-sm text-base-content/70"},
+			Children: []Node{
+				element{Tag: "div", Attrs: map[string]string{"class": "font-medium text-base-content"}, Text: s.NoteTitle},
+				element{Tag: "div", Text: s.NoteText},
+			},
+		})
+	}
+
+	return element{
+		Tag:      "aside",
+		Attrs:    map[string]string{"class": "rounded-box border border-base-300 bg-base-100 p-4 shadow-sm lg:min-h-[calc(100vh-3rem)]"},
+		Children: children,
+	}.Render()
+}
+
+func (s *sidebar) renderNav() Node {
+	items := make([]Node, 0, len(s.Items))
+	for _, item := range s.Items {
+		href := item.Href
+		if href == "" {
+			href = "#"
+		}
+		className := "btn btn-ghost justify-start text-base-content/70"
+		if item.Current {
+			className = "btn btn-primary justify-start"
+		}
+		items = append(items, element{
+			Tag:   "a",
+			Attrs: map[string]string{"class": className, "href": href},
+			Text:  item.Label,
+		})
+	}
+	return element{
+		Tag:      "nav",
+		Attrs:    map[string]string{"class": "flex flex-col gap-1"},
+		Children: items,
+	}
+}
+
+type form struct {
+	Action   string
+	TargetQ  string
+	Children []Node
+}
+
+func Form(action string, children ...Node) *form {
+	return &form{Action: action, TargetQ: "#app", Children: children}
+}
+
+func (f *form) Target(selector string) *form {
+	f.TargetQ = selector
+	return f
+}
+
+func (f *form) Render() (template.HTML, error) {
+	return element{
+		Tag: "form",
+		Attrs: map[string]string{
+			"class":     "flex flex-col gap-3",
+			"hx-post":   actionPath(f.Action),
+			"hx-target": f.TargetQ,
+			"hx-swap":   "outerHTML",
+		},
+		Children: f.Children,
+	}.Render()
+}
+
+func Input(name, value string) Node {
+	return element{
+		Tag: "input",
+		Attrs: map[string]string{
+			"class": "input input-bordered w-full",
+			"name":  name,
+			"type":  "text",
+			"value": value,
+		},
+	}
+}
+
+func HiddenInput(name, value string) Node {
+	return element{
+		Tag: "input",
+		Attrs: map[string]string{
+			"name":  name,
+			"type":  "hidden",
+			"value": value,
+		},
+	}
+}
+
+func Submit(label string) Node {
+	return element{
+		Tag: "button",
+		Attrs: map[string]string{
+			"class": "btn btn-primary w-fit",
+			"type":  "submit",
+		},
+		Text: label,
+	}
+}
+
 type button struct {
 	Label   string
 	Action  string
@@ -103,7 +310,11 @@ func Button(label string) *button {
 }
 
 func (b *button) OnClick(action string) *button {
-	b.Action = action
+	return b.Post(action)
+}
+
+func (b *button) Post(action string) *button {
+	b.Action = strings.TrimPrefix(action, "/")
 	return b
 }
 
@@ -122,6 +333,13 @@ func (b *button) Render() (template.HTML, error) {
 		return "", err
 	}
 	return template.HTML(out.String()), nil
+}
+
+func actionPath(action string) string {
+	if strings.HasPrefix(action, "/") {
+		return action
+	}
+	return "/" + action
 }
 
 func joinHTML(parts []template.HTML) template.HTML {

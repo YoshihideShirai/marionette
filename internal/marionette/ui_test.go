@@ -229,3 +229,23 @@ func TestComponentEmptyStateRendersSkeletonAndCopy(t *testing.T) {
 		}
 	}
 }
+
+func TestComponentTableRendersSortHeadersAndEmptyState(t *testing.T) {
+	emptyHTML, err := ComponentTable(TableProps{
+		Columns: []TableColumn{
+			{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true},
+			{Label: "Role"},
+		},
+		EmptyTitle:       "No users",
+		EmptyDescription: "Create a user to get started.",
+	}).Render()
+	if err != nil {
+		t.Fatalf("empty table render failed: %v", err)
+	}
+	got := string(emptyHTML)
+	for _, want := range []string{`href="/?sort=name"`, `No users`, `Create a user to get started.`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}

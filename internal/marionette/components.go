@@ -47,6 +47,24 @@ type EmptyStateProps struct {
 	Rows        int
 }
 
+type TableColumn struct {
+	Label      string
+	SortKey    string
+	SortHref   string
+	SortActive bool
+}
+
+type TableComponentRow struct {
+	Cells []Node
+}
+
+type TableProps struct {
+	Columns          []TableColumn
+	Rows             []TableComponentRow
+	EmptyTitle       string
+	EmptyDescription string
+}
+
 type templateNode struct {
 	name string
 	data any
@@ -189,6 +207,40 @@ func ComponentEmptyState(props EmptyStateProps) Node {
 			Description: strings.TrimSpace(props.Description),
 			Skeleton:    props.Skeleton,
 			Rows:        make([]int, rows),
+		},
+	}
+}
+
+func ComponentTable(props TableProps) Node {
+	rows := make([]struct {
+		Cells []template.HTML
+	}, 0, len(props.Rows))
+	for _, row := range props.Rows {
+		cells := make([]template.HTML, 0, len(row.Cells))
+		for _, cell := range row.Cells {
+			cellHTML, err := renderNode(cell)
+			if err != nil {
+				return renderErrorNode{err: err}
+			}
+			cells = append(cells, cellHTML)
+		}
+		rows = append(rows, struct {
+			Cells []template.HTML
+		}{Cells: cells})
+	}
+
+	return templateNode{
+		name: "components/table",
+		data: struct {
+			Columns          []TableColumn
+			Rows             []struct{ Cells []template.HTML }
+			EmptyTitle       string
+			EmptyDescription string
+		}{
+			Columns:          props.Columns,
+			Rows:             rows,
+			EmptyTitle:       strings.TrimSpace(props.EmptyTitle),
+			EmptyDescription: strings.TrimSpace(props.EmptyDescription),
 		},
 	}
 }

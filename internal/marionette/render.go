@@ -1,9 +1,12 @@
 package marionette
 
-import "net/http"
+import (
+	"bytes"
+	"html/template"
+	"net/http"
+)
 
-func shell(content string) string {
-	return `<!doctype html>
+var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -12,9 +15,20 @@ func shell(content string) string {
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </head>
   <body>
-    <main id="app">` + content + `</main>
+    <main id="app">{{.Content}}</main>
   </body>
-</html>`
+</html>`))
+
+func shell(content template.HTML) (string, error) {
+	view := struct {
+		Content template.HTML
+	}{Content: content}
+
+	var out bytes.Buffer
+	if err := shellTmpl.Execute(&out, view); err != nil {
+		return "", err
+	}
+	return out.String(), nil
 }
 
 func writeHTML(w http.ResponseWriter, body string) {

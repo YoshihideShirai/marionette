@@ -12,7 +12,7 @@ Marionette is a Go-first GUI framework concept inspired by Electron/Tauri, with 
 
 - **Backend (Go):** routing, state updates, event handlers.
 - **Frontend (htmx):** transport and incremental HTML swaps.
-- **Declarative Go UI DSL:** `Text`, `Div`, `Column`, `Button(...).OnClick(...)`.
+- **Declarative Go UI DSL:** `Text`, `Div`, `Column`, `Button(...).OnClick(...)` (rendered via `html/template`).
 
 ## Run example
 

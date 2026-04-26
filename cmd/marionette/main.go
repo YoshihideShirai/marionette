@@ -31,7 +31,7 @@ func renderCounter(count int) marionette.Node {
 		marionette.Column(
 			marionette.Text("Counter Demo"),
 			marionette.Text("Count: "+strconv.Itoa(count)),
-			marionette.Button("Increment").OnClick("counter/increment").Target("#app"),
+			marionette.Button("Increment").OnClick("counter/increment").TargetSelector("#app"),
 		),
 	)
 }

@@ -59,7 +59,7 @@ func (a *App) Handler() http.Handler {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			ctx := &Context{Writer: w, Request: r, State: a.state}
 			node := localFn(ctx)
-			writeHTML(w, node.Render())
+			renderAndWriteNode(w, node)
 		})
 	}
 	return mux
@@ -72,11 +72,29 @@ func (a *App) handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := &Context{Writer: w, Request: r, State: a.state}
 	root := a.onRender(ctx)
-	page := shell(root.Render())
+	rootHTML, err := root.Render()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	page, err := shell(rootHTML)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	writeHTML(w, page)
 }
 
 func (a *App) Run(addr string) error {
 	fmt.Printf("marionette listening at http://%s\n", addr)
 	return http.ListenAndServe(addr, a.Handler())
+}
+
+func renderAndWriteNode(w http.ResponseWriter, node Node) {
+	htmlOut, err := node.Render()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	writeHTML(w, string(htmlOut))
 }

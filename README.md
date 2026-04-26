@@ -51,3 +51,8 @@ Detailed API reference is available here:
 
 - [`docs_api.md`](./docs_api.md)
 
+
+## GitHub Pages deployment
+
+- The Pages deploy workflow publishes `docs/site/` via GitHub Actions.
+- Before enabling deploys, set repository **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.

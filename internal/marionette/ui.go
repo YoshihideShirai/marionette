@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"regexp"
 	"sort"
+	"strings"
 )
 
 // Node is a declarative UI element that can render itself as safe HTML.
@@ -90,6 +91,57 @@ func Column(children ...Node) Node {
 	return element{Tag: "div", Attrs: map[string]string{"class": "flex flex-col gap-3"}, Children: children}
 }
 
+type form struct {
+	Action   string
+	TargetQ  string
+	Children []Node
+}
+
+func Form(action string, children ...Node) *form {
+	return &form{Action: action, TargetQ: "#app", Children: children}
+}
+
+func (f *form) Target(selector string) *form {
+	f.TargetQ = selector
+	return f
+}
+
+func (f *form) Render() (template.HTML, error) {
+	return element{
+		Tag: "form",
+		Attrs: map[string]string{
+			"class":     "flex flex-col gap-3",
+			"hx-post":   actionPath(f.Action),
+			"hx-target": f.TargetQ,
+			"hx-swap":   "outerHTML",
+		},
+		Children: f.Children,
+	}.Render()
+}
+
+func Input(name, value string) Node {
+	return element{
+		Tag: "input",
+		Attrs: map[string]string{
+			"class": "input input-bordered w-full",
+			"name":  name,
+			"type":  "text",
+			"value": value,
+		},
+	}
+}
+
+func Submit(label string) Node {
+	return element{
+		Tag: "button",
+		Attrs: map[string]string{
+			"class": "btn btn-primary w-fit",
+			"type":  "submit",
+		},
+		Text: label,
+	}
+}
+
 type button struct {
 	Label   string
 	Action  string
@@ -103,7 +155,11 @@ func Button(label string) *button {
 }
 
 func (b *button) OnClick(action string) *button {
-	b.Action = action
+	return b.Post(action)
+}
+
+func (b *button) Post(action string) *button {
+	b.Action = strings.TrimPrefix(action, "/")
 	return b
 }
 
@@ -122,6 +178,13 @@ func (b *button) Render() (template.HTML, error) {
 		return "", err
 	}
 	return template.HTML(out.String()), nil
+}
+
+func actionPath(action string) string {
+	if strings.HasPrefix(action, "/") {
+		return action
+	}
+	return "/" + action
 }
 
 func joinHTML(parts []template.HTML) template.HTML {

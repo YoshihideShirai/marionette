@@ -19,6 +19,39 @@ func TestButtonRenderUsesHTMXMarkup(t *testing.T) {
 	}
 }
 
+func TestButtonPostAcceptsLeadingSlash(t *testing.T) {
+	html, err := Button("Save").Post("/users/create").Target("#users").Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	if strings.Contains(got, `hx-post="//users/create"`) {
+		t.Fatalf("expected normalized post path, got %q", got)
+	}
+	if want := `hx-target="#users"`; !strings.Contains(got, want) {
+		t.Fatalf("expected %q in %q", want, got)
+	}
+}
+
+func TestFormInputAndSubmitRenderHTMXMarkup(t *testing.T) {
+	html, err := Form("users/create", Input("name", `<Aiko>`), Submit("Create")).Target("#users").Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`hx-post="/users/create"`,
+		`hx-target="#users"`,
+		`name="name"`,
+		`value="&lt;Aiko&gt;"`,
+		`type="submit"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
 func TestElementRenderEscapesText(t *testing.T) {
 	html, err := Text(`<script>alert(1)</script>`).Render()
 	if err != nil {

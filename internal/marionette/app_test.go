@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -164,5 +166,50 @@ func TestFlashPersistsForNextRequestAndAutoClears(t *testing.T) {
 	app.Handler().ServeHTTP(secondRes, secondGet)
 	if strings.Contains(secondRes.Body.String(), "saved") {
 		t.Fatalf("expected flash message to be auto-cleared, got %q", secondRes.Body.String())
+	}
+}
+
+func TestAppStateConcurrentSetViaContext(t *testing.T) {
+	app := New()
+	app.Action("set", func(ctx *Context) Node {
+		ctx.Set("name", ctx.FormValue("name"))
+		return Div("ok")
+	})
+
+	handler := app.Handler()
+	const workers = 32
+
+	var wg sync.WaitGroup
+	wg.Add(workers)
+	for i := 0; i < workers; i++ {
+		i := i
+		go func() {
+			defer wg.Done()
+			form := url.Values{"name": {strconv.Itoa(i)}}
+			req := httptest.NewRequest(http.MethodPost, "/set", strings.NewReader(form.Encode()))
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+			if rr.Code != http.StatusOK {
+				t.Errorf("expected 200, got %d", rr.Code)
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+func TestContextSetIsVisibleFromAppGetInt(t *testing.T) {
+	app := New()
+	app.Page("/", func(ctx *Context) Node {
+		ctx.Set("count", 7)
+		return Div("app")
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if got := app.GetInt("count"); got != 7 {
+		t.Fatalf("expected shared app/context state to be 7, got %d", got)
 	}
 }

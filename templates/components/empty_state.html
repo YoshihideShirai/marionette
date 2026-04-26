@@ -1,15 +1,17 @@
 {{define "components/empty_state"}}
 {{if .Skeleton}}
-<div class="space-y-3 px-4 py-4" aria-live="polite" aria-busy="true">
+<div class="{{.Class}} ui-feedback-loading" role="status" aria-live="polite" aria-busy="true">
   {{range .Rows}}
-  <div class="h-12 animate-pulse rounded-lg bg-base-200"></div>
+  <div class="ui-feedback__skeleton-line"></div>
   {{end}}
 </div>
 {{else}}
-<div class="px-4 py-10 text-center">
-  <div class="mx-auto mb-3 h-10 w-10 rounded-full bg-base-200"></div>
-  <p class="text-base font-medium">{{.Title}}</p>
-  <p class="mt-1 text-sm text-base-content/60">{{.Description}}</p>
-</div>
+<section class="{{.Class}}" role="region" aria-live="polite" aria-busy="false">
+  {{if .Icon}}<span class="ui-feedback__icon" aria-hidden="true">{{.Icon}}</span>{{end}}
+  <div class="ui-feedback__body">
+    <p class="ui-feedback__title">{{.Title}}</p>
+    <p class="ui-feedback__description">{{.Description}}</p>
+  </div>
+</section>
 {{end}}
 {{end}}

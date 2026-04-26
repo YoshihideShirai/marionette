@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feedback components demo</title>
+    <link rel="stylesheet" href="../../../../ui/feedback/tokens.css" />
+    <style>body{font-family:system-ui,sans-serif;padding:16px}.stack{display:grid;gap:12px}.mobile{max-width:375px}</style>
+  </head>
+  <body>
+    <div class="stack">
+      <div class="ui-feedback ui-feedback-toast ui-feedback-success ui-feedback-md" role="status" aria-live="polite"><span class="ui-feedback__icon">✓</span><div><p class="ui-feedback__title">Toast / 通常</p><p class="ui-feedback__description">保存しました。</p></div></div>
+      <div class="ui-feedback ui-feedback-alert ui-feedback-error ui-feedback-lg" role="alert" aria-live="assertive"><span class="ui-feedback__icon">!</span><div><p class="ui-feedback__title">Alert / 長文</p><p class="ui-feedback__description">エラーが発生しました。しばらく待ってから再実行してください。</p></div></div>
+      <section class="ui-feedback ui-feedback-empty-state ui-feedback-info ui-feedback-md" role="region" aria-live="polite" aria-busy="false"><span class="ui-feedback__icon">ℹ</span><div><p class="ui-feedback__title">EmptyState / アイコン付き</p><p class="ui-feedback__description">結果がありません。</p></div></section>
+      <div class="ui-feedback ui-feedback-skeleton ui-feedback-warning ui-feedback-sm ui-feedback-loading mobile" role="status" aria-live="polite" aria-busy="true"><div style="width:100%"><div class="ui-feedback__skeleton-line"></div><div class="ui-feedback__skeleton-line"></div></div></div>
+    </div>
+  </body>
+</html>

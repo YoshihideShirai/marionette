@@ -55,6 +55,13 @@
       "golden": "internal/marionette/testdata/golden/form_field.golden.html",
       "example": "docs/site/components/examples/form_field.html",
       "template": "templates/components/form_field.html"
+    },
+    {
+      "id": "overlay-system",
+      "name": "OverlaySystemDemo",
+      "example": "ui/overlay/stories.html",
+      "template": "ui/overlay/overlay-core.js",
+      "golden": "ui/overlay/README.md"
     }
   ]
 }

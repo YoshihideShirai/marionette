@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Overlay stories</title>
+    <link rel="stylesheet" href="./tokens.css" />
+  </head>
+  <body class="ui-overlay-story">
+    <main>
+      <h1>ui/overlay stories</h1>
+      <p>Use overlay-core to validate shared behavior across Modal / Drawer / Popover / Tooltip.</p>
+
+      <section class="ui-overlay-story__actions">
+        <button type="button" id="open-modal">Open modal</button>
+        <button type="button" id="open-drawer">Open drawer</button>
+        <button type="button" id="open-popover">Open popover</button>
+        <button type="button" id="open-tooltip">Open tooltip</button>
+      </section>
+
+      <section class="ui-overlay-story__card">
+        <h2>Shared behavior</h2>
+        <ul>
+          <li>Close on Esc key (all overlays)</li>
+          <li>Backdrop-click close is configurable per overlay</li>
+          <li>Focus trap + focus restore on close</li>
+          <li>Portal target is unified at <code>#ui-overlay-root</code></li>
+        </ul>
+      </section>
+
+      <p id="overlay-log" class="ui-overlay-story__log" aria-live="polite">last event: (none)</p>
+    </main>
+
+    <script type="module">
+      import { createOverlayCore } from './overlay-core.js';
+
+      const core = createOverlayCore({ portalId: 'ui-overlay-root' });
+      const log = document.getElementById('overlay-log');
+
+      function announce(message) {
+        log.textContent = `last event: ${message}`;
+      }
+
+      function basePanel(title, body) {
+        const panel = document.createElement('section');
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-modal', 'true');
+        panel.innerHTML = `
+          <h2 style="margin-top:0">${title}</h2>
+          <p>${body}</p>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" data-close="cancel">Cancel</button>
+            <button type="button" data-close="ok">OK</button>
+          </div>
+        `;
+        return panel;
+      }
+
+      function wireButtons(layerCtrl, panel, label) {
+        panel.querySelectorAll('[data-close]').forEach((el) => {
+          el.addEventListener('click', () => {
+            layerCtrl.close(`button:${label}:${el.dataset.close}`);
+          });
+        });
+      }
+
+      document.getElementById('open-modal').addEventListener('click', (event) => {
+        const panel = basePanel('Modal', 'Backdrop click enabled / scroll lock enabled');
+        const layerCtrl = core.open({
+          type: 'modal',
+          panel,
+          closeOnEsc: true,
+          closeOnBackdrop: true,
+          lockBodyScroll: true,
+          zIndex: 1300,
+          restoreFocusTo: event.currentTarget,
+          onRequestClose: (reason) => announce(`modal closed: ${reason}`),
+        });
+        wireButtons(layerCtrl, panel, 'modal');
+      });
+
+      document.getElementById('open-drawer').addEventListener('click', (event) => {
+        const panel = basePanel('Drawer', 'Backdrop click disabled / scroll lock enabled');
+        const layerCtrl = core.open({
+          type: 'drawer',
+          panel,
+          closeOnEsc: true,
+          closeOnBackdrop: false,
+          lockBodyScroll: true,
+          zIndex: 1400,
+          restoreFocusTo: event.currentTarget,
+          onRequestClose: (reason) => announce(`drawer closed: ${reason}`),
+        });
+        wireButtons(layerCtrl, panel, 'drawer');
+      });
+
+      document.getElementById('open-popover').addEventListener('click', (event) => {
+        const panel = basePanel('Popover', 'Backdrop click enabled / scroll lock disabled');
+        panel.style.margin = '120px 0 0 140px';
+        const layerCtrl = core.open({
+          type: 'popover',
+          panel,
+          closeOnEsc: true,
+          closeOnBackdrop: true,
+          lockBodyScroll: false,
+          zIndex: 1100,
+          restoreFocusTo: event.currentTarget,
+          onRequestClose: (reason) => announce(`popover closed: ${reason}`),
+        });
+        wireButtons(layerCtrl, panel, 'popover');
+      });
+
+      document.getElementById('open-tooltip').addEventListener('click', (event) => {
+        const panel = document.createElement('section');
+        panel.setAttribute('role', 'tooltip');
+        panel.innerHTML = '<strong>Tooltip</strong><p style="margin:6px 0 0">Closes on Esc and backdrop click.</p>';
+        panel.style.margin = '80px 0 0 220px';
+
+        core.open({
+          type: 'tooltip',
+          panel,
+          closeOnEsc: true,
+          closeOnBackdrop: true,
+          lockBodyScroll: false,
+          zIndex: 1200,
+          restoreFocusTo: event.currentTarget,
+          onRequestClose: (reason) => announce(`tooltip closed: ${reason}`),
+        });
+      });
+    </script>
+  </body>
+</html>

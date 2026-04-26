@@ -1,0 +1,127 @@
+:root {
+  --ui-overlay-z-base: 1000;
+  --ui-overlay-z-popover: 1100;
+  --ui-overlay-z-tooltip: 1200;
+  --ui-overlay-z-modal: 1300;
+  --ui-overlay-z-drawer: 1400;
+
+  --ui-overlay-backdrop: rgb(15 23 42 / 0.45);
+  --ui-overlay-surface: #fff;
+  --ui-overlay-text: #0f172a;
+  --ui-overlay-border: #cbd5e1;
+  --ui-overlay-shadow: 0 20px 40px -20px rgb(15 23 42 / 0.55);
+  --ui-overlay-radius: 14px;
+}
+
+.ui-overlay-portal-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ui-overlay-layer {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  pointer-events: none;
+}
+
+.ui-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: var(--ui-overlay-backdrop);
+  pointer-events: auto;
+}
+
+.ui-overlay-panel {
+  position: relative;
+  pointer-events: auto;
+  color: var(--ui-overlay-text);
+  background: var(--ui-overlay-surface);
+  border: 1px solid var(--ui-overlay-border);
+  border-radius: var(--ui-overlay-radius);
+  box-shadow: var(--ui-overlay-shadow);
+}
+
+.ui-overlay-layer-modal .ui-overlay-panel {
+  width: min(92vw, 560px);
+  max-height: 85vh;
+  overflow: auto;
+  padding: 20px;
+}
+
+.ui-overlay-layer-drawer {
+  justify-items: end;
+}
+
+.ui-overlay-layer-drawer .ui-overlay-panel {
+  width: min(94vw, 420px);
+  height: 100vh;
+  border-radius: 0;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  padding: 20px;
+}
+
+.ui-overlay-layer-popover {
+  align-items: start;
+  justify-items: start;
+}
+
+.ui-overlay-layer-popover .ui-overlay-backdrop,
+.ui-overlay-layer-tooltip .ui-overlay-backdrop {
+  background: transparent;
+}
+
+.ui-overlay-layer-popover .ui-overlay-panel,
+.ui-overlay-layer-tooltip .ui-overlay-panel {
+  width: max-content;
+  max-width: min(88vw, 360px);
+  padding: 12px;
+}
+
+.ui-overlay-layer-tooltip .ui-overlay-panel {
+  border-radius: 10px;
+  background: #1e293b;
+  color: #f8fafc;
+  border: 0;
+}
+
+.ui-overlay-story {
+  font-family: system-ui, sans-serif;
+  margin: 24px;
+  color: #0f172a;
+}
+
+.ui-overlay-story__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.ui-overlay-story button {
+  border: 1px solid #94a3b8;
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.ui-overlay-story__log {
+  font-size: 14px;
+  color: #334155;
+}
+
+.ui-overlay-story__card {
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafc;
+}

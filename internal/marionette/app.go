@@ -83,6 +83,13 @@ func (c *Context) GetInt(key string) int {
 }
 
 func (c *Context) AddFlash(level FlashLevel, message string) {
+	secure := false
+	if c.app != nil {
+		c.app.mu.RLock()
+		secure = c.app.cookieSecure
+		c.app.mu.RUnlock()
+	}
+
 	trimmed := strings.TrimSpace(message)
 	if trimmed == "" {
 		return
@@ -98,6 +105,7 @@ func (c *Context) AddFlash(level FlashLevel, message string) {
 		Path:     "/",
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
+		Secure:   secure,
 	})
 }
 
@@ -120,18 +128,26 @@ type Handler func(*Context) Node
 
 // App is a minimal Go-only UI runtime for htmx driven desktop/web views.
 type App struct {
-	mu      sync.RWMutex
-	state   map[string]any
-	pages   map[string]Handler
-	actions map[string]Handler
+	mu           sync.RWMutex
+	state        map[string]any
+	pages        map[string]Handler
+	actions      map[string]Handler
+	cookieSecure bool
 }
 
 func New() *App {
 	return &App{
-		state:   map[string]any{},
-		pages:   map[string]Handler{},
-		actions: map[string]Handler{},
+		state:        map[string]any{},
+		pages:        map[string]Handler{},
+		actions:      map[string]Handler{},
+		cookieSecure: false,
 	}
+}
+
+func (a *App) SetCookieSecure(secure bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.cookieSecure = secure
 }
 
 func (a *App) Set(key string, value any) {
@@ -212,12 +228,15 @@ func (a *App) Handler() http.Handler {
 func (a *App) newContext(w http.ResponseWriter, r *http.Request) *Context {
 	flashes := decodeFlashes(r)
 	if len(flashes) > 0 {
-		clearFlashCookie(w)
+		a.mu.RLock()
+		secure := a.cookieSecure
+		a.mu.RUnlock()
+		clearFlashCookie(w, secure)
 	}
 	return &Context{Writer: w, Request: r, State: a.state, app: a, flashes: flashes}
 }
 
-func clearFlashCookie(w http.ResponseWriter) {
+func clearFlashCookie(w http.ResponseWriter, secure bool) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     flashCookieName,
 		Value:    "",
@@ -225,6 +244,7 @@ func clearFlashCookie(w http.ResponseWriter) {
 		MaxAge:   -1,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
+		Secure:   secure,
 	})
 }
 

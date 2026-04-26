@@ -51,3 +51,20 @@ Detailed API reference is available here:
 
 - [`docs_api.md`](./docs_api.md)
 
+
+## Screenshot setup (Playwright)
+
+If you need UI screenshots in this environment:
+
+```bash
+npm install
+npx playwright install chromium
+go run ./cmd/marionette
+npm run screenshot -- http://127.0.0.1:8080 artifacts/users-screen.png
+```
+
+If browser download is blocked by network policy, use a preinstalled browser and pass an executable path:
+
+```bash
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/path/to/chromium npm run screenshot
+```

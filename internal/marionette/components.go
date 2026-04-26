@@ -23,6 +23,13 @@ type SelectOption struct {
 	Selected bool
 }
 
+type ModalProps struct {
+	Title   string
+	Body    Node
+	Actions Node
+	Open    bool
+}
+
 type templateNode struct {
 	name string
 	data any
@@ -101,13 +108,65 @@ func ComponentSelect(name string, options []SelectOption, props ComponentProps) 
 	}
 }
 
+func ComponentModal(props ModalProps) Node {
+	bodyHTML, err := renderNode(props.Body)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	actionsHTML, err := renderNode(props.Actions)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/modal",
+		data: struct {
+			Title   string
+			Body    template.HTML
+			Actions template.HTML
+			Open    bool
+		}{
+			Title:   props.Title,
+			Body:    bodyHTML,
+			Actions: actionsHTML,
+			Open:    props.Open,
+		},
+	}
+}
+
 func loadComponentTemplates() (*template.Template, error) {
 	_, currentFile, _, ok := runtime.Caller(0)
 	if !ok {
 		return nil, fmt.Errorf("failed to resolve component template path")
 	}
-	tmplDir := filepath.Join(filepath.Dir(currentFile), "..", "..", "templates", "components", "*.tmpl")
-	return template.ParseGlob(tmplDir)
+	componentsDir := filepath.Join(filepath.Dir(currentFile), "..", "..", "templates", "components")
+	tmplFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.tmpl"))
+	if err != nil {
+		return nil, err
+	}
+	htmlFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.html"))
+	if err != nil {
+		return nil, err
+	}
+	files := append(tmplFiles, htmlFiles...)
+	if len(files) == 0 {
+		return nil, fmt.Errorf("no component templates found in %s", componentsDir)
+	}
+	return template.ParseFiles(files...)
+}
+
+func renderNode(node Node) (template.HTML, error) {
+	if node == nil {
+		return "", nil
+	}
+	return node.Render()
+}
+
+type renderErrorNode struct {
+	err error
+}
+
+func (n renderErrorNode) Render() (template.HTML, error) {
+	return "", n.err
 }
 
 func buttonClass(props ComponentProps) string {

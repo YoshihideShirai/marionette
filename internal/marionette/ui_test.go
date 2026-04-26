@@ -159,3 +159,33 @@ func TestTemplatePartialsRenderSharedProps(t *testing.T) {
 		}
 	}
 }
+
+func TestComponentModalRendersSSRState(t *testing.T) {
+	closedHTML, err := ComponentModal(ModalProps{
+		Title:   "Delete user",
+		Body:    Text("Confirm deletion"),
+		Actions: ComponentButton("Cancel", ComponentProps{Variant: "ghost", Size: "sm"}),
+		Open:    false,
+	}).Render()
+	if err != nil {
+		t.Fatalf("closed modal render failed: %v", err)
+	}
+	openHTML, err := ComponentModal(ModalProps{
+		Title:   "Delete user",
+		Body:    Text("Confirm deletion"),
+		Actions: ComponentButton("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
+		Open:    true,
+	}).Render()
+	if err != nil {
+		t.Fatalf("open modal render failed: %v", err)
+	}
+
+	if strings.Contains(string(closedHTML), "modal-open") {
+		t.Fatalf("expected closed modal without modal-open class, got %q", closedHTML)
+	}
+	for _, want := range []string{`modal-open`, `Delete user`, `Confirm deletion`, `btn-error`} {
+		if !strings.Contains(string(openHTML), want) {
+			t.Fatalf("expected %q in %q", want, openHTML)
+		}
+	}
+}

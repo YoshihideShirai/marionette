@@ -91,6 +91,103 @@ func Column(children ...Node) Node {
 	return element{Tag: "div", Attrs: map[string]string{"class": "flex flex-col gap-3"}, Children: children}
 }
 
+type sidebar struct {
+	Brand     string
+	Title     string
+	Items     []SidebarItem
+	NoteTitle string
+	NoteText  string
+}
+
+type SidebarItem struct {
+	Label   string
+	Href    string
+	Current bool
+}
+
+func Sidebar(brand, title string, items ...SidebarItem) *sidebar {
+	return &sidebar{Brand: brand, Title: title, Items: items}
+}
+
+func SidebarLink(label, href string) SidebarItem {
+	return SidebarItem{Label: label, Href: href}
+}
+
+func (i SidebarItem) Active() SidebarItem {
+	i.Current = true
+	return i
+}
+
+func (s *sidebar) Note(title, text string) *sidebar {
+	s.NoteTitle = title
+	s.NoteText = text
+	return s
+}
+
+func (s *sidebar) Render() (template.HTML, error) {
+	children := []Node{
+		element{
+			Tag: "div",
+			Attrs: map[string]string{
+				"class": "mb-6",
+			},
+			Children: []Node{
+				element{
+					Tag:   "div",
+					Attrs: map[string]string{"class": "text-sm font-semibold uppercase tracking-wide text-base-content/50"},
+					Text:  s.Brand,
+				},
+				element{
+					Tag:   "div",
+					Attrs: map[string]string{"class": "text-lg font-bold"},
+					Text:  s.Title,
+				},
+			},
+		},
+		s.renderNav(),
+	}
+	if s.NoteTitle != "" || s.NoteText != "" {
+		children = append(children, element{
+			Tag:   "div",
+			Attrs: map[string]string{"class": "mt-6 rounded-box bg-base-200 p-3 text-sm text-base-content/70"},
+			Children: []Node{
+				element{Tag: "div", Attrs: map[string]string{"class": "font-medium text-base-content"}, Text: s.NoteTitle},
+				element{Tag: "div", Text: s.NoteText},
+			},
+		})
+	}
+
+	return element{
+		Tag:      "aside",
+		Attrs:    map[string]string{"class": "rounded-box border border-base-300 bg-base-100 p-4 shadow-sm lg:min-h-[calc(100vh-3rem)]"},
+		Children: children,
+	}.Render()
+}
+
+func (s *sidebar) renderNav() Node {
+	items := make([]Node, 0, len(s.Items))
+	for _, item := range s.Items {
+		href := item.Href
+		if href == "" {
+			href = "#"
+		}
+		className := "btn btn-ghost justify-start text-base-content/70"
+		if item.Current {
+			className = "btn btn-primary justify-start"
+		}
+		items = append(items, element{
+			Tag:   "a",
+			Attrs: map[string]string{"class": className, "href": href},
+			Text:  item.Label,
+		})
+	}
+	return element{
+		Tag:      "nav",
+		Attrs:    map[string]string{"class": "flex flex-col gap-1"},
+		Children: items,
+	}
+}
+
 type form struct {
 	Action   string
 	TargetQ  string

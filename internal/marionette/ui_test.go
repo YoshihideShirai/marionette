@@ -52,6 +52,32 @@ func TestFormInputAndSubmitRenderHTMXMarkup(t *testing.T) {
 	}
 }
 
+func TestSidebarRendersNavigationAndEscapesText(t *testing.T) {
+	html, err := Sidebar("Marionette", "Admin <Console>",
+		SidebarLink("Users", "/").Active(),
+		SidebarLink("Settings", "/settings"),
+	).Note("Demo", `<unsafe>`).Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`<aside`,
+		`href="/"`,
+		`href="/settings"`,
+		`btn btn-primary justify-start`,
+		`Admin &lt;Console&gt;`,
+		`&lt;unsafe&gt;`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+	if strings.Contains(got, "Admin <Console>") || strings.Contains(got, `<unsafe>`) {
+		t.Fatalf("expected sidebar text to be escaped, got %q", got)
+	}
+}
+
 func TestElementRenderEscapesText(t *testing.T) {
 	html, err := Text(`<script>alert(1)</script>`).Render()
 	if err != nil {

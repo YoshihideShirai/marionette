@@ -72,15 +72,26 @@ func getUsers(ctx *marionette.Context) []user {
 }
 
 func renderUsersPage(ctx *marionette.Context) marionette.Node {
-	return marionette.DivClass("app", "space-y-6",
-		marionette.DivClass("", "space-y-2",
-			marionette.DivClass("", "text-3xl font-bold tracking-tight", marionette.Text("Marionette Admin UI")),
-			marionette.DivClass("", "text-base-content/70",
-				marionette.Text("Go handlers, htmx actions, and daisyUI components for small admin tools."),
+	return marionette.DivClass("app", "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]",
+		renderSidebar(),
+		marionette.DivClass("", "min-w-0 space-y-6",
+			marionette.DivClass("", "space-y-2",
+				marionette.DivClass("", "text-3xl font-bold tracking-tight", marionette.Text("Marionette Admin UI")),
+				marionette.DivClass("", "text-base-content/70",
+					marionette.Text("Go handlers, htmx actions, and daisyUI components for small admin tools."),
+				),
 			),
+			renderUsersWorkspace(ctx),
 		),
-		renderUsersWorkspace(ctx),
 	)
+}
+
+func renderSidebar() marionette.Node {
+	return marionette.Sidebar("Marionette", "Admin Console",
+		marionette.SidebarLink("Users", "/").Active(),
+		marionette.SidebarLink("Teams", "/"),
+		marionette.SidebarLink("Settings", "/"),
+	).Note("Demo workspace", "In-memory data for admin UI prototyping.")
 }
 
 func renderUsersWorkspace(ctx *marionette.Context) marionette.Node {

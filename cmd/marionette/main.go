@@ -304,37 +304,58 @@ func sortUsers(users []user, sortKey string) []user {
 }
 
 func renderCreateUserForm(form createUserFormState) marionette.Node {
+	fieldProps := func(fieldName string) marionette.ComponentProps {
+		className := "text-sm"
+		if form.Errors[fieldName] != "" {
+			className += " input-error"
+		}
+		return marionette.ComponentProps{Variant: "default", Size: "sm", Class: className}
+	}
+	selectProps := marionette.ComponentProps{Variant: "default", Size: "sm", Class: "text-sm"}
+	if form.Errors["role"] != "" {
+		selectProps.Class += " select-error"
+	}
+
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body",
 			marionette.DivClass("", "text-xl font-semibold", marionette.Text("Create user")),
 			marionette.Form("users/create",
-				marionette.ComponentInputWithOptions("name", form.Name, marionette.InputOptions{
-					Type:        "text",
-					Placeholder: "name",
-					Required:    true,
-					Error:       form.Errors["name"],
-					Props:       marionette.ComponentProps{Variant: "default", Size: "sm"},
-				}),
-				marionette.ComponentInputWithOptions("email", form.Email, marionette.InputOptions{
-					Type:        "text",
-					Placeholder: "email",
-					Required:    true,
-					Error:       form.Errors["email"],
-					Props:       marionette.ComponentProps{Variant: "default", Size: "sm"},
-				}),
-				marionette.ComponentInputWithOptions("start_date", form.StartDate, marionette.InputOptions{
-					Type:     "date",
-					Min:      startDateMin,
-					Max:      startDateMax,
-					Required: true,
-					Error:    form.Errors["start_date"],
-					Props:    marionette.ComponentProps{Variant: "default", Size: "sm"},
-				}),
-				marionette.ComponentSelect("role", []marionette.SelectOption{
-					{Label: "Admin", Value: "Admin", Selected: form.Role == "Admin"},
-					{Label: "Editor", Value: "Editor", Selected: form.Role == "Editor"},
-					{Label: "Viewer", Value: "Viewer", Selected: form.Role == "" || form.Role == "Viewer"},
-				}, marionette.ComponentProps{Variant: "default", Size: "sm"}),
+				marionette.ComponentFormField(
+					marionette.ComponentInputWithOptions("name", form.Name, marionette.InputOptions{
+						Type:        "text",
+						Placeholder: "name",
+						Required:    true,
+						Props:       fieldProps("name"),
+					}),
+					marionette.FormFieldProps{Label: "Name", Required: true, Hint: "Enter the display name.", Error: form.Errors["name"]},
+				),
+				marionette.ComponentFormField(
+					marionette.ComponentInputWithOptions("email", form.Email, marionette.InputOptions{
+						Type:        "text",
+						Placeholder: "email",
+						Required:    true,
+						Props:       fieldProps("email"),
+					}),
+					marionette.FormFieldProps{Label: "Email", Required: true, Hint: "Used for notifications.", Error: form.Errors["email"]},
+				),
+				marionette.ComponentFormField(
+					marionette.ComponentInputWithOptions("start_date", form.StartDate, marionette.InputOptions{
+						Type:     "date",
+						Min:      startDateMin,
+						Max:      startDateMax,
+						Required: true,
+						Props:    fieldProps("start_date"),
+					}),
+					marionette.FormFieldProps{Label: "Start date", Required: true, Hint: "Select a date in the active fiscal window.", Error: form.Errors["start_date"]},
+				),
+				marionette.ComponentFormField(
+					marionette.ComponentSelect("role", []marionette.SelectOption{
+						{Label: "Admin", Value: "Admin", Selected: form.Role == "Admin"},
+						{Label: "Editor", Value: "Editor", Selected: form.Role == "Editor"},
+						{Label: "Viewer", Value: "Viewer", Selected: form.Role == "" || form.Role == "Viewer"},
+					}, selectProps),
+					marionette.FormFieldProps{Label: "Role", Required: true, Hint: "Choose permission scope for this user.", Error: form.Errors["role"]},
+				),
 				marionette.ComponentSubmitButton("Create", marionette.ComponentProps{Variant: "primary", Size: "sm"}),
 			).Target("#users-workspace"),
 			marionette.DivClass("", "pt-2", marionette.ComponentButton("Preview (disabled)", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true})),

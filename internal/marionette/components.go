@@ -30,13 +30,19 @@ type ModalProps struct {
 	Open    bool
 }
 
+type FormFieldProps struct {
+	Label    string
+	Required bool
+	Hint     string
+	Error    string
+}
+
 type InputOptions struct {
 	Type        string
 	Placeholder string
 	Min         string
 	Max         string
 	Required    bool
-	Error       string
 	Props       ComponentProps
 }
 
@@ -132,7 +138,6 @@ func ComponentInputWithOptions(name, value string, options InputOptions) Node {
 			Max         string
 			Required    bool
 			Disabled    bool
-			Error       string
 		}{
 			Class:       inputClass(options.Props),
 			Name:        name,
@@ -143,7 +148,29 @@ func ComponentInputWithOptions(name, value string, options InputOptions) Node {
 			Max:         strings.TrimSpace(options.Max),
 			Required:    options.Required,
 			Disabled:    options.Props.Disabled,
-			Error:       strings.TrimSpace(options.Error),
+		},
+	}
+}
+
+func ComponentFormField(control Node, props FormFieldProps) Node {
+	controlHTML, err := renderNode(control)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/form_field",
+		data: struct {
+			Label    string
+			Required bool
+			Hint     string
+			Error    string
+			Control  template.HTML
+		}{
+			Label:    strings.TrimSpace(props.Label),
+			Required: props.Required,
+			Hint:     strings.TrimSpace(props.Hint),
+			Error:    strings.TrimSpace(props.Error),
+			Control:  controlHTML,
 		},
 	}
 }

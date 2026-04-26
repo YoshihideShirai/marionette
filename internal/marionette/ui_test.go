@@ -160,20 +160,40 @@ func TestTemplatePartialsRenderSharedProps(t *testing.T) {
 	}
 }
 
-func TestComponentInputWithOptionsRendersDateConstraintsAndError(t *testing.T) {
+func TestComponentInputWithOptionsRendersDateConstraints(t *testing.T) {
 	html, err := ComponentInputWithOptions("start_date", "2030-01-01", InputOptions{
 		Type:     "date",
 		Min:      "2024-01-01",
 		Max:      "2026-12-31",
 		Required: true,
-		Error:    "out of range",
 		Props:    ComponentProps{Variant: "default", Size: "sm"},
 	}).Render()
 	if err != nil {
 		t.Fatalf("input render failed: %v", err)
 	}
 	got := string(html)
-	for _, want := range []string{`type="date"`, `min="2024-01-01"`, `max="2026-12-31"`, `required`, `text-error`, `out of range`} {
+	for _, want := range []string{`type="date"`, `min="2024-01-01"`, `max="2026-12-31"`, `required`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestComponentFormFieldRendersLabelHintAndError(t *testing.T) {
+	html, err := ComponentFormField(
+		ComponentInputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Variant: "default", Size: "sm"}}),
+		FormFieldProps{
+			Label:    "Name",
+			Required: true,
+			Hint:     "Enter a display name.",
+			Error:    "Name is required.",
+		},
+	).Render()
+	if err != nil {
+		t.Fatalf("form field render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{`label-text`, `Name`, `*`, `Enter a display name.`, `Name is required.`, `name="name"`} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("expected %q in %q", want, got)
 		}

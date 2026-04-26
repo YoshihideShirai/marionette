@@ -1,0 +1,13 @@
+{{define "components/form_field" -}}
+<div class="form-control gap-1.5">
+  {{if .Label}}
+  <label class="label py-0">
+    <span class="label-text text-xs font-semibold uppercase tracking-wide text-base-content/70">{{.Label}}</span>
+    {{if .Required}}<span class="label-text text-xs font-semibold text-error">*</span>{{end}}
+  </label>
+  {{end}}
+  {{.Control}}
+  {{if .Hint}}<p class="text-xs text-base-content/60">{{.Hint}}</p>{{end}}
+  {{if .Error}}<p class="text-xs font-medium text-error">{{.Error}}</p>{{end}}
+</div>
+{{- end}}

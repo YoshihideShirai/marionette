@@ -19,6 +19,7 @@ Related documentation:
 
 - API reference: [`docs_api.md`](../../docs_api.md)
 - UI policy: [`docs/architecture/ui.md`](../architecture/ui.md)
+- Components gallery: [`docs/site/components/index.md`](./components/index.md)
 
 ---
 

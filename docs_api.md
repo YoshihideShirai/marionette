@@ -1,220 +1,296 @@
 # API Documentation
 
-This document provides an organized reference for the public API in the `marionette` package.
+This document is a direct API reference for the public surface in `marionette`, reorganized by runtime layer.
 
-## 1. Application setup
+## 1. App
 
-```go
-app := marionette.New()
-```
+### `New() *App`
+- Returns a new `*App`.
+- Initializes internal state:
+  - `state: map[string]any{}`
+  - `pages: map[string]Handler{}`
+  - `actions: map[string]Handler{}`
+  - `cookieSecure: false` (default).
 
-`New` initializes:
+### `Run(addr string) error`
+- Starts an HTTP server with `http.ListenAndServe(addr, a.Handler())`.
+- Logs `marionette listening at http://<addr>` to stdout before serving.
+- Returns any `ListenAndServe` error as-is.
 
-- a shared state store (`map[string]any`)
-- page (GET) handlers
-- action (POST) handlers
+### `SetCookieSecure(secure bool)`
+- Enables/disables `Secure` on the flash cookie (`marionette_flash`).
+- Default is `false`.
+- Affects both:
+  - flash write (`Context.AddFlash`)
+  - flash clear (when flashes are consumed on next request).
 
-## 2. Handlers and context
+### `Handler() http.Handler`
+- Builds and returns `*http.ServeMux` with all registered routes.
+- `Page` routes:
+  - path match is strict (`r.URL.Path` must equal registered path, otherwise `404`).
+  - method is `GET` only, otherwise `405 Method Not Allowed`.
+  - renders full HTML shell.
+- `Action` routes:
+  - method is `POST` only, otherwise `405 Method Not Allowed`.
+  - executes `r.ParseForm()`, parse failure is `400 Bad Request`.
+  - renders HTML fragment only.
+- If `/` is not registered by `Page`/`Render`:
+  - `GET /` returns `500 Internal Server Error` with configuration message.
+  - non-root unmatched paths are `404`.
 
-### 2.1 Handler type
+### `Page(path string, fn Handler)`
+- Registers full-page handler for `GET`.
+- Path normalization:
+  - `""` -> `"/"`
+  - no leading slash -> leading slash is added.
+- Render mode: handler `Node` is wrapped in Marionette shell HTML.
 
-```go
-type Handler func(*Context) Node
-```
+### `Action(name string, fn Handler)`
+- Registers fragment handler for `POST`.
+- Name normalization:
+  - always stored as `"/" + strings.TrimPrefix(name, "/")`.
+- Parse failure in request form body -> `400`.
+- Render mode: handler `Node` is returned as fragment HTML.
 
-- Every handler returns a `Node`.
-- In `Page`, the returned `Node` is rendered as a full HTML page (wrapped in the Marionette shell).
-- In `Action`, the returned `Node` is rendered as an HTML fragment.
+### `Render(fn Handler)`
+- Compatibility alias for root page registration.
+- Equivalent to `Page("/", fn)`.
 
-### 2.2 Context
+### `Handle(name string, fn Handler)`
+- Compatibility alias for action registration.
+- Equivalent to `Action(name, fn)`.
 
-`Context` provides access to request data and shared state.
+### App state helpers
 
-```go
-ctx.Param("id")       // path parameter
-ctx.FormValue("name") // form value
-ctx.Query("q")        // query parameter
+#### `Set(key string, value any)`
+- Writes into app shared state map with lock.
 
-ctx.Set("count", 3)
-count := ctx.GetInt("count")
-```
+#### `GetInt(key string) int`
+- Reads app shared state and type-asserts to `int`.
+- Returns `0` when value is missing or not `int`.
 
-> `GetInt` returns `0` when the underlying value is not an `int`.
+---
 
-## 3. Routing APIs
+## 2. Context
 
-### 3.1 Page
+`Context` is passed to each handler as `func(*Context) Node` and provides request/state access.
 
-```go
-app.Page("/users", func(ctx *marionette.Context) marionette.Node {
-    return marionette.Div("app", marionette.Text("Users"))
-})
-```
+### `Param(name string) string`
+- Returns path parameter from `Request.PathValue(name)`.
+- Returns `""` when `Request` is `nil`.
 
-- Accepts GET only.
-- If `path` does not start with `/`, it is normalized automatically (for example, `users` becomes `/users`).
+### `Query(name string) string`
+- Returns query parameter from `Request.URL.Query().Get(name)`.
+- Returns `""` when `Request` is `nil`.
 
-### 3.2 Action
+### `FormValue(name string) string`
+- Returns form value from `Request.FormValue(name)`.
+- Returns `""` when `Request` is `nil`.
 
-```go
-app.Action("users/create", func(ctx *marionette.Context) marionette.Node {
-    name := ctx.FormValue("name")
-    _ = name
-    return marionette.Div("app", marionette.Text("created"))
-})
-```
+### `Set(key string, value any)`
+- Writes shared state.
+- If context has parent app, write is synchronized via app mutex.
+- If no app is attached, writes directly to `Context.State`.
 
-- Accepts POST only.
-- `name` is normalized internally whether or not it includes a leading `/`.
-- If `r.ParseForm()` fails, Marionette returns HTTP 400.
+### `Get(key string) any`
+- Reads shared state.
+- If context has parent app, read is synchronized via app mutex.
+- If no app is attached, reads directly from `Context.State`.
 
-### 3.3 Compatibility APIs
+### `GetInt(key string) int`
+- `Get` + `int` assertion.
+- Returns `0` when value is missing/not `int`.
 
-```go
-app.Render(fn)       // same as app.Page("/", fn)
-app.Handle(name, fn) // same as app.Action(name, fn)
-```
+### Flash APIs
 
-These remain available for compatibility with earlier examples.
+#### `Flashes() []FlashMessage`
+- Returns a copied snapshot of currently loaded flashes.
+- Returns `nil` when no flash exists.
 
-### 3.4 Exporting the HTTP handler
+#### `FlashSuccess(message string)` / `FlashError(message string)` / `FlashInfo(message string)` / `FlashWarn(message string)`
+- Convenience wrappers around `AddFlash(level, message)`.
+- Level values are implementation constants:
+  - `FlashSuccess`, `FlashError`, `FlashInfo`, `FlashWarn`.
 
-```go
-mux := app.Handler()
-http.ListenAndServe(":8080", mux)
-```
+#### `AddFlash(level FlashLevel, message string)`
+- Trims message; empty after trim means no-op.
+- Appends flash into context flash list, serializes to cookie (`marionette_flash`).
+- Cookie behavior:
+  - `Path=/`
+  - `HttpOnly=true`
+  - `SameSite=Lax`
+  - `Secure` follows `App.SetCookieSecure` (default `false`).
+- Serialization failure is ignored (no panic / no status change).
 
-- If `/` is not registered, `GET /` returns HTTP 500 with a clear configuration error.
+Flash lifecycle on next request:
+- Flashes are decoded from cookie into `Context.flashes`.
+- Valid entries only: known levels and non-empty messages.
+- If flashes were present, cookie is automatically cleared in response.
 
-## 4. State management API
+---
 
-```go
-app.Set("users", users)
+## 3. Core Node
 
-ctx.Set("users", nextUsers) // handlers update the same shared store
-```
+### `type Node interface { Render() (template.HTML, error) }`
+- Every UI node renders itself to safe HTML.
+- Rendering failure eventually becomes `500 Internal Server Error` in HTTP responses.
 
-- `App` and `Context` reference the same backing map.
-- If you need concurrent access safety, add synchronization at the application level.
-
-## 5. UI node APIs
-
-All UI components implement `Node` and render HTML via `Render() (template.HTML, error)`.
-
-### 5.1 Basic nodes
-
+### Basic node constructors
 - `Text(v string) Node`
+- `Raw(html string)` (`type Raw string`, trusted HTML passthrough)
 - `Div(id string, children ...Node) Node`
 - `DivClass(id, className string, children ...Node) Node`
 - `Column(children ...Node) Node`
-- `Raw(html string)` for trusted HTML snippets
 
-### 5.2 Tables
-
-```go
-rows := []marionette.TableRowData{
-    marionette.TableRow(marionette.Text("alice"), marionette.Text("admin")),
-}
-
-table := marionette.Table([]string{"name", "role"}, rows...)
-```
-
+### Table / layout helpers
 - `Table(headers []string, rows ...TableRowData) Node`
 - `TableRow(cells ...Node) TableRowData`
-
-### 5.3 Sidebar
-
-```go
-sidebar := marionette.
-    Sidebar("Marionette", "Admin",
-        marionette.SidebarLink("Users", "/").Active(),
-        marionette.SidebarLink("Reports", "/reports"),
-    ).
-    Note("Tip", "Use htmx actions for partial updates")
-```
-
 - `Sidebar(brand, title string, items ...SidebarItem) *sidebar`
 - `SidebarLink(label, href string) SidebarItem`
-- `SidebarItem.Active() SidebarItem`
+- `(SidebarItem).Active() SidebarItem`
 - `(*sidebar).Note(title, text string) *sidebar`
 
-### 5.4 Forms
-
-```go
-form := marionette.
-    Form("users/create",
-        marionette.Input("name", ""),
-        marionette.Submit("Create"),
-    ).
-    Target("#workspace")
-```
-
+### Legacy form/button nodes
 - `Form(action string, children ...Node) *form`
+  - default target selector: `#app`.
+  - rendered attrs include `hx-post`, `hx-target`, `hx-swap="outerHTML"`.
 - `(*form).Target(selector string) *form`
 - `Input(name, value string) Node`
 - `HiddenInput(name, value string) Node`
 - `Submit(label string) Node`
-
-`Form` automatically sets `hx-post`, `hx-target`, and `hx-swap="outerHTML"`.
-
-### 5.5 Buttons
-
-```go
-btn := marionette.
-    Button("Refresh").
-    Post("users/refresh").
-    Target("#workspace")
-```
-
 - `Button(label string) *button`
-- `(*button).Post(action string) *button`
+  - default target selector: `#app`.
+- `(*button).Post(action string) *button` (action normalized without leading `/`)
 - `(*button).OnClick(action string) *button` (`Post` alias)
 - `(*button).Target(selector string) *button`
 - `(*button).TargetSelector(selector string) *button`
 
-## 6. Minimal example
+---
 
+## 4. Form APIs
+
+### `FormRow(props FormRowProps) Node`
+- Required:
+  - `props.ID` must be non-empty; otherwise render error node.
+  - `props.Control` must be non-nil; otherwise render error node.
+- Behavior:
+  - optional label, required marker (`*`), description, error row.
+  - when `props.Error` exists, internally renders `FieldError`.
+
+### `FieldError(props FieldErrorProps) Node`
+- Empty `Message` => returns empty `Raw("")`.
+- Non-empty message requires non-empty `ID`; empty ID => render error node.
+
+### `TextField(props TextFieldProps) Node`
+- Defaults:
+  - `Type` defaults to `"text"` when blank.
+- Behavior:
+  - applies `aria-describedby` from description/error presence.
+  - sets `aria-invalid=true` when error exists.
+  - supports `required`, `disabled`, `readonly`, `data-ref`.
+
+### `Textarea(props TextareaProps) Node`
+- `Rows > 0` adds `rows` attribute; otherwise omitted.
+- Same accessibility/error behavior as `TextField`.
+
+### `Select(props SelectFieldProps) Node`
+- Renders `<option value="...">` list from `Options`.
+- `SelectOption.Selected` sets `selected="selected"`.
+- Same accessibility/error behavior as text controls.
+
+### `Checkbox(props CheckboxProps) Node`
+- Renders label + checkbox input.
+- `Checked=true` sets `checked="checked"`.
+- Supports `disabled`, `readonly`, `data-ref`, error aria attrs.
+
+### `RadioGroup(props RadioGroupProps) Node`
+- Required: non-empty `props.ID`; empty ID => render error node.
+- Generates child IDs as `<groupID>-<index>`.
+- Marks checked option where `props.Value == option.Value`.
+
+### `Switch(props SwitchProps) Node`
+- Implemented as checkbox input with switch class.
+- `Checked=true` sets `checked="checked"`.
+- Supports same checkable attrs as checkbox/radio.
+
+---
+
+## 5. Component APIs
+
+Template-backed component constructors (`templates/components/*`).
+
+### Buttons / inputs / field wrappers
+- `ComponentButton(label string, props ComponentProps) Node`
+- `ComponentSubmitButton(label string, props ComponentProps) Node`
+- `ComponentInput(name, value string, props ComponentProps) Node`
+  - uses `ComponentInputWithOptions` with defaults:
+    - `Type: "text"`
+    - `Placeholder: strings.TrimSpace(name)`.
+- `ComponentInputWithOptions(name, value string, options InputOptions) Node`
+  - blank `options.Type` defaults to `"text"`.
+- `ComponentFormField(control Node, props FormFieldProps) Node`
+  - if `control` rendering fails, returns render error node.
+- `ComponentSelect(name string, options []SelectOption, props ComponentProps) Node`
+
+### Overlay / feedback
+- `ComponentModal(props ModalProps) Node`
+  - renders `Body` and `Actions` nodes first.
+  - if either render fails, returns render error node.
+- `ComponentToast(props ToastProps) Node`
+  - blank `Live` defaults to `"polite"`.
+- `ComponentAlert(props AlertProps) Node`
+- `ComponentSkeleton(props SkeletonProps) Node`
+  - `Rows <= 0` defaults to `3`.
+- `ComponentEmptyState(props EmptyStateProps) Node`
+  - `Rows <= 0` defaults to `3`.
+
+### Data display
+- `ComponentTable(props TableProps) Node`
+  - renders each cell node; any cell render error => render error node.
+- `ComponentPagination(props PaginationProps) Node`
+  - `Page < 1` defaults to `1`.
+  - `TotalPages < 1` defaults to `1`.
+
+---
+
+## 6. Flash APIs
+
+### Types / constants
+- `type FlashLevel string`
+- `type FlashMessage struct { Level FlashLevel; Message string }`
+- Levels:
+  - `FlashSuccess`
+  - `FlashError`
+  - `FlashInfo`
+  - `FlashWarn`
+
+### UI helper
+- `FlashAlerts(flashes []FlashMessage) Node`
+  - empty flashes => `DivClass("flash-alerts", "hidden")`.
+  - non-empty => `DivClass("flash-alerts", "space-y-2", ...)` with level class mapping:
+    - `FlashSuccess -> alert-success`
+    - `FlashError -> alert-error`
+    - `FlashWarn -> alert-warning`
+    - default -> `alert-info`.
+
+---
+
+## 7. Runtime
+
+### Handler type
 ```go
-package main
-
-import (
-    "fmt"
-    "net/http"
-
-    "marionette/internal/marionette"
-)
-
-func main() {
-    app := marionette.New()
-    app.Set("count", 0)
-
-    app.Page("/", func(ctx *marionette.Context) marionette.Node {
-        count := ctx.GetInt("count")
-        return marionette.Div("app",
-            marionette.Text("count"),
-            marionette.Text(": "),
-            marionette.Text(fmt.Sprintf("%d", count)),
-            marionette.Button("+1").Post("counter/inc"),
-        )
-    })
-
-    app.Action("counter/inc", func(ctx *marionette.Context) marionette.Node {
-        next := ctx.GetInt("count") + 1
-        ctx.Set("count", next)
-        return marionette.Div("app",
-            marionette.Text(fmt.Sprintf("count: %d", next)),
-            marionette.Button("+1").Post("counter/inc"),
-        )
-    })
-
-    _ = http.ListenAndServe(":8080", app.Handler())
-}
+type Handler func(*Context) Node
 ```
+- Shared by `Page`, `Action`, `Render`, `Handle`.
 
-## 7. HTTP behavior summary
+### HTTP / rendering failure behavior (consolidated)
+- `Page` endpoint + non-`GET` method: `405 Method Not Allowed`.
+- `Action` endpoint + non-`POST` method: `405 Method Not Allowed`.
+- `Action` request `ParseForm` failure: `400 Bad Request`.
+- Node render failure (page/fragment): `500 Internal Server Error`.
+- Shell render failure (page): `500 Internal Server Error`.
+- Missing root page (`/` not registered): `GET /` returns `500 Internal Server Error`.
 
-- `Page`: GET only (`405 Method Not Allowed` otherwise)
-- `Action`: POST only (`405 Method Not Allowed` otherwise)
-- Action form parsing failure: `400 Bad Request`
-- Node/template rendering failure: `500 Internal Server Error`
-- `GET /` without page registration: `500 Internal Server Error`
+### Response content type
+- Both full page and fragment writes set:
+  - `Content-Type: text/html; charset=utf-8`.

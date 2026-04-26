@@ -213,3 +213,80 @@ func TestContextSetIsVisibleFromAppGetInt(t *testing.T) {
 		t.Fatalf("expected shared app/context state to be 7, got %d", got)
 	}
 }
+
+func TestFlashCookieSecureDefaultsToFalse(t *testing.T) {
+	app := New()
+	app.Action("save", func(ctx *Context) Node {
+		ctx.FlashSuccess("saved")
+		return Div("app", Text("ok"))
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/save", strings.NewReader(""))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	var flashCookie *http.Cookie
+	for _, c := range rr.Result().Cookies() {
+		if c.Name == flashCookieName {
+			flashCookie = c
+			break
+		}
+	}
+	if flashCookie == nil {
+		t.Fatalf("expected %q cookie to be set", flashCookieName)
+	}
+	if flashCookie.Secure {
+		t.Fatalf("expected flash cookie secure to default to false")
+	}
+}
+
+func TestFlashCookieSecureCanBeEnabled(t *testing.T) {
+	app := New()
+	app.SetCookieSecure(true)
+	app.Action("save", func(ctx *Context) Node {
+		ctx.FlashSuccess("saved")
+		return Div("app", Text("ok"))
+	})
+	app.Page("/", func(ctx *Context) Node {
+		return FlashAlerts(ctx.Flashes())
+	})
+
+	actionReq := httptest.NewRequest(http.MethodPost, "/save", strings.NewReader(""))
+	actionReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	actionRes := httptest.NewRecorder()
+	app.Handler().ServeHTTP(actionRes, actionReq)
+
+	var flashCookie *http.Cookie
+	for _, c := range actionRes.Result().Cookies() {
+		if c.Name == flashCookieName {
+			flashCookie = c
+			break
+		}
+	}
+	if flashCookie == nil {
+		t.Fatalf("expected %q cookie to be set", flashCookieName)
+	}
+	if !flashCookie.Secure {
+		t.Fatalf("expected flash cookie secure to be true when enabled")
+	}
+
+	getReq := httptest.NewRequest(http.MethodGet, "/", nil)
+	getReq.AddCookie(flashCookie)
+	getRes := httptest.NewRecorder()
+	app.Handler().ServeHTTP(getRes, getReq)
+
+	var clearCookie *http.Cookie
+	for _, c := range getRes.Result().Cookies() {
+		if c.Name == flashCookieName {
+			clearCookie = c
+			break
+		}
+	}
+	if clearCookie == nil {
+		t.Fatalf("expected %q cookie to be cleared", flashCookieName)
+	}
+	if !clearCookie.Secure {
+		t.Fatalf("expected clear flash cookie secure to be true when enabled")
+	}
+}

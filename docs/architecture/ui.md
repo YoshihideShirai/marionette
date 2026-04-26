@@ -1,22 +1,22 @@
-# UIアーキテクチャ方針
+# UI Architecture Policy
 
-本プロジェクトのUI実装は、以下の方針に従う。
+UI implementation in this project must follow the policies below.
 
-## 1) UIコンポーネント実装
+## 1) UI component implementation
 
-- UIコンポーネントは **Goテンプレート（`html/template`）** で実装する。
-- クライアント側フレームワーク前提の実装には依存しない。
+- UI components must be implemented with **Go templates (`html/template`)**.
+- Do not rely on client-framework-first implementations.
 
-## 2) TypeScriptの新規追加
+## 2) New TypeScript files
 
-- **`.ts` / `.tsx` の新規ファイル追加を禁止** する。
-- 例外が必要な場合は、実装前にメンテナーとの事前合意を必須とする。
+- Adding new **`.ts` / `.tsx` files is prohibited**.
+- If an exception is necessary, prior agreement with maintainers is required before implementation.
 
-## 3) 状態遷移・バリデーション
+## 3) State transitions and validation
 
-- 画面状態の遷移および入力バリデーションは、**Goハンドラ中心** で実装する。
-- クライアント側ロジックは最小限（表示補助）に留める。
+- Implement UI state transitions and input validation primarily in **Go handlers**.
+- Keep client-side logic minimal (presentation-only support).
 
-## 受け入れ条件
+## Acceptance criteria
 
-- 以後のPRで `.ts` / `.tsx` の新規ファイルが作成されないこと。
+- Future PRs must not create new `.ts` / `.tsx` files.

@@ -44,3 +44,10 @@ app.Action("users/create", func(ctx *marionette.Context) marionette.Node {
 `Page` handlers return full pages wrapped in the Marionette shell. `Action`
 handlers are POST-only htmx endpoints and return HTML fragments for partial
 swaps. The older `Render` and `Handle` APIs still work for small examples.
+
+## API Documentation
+
+Detailed API reference is available here:
+
+- [`docs_api.md`](./docs_api.md)
+

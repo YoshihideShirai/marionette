@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/example/marionette/internal/marionette"
+	"github.com/YoshihideShirai/marionette"
 )
 
 type user struct {

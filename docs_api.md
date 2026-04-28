@@ -1,30 +1,15 @@
 # API Documentation
 
-This document is a direct API reference for the current runtime surface in
-`internal/marionette`, reorganized by runtime layer.
+This document is a direct API reference for the current runtime surface in the
+module root package, reorganized by runtime layer.
 
-## Import paths and scope (important)
-
-### 1) In-repository demos/tests (same module)
+## Import Path
 
 Use:
 
 ```go
-import marionette "github.com/example/marionette/internal/marionette"
+import marionette "github.com/YoshihideShirai/marionette"
 ```
-
-Reason: this API currently lives under `internal/`, so Go restricts imports to
-the same module/repository tree.
-
-### 2) External consumers (different module)
-
-There is currently **no public package path** in this repository that exposes
-the same API as `internal/marionette`.
-
-- If you copy snippets from this file into another repository as-is, they will
-  fail at import resolution due to the `internal` boundary.
-- Therefore, references below describe the **current internal runtime API**, not
-  a publicly importable API contract yet.
 
 ## 2. App
 
@@ -296,7 +281,7 @@ Template-backed component constructors (`templates/components/*`).
 import (
     "os"
 
-    marionette "github.com/example/marionette/internal/marionette"
+    marionette "github.com/YoshihideShirai/marionette"
 )
 
 func tableFromCSV(path string) (marionette.Node, error) {

@@ -28,18 +28,10 @@ Open http://127.0.0.1:8080 and try the users admin demo.
 
 ### Import path guidance
 
-- **Repository-internal demo/examples (this repo only):**
-  use `github.com/example/marionette/internal/marionette`.
-  This package is under Go's `internal/` rule, so it is intentionally limited to
-  code in the same module/repository.
-- **External usage (other repositories):**
-  there is currently **no public import path** exported by this repository for the
-  runtime API shown below.
-  In other words, `github.com/example/marionette` does not currently provide a
-  copy-paste-ready public package for external consumers.
+Use the module root package:
 
 ```go
-import marionette "github.com/example/marionette/internal/marionette"
+import marionette "github.com/YoshihideShirai/marionette"
 
 app := marionette.New()
 app.Set("users", []User{})

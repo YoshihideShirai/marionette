@@ -1,4 +1,4 @@
-module github.com/example/marionette
+module github.com/YoshihideShirai/marionette
 
 go 1.22
 

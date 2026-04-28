@@ -3,56 +3,56 @@
     {
       "id": "button",
       "name": "ComponentButton",
-      "golden": "internal/marionette/testdata/golden/button.golden.html",
+      "golden": "testdata/golden/button.golden.html",
       "example": "docs/site/components/examples/button.html",
       "template": "templates/components/button.tmpl"
     },
     {
       "id": "input",
       "name": "ComponentInput",
-      "golden": "internal/marionette/testdata/golden/input.golden.html",
+      "golden": "testdata/golden/input.golden.html",
       "example": "docs/site/components/examples/input.html",
       "template": "templates/components/input.tmpl"
     },
     {
       "id": "select",
       "name": "ComponentSelect",
-      "golden": "internal/marionette/testdata/golden/select.golden.html",
+      "golden": "testdata/golden/select.golden.html",
       "example": "docs/site/components/examples/select.html",
       "template": "templates/components/select.tmpl"
     },
     {
       "id": "modal",
       "name": "ComponentModal",
-      "golden": "internal/marionette/testdata/golden/modal_open.golden.html",
+      "golden": "testdata/golden/modal_open.golden.html",
       "example": "docs/site/components/examples/modal.html",
       "template": "templates/components/modal.html"
     },
     {
       "id": "empty-state",
       "name": "ComponentEmptyState",
-      "golden": "internal/marionette/testdata/golden/empty_state.golden.html",
+      "golden": "testdata/golden/empty_state.golden.html",
       "example": "docs/site/components/examples/empty_state.html",
       "template": "templates/components/empty_state.html"
     },
     {
       "id": "table",
       "name": "ComponentTable",
-      "golden": "internal/marionette/testdata/golden/table.golden.html",
+      "golden": "testdata/golden/table.golden.html",
       "example": "docs/site/components/examples/table.html",
       "template": "templates/components/table.html"
     },
     {
       "id": "pagination",
       "name": "ComponentPagination",
-      "golden": "internal/marionette/testdata/golden/pagination.golden.html",
+      "golden": "testdata/golden/pagination.golden.html",
       "example": "docs/site/components/examples/pagination.html",
       "template": "templates/components/pagination.tmpl"
     },
     {
       "id": "form-field",
       "name": "ComponentFormField",
-      "golden": "internal/marionette/testdata/golden/form_field.golden.html",
+      "golden": "testdata/golden/form_field.golden.html",
       "example": "docs/site/components/examples/form_field.html",
       "template": "templates/components/form_field.html"
     },

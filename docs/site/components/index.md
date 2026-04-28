@@ -3,7 +3,7 @@
 This page lists Marionette UI components. The target component set is managed in one place via `docs/site/components/_index.json`.
 
 - Source of truth: [`_index.json`](./_index.json)
-- Golden source files: `internal/marionette/testdata/golden/*.golden.html`
+- Golden source files: `testdata/golden/*.golden.html`
 - Generated sample output: `docs/site/components/examples/*.html`
 
 ## Contents
@@ -36,7 +36,7 @@ Clickable button for primary and secondary actions.
 
 <iframe src="./examples/button.html" title="ComponentButton example" style="width:100%;min-height:160px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`button.golden.html`](../../../internal/marionette/testdata/golden/button.golden.html)
+- Golden sample: [`button.golden.html`](../../../testdata/golden/button.golden.html)
 - Template: [`templates/components/button.tmpl`](../../../templates/components/button.tmpl)
 
 ## ComponentInput
@@ -55,7 +55,7 @@ Single-value input field for text, date, and similar values.
 
 <iframe src="./examples/input.html" title="ComponentInput example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`input.golden.html`](../../../internal/marionette/testdata/golden/input.golden.html)
+- Golden sample: [`input.golden.html`](../../../testdata/golden/input.golden.html)
 - Template: [`templates/components/input.tmpl`](../../../templates/components/input.tmpl)
 
 ## ComponentSelect
@@ -74,7 +74,7 @@ Dropdown input for selecting one option from a list.
 
 <iframe src="./examples/select.html" title="ComponentSelect example" style="width:100%;min-height:200px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`select.golden.html`](../../../internal/marionette/testdata/golden/select.golden.html)
+- Golden sample: [`select.golden.html`](../../../testdata/golden/select.golden.html)
 - Template: [`templates/components/select.tmpl`](../../../templates/components/select.tmpl)
 
 ## ComponentModal
@@ -94,7 +94,7 @@ Overlay dialog for confirmations and detail views.
 
 <iframe src="./examples/modal.html" title="ComponentModal example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`modal_open.golden.html`](../../../internal/marionette/testdata/golden/modal_open.golden.html)
+- Golden sample: [`modal_open.golden.html`](../../../testdata/golden/modal_open.golden.html)
 - Template: [`templates/components/modal.html`](../../../templates/components/modal.html)
 
 ## ComponentEmptyState
@@ -113,7 +113,7 @@ Empty-state UI for no-data and initial states.
 
 <iframe src="./examples/empty_state.html" title="ComponentEmptyState example" style="width:100%;min-height:260px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`empty_state.golden.html`](../../../internal/marionette/testdata/golden/empty_state.golden.html)
+- Golden sample: [`empty_state.golden.html`](../../../testdata/golden/empty_state.golden.html)
 - Template: [`templates/components/empty_state.html`](../../../templates/components/empty_state.html)
 
 ## ComponentTable
@@ -132,7 +132,7 @@ Tabular list UI rendered from column and row definitions.
 
 <iframe src="./examples/table.html" title="ComponentTable example" style="width:100%;min-height:300px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`table.golden.html`](../../../internal/marionette/testdata/golden/table.golden.html)
+- Golden sample: [`table.golden.html`](../../../testdata/golden/table.golden.html)
 - Template: [`templates/components/table.html`](../../../templates/components/table.html)
 
 ## ComponentPagination
@@ -151,7 +151,7 @@ Pagination controls for previous/next navigation and current page display.
 
 <iframe src="./examples/pagination.html" title="ComponentPagination example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`pagination.golden.html`](../../../internal/marionette/testdata/golden/pagination.golden.html)
+- Golden sample: [`pagination.golden.html`](../../../testdata/golden/pagination.golden.html)
 - Template: [`templates/components/pagination.tmpl`](../../../templates/components/pagination.tmpl)
 
 ## ComponentFormField
@@ -172,7 +172,7 @@ Form wrapper that combines label, input, hint text, and error text.
 
 <iframe src="./examples/form_field.html" title="ComponentFormField example" style="width:100%;min-height:260px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`form_field.golden.html`](../../../internal/marionette/testdata/golden/form_field.golden.html)
+- Golden sample: [`form_field.golden.html`](../../../testdata/golden/form_field.golden.html)
 - Template: [`templates/components/form_field.html`](../../../templates/components/form_field.html)
 
 ---

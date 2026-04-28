@@ -401,7 +401,7 @@ func loadComponentTemplates() (*template.Template, error) {
 			cachedTemplatesErr = fmt.Errorf("failed to resolve component template path")
 			return
 		}
-		componentsDir := filepath.Join(filepath.Dir(currentFile), "..", "..", "templates", "components")
+		componentsDir := filepath.Join(filepath.Dir(currentFile), "templates", "components")
 		tmplFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.tmpl"))
 		if err != nil {
 			cachedTemplatesErr = err

@@ -83,7 +83,7 @@ func TestSidebarRendersNavigationAndEscapesText(t *testing.T) {
 
 func TestTableRendersHeadersRowsAndEscapesCells(t *testing.T) {
 	html, err := Table([]string{"Name", "Role"},
-		TableRow(Text(`<Aiko>`), DivClass("", "badge", Text("Admin"))),
+		TableRow(Text(`<Aiko>`), DivClass("badge", Text("Admin"))),
 	).Render()
 	if err != nil {
 		t.Fatalf("render failed: %v", err)
@@ -129,6 +129,46 @@ func TestElementRenderEscapesText(t *testing.T) {
 	got := string(html)
 	if strings.Contains(got, `<script>alert(1)</script>`) {
 		t.Fatalf("expected escaped content, got %q", got)
+	}
+}
+
+func TestDivConstructorsSupportPlainAndAttributedMarkup(t *testing.T) {
+	plainHTML, err := Div(Text("Plain")).Render()
+	if err != nil {
+		t.Fatalf("plain div render failed: %v", err)
+	}
+	if got, want := string(plainHTML), `<div><span>Plain</span></div>`; got != want {
+		t.Fatalf("expected %q, got %q", want, got)
+	}
+
+	attrsHTML, err := DivAttrs(Attrs{"data-ref": "plain"}, Text("Attrs")).Render()
+	if err != nil {
+		t.Fatalf("attrs div render failed: %v", err)
+	}
+	if got := string(attrsHTML); !strings.Contains(got, `data-ref="plain"`) {
+		t.Fatalf("expected data-ref attribute in %q", got)
+	}
+
+	attrHTML, err := DivProps(ElementProps{
+		ID:    "panel",
+		Class: "p-4",
+		Attrs: Attrs{
+			"class":    "rounded-box",
+			"data-ref": `<unsafe>`,
+		},
+	}, Text("Panel")).Render()
+	if err != nil {
+		t.Fatalf("attributed div render failed: %v", err)
+	}
+	got := string(attrHTML)
+	for _, want := range []string{
+		`class="rounded-box p-4"`,
+		`data-ref="&lt;unsafe&gt;"`,
+		`id="panel"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
 	}
 }
 
@@ -441,7 +481,7 @@ func TestComponentDataFrameRendersPrimitiveAndNodeValues(t *testing.T) {
 	df := rdf.NewDataFrame(
 		rdf.NewSeriesString("Name", nil, "Aiko", "Ken"),
 		rdf.NewSeriesInt64("Age", nil, int64(42), nil),
-		rdf.NewSeriesMixed("Role", nil, DivClass("", "badge", Text("Admin")), "Viewer"),
+		rdf.NewSeriesMixed("Role", nil, DivClass("badge", Text("Admin")), "Viewer"),
 	)
 	html, err := ComponentDataFrame(df, TableProps{
 		EmptyTitle:       "No rows",

@@ -25,6 +25,17 @@ type element struct {
 	Text     string
 }
 
+// Attrs defines HTML attributes for low-level element constructors.
+type Attrs map[string]string
+
+// ElementProps defines common HTML element attributes while keeping class and
+// id easy to scan at call sites.
+type ElementProps struct {
+	ID    string
+	Class string
+	Attrs Attrs
+}
+
 var tagPattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9-]*$`)
 
 func (e element) Render() (template.HTML, error) {
@@ -76,19 +87,42 @@ func Text(v string) Node {
 	return element{Tag: "span", Text: v}
 }
 
-func Div(id string, children ...Node) Node {
-	return DivClass(id, "", children...)
+func Element(tag string, props ElementProps, children ...Node) Node {
+	return element{Tag: tag, Attrs: elementAttrs(props), Children: children}
 }
 
-func DivClass(id, className string, children ...Node) Node {
-	attrs := map[string]string{}
-	if id != "" {
-		attrs["id"] = id
+func Div(children ...Node) Node {
+	return DivProps(ElementProps{}, children...)
+}
+
+func DivID(id string, children ...Node) Node {
+	return DivProps(ElementProps{ID: id}, children...)
+}
+
+func DivClass(className string, children ...Node) Node {
+	return DivProps(ElementProps{Class: className}, children...)
+}
+
+func DivAttrs(attrs Attrs, children ...Node) Node {
+	return DivProps(ElementProps{Attrs: attrs}, children...)
+}
+
+func DivProps(props ElementProps, children ...Node) Node {
+	return Element("div", props, children...)
+}
+
+func elementAttrs(props ElementProps) map[string]string {
+	attrs := make(map[string]string, len(props.Attrs)+2)
+	for key, value := range props.Attrs {
+		attrs[key] = value
 	}
-	if className != "" {
-		attrs["class"] = className
+	if props.ID != "" {
+		attrs["id"] = props.ID
 	}
-	return element{Tag: "div", Attrs: attrs, Children: children}
+	if props.Class != "" {
+		attrs["class"] = joinClass(attrs["class"], props.Class)
+	}
+	return attrs
 }
 
 func Column(children ...Node) Node {
@@ -378,15 +412,15 @@ func joinHTML(parts []template.HTML) template.HTML {
 
 func FlashAlerts(flashes []FlashMessage) Node {
 	if len(flashes) == 0 {
-		return DivClass("flash-alerts", "hidden")
+		return DivProps(ElementProps{ID: "flash-alerts", Class: "hidden"})
 	}
 
 	children := make([]Node, 0, len(flashes))
 	for _, flash := range flashes {
-		children = append(children, DivClass("", "alert "+flashLevelClass(flash.Level), Text(flash.Message)))
+		children = append(children, DivClass("alert "+flashLevelClass(flash.Level), Text(flash.Message)))
 	}
 
-	return DivClass("flash-alerts", "space-y-2", children...)
+	return DivProps(ElementProps{ID: "flash-alerts", Class: "space-y-2"}, children...)
 }
 
 func flashLevelClass(level FlashLevel) string {

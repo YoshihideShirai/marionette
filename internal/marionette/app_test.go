@@ -13,7 +13,7 @@ import (
 func TestIndexRendersHTMLNotEscaped(t *testing.T) {
 	app := New()
 	app.Render(func(ctx *Context) Node {
-		return DivClass("app", "card", Text("Hello"))
+		return DivProps(ElementProps{ID: "app", Class: "card"}, Text("Hello"))
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -32,7 +32,7 @@ func TestIndexRendersHTMLNotEscaped(t *testing.T) {
 func TestPageRendersFullHTML(t *testing.T) {
 	app := New()
 	app.Page("/", func(ctx *Context) Node {
-		return DivClass("app", "card", Text("Dashboard"))
+		return DivProps(ElementProps{ID: "app", Class: "card"}, Text("Dashboard"))
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -54,7 +54,7 @@ func TestPageRendersFullHTML(t *testing.T) {
 func TestUnregisteredPageReturnsNotFound(t *testing.T) {
 	app := New()
 	app.Page("/", func(ctx *Context) Node {
-		return Div("app", Text("Dashboard"))
+		return DivID("app", Text("Dashboard"))
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/missing", nil)
@@ -70,7 +70,7 @@ func TestActionRendersFragmentAndParsesForm(t *testing.T) {
 	app := New()
 	app.Action("users/create", func(ctx *Context) Node {
 		ctx.Set("name", ctx.FormValue("name"))
-		return DivClass("users", "card", Text(ctx.Get("name").(string)))
+		return DivProps(ElementProps{ID: "users", Class: "card"}, Text(ctx.Get("name").(string)))
 	})
 
 	form := url.Values{"name": {"Aiko"}}
@@ -94,7 +94,7 @@ func TestActionRendersFragmentAndParsesForm(t *testing.T) {
 func TestActionRejectsGet(t *testing.T) {
 	app := New()
 	app.Action("users/create", func(ctx *Context) Node {
-		return Div("users")
+		return DivID("users")
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/users/create", nil)
@@ -110,7 +110,7 @@ func TestContextQueryAndStateHelpers(t *testing.T) {
 	app := New()
 	app.Page("/", func(ctx *Context) Node {
 		ctx.Set("count", 2)
-		return Div("app", Text(ctx.Query("filter")+":"+ctx.Param("id")+":"+strings.Repeat("x", ctx.GetInt("count"))))
+		return DivID("app", Text(ctx.Query("filter")+":"+ctx.Param("id")+":"+strings.Repeat("x", ctx.GetInt("count"))))
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/?filter=active", nil)
@@ -126,7 +126,7 @@ func TestFlashPersistsForNextRequestAndAutoClears(t *testing.T) {
 	app := New()
 	app.Action("save", func(ctx *Context) Node {
 		ctx.FlashSuccess("saved")
-		return Div("app", Text("ok"))
+		return DivID("app", Text("ok"))
 	})
 	app.Page("/", func(ctx *Context) Node {
 		return FlashAlerts(ctx.Flashes())
@@ -173,7 +173,7 @@ func TestAppStateConcurrentSetViaContext(t *testing.T) {
 	app := New()
 	app.Action("set", func(ctx *Context) Node {
 		ctx.Set("name", ctx.FormValue("name"))
-		return Div("ok")
+		return DivID("ok")
 	})
 
 	handler := app.Handler()
@@ -202,7 +202,7 @@ func TestContextSetIsVisibleFromAppGetInt(t *testing.T) {
 	app := New()
 	app.Page("/", func(ctx *Context) Node {
 		ctx.Set("count", 7)
-		return Div("app")
+		return DivID("app")
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -218,7 +218,7 @@ func TestFlashCookieSecureDefaultsToFalse(t *testing.T) {
 	app := New()
 	app.Action("save", func(ctx *Context) Node {
 		ctx.FlashSuccess("saved")
-		return Div("app", Text("ok"))
+		return DivID("app", Text("ok"))
 	})
 
 	req := httptest.NewRequest(http.MethodPost, "/save", strings.NewReader(""))
@@ -246,7 +246,7 @@ func TestFlashCookieSecureCanBeEnabled(t *testing.T) {
 	app.SetCookieSecure(true)
 	app.Action("save", func(ctx *Context) Node {
 		ctx.FlashSuccess("saved")
-		return Div("app", Text("ok"))
+		return DivID("app", Text("ok"))
 	})
 	app.Page("/", func(ctx *Context) Node {
 		return FlashAlerts(ctx.Flashes())

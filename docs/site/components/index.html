@@ -42,6 +42,12 @@
 <li><a href="#componenttable">ComponentTable</a></li>
 <li><a href="#componentpagination">ComponentPagination</a></li>
 <li><a href="#componentformfield">ComponentFormField</a></li>
+<li><a href="#componenttabs">ComponentTabs</a></li>
+<li><a href="#componentbreadcrumb">ComponentBreadcrumb</a></li>
+<li><a href="#componenttextarea">ComponentTextarea</a></li>
+<li><a href="#componentcheckbox">ComponentCheckbox</a></li>
+<li><a href="#componentradiogroup">ComponentRadioGroup</a></li>
+<li><a href="#componentswitch">ComponentSwitch</a></li>
 <li><a href="#feedback-demo">Feedback Demo</a></li>
 </ol>
 <hr>
@@ -169,8 +175,124 @@
 <li>Template: <a href="../../../templates/components/form_field.html"><code>templates/components/form_field.html</code></a></li>
 </ul>
 <hr>
-<h2 id="feedback-demo">Feedback Demo</h2>
+<h2 id="componenttabs">ComponentTabs</h2>
 <h3 id="purpose-8">Purpose</h3>
+<p>Tabbed navigation for related views and sections.</p>
+<h3 id="key-props-8">Key props</h3>
+<ul>
+<li><code>Items</code> (<code>Label</code>, <code>Href</code>, <code>Active</code>, <code>Disabled</code>)</li>
+<li><code>AriaLabel</code></li>
+<li><code>Props.Class</code></li>
+</ul>
+<h3 id="visual-8">Visual</h3>
+<iframe src="./examples/navigation.html" title="ComponentTabs example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../testdata/golden/tabs.golden.html"><code>tabs.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/tabs.html"><code>templates/components/tabs.html</code></a></li>
+</ul>
+<h2 id="componentbreadcrumb">ComponentBreadcrumb</h2>
+<h3 id="purpose-9">Purpose</h3>
+<p>Path-based navigation that shows the current location hierarchy.</p>
+<h3 id="key-props-9">Key props</h3>
+<ul>
+<li><code>Items</code> (<code>Label</code>, <code>Href</code>, <code>Active</code>)</li>
+<li><code>AriaLabel</code></li>
+<li><code>Props.Class</code></li>
+</ul>
+<h3 id="visual-9">Visual</h3>
+<iframe src="./examples/navigation.html" title="ComponentBreadcrumb example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="../../../testdata/golden/breadcrumb.golden.html"><code>breadcrumb.golden.html</code></a></li>
+<li>Template: <a href="../../../templates/components/breadcrumb.html"><code>templates/components/breadcrumb.html</code></a></li>
+</ul>
+<hr>
+<h2 id="componenttextarea">ComponentTextarea</h2>
+<h3 id="purpose-10">Purpose</h3>
+<p>Multiline text input with shared component styling options.</p>
+<h3 id="key-props-10">Key props</h3>
+<ul>
+<li>
+<p><code>name</code>, <code>value</code></p>
+</li>
+<li>
+<p><code>Placeholder</code>, <code>Rows</code>, <code>Required</code></p>
+</li>
+<li>
+<p><code>Props</code> (<code>Variant</code>, <code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/textarea.golden.html"><code>textarea.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/textarea.html"><code>templates/components/textarea.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentcheckbox">ComponentCheckbox</h2>
+<h3 id="purpose-11">Purpose</h3>
+<p>Single boolean selection input with label.</p>
+<h3 id="key-props-11">Key props</h3>
+<ul>
+<li>
+<p><code>Name</code>, <code>Value</code>, <code>Label</code></p>
+</li>
+<li>
+<p><code>Checked</code></p>
+</li>
+<li>
+<p><code>Props</code> (<code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/checkbox.golden.html"><code>checkbox.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/checkbox.html"><code>templates/components/checkbox.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentradiogroup">ComponentRadioGroup</h2>
+<h3 id="purpose-12">Purpose</h3>
+<p>Exclusive selection group rendered from item definitions.</p>
+<h3 id="key-props-12">Key props</h3>
+<ul>
+<li>
+<p><code>Name</code>, <code>AriaLabel</code></p>
+</li>
+<li>
+<p><code>Items</code> (<code>Label</code>, <code>Value</code>, <code>Checked</code>, <code>Disabled</code>)</p>
+</li>
+<li>
+<p><code>Props</code> (<code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/radio_group.golden.html"><code>radio_group.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/radio_group.html"><code>templates/components/radio_group.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentswitch">ComponentSwitch</h2>
+<h3 id="purpose-13">Purpose</h3>
+<p>Switch-style boolean control for settings and toggles.</p>
+<h3 id="key-props-13">Key props</h3>
+<ul>
+<li>
+<p><code>Name</code>, <code>Value</code>, <code>Label</code></p>
+</li>
+<li>
+<p><code>Checked</code></p>
+</li>
+<li>
+<p><code>Props</code> (<code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/switch.golden.html"><code>switch.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/switch.html"><code>templates/components/switch.html</code></a></p>
+</li>
+</ul>
+<hr>
+<h2 id="feedback-demo">Feedback Demo</h2>
+<h3 id="purpose-14">Purpose</h3>
 <p>Unified demo for <code>Toast</code>, <code>Alert</code>, <code>EmptyState</code>, and <code>Skeleton</code> added under <code>ui/feedback/</code>.</p>
 <ul>
 <li>Variant: <code>success</code> / <code>info</code> / <code>warning</code> / <code>error</code></li>
@@ -178,7 +300,7 @@
 <li>Accessibility: <code>role</code>, <code>aria-live</code>, <code>aria-busy</code></li>
 <li>Tokens: <code>ui/feedback/tokens.css</code></li>
 </ul>
-<h3 id="visual-8">Visual</h3>
+<h3 id="visual-10">Visual</h3>
 <iframe src="./examples/feedback.html" title="Feedback components demo" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <ul>
 <li>Demo source: <a href="../../../ui/feedback/stories.html"><code>ui/feedback/stories.html</code></a></li>
@@ -188,7 +310,7 @@
 <h2 id="optional-demo-screenshot">Optional demo screenshot</h2>
 <p>Place a demo screenshot from <code>cmd/marionette/main.go</code> under <code>docs/site/assets/</code> when browser-capture tooling is available.</p>
 <h2 id="overlay-system-demo">Overlay System Demo</h2>
-<h3 id="purpose-9">Purpose</h3>
+<h3 id="purpose-15">Purpose</h3>
 <p>A demo that validates <code>Modal</code>, <code>Drawer</code>, <code>Popover</code>, and <code>Tooltip</code> in <code>ui/overlay/</code>, powered by shared <code>overlay-core</code> logic.</p>
 <ul>
 <li>Esc-key close</li>
@@ -197,7 +319,7 @@
 <li>Unified portal target (<code>#ui-overlay-root</code>)</li>
 <li>Reusable z-index / scroll-lock rules</li>
 </ul>
-<h3 id="visual-9">Visual</h3>
+<h3 id="visual-11">Visual</h3>
 <iframe src="../../../ui/overlay/stories.html" title="Overlay system demo" style="width:100%;min-height:560px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <ul>
 <li>Demo source: <a href="../../../ui/overlay/stories.html"><code>ui/overlay/stories.html</code></a></li>

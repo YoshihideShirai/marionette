@@ -1,0 +1,10 @@
+{{define "components/textarea" -}}
+<textarea
+  name="{{.Name}}"
+  class="{{.Class}}"
+  rows="{{.Rows}}"
+  {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
+  {{if .Required}}required{{end}}
+  {{if .Disabled}}disabled{{end}}
+>{{.Value}}</textarea>
+{{- end}}

@@ -82,6 +82,68 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			name: "pagination",
 			node: ComponentPagination(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
 		},
+		{
+			name: "tabs",
+			node: ComponentTabs(TabsProps{
+				AriaLabel: "user sections",
+				Items: []TabsItem{
+					{Label: "Profile", Href: "/users/1/profile", Active: true},
+					{Label: "Permissions", Href: "/users/1/permissions"},
+					{Label: "Audit", Disabled: true},
+				},
+			}),
+		},
+		{
+			name: "breadcrumb",
+			node: ComponentBreadcrumb(BreadcrumbProps{
+				Items: []BreadcrumbItem{
+					{Label: "Home", Href: "/"},
+					{Label: "Users", Href: "/users"},
+					{Label: "Aiko", Active: true},
+				},
+			}),
+		},
+		{
+			name: "textarea",
+			node: ComponentTextarea("notes", "hello", TextareaOptions{
+				Placeholder: "Memo",
+				Rows:        4,
+				Required:    true,
+				Props:       ComponentProps{Variant: "ghost", Size: "sm"},
+			}),
+		},
+		{
+			name: "checkbox",
+			node: ComponentCheckbox(CheckboxComponentProps{
+				Name:    "active",
+				Value:   "1",
+				Label:   "Active user",
+				Checked: true,
+				Props:   ComponentProps{Size: "sm"},
+			}),
+		},
+		{
+			name: "radio_group",
+			node: ComponentRadioGroup(RadioGroupComponentProps{
+				Name:      "role",
+				AriaLabel: "role",
+				Items: []RadioItem{
+					{Label: "Admin", Value: "admin", Checked: true},
+					{Label: "Viewer", Value: "viewer"},
+				},
+				Props: ComponentProps{Size: "sm"},
+			}),
+		},
+		{
+			name: "switch",
+			node: ComponentSwitch(SwitchComponentProps{
+				Name:    "notify",
+				Value:   "1",
+				Label:   "Enable notifications",
+				Checked: true,
+				Props:   ComponentProps{Size: "sm"},
+			}),
+		},
 	}
 
 	for _, tc := range tests {

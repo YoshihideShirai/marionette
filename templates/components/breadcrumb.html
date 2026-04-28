@@ -1,0 +1,15 @@
+{{define "components/breadcrumb" -}}
+<nav aria-label="{{.AriaLabel}}" class="{{.Class}}">
+  <ul>
+  {{range .Items}}
+    <li>
+      {{if .Href}}
+      <a href="{{.Href}}" {{if .Active}}aria-current="page"{{end}}>{{.Label}}</a>
+      {{else}}
+      <span {{if .Active}}aria-current="page"{{end}}>{{.Label}}</span>
+      {{end}}
+    </li>
+  {{end}}
+  </ul>
+</nav>
+{{- end}}

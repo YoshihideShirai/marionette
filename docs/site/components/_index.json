@@ -57,6 +57,48 @@
       "template": "templates/components/form_field.html"
     },
     {
+      "id": "tabs",
+      "name": "ComponentTabs",
+      "golden": "testdata/golden/tabs.golden.html",
+      "example": "docs/site/components/examples/navigation.html",
+      "template": "templates/components/tabs.html"
+    },
+    {
+      "id": "breadcrumb",
+      "name": "ComponentBreadcrumb",
+      "golden": "testdata/golden/breadcrumb.golden.html",
+      "example": "docs/site/components/examples/navigation.html",
+      "template": "templates/components/breadcrumb.html"
+    },
+    {
+      "id": "textarea",
+      "name": "ComponentTextarea",
+      "golden": "testdata/golden/textarea.golden.html",
+      "example": "docs/site/components/examples/form_field.html",
+      "template": "templates/components/textarea.html"
+    },
+    {
+      "id": "checkbox",
+      "name": "ComponentCheckbox",
+      "golden": "testdata/golden/checkbox.golden.html",
+      "example": "docs/site/components/examples/form_field.html",
+      "template": "templates/components/checkbox.html"
+    },
+    {
+      "id": "radio-group",
+      "name": "ComponentRadioGroup",
+      "golden": "testdata/golden/radio_group.golden.html",
+      "example": "docs/site/components/examples/form_field.html",
+      "template": "templates/components/radio_group.html"
+    },
+    {
+      "id": "switch",
+      "name": "ComponentSwitch",
+      "golden": "testdata/golden/switch.golden.html",
+      "example": "docs/site/components/examples/form_field.html",
+      "template": "templates/components/switch.html"
+    },
+    {
       "id": "overlay-system",
       "name": "OverlaySystemDemo",
       "example": "ui/overlay/stories.html",

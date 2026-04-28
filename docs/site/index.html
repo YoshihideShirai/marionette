@@ -72,7 +72,7 @@
 </blockquote>
 <h3 id="componentbutton">ComponentButton</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">saveButton := marionette.ComponentButton(&quot;Save&quot;, marionette.ComponentProps{
+<pre><code class="language-go">saveButton := mrn.ComponentButton(&quot;Save&quot;, mrn.ComponentProps{
     Variant: &quot;secondary&quot;,
     Size:    &quot;sm&quot;,
 })
@@ -83,11 +83,11 @@
 </div>
 <h3 id="componentinput">ComponentInput</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">nameInput := marionette.ComponentInputWithOptions(&quot;name&quot;, &quot;&quot;, marionette.InputOptions{
+<pre><code class="language-go">nameInput := mrn.ComponentInputWithOptions(&quot;name&quot;, &quot;&quot;, mrn.InputOptions{
     Type:        &quot;text&quot;,
     Placeholder: &quot;Username&quot;,
     Required:    true,
-    Props:       marionette.ComponentProps{Size: &quot;lg&quot;},
+    Props:       mrn.ComponentProps{Size: &quot;lg&quot;},
 })
 </code></pre>
 <p><strong>Rendered sample</strong></p>
@@ -96,9 +96,9 @@
 </div>
 <h3 id="componentformfield">ComponentFormField</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">field := marionette.ComponentFormField(
-    marionette.ComponentInput(&quot;email&quot;, &quot;&quot;, marionette.ComponentProps{}),
-    marionette.FormFieldProps{
+<pre><code class="language-go">field := mrn.ComponentFormField(
+    mrn.ComponentInput(&quot;email&quot;, &quot;&quot;, mrn.ComponentProps{}),
+    mrn.FormFieldProps{
         Label:    &quot;Email address&quot;,
         Required: true,
         Hint:     &quot;Used for notifications&quot;,
@@ -113,10 +113,10 @@
 </div>
 <h3 id="componentselect">ComponentSelect</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">statusSelect := marionette.ComponentSelect(&quot;status&quot;, []marionette.SelectOption{
+<pre><code class="language-go">statusSelect := mrn.ComponentSelect(&quot;status&quot;, []mrn.SelectOption{
     {Label: &quot;Active&quot;, Value: &quot;active&quot;, Selected: true},
     {Label: &quot;Inactive&quot;, Value: &quot;inactive&quot;},
-}, marionette.ComponentProps{})
+}, mrn.ComponentProps{})
 </code></pre>
 <p><strong>Rendered sample</strong></p>
 <div style="margin:8px 0 16px;max-width:240px;">
@@ -127,10 +127,10 @@
 </div>
 <h3 id="componentmodal">ComponentModal</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">confirmModal := marionette.ComponentModal(marionette.ModalProps{
+<pre><code class="language-go">confirmModal := mrn.ComponentModal(mrn.ModalProps{
     Title: &quot;Confirm deletion&quot;,
-    Body:  marionette.Text(&quot;This action cannot be undone.&quot;),
-    Actions: marionette.ComponentButton(&quot;Close&quot;, marionette.ComponentProps{
+    Body:  mrn.Text(&quot;This action cannot be undone.&quot;),
+    Actions: mrn.ComponentButton(&quot;Close&quot;, mrn.ComponentProps{
         Variant: &quot;ghost&quot;,
     }),
     Open: true,
@@ -147,7 +147,7 @@
 </div>
 <h3 id="componentemptystate">ComponentEmptyState</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">empty := marionette.ComponentEmptyState(marionette.EmptyStateProps{
+<pre><code class="language-go">empty := mrn.ComponentEmptyState(mrn.EmptyStateProps{
     Title:       &quot;No data available&quot;,
     Description: &quot;Try changing your filter criteria.&quot;,
     Skeleton:    false,
@@ -160,13 +160,13 @@
 </section>
 <h3 id="componenttable">ComponentTable</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">table := marionette.ComponentTable(marionette.TableProps{
-    Columns: []marionette.TableColumn{
+<pre><code class="language-go">table := mrn.ComponentTable(mrn.TableProps{
+    Columns: []mrn.TableColumn{
         {Label: &quot;Name&quot;},
         {Label: &quot;Role&quot;},
     },
-    Rows: []marionette.TableComponentRow{
-        {Cells: []marionette.Node{marionette.Text(&quot;Alice&quot;), marionette.Text(&quot;Admin&quot;)}},
+    Rows: []mrn.TableComponentRow{
+        {Cells: []mrn.Node{mrn.Text(&quot;Alice&quot;), mrn.Text(&quot;Admin&quot;)}},
     },
     EmptyTitle:       &quot;No users&quot;,
     EmptyDescription: &quot;Create your first user.&quot;,
@@ -189,7 +189,7 @@
 </table>
 <h3 id="componentpagination">ComponentPagination</h3>
 <p><strong>Go code</strong></p>
-<pre><code class="language-go">pager := marionette.ComponentPagination(marionette.PaginationProps{
+<pre><code class="language-go">pager := mrn.ComponentPagination(mrn.PaginationProps{
     Page:       2,
     TotalPages: 10,
     PrevHref:   &quot;?page=1&quot;,

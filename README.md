@@ -28,21 +28,24 @@ Open http://127.0.0.1:8080 and try the users admin demo.
 
 ### Import path guidance
 
-Use the module root package:
+Split imports by runtime role (`backend` for app wiring, `frontend` for UI nodes):
 
 ```go
-import mrn "github.com/YoshihideShirai/marionette"
+import (
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+)
 
-app := mrn.New()
+app := mb.New()
 app.Set("users", []User{})
 
-app.Page("/", func(ctx *mrn.Context) mrn.Node {
+app.Page("/", func(ctx *mb.Context) mf.Node {
     return renderUsersPage(ctx)
 })
 
-app.Action("users/create", func(ctx *mrn.Context) mrn.Node {
+app.Action("users/create", func(ctx *mb.Context) mf.Node {
     name := ctx.FormValue("name")
-    // update app state
+    _ = name // update app state
     return renderUsersWorkspace(ctx)
 })
 ```
@@ -50,9 +53,6 @@ app.Action("users/create", func(ctx *mrn.Context) mrn.Node {
 `Page` handlers return full pages wrapped in the Marionette shell. `Action`
 handlers are POST-only htmx endpoints and return HTML fragments for partial
 swaps. The older `Render` and `Handle` APIs still work for small examples.
-
-> Note: this snippet is for in-repo demos/tests. Because it imports an
-> `internal` package, it will not build when copied into a different module.
 
 ## API Documentation
 

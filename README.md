@@ -24,6 +24,17 @@ go run ./cmd/marionette
 
 Open http://127.0.0.1:8080 and try the users admin demo.
 
+## Development with hot reload
+
+Use [Air](https://github.com/air-verse/air) to restart the demo app automatically when Go files change.
+
+```bash
+go install github.com/air-verse/air@latest
+air
+```
+
+This repository includes a preconfigured `.air.toml` that builds and runs `cmd/marionette`.
+
 ## Example API
 
 ### Import path guidance

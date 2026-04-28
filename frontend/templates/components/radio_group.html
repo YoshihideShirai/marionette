@@ -1,0 +1,17 @@
+{{define "components/radio_group" -}}
+<fieldset class="flex flex-wrap gap-3" aria-label="{{.AriaLabel}}">
+  {{range .Items}}
+  <label class="label cursor-pointer justify-start gap-2">
+    <input
+      type="radio"
+      name="{{$.Name}}"
+      value="{{.Value}}"
+      class="{{$.Class}}"
+      {{if .Checked}}checked{{end}}
+      {{if or $.Disabled .Disabled}}disabled{{end}}
+    />
+    <span class="label-text">{{.Label}}</span>
+  </label>
+  {{end}}
+</fieldset>
+{{- end}}

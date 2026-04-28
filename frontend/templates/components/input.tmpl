@@ -1,0 +1,3 @@
+{{define "components/input" -}}
+<input class="{{.Class}}" name="{{.Name}}" type="{{.Type}}" value="{{.Value}}"{{if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}{{if .Min}} min="{{.Min}}"{{end}}{{if .Max}} max="{{.Max}}"{{end}}{{if .Required}} required{{end}}{{if .Disabled}} disabled{{end}} />
+{{- end}}

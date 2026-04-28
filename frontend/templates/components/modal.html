@@ -1,0 +1,9 @@
+{{define "components/modal" -}}
+<div class="modal{{if .Open}} modal-open{{end}}" role="dialog" aria-modal="true"{{if not .Open}} aria-hidden="true"{{end}}>
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">{{.Title}}</h3>
+    <div class="py-4">{{.Body}}</div>
+    <div class="modal-action">{{.Actions}}</div>
+  </div>
+</div>
+{{- end}}

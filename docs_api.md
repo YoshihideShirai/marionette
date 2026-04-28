@@ -5,11 +5,18 @@ module root package, reorganized by runtime layer.
 
 ## Import Path
 
-Use:
+Split imports by runtime role:
 
 ```go
-import mrn "github.com/YoshihideShirai/marionette"
+import (
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+)
 ```
+
+- Recommended aliases: `mb` (marionette backend), `mf` (marionette frontend).
+- Use `mb` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
+- Use `mf` for UI node APIs such as `Node`, `Div`, `Element`, `Table`.
 
 ## 2. App
 

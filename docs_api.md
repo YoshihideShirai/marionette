@@ -8,7 +8,7 @@ module root package, reorganized by runtime layer.
 Use:
 
 ```go
-import marionette "github.com/YoshihideShirai/marionette"
+import mrn "github.com/YoshihideShirai/marionette"
 ```
 
 ## 2. App
@@ -296,27 +296,27 @@ import (
     marionette "github.com/YoshihideShirai/marionette"
 )
 
-func tableFromCSV(path string) (marionette.Node, error) {
+func tableFromCSV(path string) (mrn.Node, error) {
     f, err := os.Open(path)
     if err != nil {
         return nil, err
     }
     defer f.Close()
 
-    return marionette.ComponentDataFrameFromCSV(f, marionette.TableProps{
+    return mrn.ComponentDataFrameFromCSV(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "CSV is empty.",
     })
 }
 
-func tableFromTSV(path string) (marionette.Node, error) {
+func tableFromTSV(path string) (mrn.Node, error) {
     f, err := os.Open(path)
     if err != nil {
         return nil, err
     }
     defer f.Close()
 
-    return marionette.ComponentDataFrameFromTSV(f, marionette.TableProps{
+    return mrn.ComponentDataFrameFromTSV(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "TSV is empty.",
     })

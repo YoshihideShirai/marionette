@@ -31,16 +31,16 @@ Open http://127.0.0.1:8080 and try the users admin demo.
 Use the module root package:
 
 ```go
-import marionette "github.com/YoshihideShirai/marionette"
+import mrn "github.com/YoshihideShirai/marionette"
 
-app := marionette.New()
+app := mrn.New()
 app.Set("users", []User{})
 
-app.Page("/", func(ctx *marionette.Context) marionette.Node {
+app.Page("/", func(ctx *mrn.Context) mrn.Node {
     return renderUsersPage(ctx)
 })
 
-app.Action("users/create", func(ctx *marionette.Context) marionette.Node {
+app.Action("users/create", func(ctx *mrn.Context) mrn.Node {
     name := ctx.FormValue("name")
     // update app state
     return renderUsersWorkspace(ctx)

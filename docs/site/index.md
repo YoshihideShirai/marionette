@@ -47,7 +47,7 @@ The following is the fixed list of core Marionette UI components.
 **Go code**
 
 ```go
-saveButton := marionette.ComponentButton("Save", marionette.ComponentProps{
+saveButton := mrn.ComponentButton("Save", mrn.ComponentProps{
     Variant: "secondary",
     Size:    "sm",
 })
@@ -64,11 +64,11 @@ saveButton := marionette.ComponentButton("Save", marionette.ComponentProps{
 **Go code**
 
 ```go
-nameInput := marionette.ComponentInputWithOptions("name", "", marionette.InputOptions{
+nameInput := mrn.ComponentInputWithOptions("name", "", mrn.InputOptions{
     Type:        "text",
     Placeholder: "Username",
     Required:    true,
-    Props:       marionette.ComponentProps{Size: "lg"},
+    Props:       mrn.ComponentProps{Size: "lg"},
 })
 ```
 
@@ -83,9 +83,9 @@ nameInput := marionette.ComponentInputWithOptions("name", "", marionette.InputOp
 **Go code**
 
 ```go
-field := marionette.ComponentFormField(
-    marionette.ComponentInput("email", "", marionette.ComponentProps{}),
-    marionette.FormFieldProps{
+field := mrn.ComponentFormField(
+    mrn.ComponentInput("email", "", mrn.ComponentProps{}),
+    mrn.FormFieldProps{
         Label:    "Email address",
         Required: true,
         Hint:     "Used for notifications",
@@ -106,10 +106,10 @@ field := marionette.ComponentFormField(
 **Go code**
 
 ```go
-statusSelect := marionette.ComponentSelect("status", []marionette.SelectOption{
+statusSelect := mrn.ComponentSelect("status", []mrn.SelectOption{
     {Label: "Active", Value: "active", Selected: true},
     {Label: "Inactive", Value: "inactive"},
-}, marionette.ComponentProps{})
+}, mrn.ComponentProps{})
 ```
 
 **Rendered sample**
@@ -126,10 +126,10 @@ statusSelect := marionette.ComponentSelect("status", []marionette.SelectOption{
 **Go code**
 
 ```go
-confirmModal := marionette.ComponentModal(marionette.ModalProps{
+confirmModal := mrn.ComponentModal(mrn.ModalProps{
     Title: "Confirm deletion",
-    Body:  marionette.Text("This action cannot be undone."),
-    Actions: marionette.ComponentButton("Close", marionette.ComponentProps{
+    Body:  mrn.Text("This action cannot be undone."),
+    Actions: mrn.ComponentButton("Close", mrn.ComponentProps{
         Variant: "ghost",
     }),
     Open: true,
@@ -152,7 +152,7 @@ confirmModal := marionette.ComponentModal(marionette.ModalProps{
 **Go code**
 
 ```go
-empty := marionette.ComponentEmptyState(marionette.EmptyStateProps{
+empty := mrn.ComponentEmptyState(mrn.EmptyStateProps{
     Title:       "No data available",
     Description: "Try changing your filter criteria.",
     Skeleton:    false,
@@ -171,13 +171,13 @@ empty := marionette.ComponentEmptyState(marionette.EmptyStateProps{
 **Go code**
 
 ```go
-table := marionette.ComponentTable(marionette.TableProps{
-    Columns: []marionette.TableColumn{
+table := mrn.ComponentTable(mrn.TableProps{
+    Columns: []mrn.TableColumn{
         {Label: "Name"},
         {Label: "Role"},
     },
-    Rows: []marionette.TableComponentRow{
-        {Cells: []marionette.Node{marionette.Text("Alice"), marionette.Text("Admin")}},
+    Rows: []mrn.TableComponentRow{
+        {Cells: []mrn.Node{mrn.Text("Alice"), mrn.Text("Admin")}},
     },
     EmptyTitle:       "No users",
     EmptyDescription: "Create your first user.",
@@ -206,7 +206,7 @@ table := marionette.ComponentTable(marionette.TableProps{
 **Go code**
 
 ```go
-pager := marionette.ComponentPagination(marionette.PaginationProps{
+pager := mrn.ComponentPagination(mrn.PaginationProps{
     Page:       2,
     TotalPages: 10,
     PrevHref:   "?page=1",

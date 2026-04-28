@@ -1,0 +1,9 @@
+{{define "components/toast"}}
+<div class="{{.Class}}" role="status" aria-live="{{.Live}}" aria-atomic="true">
+  {{if .Icon}}<span class="ui-feedback__icon" aria-hidden="true">{{.Icon}}</span>{{end}}
+  <div class="ui-feedback__body">
+    {{if .Title}}<p class="ui-feedback__title">{{.Title}}</p>{{end}}
+    {{if .Description}}<p class="ui-feedback__description">{{.Description}}</p>{{end}}
+  </div>
+</div>
+{{end}}

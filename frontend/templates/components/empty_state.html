@@ -1,0 +1,17 @@
+{{define "components/empty_state"}}
+{{if .Skeleton}}
+<div class="{{.Class}} ui-feedback-loading" role="status" aria-live="polite" aria-busy="true">
+  {{range .Rows}}
+  <div class="ui-feedback__skeleton-line"></div>
+  {{end}}
+</div>
+{{else}}
+<section class="{{.Class}}" role="region" aria-live="polite" aria-busy="false">
+  {{if .Icon}}<span class="ui-feedback__icon" aria-hidden="true">{{.Icon}}</span>{{end}}
+  <div class="ui-feedback__body">
+    <p class="ui-feedback__title">{{.Title}}</p>
+    <p class="ui-feedback__description">{{.Description}}</p>
+  </div>
+</section>
+{{end}}
+{{end}}

@@ -1,0 +1,25 @@
+{{define "components/tabs" -}}
+<div role="tablist" aria-label="{{.AriaLabel}}" class="{{.Class}}">
+  {{range .Items}}
+    {{if .Href}}
+    <a
+      role="tab"
+      href="{{.Href}}"
+      class="tab{{if .Active}} tab-active{{end}}{{if .Disabled}} pointer-events-none opacity-50{{end}}"
+      {{if .Active}}aria-selected="true"{{else}}aria-selected="false"{{end}}
+      {{if .Active}}aria-current="page"{{end}}
+      {{if .Disabled}}aria-disabled="true"{{end}}
+    >{{.Label}}</a>
+    {{else}}
+    <button
+      role="tab"
+      type="button"
+      class="tab{{if .Active}} tab-active{{end}}{{if .Disabled}} pointer-events-none opacity-50{{end}}"
+      {{if .Active}}aria-selected="true"{{else}}aria-selected="false"{{end}}
+      {{if .Active}}aria-current="page"{{end}}
+      {{if .Disabled}}aria-disabled="true"{{end}}
+    >{{.Label}}</button>
+    {{end}}
+  {{end}}
+</div>
+{{- end}}

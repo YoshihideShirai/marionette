@@ -185,13 +185,13 @@ func getUsers(ctx *marionette.Context) []user {
 }
 
 func renderUsersPage(ctx *marionette.Context, formState createUserFormState) marionette.Node {
-	return marionette.DivClass("app", "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]",
+	return marionette.DivProps(marionette.ElementProps{ID: "app", Class: "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]"},
 		renderSidebar(),
-		marionette.DivClass("", "min-w-0 space-y-6",
+		marionette.DivClass("min-w-0 space-y-6",
 			marionette.FlashAlerts(ctx.Flashes()),
-			marionette.DivClass("", "space-y-2",
-				marionette.DivClass("", "text-3xl font-bold tracking-tight", marionette.Text("Marionette Admin UI")),
-				marionette.DivClass("", "text-base-content/70",
+			marionette.DivClass("space-y-2",
+				marionette.DivClass("text-3xl font-bold tracking-tight", marionette.Text("Marionette Admin UI")),
+				marionette.DivClass("text-base-content/70",
 					marionette.Text("Go handlers, htmx actions, and daisyUI components for small admin tools."),
 				),
 			),
@@ -209,10 +209,10 @@ func renderSidebar() marionette.Node {
 }
 
 func renderUsersWorkspace(ctx *marionette.Context, formState createUserFormState) marionette.Node {
-	return marionette.DivClass("users-workspace", "space-y-4",
+	return marionette.DivProps(marionette.ElementProps{ID: "users-workspace", Class: "space-y-4"},
 		marionette.FlashAlerts(ctx.Flashes()),
 		renderDashboardOverview(ctx),
-		marionette.DivClass("", "grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
+		marionette.DivClass("grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
 			renderUsersTable(ctx),
 			renderCreateUserForm(formState),
 		),
@@ -226,7 +226,7 @@ func renderDashboardOverview(ctx *marionette.Context) marionette.Node {
 	roles := roleCounts(users)
 	latest := latestStartDate(users)
 
-	return marionette.DivClass("", "grid gap-4 md:grid-cols-3",
+	return marionette.DivClass("grid gap-4 md:grid-cols-3",
 		statCard("Users", strconv.Itoa(len(users)), "Active demo records", "primary"),
 		statCard("Admins", strconv.Itoa(roles["Admin"]), "High-access seats", "secondary"),
 		statCard("Latest start", latest, "Newest onboarding date", "accent"),
@@ -234,14 +234,14 @@ func renderDashboardOverview(ctx *marionette.Context) marionette.Node {
 }
 
 func statCard(label, value, caption, tone string) marionette.Node {
-	return marionette.DivClass("", "card bg-base-100 shadow-sm",
-		marionette.DivClass("", "card-body gap-2",
-			marionette.DivClass("", "text-sm font-medium text-base-content/60", marionette.Text(label)),
-			marionette.DivClass("", "flex items-end justify-between gap-3",
-				marionette.DivClass("", "text-3xl font-bold", marionette.Text(value)),
-				marionette.DivClass("", "badge badge-"+tone, marionette.Text("live")),
+	return marionette.DivClass("card bg-base-100 shadow-sm",
+		marionette.DivClass("card-body gap-2",
+			marionette.DivClass("text-sm font-medium text-base-content/60", marionette.Text(label)),
+			marionette.DivClass("flex items-end justify-between gap-3",
+				marionette.DivClass("text-3xl font-bold", marionette.Text(value)),
+				marionette.DivClass("badge badge-"+tone, marionette.Text("live")),
 			),
-			marionette.DivClass("", "text-sm text-base-content/60", marionette.Text(caption)),
+			marionette.DivClass("text-sm text-base-content/60", marionette.Text(caption)),
 		),
 	)
 }
@@ -252,15 +252,15 @@ func renderUsersTable(ctx *marionette.Context) marionette.Node {
 	pg := parsePagination(ctx.Query("page"), ctx.Query("per_page"), len(users))
 	tableBody := renderUsersTableBody(users, loading, ctx.Query("sort"), pg)
 
-	return marionette.DivClass("", "card bg-base-100 shadow-sm",
-		marionette.DivClass("", "card-body gap-4",
-			marionette.DivClass("", "flex items-center justify-between gap-4",
-				marionette.DivClass("", "space-y-1",
-					marionette.DivClass("", "text-xl font-semibold", marionette.Text("Users")),
-					marionette.DivClass("", "text-sm text-base-content/60", marionette.Text("Create and remove users with htmx-backed actions.")),
+	return marionette.DivClass("card bg-base-100 shadow-sm",
+		marionette.DivClass("card-body gap-4",
+			marionette.DivClass("flex items-center justify-between gap-4",
+				marionette.DivClass("space-y-1",
+					marionette.DivClass("text-xl font-semibold", marionette.Text("Users")),
+					marionette.DivClass("text-sm text-base-content/60", marionette.Text("Create and remove users with htmx-backed actions.")),
 				),
-				marionette.DivClass("", "flex items-center gap-2",
-					marionette.DivClass("", "badge badge-outline", marionette.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
+				marionette.DivClass("flex items-center gap-2",
+					marionette.DivClass("badge badge-outline", marionette.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
 					marionette.Form("users/loading/start",
 						marionette.ComponentSubmitButton("Show loading", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
 					).Target("#users-workspace"),
@@ -272,7 +272,7 @@ func renderUsersTable(ctx *marionette.Context) marionette.Node {
 					).Target("#users-workspace"),
 				),
 			),
-			marionette.DivClass("", "overflow-hidden rounded-box border border-base-300", tableBody),
+			marionette.DivClass("overflow-hidden rounded-box border border-base-300", tableBody),
 			marionette.ComponentPagination(marionette.PaginationProps{
 				Page:       pg.Page,
 				TotalPages: pg.TotalPages,
@@ -360,10 +360,10 @@ func isLoading(ctx *marionette.Context) bool {
 func renderUserRow(u user) marionette.TableComponentRow {
 	return marionette.TableComponentRow{
 		Cells: []marionette.Node{
-			marionette.DivClass("", "font-medium", marionette.Text(u.Name)),
-			marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(u.Email)),
-			marionette.DivClass("", "badge badge-ghost", marionette.Text(u.Role)),
-			marionette.DivClass("", "text-sm", marionette.Text(u.StartDate)),
+			marionette.DivClass("font-medium", marionette.Text(u.Name)),
+			marionette.DivClass("text-sm text-base-content/70", marionette.Text(u.Email)),
+			marionette.DivClass("badge badge-ghost", marionette.Text(u.Role)),
+			marionette.DivClass("text-sm", marionette.Text(u.StartDate)),
 			marionette.Form("users/delete/prompt",
 				marionette.HiddenInput("id", strconv.Itoa(u.ID)),
 				marionette.ComponentSubmitButton("Delete", marionette.ComponentProps{Variant: "danger", Size: "sm"}),
@@ -435,13 +435,13 @@ func roleBadge(role string) marionette.Node {
 	case "Editor":
 		tone = "badge-secondary"
 	}
-	return marionette.DivClass("", "badge "+tone, marionette.Text(role))
+	return marionette.DivClass("badge "+tone, marionette.Text(role))
 }
 
 func renderCreateUserForm(form createUserFormState) marionette.Node {
-	return marionette.DivClass("", "card bg-base-100 shadow-sm",
-		marionette.DivClass("", "card-body",
-			marionette.DivClass("", "text-xl font-semibold", marionette.Text("Create user")),
+	return marionette.DivClass("card bg-base-100 shadow-sm",
+		marionette.DivClass("card-body",
+			marionette.DivClass("text-xl font-semibold", marionette.Text("Create user")),
 			marionette.Form("users/create",
 				marionette.FormRow(marionette.FormRowProps{
 					ID:          "name",
@@ -510,7 +510,7 @@ func renderCreateUserForm(form createUserFormState) marionette.Node {
 						Required:    true,
 					}),
 				}),
-				marionette.DivClass("", "divider my-1"),
+				marionette.DivClass("divider my-1"),
 				marionette.FormRow(marionette.FormRowProps{
 					ID:          "workspace",
 					Label:       "Workspace",
@@ -539,7 +539,7 @@ func renderCreateUserForm(form createUserFormState) marionette.Node {
 						Description: "Ignored by the demo action, useful for layout coverage.",
 					}),
 				}),
-				marionette.DivClass("", "space-y-3",
+				marionette.DivClass("space-y-3",
 					marionette.Checkbox(marionette.CheckboxProps{
 						ID:          "send_invite",
 						Name:        "send_invite",
@@ -557,7 +557,7 @@ func renderCreateUserForm(form createUserFormState) marionette.Node {
 						Description: "Access preference.",
 					}),
 				),
-				marionette.DivClass("", "flex flex-wrap gap-2 pt-2",
+				marionette.DivClass("flex flex-wrap gap-2 pt-2",
 					marionette.ComponentSubmitButton("Create", marionette.ComponentProps{Variant: "primary", Size: "sm"}),
 					marionette.ComponentButton("Preview", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
 				),
@@ -570,14 +570,14 @@ func renderComponentShowcase(ctx *marionette.Context) marionette.Node {
 	users := getUsers(ctx)
 	roles := roleCounts(users)
 
-	return marionette.DivClass("", "grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]",
-		marionette.DivClass("", "card bg-base-100 shadow-sm",
-			marionette.DivClass("", "card-body gap-4",
-				marionette.DivClass("", "space-y-1",
-					marionette.DivClass("", "text-xl font-semibold", marionette.Text("Component states")),
-					marionette.DivClass("", "text-sm text-base-content/60", marionette.Text("Alerts, toasts, skeletons, and empty states rendered from Go.")),
+	return marionette.DivClass("grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]",
+		marionette.DivClass("card bg-base-100 shadow-sm",
+			marionette.DivClass("card-body gap-4",
+				marionette.DivClass("space-y-1",
+					marionette.DivClass("text-xl font-semibold", marionette.Text("Component states")),
+					marionette.DivClass("text-sm text-base-content/60", marionette.Text("Alerts, toasts, skeletons, and empty states rendered from Go.")),
 				),
-				marionette.DivClass("", "grid gap-3 md:grid-cols-2",
+				marionette.DivClass("grid gap-3 md:grid-cols-2",
 					marionette.ComponentAlert(marionette.AlertProps{
 						Title:       "Validation feedback",
 						Description: "Form errors, success flashes, and informational alerts share the same feedback API.",
@@ -591,7 +591,7 @@ func renderComponentShowcase(ctx *marionette.Context) marionette.Node {
 						Props:       marionette.ComponentProps{Variant: "success", Size: "sm"},
 					}),
 				),
-				marionette.DivClass("", "grid gap-3 md:grid-cols-2",
+				marionette.DivClass("grid gap-3 md:grid-cols-2",
 					marionette.ComponentSkeleton(marionette.SkeletonProps{Rows: 4, Props: marionette.ComponentProps{Size: "sm"}}),
 					marionette.ComponentEmptyState(marionette.EmptyStateProps{
 						Title:       "No pending reviews",
@@ -602,11 +602,11 @@ func renderComponentShowcase(ctx *marionette.Context) marionette.Node {
 				),
 			),
 		),
-		marionette.DivClass("", "card bg-base-100 shadow-sm",
-			marionette.DivClass("", "card-body gap-4",
-				marionette.DivClass("", "space-y-1",
-					marionette.DivClass("", "text-xl font-semibold", marionette.Text("Role mix")),
-					marionette.DivClass("", "text-sm text-base-content/60", marionette.Text("Small repeated views stay plain Go functions.")),
+		marionette.DivClass("card bg-base-100 shadow-sm",
+			marionette.DivClass("card-body gap-4",
+				marionette.DivClass("space-y-1",
+					marionette.DivClass("text-xl font-semibold", marionette.Text("Role mix")),
+					marionette.DivClass("text-sm text-base-content/60", marionette.Text("Small repeated views stay plain Go functions.")),
 				),
 				roleMixRow("Admin", roles["Admin"]),
 				roleMixRow("Editor", roles["Editor"]),
@@ -617,9 +617,9 @@ func renderComponentShowcase(ctx *marionette.Context) marionette.Node {
 }
 
 func roleMixRow(role string, count int) marionette.Node {
-	return marionette.DivClass("", "flex items-center justify-between rounded-box border border-base-300 px-3 py-2",
+	return marionette.DivClass("flex items-center justify-between rounded-box border border-base-300 px-3 py-2",
 		roleBadge(role),
-		marionette.DivClass("", "text-sm font-medium", marionette.Text(strconv.Itoa(count)+" users")),
+		marionette.DivClass("text-sm font-medium", marionette.Text(strconv.Itoa(count)+" users")),
 	)
 }
 
@@ -635,11 +635,11 @@ func renderDeleteModal(ctx *marionette.Context) marionette.Node {
 
 	return marionette.ComponentModal(marionette.ModalProps{
 		Title: "Delete user",
-		Body: marionette.DivClass("", "space-y-2",
+		Body: marionette.DivClass("space-y-2",
 			marionette.Text("Are you sure you want to delete this user?"),
-			marionette.DivClass("", "text-sm text-base-content/70", marionette.Text(targetName)),
+			marionette.DivClass("text-sm text-base-content/70", marionette.Text(targetName)),
 		),
-		Actions: marionette.DivClass("", "flex w-full justify-end gap-2",
+		Actions: marionette.DivClass("flex w-full justify-end gap-2",
 			marionette.Form("users/delete/cancel",
 				marionette.ComponentSubmitButton("Cancel", marionette.ComponentProps{Variant: "ghost", Size: "sm"}),
 			).Target("#users-workspace"),

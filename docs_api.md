@@ -162,8 +162,14 @@ Flash lifecycle on next request:
 ### Basic node constructors
 - `Text(v string) Node`
 - `Raw(html string)` (`type Raw string`, trusted HTML passthrough)
-- `Div(id string, children ...Node) Node`
-- `DivClass(id, className string, children ...Node) Node`
+- `type Attrs map[string]string`
+- `type ElementProps struct { ID string; Class string; Attrs Attrs }`
+- `Element(tag string, props ElementProps, children ...Node) Node`
+- `Div(children ...Node) Node`
+- `DivID(id string, children ...Node) Node`
+- `DivClass(className string, children ...Node) Node`
+- `DivAttrs(attrs Attrs, children ...Node) Node`
+- `DivProps(props ElementProps, children ...Node) Node`
 - `Column(children ...Node) Node`
 
 ### Table / layout helpers
@@ -335,8 +341,8 @@ func tableFromTSV(path string) (marionette.Node, error) {
 
 ### UI helper
 - `FlashAlerts(flashes []FlashMessage) Node`
-  - empty flashes => `DivClass("flash-alerts", "hidden")`.
-  - non-empty => `DivClass("flash-alerts", "space-y-2", ...)` with level class mapping:
+  - empty flashes => `DivProps(ElementProps{ID: "flash-alerts", Class: "hidden"})`.
+  - non-empty => `DivProps(ElementProps{ID: "flash-alerts", Class: "space-y-2"}, ...)` with level class mapping:
     - `FlashSuccess -> alert-success`
     - `FlashError -> alert-error`
     - `FlashWarn -> alert-warning`

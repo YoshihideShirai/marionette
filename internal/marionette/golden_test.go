@@ -73,7 +73,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			name: "table",
 			node: ComponentTable(TableProps{
 				Columns:          []TableColumn{{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true}, {Label: "Role"}},
-				Rows:             []TableComponentRow{{Cells: []Node{Text("Aiko"), DivClass("", "badge", Text("Admin"))}}},
+				Rows:             []TableComponentRow{{Cells: []Node{Text("Aiko"), DivClass("badge", Text("Admin"))}}},
 				EmptyTitle:       "No users",
 				EmptyDescription: "Create a user to get started.",
 			}),

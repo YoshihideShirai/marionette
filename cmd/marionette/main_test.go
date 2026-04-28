@@ -136,3 +136,22 @@ func TestUsersPaginationNavigation(t *testing.T) {
 		t.Fatalf("did not expect first-page user entry on page 2, got %q", body)
 	}
 }
+
+func TestUsersPageIncludesThemeToggleButton(t *testing.T) {
+	app := buildApp()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	if !strings.Contains(body, "🌓 Theme") {
+		t.Fatalf("expected theme toggle button label, got %q", body)
+	}
+	if !strings.Contains(body, "window.mrnToggleTheme") {
+		t.Fatalf("expected theme toggle button onclick handler, got %q", body)
+	}
+}

@@ -42,8 +42,8 @@ Clickable button for primary and secondary actions.
 
 <iframe src="./examples/button.html" title="ComponentButton example" style="width:100%;min-height:160px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`button.golden.html`](../../../testdata/golden/button.golden.html)
-- Template: [`templates/components/button.tmpl`](../../../templates/components/button.tmpl)
+- Golden sample: [`button.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/button.golden.html)
+- Template: [`templates/components/button.tmpl`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/button.tmpl)
 
 ## ComponentInput
 
@@ -61,8 +61,8 @@ Single-value input field for text, date, and similar values.
 
 <iframe src="./examples/input.html" title="ComponentInput example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`input.golden.html`](../../../testdata/golden/input.golden.html)
-- Template: [`templates/components/input.tmpl`](../../../templates/components/input.tmpl)
+- Golden sample: [`input.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/input.golden.html)
+- Template: [`templates/components/input.tmpl`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/input.tmpl)
 
 ## ComponentSelect
 
@@ -80,8 +80,8 @@ Dropdown input for selecting one option from a list.
 
 <iframe src="./examples/select.html" title="ComponentSelect example" style="width:100%;min-height:200px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`select.golden.html`](../../../testdata/golden/select.golden.html)
-- Template: [`templates/components/select.tmpl`](../../../templates/components/select.tmpl)
+- Golden sample: [`select.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/select.golden.html)
+- Template: [`templates/components/select.tmpl`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/select.tmpl)
 
 ## ComponentModal
 
@@ -100,8 +100,8 @@ Overlay dialog for confirmations and detail views.
 
 <iframe src="./examples/modal.html" title="ComponentModal example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`modal_open.golden.html`](../../../testdata/golden/modal_open.golden.html)
-- Template: [`templates/components/modal.html`](../../../templates/components/modal.html)
+- Golden sample: [`modal_open.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/modal_open.golden.html)
+- Template: [`templates/components/modal.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/modal.html)
 
 ## ComponentEmptyState
 
@@ -119,8 +119,8 @@ Empty-state UI for no-data and initial states.
 
 <iframe src="./examples/empty_state.html" title="ComponentEmptyState example" style="width:100%;min-height:260px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`empty_state.golden.html`](../../../testdata/golden/empty_state.golden.html)
-- Template: [`templates/components/empty_state.html`](../../../templates/components/empty_state.html)
+- Golden sample: [`empty_state.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/empty_state.golden.html)
+- Template: [`templates/components/empty_state.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/empty_state.html)
 
 ## ComponentTable
 
@@ -138,8 +138,8 @@ Tabular list UI rendered from column and row definitions.
 
 <iframe src="./examples/table.html" title="ComponentTable example" style="width:100%;min-height:300px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`table.golden.html`](../../../testdata/golden/table.golden.html)
-- Template: [`templates/components/table.html`](../../../templates/components/table.html)
+- Golden sample: [`table.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/table.golden.html)
+- Template: [`templates/components/table.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/table.html)
 
 ## ComponentPagination
 
@@ -157,8 +157,8 @@ Pagination controls for previous/next navigation and current page display.
 
 <iframe src="./examples/pagination.html" title="ComponentPagination example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`pagination.golden.html`](../../../testdata/golden/pagination.golden.html)
-- Template: [`templates/components/pagination.tmpl`](../../../templates/components/pagination.tmpl)
+- Golden sample: [`pagination.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/pagination.golden.html)
+- Template: [`templates/components/pagination.tmpl`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/pagination.tmpl)
 
 ## ComponentFormField
 
@@ -178,8 +178,8 @@ Form wrapper that combines label, input, hint text, and error text.
 
 <iframe src="./examples/form_field.html" title="ComponentFormField example" style="width:100%;min-height:260px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`form_field.golden.html`](../../../testdata/golden/form_field.golden.html)
-- Template: [`templates/components/form_field.html`](../../../templates/components/form_field.html)
+- Golden sample: [`form_field.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/form_field.golden.html)
+- Template: [`templates/components/form_field.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/form_field.html)
 
 ---
 
@@ -199,8 +199,8 @@ Tabbed navigation for related views and sections.
 
 <iframe src="./examples/navigation.html" title="ComponentTabs example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`tabs.golden.html`](../../../testdata/golden/tabs.golden.html)
-- Template: [`templates/components/tabs.html`](../../../templates/components/tabs.html)
+- Golden sample: [`tabs.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/tabs.golden.html)
+- Template: [`templates/components/tabs.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/tabs.html)
 
 ## ComponentBreadcrumb
 
@@ -218,8 +218,8 @@ Path-based navigation that shows the current location hierarchy.
 
 <iframe src="./examples/navigation.html" title="ComponentBreadcrumb example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Golden sample: [`breadcrumb.golden.html`](../../../testdata/golden/breadcrumb.golden.html)
-- Template: [`templates/components/breadcrumb.html`](../../../templates/components/breadcrumb.html)
+- Golden sample: [`breadcrumb.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/breadcrumb.golden.html)
+- Template: [`templates/components/breadcrumb.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/breadcrumb.html)
 
 ---
 
@@ -235,8 +235,8 @@ Multiline text input with shared component styling options.
 - `Placeholder`, `Rows`, `Required`
 - `Props` (`Variant`, `Size`, `Disabled`, `Class`)
 
-- Golden sample: [`textarea.golden.html`](../../../testdata/golden/textarea.golden.html)
-- Template: [`templates/components/textarea.html`](../../../templates/components/textarea.html)
+- Golden sample: [`textarea.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/textarea.golden.html)
+- Template: [`templates/components/textarea.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/textarea.html)
 
 ## ComponentCheckbox
 
@@ -250,8 +250,8 @@ Single boolean selection input with label.
 - `Checked`
 - `Props` (`Size`, `Disabled`, `Class`)
 
-- Golden sample: [`checkbox.golden.html`](../../../testdata/golden/checkbox.golden.html)
-- Template: [`templates/components/checkbox.html`](../../../templates/components/checkbox.html)
+- Golden sample: [`checkbox.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/checkbox.golden.html)
+- Template: [`templates/components/checkbox.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/checkbox.html)
 
 ## ComponentRadioGroup
 
@@ -265,8 +265,8 @@ Exclusive selection group rendered from item definitions.
 - `Items` (`Label`, `Value`, `Checked`, `Disabled`)
 - `Props` (`Size`, `Disabled`, `Class`)
 
-- Golden sample: [`radio_group.golden.html`](../../../testdata/golden/radio_group.golden.html)
-- Template: [`templates/components/radio_group.html`](../../../templates/components/radio_group.html)
+- Golden sample: [`radio_group.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/radio_group.golden.html)
+- Template: [`templates/components/radio_group.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/radio_group.html)
 
 ## ComponentSwitch
 
@@ -280,8 +280,8 @@ Switch-style boolean control for settings and toggles.
 - `Checked`
 - `Props` (`Size`, `Disabled`, `Class`)
 
-- Golden sample: [`switch.golden.html`](../../../testdata/golden/switch.golden.html)
-- Template: [`templates/components/switch.html`](../../../templates/components/switch.html)
+- Golden sample: [`switch.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/switch.golden.html)
+- Template: [`templates/components/switch.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/switch.html)
 
 ---
 
@@ -301,8 +301,8 @@ Unified demo for `Toast`, `Alert`, `EmptyState`, and `Skeleton` added under `ui/
 
 <iframe src="./examples/feedback.html" title="Feedback components demo" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
-- Demo source: [`ui/feedback/stories.html`](../../../ui/feedback/stories.html)
-- Tokens: [`ui/feedback/tokens.css`](../../../ui/feedback/tokens.css)
+- Demo source: [`ui/feedback/stories.html`](https://github.com/YoshihideShirai/marionette/blob/main/ui/feedback/stories.html)
+- Tokens: [`ui/feedback/tokens.css`](https://github.com/YoshihideShirai/marionette/blob/main/ui/feedback/tokens.css)
 - Templates: `templates/components/{toast,alert,empty_state,skeleton}.html`
 
 ## Optional demo screenshot
@@ -324,9 +324,9 @@ A demo that validates `Modal`, `Drawer`, `Popover`, and `Tooltip` in `ui/overlay
 
 ### Visual
 
-<iframe src="../../../ui/overlay/stories.html" title="Overlay system demo" style="width:100%;min-height:560px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+> Live iframe preview is omitted in GitHub Pages because `ui/overlay/` is outside the published `docs/site/` artifact. Use the links below to view source assets.
 
-- Demo source: [`ui/overlay/stories.html`](../../../ui/overlay/stories.html)
-- Core logic: [`ui/overlay/overlay-core.js`](../../../ui/overlay/overlay-core.js)
-- Tokens: [`ui/overlay/tokens.css`](../../../ui/overlay/tokens.css)
-- Overlay docs: [`ui/overlay/README.md`](../../../ui/overlay/README.md)
+- Demo source: [`ui/overlay/stories.html`](https://github.com/YoshihideShirai/marionette/blob/main/ui/overlay/stories.html)
+- Core logic: [`ui/overlay/overlay-core.js`](https://github.com/YoshihideShirai/marionette/blob/main/ui/overlay/overlay-core.js)
+- Tokens: [`ui/overlay/tokens.css`](https://github.com/YoshihideShirai/marionette/blob/main/ui/overlay/tokens.css)
+- Overlay docs: [`ui/overlay/README.md`](https://github.com/YoshihideShirai/marionette/blob/main/ui/overlay/README.md)

@@ -82,6 +82,27 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			name: "pagination",
 			node: ComponentPagination(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
 		},
+		{
+			name: "tabs",
+			node: ComponentTabs(TabsProps{
+				AriaLabel: "user sections",
+				Items: []TabsItem{
+					{Label: "Profile", Href: "/users/1/profile", Active: true},
+					{Label: "Permissions", Href: "/users/1/permissions"},
+					{Label: "Audit", Disabled: true},
+				},
+			}),
+		},
+		{
+			name: "breadcrumb",
+			node: ComponentBreadcrumb(BreadcrumbProps{
+				Items: []BreadcrumbItem{
+					{Label: "Home", Href: "/"},
+					{Label: "Users", Href: "/users"},
+					{Label: "Aiko", Active: true},
+				},
+			}),
+		},
 	}
 
 	for _, tc := range tests {

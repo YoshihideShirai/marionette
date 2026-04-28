@@ -16,7 +16,9 @@ This page lists Marionette UI components. The target component set is managed in
 6. [ComponentTable](#componenttable)
 7. [ComponentPagination](#componentpagination)
 8. [ComponentFormField](#componentformfield)
-9. [Feedback Demo](#feedback-demo)
+9. [ComponentTabs](#componenttabs)
+10. [ComponentBreadcrumb](#componentbreadcrumb)
+11. [Feedback Demo](#feedback-demo)
 
 ---
 
@@ -174,6 +176,46 @@ Form wrapper that combines label, input, hint text, and error text.
 
 - Golden sample: [`form_field.golden.html`](../../../testdata/golden/form_field.golden.html)
 - Template: [`templates/components/form_field.html`](../../../templates/components/form_field.html)
+
+---
+
+## ComponentTabs
+
+### Purpose
+
+Tabbed navigation for related views and sections.
+
+### Key props
+
+- `Items` (`Label`, `Href`, `Active`, `Disabled`)
+- `AriaLabel`
+- `Props.Class`
+
+### Visual
+
+<iframe src="./examples/navigation.html" title="ComponentTabs example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+- Golden sample: [`tabs.golden.html`](../../../testdata/golden/tabs.golden.html)
+- Template: [`templates/components/tabs.html`](../../../templates/components/tabs.html)
+
+## ComponentBreadcrumb
+
+### Purpose
+
+Path-based navigation that shows the current location hierarchy.
+
+### Key props
+
+- `Items` (`Label`, `Href`, `Active`)
+- `AriaLabel`
+- `Props.Class`
+
+### Visual
+
+<iframe src="./examples/navigation.html" title="ComponentBreadcrumb example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+- Golden sample: [`breadcrumb.golden.html`](../../../testdata/golden/breadcrumb.golden.html)
+- Template: [`templates/components/breadcrumb.html`](../../../templates/components/breadcrumb.html)
 
 ---
 

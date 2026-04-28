@@ -270,6 +270,12 @@ Template-backed component constructors (`templates/components/*`).
 - `ComponentPagination(props PaginationProps) Node`
   - `Page < 1` defaults to `1`.
   - `TotalPages < 1` defaults to `1`.
+- `ComponentTabs(props TabsProps) Node`
+  - blank `AriaLabel` defaults to `"tabs"`.
+  - supports active/disabled states and link/button tab items.
+- `ComponentBreadcrumb(props BreadcrumbProps) Node`
+  - blank `AriaLabel` defaults to `"breadcrumb"`.
+  - supports active/current breadcrumb items.
 - `ComponentDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
 - `ComponentDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`

@@ -57,6 +57,20 @@
       "template": "templates/components/form_field.html"
     },
     {
+      "id": "tabs",
+      "name": "ComponentTabs",
+      "golden": "testdata/golden/tabs.golden.html",
+      "example": "docs/site/components/examples/navigation.html",
+      "template": "templates/components/tabs.html"
+    },
+    {
+      "id": "breadcrumb",
+      "name": "ComponentBreadcrumb",
+      "golden": "testdata/golden/breadcrumb.golden.html",
+      "example": "docs/site/components/examples/navigation.html",
+      "template": "templates/components/breadcrumb.html"
+    },
+    {
       "id": "overlay-system",
       "name": "OverlaySystemDemo",
       "example": "ui/overlay/stories.html",

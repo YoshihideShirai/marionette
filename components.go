@@ -101,6 +101,31 @@ type PaginationProps struct {
 	NextHref   string
 }
 
+type TabsItem struct {
+	Label    string
+	Href     string
+	Active   bool
+	Disabled bool
+}
+
+type TabsProps struct {
+	Items     []TabsItem
+	AriaLabel string
+	Props     ComponentProps
+}
+
+type BreadcrumbItem struct {
+	Label  string
+	Href   string
+	Active bool
+}
+
+type BreadcrumbProps struct {
+	Items     []BreadcrumbItem
+	AriaLabel string
+	Props     ComponentProps
+}
+
 type templateNode struct {
 	name string
 	data any
@@ -390,6 +415,61 @@ func ComponentPagination(props PaginationProps) Node {
 			TotalPages: totalPages,
 			PrevHref:   strings.TrimSpace(props.PrevHref),
 			NextHref:   strings.TrimSpace(props.NextHref),
+		},
+	}
+}
+
+func ComponentTabs(props TabsProps) Node {
+	items := make([]TabsItem, 0, len(props.Items))
+	for _, item := range props.Items {
+		items = append(items, TabsItem{
+			Label:    strings.TrimSpace(item.Label),
+			Href:     strings.TrimSpace(item.Href),
+			Active:   item.Active,
+			Disabled: item.Disabled,
+		})
+	}
+	ariaLabel := strings.TrimSpace(props.AriaLabel)
+	if ariaLabel == "" {
+		ariaLabel = "tabs"
+	}
+	return templateNode{
+		name: "components/tabs",
+		data: struct {
+			Class     string
+			AriaLabel string
+			Items     []TabsItem
+		}{
+			Class:     joinClass("tabs tabs-boxed", props.Props.Class),
+			AriaLabel: ariaLabel,
+			Items:     items,
+		},
+	}
+}
+
+func ComponentBreadcrumb(props BreadcrumbProps) Node {
+	items := make([]BreadcrumbItem, 0, len(props.Items))
+	for _, item := range props.Items {
+		items = append(items, BreadcrumbItem{
+			Label:  strings.TrimSpace(item.Label),
+			Href:   strings.TrimSpace(item.Href),
+			Active: item.Active,
+		})
+	}
+	ariaLabel := strings.TrimSpace(props.AriaLabel)
+	if ariaLabel == "" {
+		ariaLabel = "breadcrumb"
+	}
+	return templateNode{
+		name: "components/breadcrumb",
+		data: struct {
+			Class     string
+			AriaLabel string
+			Items     []BreadcrumbItem
+		}{
+			Class:     joinClass("breadcrumbs text-sm", props.Props.Class),
+			AriaLabel: ariaLabel,
+			Items:     items,
 		},
 	}
 }

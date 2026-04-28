@@ -42,6 +42,14 @@ func defaultCreateUserFormState() createUserFormState {
 	return createUserFormState{Role: "Viewer", Errors: map[string]string{}}
 }
 
+func demoUsers() []user {
+	return []user{
+		{ID: 1, Name: "Aiko Tanaka", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-03-18"},
+		{ID: 2, Name: "Ren Sato", Email: "ren@example.com", Role: "Editor", StartDate: "2024-07-01"},
+		{ID: 3, Name: "Mina Suzuki", Email: "mina@example.com", Role: "Viewer", StartDate: "2025-01-10"},
+	}
+}
+
 func main() {
 	app := buildApp()
 	if err := app.Run("127.0.0.1:8080"); err != nil {
@@ -52,11 +60,7 @@ func main() {
 func buildApp() *marionette.App {
 	app := marionette.New()
 	app.Set("nextUserID", 4)
-	app.Set("users", []user{
-		{ID: 1, Name: "Aiko Tanaka", Email: "aiko@example.com", Role: "Admin", StartDate: "2024-03-18"},
-		{ID: 2, Name: "Ren Sato", Email: "ren@example.com", Role: "Editor", StartDate: "2024-07-01"},
-		{ID: 3, Name: "Mina Suzuki", Email: "mina@example.com", Role: "Viewer", StartDate: "2025-01-10"},
-	})
+	app.Set("users", demoUsers())
 	app.Set("deleteModalOpen", false)
 	app.Set("deleteTargetID", 0)
 	app.Set("loading", false)
@@ -143,6 +147,16 @@ func buildApp() *marionette.App {
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
+	app.Action("users/reset", func(ctx *marionette.Context) marionette.Node {
+		ctx.Set("users", demoUsers())
+		ctx.Set("nextUserID", 4)
+		ctx.Set("deleteModalOpen", false)
+		ctx.Set("deleteTargetID", 0)
+		ctx.Set("loading", false)
+		ctx.FlashInfo("Demo data was reset.")
+		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
+	})
+
 	return app
 }
 
@@ -197,11 +211,38 @@ func renderSidebar() marionette.Node {
 func renderUsersWorkspace(ctx *marionette.Context, formState createUserFormState) marionette.Node {
 	return marionette.DivClass("users-workspace", "space-y-4",
 		marionette.FlashAlerts(ctx.Flashes()),
+		renderDashboardOverview(ctx),
 		marionette.DivClass("", "grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
 			renderUsersTable(ctx),
 			renderCreateUserForm(formState),
 		),
+		renderComponentShowcase(ctx),
 		renderDeleteModal(ctx),
+	)
+}
+
+func renderDashboardOverview(ctx *marionette.Context) marionette.Node {
+	users := getUsers(ctx)
+	roles := roleCounts(users)
+	latest := latestStartDate(users)
+
+	return marionette.DivClass("", "grid gap-4 md:grid-cols-3",
+		statCard("Users", strconv.Itoa(len(users)), "Active demo records", "primary"),
+		statCard("Admins", strconv.Itoa(roles["Admin"]), "High-access seats", "secondary"),
+		statCard("Latest start", latest, "Newest onboarding date", "accent"),
+	)
+}
+
+func statCard(label, value, caption, tone string) marionette.Node {
+	return marionette.DivClass("", "card bg-base-100 shadow-sm",
+		marionette.DivClass("", "card-body gap-2",
+			marionette.DivClass("", "text-sm font-medium text-base-content/60", marionette.Text(label)),
+			marionette.DivClass("", "flex items-end justify-between gap-3",
+				marionette.DivClass("", "text-3xl font-bold", marionette.Text(value)),
+				marionette.DivClass("", "badge badge-"+tone, marionette.Text("live")),
+			),
+			marionette.DivClass("", "text-sm text-base-content/60", marionette.Text(caption)),
+		),
 	)
 }
 
@@ -225,6 +266,9 @@ func renderUsersTable(ctx *marionette.Context) marionette.Node {
 					).Target("#users-workspace"),
 					marionette.Form("users/loading/stop",
 						marionette.ComponentSubmitButton("Show data", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: !loading}),
+					).Target("#users-workspace"),
+					marionette.Form("users/reset",
+						marionette.ComponentSubmitButton("Reset", marionette.ComponentProps{Variant: "secondary", Size: "sm"}),
 					).Target("#users-workspace"),
 				),
 			),
@@ -365,6 +409,35 @@ func sortUsers(users []user, sortKey string) []user {
 	return sorted
 }
 
+func roleCounts(users []user) map[string]int {
+	counts := map[string]int{"Admin": 0, "Editor": 0, "Viewer": 0}
+	for _, u := range users {
+		counts[u.Role]++
+	}
+	return counts
+}
+
+func latestStartDate(users []user) string {
+	latest := "n/a"
+	for _, u := range users {
+		if u.StartDate > latest || latest == "n/a" {
+			latest = u.StartDate
+		}
+	}
+	return latest
+}
+
+func roleBadge(role string) marionette.Node {
+	tone := "badge-ghost"
+	switch role {
+	case "Admin":
+		tone = "badge-primary"
+	case "Editor":
+		tone = "badge-secondary"
+	}
+	return marionette.DivClass("", "badge "+tone, marionette.Text(role))
+}
+
 func renderCreateUserForm(form createUserFormState) marionette.Node {
 	return marionette.DivClass("", "card bg-base-100 shadow-sm",
 		marionette.DivClass("", "card-body",
@@ -437,10 +510,116 @@ func renderCreateUserForm(form createUserFormState) marionette.Node {
 						Required:    true,
 					}),
 				}),
-				marionette.ComponentSubmitButton("Create", marionette.ComponentProps{Variant: "primary", Size: "sm"}),
+				marionette.DivClass("", "divider my-1"),
+				marionette.FormRow(marionette.FormRowProps{
+					ID:          "workspace",
+					Label:       "Workspace",
+					Description: "Demo-only field showing radio group markup.",
+					Control: marionette.RadioGroup(marionette.RadioGroupProps{
+						ID:          "workspace",
+						Name:        "workspace",
+						Value:       "core",
+						Description: "Demo-only field showing radio group markup.",
+						Options: []marionette.RadioOption{
+							{Label: "Core", Value: "core"},
+							{Label: "Growth", Value: "growth"},
+							{Label: "Support", Value: "support"},
+						},
+					}),
+				}),
+				marionette.FormRow(marionette.FormRowProps{
+					ID:          "notes",
+					Label:       "Notes",
+					Description: "Ignored by the demo action, useful for layout coverage.",
+					Control: marionette.Textarea(marionette.TextareaProps{
+						ID:          "notes",
+						Name:        "notes",
+						Placeholder: "Add onboarding context",
+						Rows:        3,
+						Description: "Ignored by the demo action, useful for layout coverage.",
+					}),
+				}),
+				marionette.DivClass("", "space-y-3",
+					marionette.Checkbox(marionette.CheckboxProps{
+						ID:          "send_invite",
+						Name:        "send_invite",
+						Value:       "yes",
+						Checked:     true,
+						Label:       "Send invite email",
+						Description: "Invite preference.",
+					}),
+					marionette.Switch(marionette.SwitchProps{
+						ID:          "provision_access",
+						Name:        "provision_access",
+						Value:       "yes",
+						Checked:     true,
+						Label:       "Provision default access",
+						Description: "Access preference.",
+					}),
+				),
+				marionette.DivClass("", "flex flex-wrap gap-2 pt-2",
+					marionette.ComponentSubmitButton("Create", marionette.ComponentProps{Variant: "primary", Size: "sm"}),
+					marionette.ComponentButton("Preview", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
+				),
 			).Target("#users-workspace"),
-			marionette.DivClass("", "pt-2", marionette.ComponentButton("Preview (disabled)", marionette.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true})),
 		),
+	)
+}
+
+func renderComponentShowcase(ctx *marionette.Context) marionette.Node {
+	users := getUsers(ctx)
+	roles := roleCounts(users)
+
+	return marionette.DivClass("", "grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]",
+		marionette.DivClass("", "card bg-base-100 shadow-sm",
+			marionette.DivClass("", "card-body gap-4",
+				marionette.DivClass("", "space-y-1",
+					marionette.DivClass("", "text-xl font-semibold", marionette.Text("Component states")),
+					marionette.DivClass("", "text-sm text-base-content/60", marionette.Text("Alerts, toasts, skeletons, and empty states rendered from Go.")),
+				),
+				marionette.DivClass("", "grid gap-3 md:grid-cols-2",
+					marionette.ComponentAlert(marionette.AlertProps{
+						Title:       "Validation feedback",
+						Description: "Form errors, success flashes, and informational alerts share the same feedback API.",
+						Icon:        "!",
+						Props:       marionette.ComponentProps{Variant: "info", Size: "sm"},
+					}),
+					marionette.ComponentToast(marionette.ToastProps{
+						Title:       "Saved",
+						Description: "Toast markup is available for transient status messages.",
+						Icon:        "OK",
+						Props:       marionette.ComponentProps{Variant: "success", Size: "sm"},
+					}),
+				),
+				marionette.DivClass("", "grid gap-3 md:grid-cols-2",
+					marionette.ComponentSkeleton(marionette.SkeletonProps{Rows: 4, Props: marionette.ComponentProps{Size: "sm"}}),
+					marionette.ComponentEmptyState(marionette.EmptyStateProps{
+						Title:       "No pending reviews",
+						Description: "Empty states can replace tables or panels without extra branching in templates.",
+						Icon:        "0",
+						Props:       marionette.ComponentProps{Size: "sm"},
+					}),
+				),
+			),
+		),
+		marionette.DivClass("", "card bg-base-100 shadow-sm",
+			marionette.DivClass("", "card-body gap-4",
+				marionette.DivClass("", "space-y-1",
+					marionette.DivClass("", "text-xl font-semibold", marionette.Text("Role mix")),
+					marionette.DivClass("", "text-sm text-base-content/60", marionette.Text("Small repeated views stay plain Go functions.")),
+				),
+				roleMixRow("Admin", roles["Admin"]),
+				roleMixRow("Editor", roles["Editor"]),
+				roleMixRow("Viewer", roles["Viewer"]),
+			),
+		),
+	)
+}
+
+func roleMixRow(role string, count int) marionette.Node {
+	return marionette.DivClass("", "flex items-center justify-between rounded-box border border-base-300 px-3 py-2",
+		roleBadge(role),
+		marionette.DivClass("", "text-sm font-medium", marionette.Text(strconv.Itoa(count)+" users")),
 	)
 }
 

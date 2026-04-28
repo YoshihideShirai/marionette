@@ -4,6 +4,8 @@ import (
 	"strings"
 	"sync"
 	"testing"
+
+	rdf "github.com/rocketlaunchr/dataframe-go"
 )
 
 func TestButtonRenderUsesHTMXMarkup(t *testing.T) {
@@ -431,6 +433,87 @@ func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
 	for _, want := range []string{`ui-feedback-warning`, `ui-feedback-lg`, `aria-busy="true"`} {
 		if !strings.Contains(string(skeletonHTML), want) {
 			t.Fatalf("expected %q in %q", want, skeletonHTML)
+		}
+	}
+}
+
+func TestComponentDataFrameRendersPrimitiveAndNodeValues(t *testing.T) {
+	df := rdf.NewDataFrame(
+		rdf.NewSeriesString("Name", nil, "Aiko", "Ken"),
+		rdf.NewSeriesInt64("Age", nil, int64(42), nil),
+		rdf.NewSeriesMixed("Role", nil, DivClass("", "badge", Text("Admin")), "Viewer"),
+	)
+	html, err := ComponentDataFrame(df, TableProps{
+		EmptyTitle:       "No rows",
+		EmptyDescription: "Add rows to continue.",
+	}).Render()
+	if err != nil {
+		t.Fatalf("dataframe render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{"Name", "Age", "Role", "Aiko", "42", `class="badge"`, "Ken", "Viewer"} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestComponentDataFrameOverridesExplicitColumnsWithDataFrameNames(t *testing.T) {
+	df := rdf.NewDataFrame(
+		rdf.NewSeriesString("Name", nil, "Aiko"),
+		rdf.NewSeriesString("Role", nil, "Admin"),
+	)
+	html, err := ComponentDataFrame(df, TableProps{
+		Columns: []TableColumn{{Label: "Display Name"}, {Label: "Team Role"}},
+	}).Render()
+	if err != nil {
+		t.Fatalf("dataframe render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{"Name", "Role", "Aiko", "Admin"} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+	for _, notWant := range []string{"Display Name", "Team Role"} {
+		if strings.Contains(got, notWant) {
+			t.Fatalf("did not expect %q in %q", notWant, got)
+		}
+	}
+}
+
+func TestComponentDataFrameFromCSVUsesDataFrameGoImports(t *testing.T) {
+	reader := strings.NewReader("name,role\nAiko,Admin\nKen,Viewer\n")
+	node, err := ComponentDataFrameFromCSV(reader, TableProps{})
+	if err != nil {
+		t.Fatalf("csv import failed: %v", err)
+	}
+	html, err := node.Render()
+	if err != nil {
+		t.Fatalf("csv table render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{"name", "role", "Aiko", "Admin", "Ken", "Viewer"} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestComponentDataFrameFromTSVDefaultsToTabDelimiter(t *testing.T) {
+	reader := strings.NewReader("name\trole\nAiko\tAdmin\n")
+	node, err := ComponentDataFrameFromTSV(reader, TableProps{})
+	if err != nil {
+		t.Fatalf("tsv import failed: %v", err)
+	}
+	html, err := node.Render()
+	if err != nil {
+		t.Fatalf("tsv table render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{"name", "role", "Aiko", "Admin"} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
 		}
 	}
 }

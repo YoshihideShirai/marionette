@@ -271,9 +271,54 @@ Template-backed component constructors (`templates/components/*`).
 ### Data display
 - `ComponentTable(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
+- `ComponentDataFrame(df *dataframe.DataFrame, props TableProps) Node`
+  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `ComponentTable`.
+  - `df.Names()` is mapped to `TableColumn.Label` and overrides `props.Columns`.
+  - each row is read by `df.Row(row, true, dataframe.SeriesName)`.
+  - cell conversion: `nil` => empty text, `Node` => rendered directly, all others => `fmt.Sprint(value)`.
 - `ComponentPagination(props PaginationProps) Node`
   - `Page < 1` defaults to `1`.
   - `TotalPages < 1` defaults to `1`.
+- `ComponentDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+  - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
+- `ComponentDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+  - same loader with `Comma: '\t'` as default.
+
+#### Example: Convert CSV/TSV data to `ComponentDataFrame`
+
+```go
+import (
+    "os"
+
+    marionette "github.com/example/marionette/internal/marionette"
+)
+
+func tableFromCSV(path string) (marionette.Node, error) {
+    f, err := os.Open(path)
+    if err != nil {
+        return nil, err
+    }
+    defer f.Close()
+
+    return marionette.ComponentDataFrameFromCSV(f, marionette.TableProps{
+        EmptyTitle:       "No data",
+        EmptyDescription: "CSV is empty.",
+    })
+}
+
+func tableFromTSV(path string) (marionette.Node, error) {
+    f, err := os.Open(path)
+    if err != nil {
+        return nil, err
+    }
+    defer f.Close()
+
+    return marionette.ComponentDataFrameFromTSV(f, marionette.TableProps{
+        EmptyTitle:       "No data",
+        EmptyDescription: "TSV is empty.",
+    })
+}
+```
 
 ---
 

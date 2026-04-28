@@ -5,11 +5,17 @@ module root package, reorganized by runtime layer.
 
 ## Import Path
 
-Use:
+Split imports by runtime role:
 
 ```go
-import mrn "github.com/YoshihideShirai/marionette"
+import (
+    backend "github.com/YoshihideShirai/marionette/backend"
+    frontend "github.com/YoshihideShirai/marionette/frontend"
+)
 ```
+
+- Use `backend` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
+- Use `frontend` for UI node APIs such as `Node`, `Div`, `Element`, `Table`.
 
 ## 2. App
 

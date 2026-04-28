@@ -47,6 +47,13 @@ type InputOptions struct {
 	Props       ComponentProps
 }
 
+type TextareaOptions struct {
+	Placeholder string
+	Rows        int
+	Required    bool
+	Props       ComponentProps
+}
+
 type EmptyStateProps struct {
 	Title       string
 	Description string
@@ -124,6 +131,36 @@ type BreadcrumbProps struct {
 	Items     []BreadcrumbItem
 	AriaLabel string
 	Props     ComponentProps
+}
+
+type CheckboxComponentProps struct {
+	Name    string
+	Value   string
+	Label   string
+	Checked bool
+	Props   ComponentProps
+}
+
+type RadioItem struct {
+	Label    string
+	Value    string
+	Checked  bool
+	Disabled bool
+}
+
+type RadioGroupComponentProps struct {
+	Name      string
+	Items     []RadioItem
+	AriaLabel string
+	Props     ComponentProps
+}
+
+type SwitchComponentProps struct {
+	Name    string
+	Value   string
+	Label   string
+	Checked bool
+	Props   ComponentProps
 }
 
 type templateNode struct {
@@ -207,6 +244,33 @@ func ComponentInputWithOptions(name, value string, options InputOptions) Node {
 			Placeholder: options.Placeholder,
 			Min:         strings.TrimSpace(options.Min),
 			Max:         strings.TrimSpace(options.Max),
+			Required:    options.Required,
+			Disabled:    options.Props.Disabled,
+		},
+	}
+}
+
+func ComponentTextarea(name, value string, options TextareaOptions) Node {
+	rows := options.Rows
+	if rows <= 0 {
+		rows = 3
+	}
+	return templateNode{
+		name: "components/textarea",
+		data: struct {
+			Class       string
+			Name        string
+			Value       string
+			Placeholder string
+			Rows        int
+			Required    bool
+			Disabled    bool
+		}{
+			Class:       textareaClass(options.Props),
+			Name:        strings.TrimSpace(name),
+			Value:       value,
+			Placeholder: strings.TrimSpace(options.Placeholder),
+			Rows:        rows,
 			Required:    options.Required,
 			Disabled:    options.Props.Disabled,
 		},
@@ -474,6 +538,80 @@ func ComponentBreadcrumb(props BreadcrumbProps) Node {
 	}
 }
 
+func ComponentCheckbox(props CheckboxComponentProps) Node {
+	return templateNode{
+		name: "components/checkbox",
+		data: struct {
+			Label    string
+			Name     string
+			Value    string
+			Class    string
+			Checked  bool
+			Disabled bool
+		}{
+			Label:    strings.TrimSpace(props.Label),
+			Name:     strings.TrimSpace(props.Name),
+			Value:    strings.TrimSpace(props.Value),
+			Class:    checkboxClass(props.Props),
+			Checked:  props.Checked,
+			Disabled: props.Props.Disabled,
+		},
+	}
+}
+
+func ComponentRadioGroup(props RadioGroupComponentProps) Node {
+	items := make([]RadioItem, 0, len(props.Items))
+	for _, item := range props.Items {
+		items = append(items, RadioItem{
+			Label:    strings.TrimSpace(item.Label),
+			Value:    strings.TrimSpace(item.Value),
+			Checked:  item.Checked,
+			Disabled: item.Disabled,
+		})
+	}
+	ariaLabel := strings.TrimSpace(props.AriaLabel)
+	if ariaLabel == "" {
+		ariaLabel = "radio group"
+	}
+	return templateNode{
+		name: "components/radio_group",
+		data: struct {
+			Name      string
+			Class     string
+			AriaLabel string
+			Items     []RadioItem
+			Disabled  bool
+		}{
+			Name:      strings.TrimSpace(props.Name),
+			Class:     radioClass(props.Props),
+			AriaLabel: ariaLabel,
+			Items:     items,
+			Disabled:  props.Props.Disabled,
+		},
+	}
+}
+
+func ComponentSwitch(props SwitchComponentProps) Node {
+	return templateNode{
+		name: "components/switch",
+		data: struct {
+			Label    string
+			Name     string
+			Value    string
+			Class    string
+			Checked  bool
+			Disabled bool
+		}{
+			Label:    strings.TrimSpace(props.Label),
+			Name:     strings.TrimSpace(props.Name),
+			Value:    strings.TrimSpace(props.Value),
+			Class:    switchClass(props.Props),
+			Checked:  props.Checked,
+			Disabled: props.Props.Disabled,
+		},
+	}
+}
+
 func loadComponentTemplates() (*template.Template, error) {
 	componentTemplatesOnce.Do(func() {
 		_, currentFile, _, ok := runtime.Caller(0)
@@ -549,6 +687,18 @@ func selectClass(props ComponentProps) string {
 	return joinClass(base...)
 }
 
+func textareaClass(props ComponentProps) string {
+	variantClass := "textarea-bordered"
+	if props.Variant == "ghost" {
+		variantClass = "textarea-ghost"
+	}
+	base := []string{"textarea", "w-full", variantClass, textareaSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
 func buttonVariantClass(variant string) string {
 	switch variant {
 	case "secondary":
@@ -590,6 +740,74 @@ func selectSizeClass(size string) string {
 		return "select-sm"
 	case "lg":
 		return "select-lg"
+	default:
+		return ""
+	}
+}
+
+func textareaSizeClass(size string) string {
+	switch size {
+	case "sm":
+		return "textarea-sm"
+	case "lg":
+		return "textarea-lg"
+	default:
+		return ""
+	}
+}
+
+func checkboxClass(props ComponentProps) string {
+	base := []string{"checkbox", checkboxSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func checkboxSizeClass(size string) string {
+	switch size {
+	case "sm":
+		return "checkbox-sm"
+	case "lg":
+		return "checkbox-lg"
+	default:
+		return ""
+	}
+}
+
+func radioClass(props ComponentProps) string {
+	base := []string{"radio", radioSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func radioSizeClass(size string) string {
+	switch size {
+	case "sm":
+		return "radio-sm"
+	case "lg":
+		return "radio-lg"
+	default:
+		return ""
+	}
+}
+
+func switchClass(props ComponentProps) string {
+	base := []string{"toggle", toggleSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func toggleSizeClass(size string) string {
+	switch size {
+	case "sm":
+		return "toggle-sm"
+	case "lg":
+		return "toggle-lg"
 	default:
 		return ""
 	}

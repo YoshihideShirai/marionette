@@ -44,6 +44,10 @@
 <li><a href="#componentformfield">ComponentFormField</a></li>
 <li><a href="#componenttabs">ComponentTabs</a></li>
 <li><a href="#componentbreadcrumb">ComponentBreadcrumb</a></li>
+<li><a href="#componenttextarea">ComponentTextarea</a></li>
+<li><a href="#componentcheckbox">ComponentCheckbox</a></li>
+<li><a href="#componentradiogroup">ComponentRadioGroup</a></li>
+<li><a href="#componentswitch">ComponentSwitch</a></li>
 <li><a href="#feedback-demo">Feedback Demo</a></li>
 </ol>
 <hr>
@@ -202,8 +206,93 @@
 <li>Template: <a href="../../../templates/components/breadcrumb.html"><code>templates/components/breadcrumb.html</code></a></li>
 </ul>
 <hr>
-<h2 id="feedback-demo">Feedback Demo</h2>
+<h2 id="componenttextarea">ComponentTextarea</h2>
 <h3 id="purpose-10">Purpose</h3>
+<p>Multiline text input with shared component styling options.</p>
+<h3 id="key-props-10">Key props</h3>
+<ul>
+<li>
+<p><code>name</code>, <code>value</code></p>
+</li>
+<li>
+<p><code>Placeholder</code>, <code>Rows</code>, <code>Required</code></p>
+</li>
+<li>
+<p><code>Props</code> (<code>Variant</code>, <code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/textarea.golden.html"><code>textarea.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/textarea.html"><code>templates/components/textarea.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentcheckbox">ComponentCheckbox</h2>
+<h3 id="purpose-11">Purpose</h3>
+<p>Single boolean selection input with label.</p>
+<h3 id="key-props-11">Key props</h3>
+<ul>
+<li>
+<p><code>Name</code>, <code>Value</code>, <code>Label</code></p>
+</li>
+<li>
+<p><code>Checked</code></p>
+</li>
+<li>
+<p><code>Props</code> (<code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/checkbox.golden.html"><code>checkbox.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/checkbox.html"><code>templates/components/checkbox.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentradiogroup">ComponentRadioGroup</h2>
+<h3 id="purpose-12">Purpose</h3>
+<p>Exclusive selection group rendered from item definitions.</p>
+<h3 id="key-props-12">Key props</h3>
+<ul>
+<li>
+<p><code>Name</code>, <code>AriaLabel</code></p>
+</li>
+<li>
+<p><code>Items</code> (<code>Label</code>, <code>Value</code>, <code>Checked</code>, <code>Disabled</code>)</p>
+</li>
+<li>
+<p><code>Props</code> (<code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/radio_group.golden.html"><code>radio_group.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/radio_group.html"><code>templates/components/radio_group.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentswitch">ComponentSwitch</h2>
+<h3 id="purpose-13">Purpose</h3>
+<p>Switch-style boolean control for settings and toggles.</p>
+<h3 id="key-props-13">Key props</h3>
+<ul>
+<li>
+<p><code>Name</code>, <code>Value</code>, <code>Label</code></p>
+</li>
+<li>
+<p><code>Checked</code></p>
+</li>
+<li>
+<p><code>Props</code> (<code>Size</code>, <code>Disabled</code>, <code>Class</code>)</p>
+</li>
+<li>
+<p>Golden sample: <a href="../../../testdata/golden/switch.golden.html"><code>switch.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="../../../templates/components/switch.html"><code>templates/components/switch.html</code></a></p>
+</li>
+</ul>
+<hr>
+<h2 id="feedback-demo">Feedback Demo</h2>
+<h3 id="purpose-14">Purpose</h3>
 <p>Unified demo for <code>Toast</code>, <code>Alert</code>, <code>EmptyState</code>, and <code>Skeleton</code> added under <code>ui/feedback/</code>.</p>
 <ul>
 <li>Variant: <code>success</code> / <code>info</code> / <code>warning</code> / <code>error</code></li>
@@ -221,7 +310,7 @@
 <h2 id="optional-demo-screenshot">Optional demo screenshot</h2>
 <p>Place a demo screenshot from <code>cmd/marionette/main.go</code> under <code>docs/site/assets/</code> when browser-capture tooling is available.</p>
 <h2 id="overlay-system-demo">Overlay System Demo</h2>
-<h3 id="purpose-11">Purpose</h3>
+<h3 id="purpose-15">Purpose</h3>
 <p>A demo that validates <code>Modal</code>, <code>Drawer</code>, <code>Popover</code>, and <code>Tooltip</code> in <code>ui/overlay/</code>, powered by shared <code>overlay-core</code> logic.</p>
 <ul>
 <li>Esc-key close</li>

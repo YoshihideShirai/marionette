@@ -18,7 +18,11 @@ This page lists Marionette UI components. The target component set is managed in
 8. [ComponentFormField](#componentformfield)
 9. [ComponentTabs](#componenttabs)
 10. [ComponentBreadcrumb](#componentbreadcrumb)
-11. [Feedback Demo](#feedback-demo)
+11. [ComponentTextarea](#componenttextarea)
+12. [ComponentCheckbox](#componentcheckbox)
+13. [ComponentRadioGroup](#componentradiogroup)
+14. [ComponentSwitch](#componentswitch)
+15. [Feedback Demo](#feedback-demo)
 
 ---
 
@@ -216,6 +220,68 @@ Path-based navigation that shows the current location hierarchy.
 
 - Golden sample: [`breadcrumb.golden.html`](../../../testdata/golden/breadcrumb.golden.html)
 - Template: [`templates/components/breadcrumb.html`](../../../templates/components/breadcrumb.html)
+
+---
+
+## ComponentTextarea
+
+### Purpose
+
+Multiline text input with shared component styling options.
+
+### Key props
+
+- `name`, `value`
+- `Placeholder`, `Rows`, `Required`
+- `Props` (`Variant`, `Size`, `Disabled`, `Class`)
+
+- Golden sample: [`textarea.golden.html`](../../../testdata/golden/textarea.golden.html)
+- Template: [`templates/components/textarea.html`](../../../templates/components/textarea.html)
+
+## ComponentCheckbox
+
+### Purpose
+
+Single boolean selection input with label.
+
+### Key props
+
+- `Name`, `Value`, `Label`
+- `Checked`
+- `Props` (`Size`, `Disabled`, `Class`)
+
+- Golden sample: [`checkbox.golden.html`](../../../testdata/golden/checkbox.golden.html)
+- Template: [`templates/components/checkbox.html`](../../../templates/components/checkbox.html)
+
+## ComponentRadioGroup
+
+### Purpose
+
+Exclusive selection group rendered from item definitions.
+
+### Key props
+
+- `Name`, `AriaLabel`
+- `Items` (`Label`, `Value`, `Checked`, `Disabled`)
+- `Props` (`Size`, `Disabled`, `Class`)
+
+- Golden sample: [`radio_group.golden.html`](../../../testdata/golden/radio_group.golden.html)
+- Template: [`templates/components/radio_group.html`](../../../templates/components/radio_group.html)
+
+## ComponentSwitch
+
+### Purpose
+
+Switch-style boolean control for settings and toggles.
+
+### Key props
+
+- `Name`, `Value`, `Label`
+- `Checked`
+- `Props` (`Size`, `Disabled`, `Class`)
+
+- Golden sample: [`switch.golden.html`](../../../testdata/golden/switch.golden.html)
+- Template: [`templates/components/switch.html`](../../../templates/components/switch.html)
 
 ---
 

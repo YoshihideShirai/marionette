@@ -103,6 +103,47 @@ func TestTemplateRenderingGolden(t *testing.T) {
 				},
 			}),
 		},
+		{
+			name: "textarea",
+			node: ComponentTextarea("notes", "hello", TextareaOptions{
+				Placeholder: "Memo",
+				Rows:        4,
+				Required:    true,
+				Props:       ComponentProps{Variant: "ghost", Size: "sm"},
+			}),
+		},
+		{
+			name: "checkbox",
+			node: ComponentCheckbox(CheckboxComponentProps{
+				Name:    "active",
+				Value:   "1",
+				Label:   "Active user",
+				Checked: true,
+				Props:   ComponentProps{Size: "sm"},
+			}),
+		},
+		{
+			name: "radio_group",
+			node: ComponentRadioGroup(RadioGroupComponentProps{
+				Name:      "role",
+				AriaLabel: "role",
+				Items: []RadioItem{
+					{Label: "Admin", Value: "admin", Checked: true},
+					{Label: "Viewer", Value: "viewer"},
+				},
+				Props: ComponentProps{Size: "sm"},
+			}),
+		},
+		{
+			name: "switch",
+			node: ComponentSwitch(SwitchComponentProps{
+				Name:    "notify",
+				Value:   "1",
+				Label:   "Enable notifications",
+				Checked: true,
+				Props:   ComponentProps{Size: "sm"},
+			}),
+		},
 	}
 
 	for _, tc := range tests {

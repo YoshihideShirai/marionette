@@ -243,6 +243,8 @@ Template-backed component constructors (`templates/components/*`).
     - `Placeholder: strings.TrimSpace(name)`.
 - `ComponentInputWithOptions(name, value string, options InputOptions) Node`
   - blank `options.Type` defaults to `"text"`.
+- `ComponentTextarea(name, value string, options TextareaOptions) Node`
+  - `Rows <= 0` defaults to `3`.
 - `ComponentFormField(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
 - `ComponentSelect(name string, options []SelectOption, props ComponentProps) Node`
@@ -276,6 +278,10 @@ Template-backed component constructors (`templates/components/*`).
 - `ComponentBreadcrumb(props BreadcrumbProps) Node`
   - blank `AriaLabel` defaults to `"breadcrumb"`.
   - supports active/current breadcrumb items.
+- `ComponentCheckbox(props CheckboxComponentProps) Node`
+- `ComponentRadioGroup(props RadioGroupComponentProps) Node`
+  - blank `AriaLabel` defaults to `"radio group"`.
+- `ComponentSwitch(props SwitchComponentProps) Node`
 - `ComponentDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
 - `ComponentDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`

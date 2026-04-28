@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -95,7 +96,19 @@ func generate(path string) error {
 }
 
 func rewriteMarkdownLinks(s string) string {
-	return mdHrefRe.ReplaceAllString(s, `href="$1.html"`)
+	return mdHrefRe.ReplaceAllStringFunc(s, func(m string) string {
+		parts := mdHrefRe.FindStringSubmatch(m)
+		if len(parts) < 2 {
+			return m
+		}
+
+		href := parts[1]
+		if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") {
+			return m
+		}
+
+		return `href="` + href + `.html"`
+	})
 }
 
 func docTitle(src []byte, fallback string) string {

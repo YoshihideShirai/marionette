@@ -9,13 +9,14 @@ Split imports by runtime role:
 
 ```go
 import (
-    backend "github.com/YoshihideShirai/marionette/backend"
-    frontend "github.com/YoshihideShirai/marionette/frontend"
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
 )
 ```
 
-- Use `backend` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
-- Use `frontend` for UI node APIs such as `Node`, `Div`, `Element`, `Table`.
+- Recommended aliases: `mb` (marionette backend), `mf` (marionette frontend).
+- Use `mb` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
+- Use `mf` for UI node APIs such as `Node`, `Div`, `Element`, `Table`.
 
 ## 2. App
 

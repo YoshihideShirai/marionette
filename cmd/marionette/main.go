@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	backend "github.com/YoshihideShirai/marionette/backend"
-	frontend "github.com/YoshihideShirai/marionette/frontend"
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
 )
 
 type user struct {
@@ -58,19 +58,19 @@ func main() {
 	}
 }
 
-func buildApp() *backend.App {
-	app := backend.New()
+func buildApp() *mb.App {
+	app := mb.New()
 	app.Set("nextUserID", 4)
 	app.Set("users", demoUsers())
 	app.Set("deleteModalOpen", false)
 	app.Set("deleteTargetID", 0)
 	app.Set("loading", false)
 
-	app.Page("/", func(ctx *backend.Context) frontend.Node {
+	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return renderUsersPage(ctx, defaultCreateUserFormState())
 	})
 
-	app.Action("users/create", func(ctx *backend.Context) frontend.Node {
+	app.Action("users/create", func(ctx *mb.Context) mf.Node {
 		ctx.Set("loading", false)
 		form := createUserFormState{
 			Name:      strings.TrimSpace(ctx.FormValue("name")),
@@ -107,7 +107,7 @@ func buildApp() *backend.App {
 		return renderUsersWorkspace(ctx, form)
 	})
 
-	app.Action("users/delete/prompt", func(ctx *backend.Context) frontend.Node {
+	app.Action("users/delete/prompt", func(ctx *mb.Context) mf.Node {
 		ctx.Set("loading", false)
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
 		ctx.Set("deleteTargetID", id)
@@ -115,14 +115,14 @@ func buildApp() *backend.App {
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
-	app.Action("users/delete/cancel", func(ctx *backend.Context) frontend.Node {
+	app.Action("users/delete/cancel", func(ctx *mb.Context) mf.Node {
 		ctx.Set("loading", false)
 		ctx.Set("deleteModalOpen", false)
 		ctx.Set("deleteTargetID", 0)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
-	app.Action("users/delete/confirm", func(ctx *backend.Context) frontend.Node {
+	app.Action("users/delete/confirm", func(ctx *mb.Context) mf.Node {
 		ctx.Set("loading", false)
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
 		users := getUsers(ctx)
@@ -138,17 +138,17 @@ func buildApp() *backend.App {
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
-	app.Action("users/loading/start", func(ctx *backend.Context) frontend.Node {
+	app.Action("users/loading/start", func(ctx *mb.Context) mf.Node {
 		ctx.Set("loading", true)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
-	app.Action("users/loading/stop", func(ctx *backend.Context) frontend.Node {
+	app.Action("users/loading/stop", func(ctx *mb.Context) mf.Node {
 		ctx.Set("loading", false)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
-	app.Action("users/reset", func(ctx *backend.Context) frontend.Node {
+	app.Action("users/reset", func(ctx *mb.Context) mf.Node {
 		ctx.Set("users", demoUsers())
 		ctx.Set("nextUserID", 4)
 		ctx.Set("deleteModalOpen", false)
@@ -177,7 +177,7 @@ func validateStartDate(raw string) string {
 	return ""
 }
 
-func getUsers(ctx *backend.Context) []user {
+func getUsers(ctx *mb.Context) []user {
 	users, ok := ctx.Get("users").([]user)
 	if !ok {
 		return nil
@@ -185,44 +185,44 @@ func getUsers(ctx *backend.Context) []user {
 	return users
 }
 
-func renderUsersPage(ctx *backend.Context, formState createUserFormState) frontend.Node {
-	return frontend.DivProps(frontend.ElementProps{ID: "app", Class: "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]"},
+func renderUsersPage(ctx *mb.Context, formState createUserFormState) mf.Node {
+	return mf.DivProps(mf.ElementProps{ID: "app", Class: "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]"},
 		renderSidebar(),
-		frontend.DivClass("min-w-0 space-y-6",
-			frontend.FlashAlerts(ctx.Flashes()),
-			frontend.DivClass("flex items-start justify-between gap-4",
-				frontend.DivClass("space-y-2",
-					frontend.DivClass("text-3xl font-bold tracking-tight", frontend.Text("Marionette Admin UI")),
-					frontend.DivClass("text-base-content/70",
-						frontend.Text("Go handlers, htmx actions, and daisyUI components for small admin tools."),
+		mf.DivClass("min-w-0 space-y-6",
+			mf.FlashAlerts(ctx.Flashes()),
+			mf.DivClass("flex items-start justify-between gap-4",
+				mf.DivClass("space-y-2",
+					mf.DivClass("text-3xl font-bold tracking-tight", mf.Text("Marionette Admin UI")),
+					mf.DivClass("text-base-content/70",
+						mf.Text("Go handlers, htmx actions, and daisyUI components for small admin tools."),
 					),
 				),
-				frontend.Element("button", frontend.ElementProps{
+				mf.Element("button", mf.ElementProps{
 					Class: "btn btn-outline btn-sm",
-					Attrs: frontend.Attrs{
+					Attrs: mf.Attrs{
 						"type":    "button",
 						"onclick": "window.mrnToggleTheme && window.mrnToggleTheme()",
 					},
-				}, frontend.Text("🌓 Theme")),
+				}, mf.Text("🌓 Theme")),
 			),
 			renderUsersWorkspace(ctx, formState),
 		),
 	)
 }
 
-func renderSidebar() frontend.Node {
-	return frontend.Sidebar("Marionette", "Admin Console",
-		frontend.SidebarLink("Users", "/").Active(),
-		frontend.SidebarLink("Teams", "/"),
-		frontend.SidebarLink("Settings", "/"),
+func renderSidebar() mf.Node {
+	return mf.Sidebar("Marionette", "Admin Console",
+		mf.SidebarLink("Users", "/").Active(),
+		mf.SidebarLink("Teams", "/"),
+		mf.SidebarLink("Settings", "/"),
 	).Note("Demo workspace", "In-memory data for admin UI prototyping.")
 }
 
-func renderUsersWorkspace(ctx *backend.Context, formState createUserFormState) frontend.Node {
-	return frontend.DivProps(frontend.ElementProps{ID: "users-workspace", Class: "space-y-4"},
-		frontend.FlashAlerts(ctx.Flashes()),
+func renderUsersWorkspace(ctx *mb.Context, formState createUserFormState) mf.Node {
+	return mf.DivProps(mf.ElementProps{ID: "users-workspace", Class: "space-y-4"},
+		mf.FlashAlerts(ctx.Flashes()),
 		renderDashboardOverview(ctx),
-		frontend.DivClass("grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
+		mf.DivClass("grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
 			renderUsersTable(ctx),
 			renderCreateUserForm(formState),
 		),
@@ -231,59 +231,59 @@ func renderUsersWorkspace(ctx *backend.Context, formState createUserFormState) f
 	)
 }
 
-func renderDashboardOverview(ctx *backend.Context) frontend.Node {
+func renderDashboardOverview(ctx *mb.Context) mf.Node {
 	users := getUsers(ctx)
 	roles := roleCounts(users)
 	latest := latestStartDate(users)
 
-	return frontend.DivClass("grid gap-4 md:grid-cols-3",
+	return mf.DivClass("grid gap-4 md:grid-cols-3",
 		statCard("Users", strconv.Itoa(len(users)), "Active demo records", "primary"),
 		statCard("Admins", strconv.Itoa(roles["Admin"]), "High-access seats", "secondary"),
 		statCard("Latest start", latest, "Newest onboarding date", "accent"),
 	)
 }
 
-func statCard(label, value, caption, tone string) frontend.Node {
-	return frontend.DivClass("card bg-base-100 shadow-sm",
-		frontend.DivClass("card-body gap-2",
-			frontend.DivClass("text-sm font-medium text-base-content/60", frontend.Text(label)),
-			frontend.DivClass("flex items-end justify-between gap-3",
-				frontend.DivClass("text-3xl font-bold", frontend.Text(value)),
-				frontend.DivClass("badge badge-"+tone, frontend.Text("live")),
+func statCard(label, value, caption, tone string) mf.Node {
+	return mf.DivClass("card bg-base-100 shadow-sm",
+		mf.DivClass("card-body gap-2",
+			mf.DivClass("text-sm font-medium text-base-content/60", mf.Text(label)),
+			mf.DivClass("flex items-end justify-between gap-3",
+				mf.DivClass("text-3xl font-bold", mf.Text(value)),
+				mf.DivClass("badge badge-"+tone, mf.Text("live")),
 			),
-			frontend.DivClass("text-sm text-base-content/60", frontend.Text(caption)),
+			mf.DivClass("text-sm text-base-content/60", mf.Text(caption)),
 		),
 	)
 }
 
-func renderUsersTable(ctx *backend.Context) frontend.Node {
+func renderUsersTable(ctx *mb.Context) mf.Node {
 	users := getUsers(ctx)
 	loading := isLoading(ctx)
 	pg := parsePagination(ctx.Query("page"), ctx.Query("per_page"), len(users))
 	tableBody := renderUsersTableBody(users, loading, ctx.Query("sort"), pg)
 
-	return frontend.DivClass("card bg-base-100 shadow-sm",
-		frontend.DivClass("card-body gap-4",
-			frontend.DivClass("flex items-center justify-between gap-4",
-				frontend.DivClass("space-y-1",
-					frontend.DivClass("text-xl font-semibold", frontend.Text("Users")),
-					frontend.DivClass("text-sm text-base-content/60", frontend.Text("Create and remove users with htmx-backed actions.")),
+	return mf.DivClass("card bg-base-100 shadow-sm",
+		mf.DivClass("card-body gap-4",
+			mf.DivClass("flex items-center justify-between gap-4",
+				mf.DivClass("space-y-1",
+					mf.DivClass("text-xl font-semibold", mf.Text("Users")),
+					mf.DivClass("text-sm text-base-content/60", mf.Text("Create and remove users with htmx-backed actions.")),
 				),
-				frontend.DivClass("flex items-center gap-2",
-					frontend.DivClass("badge badge-outline", frontend.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
-					frontend.Form("users/loading/start",
-						frontend.ComponentSubmitButton("Show loading", frontend.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
+				mf.DivClass("flex items-center gap-2",
+					mf.DivClass("badge badge-outline", mf.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
+					mf.Form("users/loading/start",
+						mf.ComponentSubmitButton("Show loading", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
 					).Target("#users-workspace"),
-					frontend.Form("users/loading/stop",
-						frontend.ComponentSubmitButton("Show data", frontend.ComponentProps{Variant: "ghost", Size: "sm", Disabled: !loading}),
+					mf.Form("users/loading/stop",
+						mf.ComponentSubmitButton("Show data", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: !loading}),
 					).Target("#users-workspace"),
-					frontend.Form("users/reset",
-						frontend.ComponentSubmitButton("Reset", frontend.ComponentProps{Variant: "secondary", Size: "sm"}),
+					mf.Form("users/reset",
+						mf.ComponentSubmitButton("Reset", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
 					).Target("#users-workspace"),
 				),
 			),
-			frontend.DivClass("overflow-hidden rounded-box border border-base-300", tableBody),
-			frontend.ComponentPagination(frontend.PaginationProps{
+			mf.DivClass("overflow-hidden rounded-box border border-base-300", tableBody),
+			mf.ComponentPagination(mf.PaginationProps{
 				Page:       pg.Page,
 				TotalPages: pg.TotalPages,
 				PrevHref:   pageLink(pg.Page-1, pg.PerPage, ctx.Query("sort"), pg.TotalPages),
@@ -293,21 +293,21 @@ func renderUsersTable(ctx *backend.Context) frontend.Node {
 	)
 }
 
-func renderUsersTableBody(users []user, loading bool, sortKey string, pg pagination) frontend.Node {
+func renderUsersTableBody(users []user, loading bool, sortKey string, pg pagination) mf.Node {
 	if loading {
-		return frontend.ComponentEmptyState(frontend.EmptyStateProps{
+		return mf.ComponentEmptyState(mf.EmptyStateProps{
 			Skeleton: true,
 			Rows:     5,
 		})
 	}
 
 	sorted := paginateUsers(sortUsers(users, sortKey), pg)
-	rows := make([]frontend.TableComponentRow, 0, len(sorted))
+	rows := make([]mf.TableComponentRow, 0, len(sorted))
 	for _, u := range sorted {
 		rows = append(rows, renderUserRow(u))
 	}
 
-	return frontend.ComponentTable(frontend.TableProps{
+	return mf.ComponentTable(mf.TableProps{
 		Columns:          usersTableColumns(sortKey, pg),
 		Rows:             rows,
 		EmptyTitle:       "No users yet",
@@ -362,27 +362,27 @@ func pageLink(page, perPage int, sortKey string, totalPages int) string {
 	return "/?" + query.Encode()
 }
 
-func isLoading(ctx *backend.Context) bool {
+func isLoading(ctx *mb.Context) bool {
 	v, _ := ctx.Get("loading").(bool)
 	return v
 }
 
-func renderUserRow(u user) frontend.TableComponentRow {
-	return frontend.TableComponentRow{
-		Cells: []frontend.Node{
-			frontend.DivClass("font-medium", frontend.Text(u.Name)),
-			frontend.DivClass("text-sm text-base-content/70", frontend.Text(u.Email)),
-			frontend.DivClass("badge badge-ghost", frontend.Text(u.Role)),
-			frontend.DivClass("text-sm", frontend.Text(u.StartDate)),
-			frontend.Form("users/delete/prompt",
-				frontend.HiddenInput("id", strconv.Itoa(u.ID)),
-				frontend.ComponentSubmitButton("Delete", frontend.ComponentProps{Variant: "danger", Size: "sm"}),
+func renderUserRow(u user) mf.TableComponentRow {
+	return mf.TableComponentRow{
+		Cells: []mf.Node{
+			mf.DivClass("font-medium", mf.Text(u.Name)),
+			mf.DivClass("text-sm text-base-content/70", mf.Text(u.Email)),
+			mf.DivClass("badge badge-ghost", mf.Text(u.Role)),
+			mf.DivClass("text-sm", mf.Text(u.StartDate)),
+			mf.Form("users/delete/prompt",
+				mf.HiddenInput("id", strconv.Itoa(u.ID)),
+				mf.ComponentSubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
 			).Target("#users-workspace"),
 		},
 	}
 }
 
-func usersTableColumns(activeSort string, pg pagination) []frontend.TableColumn {
+func usersTableColumns(activeSort string, pg pagination) []mf.TableColumn {
 	sortedQuery := func(key string) string {
 		query := url.Values{}
 		query.Set("sort", key)
@@ -390,7 +390,7 @@ func usersTableColumns(activeSort string, pg pagination) []frontend.TableColumn 
 		query.Set("per_page", strconv.Itoa(pg.PerPage))
 		return "/?" + query.Encode()
 	}
-	return []frontend.TableColumn{
+	return []mf.TableColumn{
 		{Label: "Name", SortKey: "name", SortHref: sortedQuery("name"), SortActive: activeSort == "name"},
 		{Label: "Email", SortKey: "email", SortHref: sortedQuery("email"), SortActive: activeSort == "email"},
 		{Label: "Role", SortKey: "role", SortHref: sortedQuery("role"), SortActive: activeSort == "role"},
@@ -437,7 +437,7 @@ func latestStartDate(users []user) string {
 	return latest
 }
 
-func roleBadge(role string) frontend.Node {
+func roleBadge(role string) mf.Node {
 	tone := "badge-ghost"
 	switch role {
 	case "Admin":
@@ -445,21 +445,21 @@ func roleBadge(role string) frontend.Node {
 	case "Editor":
 		tone = "badge-secondary"
 	}
-	return frontend.DivClass("badge "+tone, frontend.Text(role))
+	return mf.DivClass("badge "+tone, mf.Text(role))
 }
 
-func renderCreateUserForm(form createUserFormState) frontend.Node {
-	return frontend.DivClass("card bg-base-100 shadow-sm",
-		frontend.DivClass("card-body",
-			frontend.DivClass("text-xl font-semibold", frontend.Text("Create user")),
-			frontend.Form("users/create",
-				frontend.FormRow(frontend.FormRowProps{
+func renderCreateUserForm(form createUserFormState) mf.Node {
+	return mf.DivClass("card bg-base-100 shadow-sm",
+		mf.DivClass("card-body",
+			mf.DivClass("text-xl font-semibold", mf.Text("Create user")),
+			mf.Form("users/create",
+				mf.FormRow(mf.FormRowProps{
 					ID:          "name",
 					Label:       "Name",
 					Description: "Enter the display name.",
 					Error:       form.Errors["name"],
 					Required:    true,
-					Control: frontend.TextField(frontend.TextFieldProps{
+					Control: mf.TextField(mf.TextFieldProps{
 						ID:          "name",
 						Name:        "name",
 						Value:       form.Name,
@@ -469,13 +469,13 @@ func renderCreateUserForm(form createUserFormState) frontend.Node {
 						Required:    true,
 					}),
 				}),
-				frontend.FormRow(frontend.FormRowProps{
+				mf.FormRow(mf.FormRowProps{
 					ID:          "email",
 					Label:       "Email",
 					Description: "Used for notifications.",
 					Error:       form.Errors["email"],
 					Required:    true,
-					Control: frontend.TextField(frontend.TextFieldProps{
+					Control: mf.TextField(mf.TextFieldProps{
 						ID:          "email",
 						Name:        "email",
 						Value:       form.Email,
@@ -485,13 +485,13 @@ func renderCreateUserForm(form createUserFormState) frontend.Node {
 						Required:    true,
 					}),
 				}),
-				frontend.FormRow(frontend.FormRowProps{
+				mf.FormRow(mf.FormRowProps{
 					ID:          "start_date",
 					Label:       "Start date",
 					Description: "Select a date in the active fiscal window.",
 					Error:       form.Errors["start_date"],
 					Required:    true,
-					Control: frontend.TextField(frontend.TextFieldProps{
+					Control: mf.TextField(mf.TextFieldProps{
 						ID:          "start_date",
 						Name:        "start_date",
 						Value:       form.StartDate,
@@ -501,16 +501,16 @@ func renderCreateUserForm(form createUserFormState) frontend.Node {
 						Required:    true,
 					}),
 				}),
-				frontend.FormRow(frontend.FormRowProps{
+				mf.FormRow(mf.FormRowProps{
 					ID:          "role",
 					Label:       "Role",
 					Description: "Choose permission scope for this user.",
 					Error:       form.Errors["role"],
 					Required:    true,
-					Control: frontend.Select(frontend.SelectFieldProps{
+					Control: mf.Select(mf.SelectFieldProps{
 						ID:   "role",
 						Name: "role",
-						Options: []frontend.SelectOption{
+						Options: []mf.SelectOption{
 							{Label: "Admin", Value: "Admin", Selected: form.Role == "Admin"},
 							{Label: "Editor", Value: "Editor", Selected: form.Role == "Editor"},
 							{Label: "Viewer", Value: "Viewer", Selected: form.Role == "" || form.Role == "Viewer"},
@@ -520,28 +520,28 @@ func renderCreateUserForm(form createUserFormState) frontend.Node {
 						Required:    true,
 					}),
 				}),
-				frontend.DivClass("divider my-1"),
-				frontend.FormRow(frontend.FormRowProps{
+				mf.DivClass("divider my-1"),
+				mf.FormRow(mf.FormRowProps{
 					ID:          "workspace",
 					Label:       "Workspace",
 					Description: "Demo-only field showing radio group markup.",
-					Control: frontend.RadioGroup(frontend.RadioGroupProps{
+					Control: mf.RadioGroup(mf.RadioGroupProps{
 						ID:          "workspace",
 						Name:        "workspace",
 						Value:       "core",
 						Description: "Demo-only field showing radio group markup.",
-						Options: []frontend.RadioOption{
+						Options: []mf.RadioOption{
 							{Label: "Core", Value: "core"},
 							{Label: "Growth", Value: "growth"},
 							{Label: "Support", Value: "support"},
 						},
 					}),
 				}),
-				frontend.FormRow(frontend.FormRowProps{
+				mf.FormRow(mf.FormRowProps{
 					ID:          "notes",
 					Label:       "Notes",
 					Description: "Ignored by the demo action, useful for layout coverage.",
-					Control: frontend.Textarea(frontend.TextareaProps{
+					Control: mf.Textarea(mf.TextareaProps{
 						ID:          "notes",
 						Name:        "notes",
 						Placeholder: "Add onboarding context",
@@ -549,8 +549,8 @@ func renderCreateUserForm(form createUserFormState) frontend.Node {
 						Description: "Ignored by the demo action, useful for layout coverage.",
 					}),
 				}),
-				frontend.DivClass("space-y-3",
-					frontend.Checkbox(frontend.CheckboxProps{
+				mf.DivClass("space-y-3",
+					mf.Checkbox(mf.CheckboxProps{
 						ID:          "send_invite",
 						Name:        "send_invite",
 						Value:       "yes",
@@ -558,7 +558,7 @@ func renderCreateUserForm(form createUserFormState) frontend.Node {
 						Label:       "Send invite email",
 						Description: "Invite preference.",
 					}),
-					frontend.Switch(frontend.SwitchProps{
+					mf.Switch(mf.SwitchProps{
 						ID:          "provision_access",
 						Name:        "provision_access",
 						Value:       "yes",
@@ -567,56 +567,56 @@ func renderCreateUserForm(form createUserFormState) frontend.Node {
 						Description: "Access preference.",
 					}),
 				),
-				frontend.DivClass("flex flex-wrap gap-2 pt-2",
-					frontend.ComponentSubmitButton("Create", frontend.ComponentProps{Variant: "primary", Size: "sm"}),
-					frontend.ComponentButton("Preview", frontend.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
+				mf.DivClass("flex flex-wrap gap-2 pt-2",
+					mf.ComponentSubmitButton("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
+					mf.ComponentButton("Preview", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
 				),
 			).Target("#users-workspace"),
 		),
 	)
 }
 
-func renderComponentShowcase(ctx *backend.Context) frontend.Node {
+func renderComponentShowcase(ctx *mb.Context) mf.Node {
 	users := getUsers(ctx)
 	roles := roleCounts(users)
 
-	return frontend.DivClass("grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]",
-		frontend.DivClass("card bg-base-100 shadow-sm",
-			frontend.DivClass("card-body gap-4",
-				frontend.DivClass("space-y-1",
-					frontend.DivClass("text-xl font-semibold", frontend.Text("Component states")),
-					frontend.DivClass("text-sm text-base-content/60", frontend.Text("Alerts, toasts, skeletons, and empty states rendered from Go.")),
+	return mf.DivClass("grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]",
+		mf.DivClass("card bg-base-100 shadow-sm",
+			mf.DivClass("card-body gap-4",
+				mf.DivClass("space-y-1",
+					mf.DivClass("text-xl font-semibold", mf.Text("Component states")),
+					mf.DivClass("text-sm text-base-content/60", mf.Text("Alerts, toasts, skeletons, and empty states rendered from Go.")),
 				),
-				frontend.DivClass("grid gap-3 md:grid-cols-2",
-					frontend.ComponentAlert(frontend.AlertProps{
+				mf.DivClass("grid gap-3 md:grid-cols-2",
+					mf.ComponentAlert(mf.AlertProps{
 						Title:       "Validation feedback",
 						Description: "Form errors, success flashes, and informational alerts share the same feedback API.",
 						Icon:        "!",
-						Props:       frontend.ComponentProps{Variant: "info", Size: "sm"},
+						Props:       mf.ComponentProps{Variant: "info", Size: "sm"},
 					}),
-					frontend.ComponentToast(frontend.ToastProps{
+					mf.ComponentToast(mf.ToastProps{
 						Title:       "Saved",
 						Description: "Toast markup is available for transient status messages.",
 						Icon:        "OK",
-						Props:       frontend.ComponentProps{Variant: "success", Size: "sm"},
+						Props:       mf.ComponentProps{Variant: "success", Size: "sm"},
 					}),
 				),
-				frontend.DivClass("grid gap-3 md:grid-cols-2",
-					frontend.ComponentSkeleton(frontend.SkeletonProps{Rows: 4, Props: frontend.ComponentProps{Size: "sm"}}),
-					frontend.ComponentEmptyState(frontend.EmptyStateProps{
+				mf.DivClass("grid gap-3 md:grid-cols-2",
+					mf.ComponentSkeleton(mf.SkeletonProps{Rows: 4, Props: mf.ComponentProps{Size: "sm"}}),
+					mf.ComponentEmptyState(mf.EmptyStateProps{
 						Title:       "No pending reviews",
 						Description: "Empty states can replace tables or panels without extra branching in templates.",
 						Icon:        "0",
-						Props:       frontend.ComponentProps{Size: "sm"},
+						Props:       mf.ComponentProps{Size: "sm"},
 					}),
 				),
 			),
 		),
-		frontend.DivClass("card bg-base-100 shadow-sm",
-			frontend.DivClass("card-body gap-4",
-				frontend.DivClass("space-y-1",
-					frontend.DivClass("text-xl font-semibold", frontend.Text("Role mix")),
-					frontend.DivClass("text-sm text-base-content/60", frontend.Text("Small repeated views stay plain Go functions.")),
+		mf.DivClass("card bg-base-100 shadow-sm",
+			mf.DivClass("card-body gap-4",
+				mf.DivClass("space-y-1",
+					mf.DivClass("text-xl font-semibold", mf.Text("Role mix")),
+					mf.DivClass("text-sm text-base-content/60", mf.Text("Small repeated views stay plain Go functions.")),
 				),
 				roleMixRow("Admin", roles["Admin"]),
 				roleMixRow("Editor", roles["Editor"]),
@@ -626,14 +626,14 @@ func renderComponentShowcase(ctx *backend.Context) frontend.Node {
 	)
 }
 
-func roleMixRow(role string, count int) frontend.Node {
-	return frontend.DivClass("flex items-center justify-between rounded-box border border-base-300 px-3 py-2",
+func roleMixRow(role string, count int) mf.Node {
+	return mf.DivClass("flex items-center justify-between rounded-box border border-base-300 px-3 py-2",
 		roleBadge(role),
-		frontend.DivClass("text-sm font-medium", frontend.Text(strconv.Itoa(count)+" users")),
+		mf.DivClass("text-sm font-medium", mf.Text(strconv.Itoa(count)+" users")),
 	)
 }
 
-func renderDeleteModal(ctx *backend.Context) frontend.Node {
+func renderDeleteModal(ctx *mb.Context) mf.Node {
 	targetID, _ := ctx.Get("deleteTargetID").(int)
 	targetName := ""
 	for _, u := range getUsers(ctx) {
@@ -643,19 +643,19 @@ func renderDeleteModal(ctx *backend.Context) frontend.Node {
 		}
 	}
 
-	return frontend.ComponentModal(frontend.ModalProps{
+	return mf.ComponentModal(mf.ModalProps{
 		Title: "Delete user",
-		Body: frontend.DivClass("space-y-2",
-			frontend.Text("Are you sure you want to delete this user?"),
-			frontend.DivClass("text-sm text-base-content/70", frontend.Text(targetName)),
+		Body: mf.DivClass("space-y-2",
+			mf.Text("Are you sure you want to delete this user?"),
+			mf.DivClass("text-sm text-base-content/70", mf.Text(targetName)),
 		),
-		Actions: frontend.DivClass("flex w-full justify-end gap-2",
-			frontend.Form("users/delete/cancel",
-				frontend.ComponentSubmitButton("Cancel", frontend.ComponentProps{Variant: "ghost", Size: "sm"}),
+		Actions: mf.DivClass("flex w-full justify-end gap-2",
+			mf.Form("users/delete/cancel",
+				mf.ComponentSubmitButton("Cancel", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
 			).Target("#users-workspace"),
-			frontend.Form("users/delete/confirm",
-				frontend.HiddenInput("id", strconv.Itoa(targetID)),
-				frontend.ComponentSubmitButton("Delete", frontend.ComponentProps{Variant: "danger", Size: "sm"}),
+			mf.Form("users/delete/confirm",
+				mf.HiddenInput("id", strconv.Itoa(targetID)),
+				mf.ComponentSubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
 			).Target("#users-workspace"),
 		),
 		Open: ctx.Get("deleteModalOpen") == true,

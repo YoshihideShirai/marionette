@@ -1,6 +1,6 @@
 # Marionette
 
-Marionette is a Go-first admin UI framework concept inspired by Electron/Tauri, with an htmx front-end runtime.
+Marionette is a Go-first admin UI framework concept inspired by Streamlit, with an htmx front-end runtime.
 
 ## Goals
 

@@ -314,6 +314,30 @@
       "description": "Build chart datasets from a DataFrame for ComponentChart.",
       "template": "dataframe.go",
       "example": "/marionette/examples/dataframe-chart.html"
+    },
+    {
+      "id": "heading",
+      "name": "H1-H4",
+      "group": "Components",
+      "description": "Semantic heading node helpers (H1-H4 and props variants).",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/heading.html"
+    },
+    {
+      "id": "paragraph",
+      "name": "P",
+      "group": "Components",
+      "description": "Paragraph node helper for readable body text blocks.",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/paragraph.html"
+    },
+    {
+      "id": "span",
+      "name": "Span",
+      "group": "Components",
+      "description": "Inline span node helper and props variant for text fragments.",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/span.html"
     }
   ]
 }

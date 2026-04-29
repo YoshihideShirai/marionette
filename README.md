@@ -39,6 +39,27 @@ This repository includes a preconfigured `.air.toml` that builds and runs `cmd/m
 
 ## Example API
 
+## Simple full implementation sample
+
+The runnable minimal sample is maintained outside of the README at:
+
+- `cmd/simple-sample/main.go`
+
+Run it with:
+
+```bash
+go run ./cmd/simple-sample
+```
+
+Then open `http://127.0.0.1:8081` to view the minimal Tasks demo.
+
+What this sample demonstrates:
+
+- **Entrypoint:** create an app with `mb.New()` and start it with `app.Run`
+- **Routing:** `Page` for full-page rendering, `Action` for htmx partial updates
+- **State management:** server-side state via `ctx.Get` / `ctx.Set`
+- **UI composition:** declarative HTML building with the `frontend` Node DSL
+
 ### Import path guidance
 
 Split imports by runtime role (`backend` for app wiring, `frontend` for UI nodes):

@@ -85,7 +85,7 @@ func TestRenderUsersTableBodySortsByQueryColumn(t *testing.T) {
 		t.Fatalf("data state render failed: %v", err)
 	}
 	got := string(dataHTML)
-	if !strings.Contains(got, `href="/?page=1&amp;per_page=5&amp;sort=name"`) {
+	if !strings.Contains(got, `href="/users?page=1&amp;per_page=5&amp;sort=name"`) {
 		t.Fatalf("expected sortable header link, got %q", got)
 	}
 	if strings.Index(got, "Aiko") > strings.Index(got, "Ren") {
@@ -95,7 +95,7 @@ func TestRenderUsersTableBodySortsByQueryColumn(t *testing.T) {
 
 func TestUsersTableSortLinksKeepPerPageQuery(t *testing.T) {
 	app := buildApp()
-	req := httptest.NewRequest(http.MethodGet, "/?page=2&per_page=2", nil)
+	req := httptest.NewRequest(http.MethodGet, "/users?page=2&per_page=2", nil)
 	rr := httptest.NewRecorder()
 
 	app.Handler().ServeHTTP(rr, req)
@@ -104,14 +104,14 @@ func TestUsersTableSortLinksKeepPerPageQuery(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rr.Code)
 	}
 	body := rr.Body.String()
-	if !strings.Contains(body, `href="/?page=2&amp;per_page=2&amp;sort=name"`) {
+	if !strings.Contains(body, `href="/users?page=2&amp;per_page=2&amp;sort=name"`) {
 		t.Fatalf("expected sort link to keep current page/per_page query, got %q", body)
 	}
 }
 
 func TestUsersPaginationNavigation(t *testing.T) {
 	app := buildApp()
-	req := httptest.NewRequest(http.MethodGet, "/?page=2&per_page=2", nil)
+	req := httptest.NewRequest(http.MethodGet, "/users?page=2&per_page=2", nil)
 	rr := httptest.NewRecorder()
 
 	app.Handler().ServeHTTP(rr, req)
@@ -123,10 +123,10 @@ func TestUsersPaginationNavigation(t *testing.T) {
 	if !strings.Contains(body, "Page 2 / 2") {
 		t.Fatalf("expected page indicator, got %q", body)
 	}
-	if !strings.Contains(body, `href="/?page=1&amp;per_page=2"`) {
+	if !strings.Contains(body, `href="/users?page=1&amp;per_page=2"`) {
 		t.Fatalf("expected prev link, got %q", body)
 	}
-	if strings.Contains(body, `href="/?page=3&amp;per_page=2"`) {
+	if strings.Contains(body, `href="/users?page=3&amp;per_page=2"`) {
 		t.Fatalf("did not expect next link on last page, got %q", body)
 	}
 	if !strings.Contains(body, "Mina Suzuki") {

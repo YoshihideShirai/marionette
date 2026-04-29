@@ -174,15 +174,15 @@ func TestDivConstructorsSupportPlainAndAttributedMarkup(t *testing.T) {
 }
 
 func TestTemplatePartialsRenderSharedProps(t *testing.T) {
-	buttonHTML, err := ComponentButton("Send", ComponentProps{Class: "tracking-wide", Variant: "secondary", Size: "sm", Disabled: true}).Render()
+	buttonHTML, err := UIButton("Send", ComponentProps{Class: "tracking-wide", Variant: "secondary", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("button render failed: %v", err)
 	}
-	inputHTML, err := ComponentInput("email", "demo@example.com", ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	inputHTML, err := UIInput("email", "demo@example.com", ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("input render failed: %v", err)
 	}
-	selectHTML, err := ComponentSelect("role", []SelectOption{{Label: "Viewer", Value: "viewer", Selected: true}}, ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	selectHTML, err := UISelect("role", []SelectOption{{Label: "Viewer", Value: "viewer", Selected: true}}, ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("select render failed: %v", err)
 	}
@@ -229,7 +229,7 @@ func TestLoadComponentTemplatesCachesParsedTemplates(t *testing.T) {
 }
 
 func TestComponentInputWithOptionsRendersDateConstraints(t *testing.T) {
-	html, err := ComponentInputWithOptions("start_date", "2030-01-01", InputOptions{
+	html, err := UIInputWithOptions("start_date", "2030-01-01", InputOptions{
 		Type:     "date",
 		Min:      "2024-01-01",
 		Max:      "2026-12-31",
@@ -248,8 +248,8 @@ func TestComponentInputWithOptionsRendersDateConstraints(t *testing.T) {
 }
 
 func TestComponentFormFieldRendersLabelHintAndError(t *testing.T) {
-	html, err := ComponentFormField(
-		ComponentInputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Variant: "default", Size: "sm"}}),
+	html, err := UIFormField(
+		UIInputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Variant: "default", Size: "sm"}}),
 		FormFieldProps{
 			Label:    "Name",
 			Required: true,
@@ -354,19 +354,19 @@ func TestSelectCheckboxRadioAndSwitchExposeState(t *testing.T) {
 }
 
 func TestComponentModalRendersSSRState(t *testing.T) {
-	closedHTML, err := ComponentModal(ModalProps{
+	closedHTML, err := UIModal(ModalProps{
 		Title:   "Delete user",
 		Body:    Text("Confirm deletion"),
-		Actions: ComponentButton("Cancel", ComponentProps{Variant: "ghost", Size: "sm"}),
+		Actions: UIButton("Cancel", ComponentProps{Variant: "ghost", Size: "sm"}),
 		Open:    false,
 	}).Render()
 	if err != nil {
 		t.Fatalf("closed modal render failed: %v", err)
 	}
-	openHTML, err := ComponentModal(ModalProps{
+	openHTML, err := UIModal(ModalProps{
 		Title:   "Delete user",
 		Body:    Text("Confirm deletion"),
-		Actions: ComponentButton("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
+		Actions: UIButton("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
 		Open:    true,
 	}).Render()
 	if err != nil {
@@ -384,7 +384,7 @@ func TestComponentModalRendersSSRState(t *testing.T) {
 }
 
 func TestComponentEmptyStateRendersSkeletonAndCopy(t *testing.T) {
-	skeletonHTML, err := ComponentEmptyState(EmptyStateProps{Skeleton: true, Rows: 2}).Render()
+	skeletonHTML, err := UIEmptyState(EmptyStateProps{Skeleton: true, Rows: 2}).Render()
 	if err != nil {
 		t.Fatalf("skeleton render failed: %v", err)
 	}
@@ -392,7 +392,7 @@ func TestComponentEmptyStateRendersSkeletonAndCopy(t *testing.T) {
 		t.Fatalf("expected skeleton aria-busy state, got %q", skeletonHTML)
 	}
 
-	emptyHTML, err := ComponentEmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}).Render()
+	emptyHTML, err := UIEmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}).Render()
 	if err != nil {
 		t.Fatalf("empty render failed: %v", err)
 	}
@@ -404,7 +404,7 @@ func TestComponentEmptyStateRendersSkeletonAndCopy(t *testing.T) {
 }
 
 func TestComponentTableRendersSortHeadersAndEmptyState(t *testing.T) {
-	emptyHTML, err := ComponentTable(TableProps{
+	emptyHTML, err := UITable(TableProps{
 		Columns: []TableColumn{
 			{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true},
 			{Label: "Role"},
@@ -424,7 +424,7 @@ func TestComponentTableRendersSortHeadersAndEmptyState(t *testing.T) {
 }
 
 func TestComponentPaginationRendersState(t *testing.T) {
-	html, err := ComponentPagination(PaginationProps{
+	html, err := UIPagination(PaginationProps{
 		Page:       2,
 		TotalPages: 4,
 		PrevHref:   "/?page=1&per_page=10",
@@ -442,7 +442,7 @@ func TestComponentPaginationRendersState(t *testing.T) {
 }
 
 func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
-	toastHTML, err := ComponentToast(ToastProps{
+	toastHTML, err := UIToast(ToastProps{
 		Title:       "Saved",
 		Description: "All changes were synced.",
 		Icon:        "✓",
@@ -457,7 +457,7 @@ func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
 		}
 	}
 
-	alertHTML, err := ComponentAlert(AlertProps{Title: "Failed", Description: "Try again.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}).Render()
+	alertHTML, err := UIAlert(AlertProps{Title: "Failed", Description: "Try again.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}).Render()
 	if err != nil {
 		t.Fatalf("alert render failed: %v", err)
 	}
@@ -467,7 +467,7 @@ func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
 		}
 	}
 
-	skeletonHTML, err := ComponentSkeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}).Render()
+	skeletonHTML, err := UISkeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}).Render()
 	if err != nil {
 		t.Fatalf("skeleton render failed: %v", err)
 	}
@@ -479,7 +479,7 @@ func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
 }
 
 func TestLayoutComponentsRenderClassesAndContent(t *testing.T) {
-	stackHTML, err := ComponentStack(
+	stackHTML, err := UIStack(
 		StackProps{Direction: "horizontal", Gap: "sm", Align: "center", Justify: "between", Wrap: true, Props: ComponentProps{Class: "w-full"}},
 		Text("Left"),
 		Text("Right"),
@@ -493,7 +493,7 @@ func TestLayoutComponentsRenderClassesAndContent(t *testing.T) {
 		}
 	}
 
-	gridHTML, err := ComponentGrid(
+	gridHTML, err := UIGrid(
 		GridProps{Columns: "4", Gap: "lg"},
 		Text("A"),
 		Text("B"),
@@ -507,7 +507,7 @@ func TestLayoutComponentsRenderClassesAndContent(t *testing.T) {
 		}
 	}
 
-	splitHTML, err := ComponentSplit(SplitProps{
+	splitHTML, err := UISplit(SplitProps{
 		Main:            Text("Main"),
 		Aside:           Text("Aside"),
 		AsideWidth:      "lg",
@@ -524,10 +524,10 @@ func TestLayoutComponentsRenderClassesAndContent(t *testing.T) {
 }
 
 func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
-	headerHTML, err := ComponentPageHeader(PageHeaderProps{
+	headerHTML, err := UIPageHeader(PageHeaderProps{
 		Title:       "Users",
 		Description: "Manage users",
-		Actions:     ComponentButton("Create", ComponentProps{Size: "sm"}),
+		Actions:     UIButton("Create", ComponentProps{Size: "sm"}),
 	}).Render()
 	if err != nil {
 		t.Fatalf("page header render failed: %v", err)
@@ -538,7 +538,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	containerHTML, err := ComponentContainer(ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true}, Text("Contained")).Render()
+	containerHTML, err := UIContainer(ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true}, Text("Contained")).Render()
 	if err != nil {
 		t.Fatalf("container render failed: %v", err)
 	}
@@ -548,10 +548,10 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	cardHTML, err := ComponentCard(CardProps{
+	cardHTML, err := UICard(CardProps{
 		Title:       "Card",
 		Description: "Summary",
-		Actions:     ComponentButton("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+		Actions:     UIButton("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
 	}, Text("Body")).Render()
 	if err != nil {
 		t.Fatalf("card render failed: %v", err)
@@ -562,7 +562,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	sectionHTML, err := ComponentSection(SectionProps{Title: "Section", Description: "Details"}, Text("Content")).Render()
+	sectionHTML, err := UISection(SectionProps{Title: "Section", Description: "Details"}, Text("Content")).Render()
 	if err != nil {
 		t.Fatalf("section render failed: %v", err)
 	}
@@ -574,11 +574,11 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 }
 
 func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
-	rootHTML, err := ComponentGrid(GridProps{Columns: "2", Gap: "sm"}, Text("A"), Text("B")).Render()
+	rootHTML, err := UIGrid(GridProps{Columns: "2", Gap: "sm"}, Text("A"), Text("B")).Render()
 	if err != nil {
 		t.Fatalf("root grid render failed: %v", err)
 	}
-	frontendHTML, err := mf.ComponentGrid(mf.GridProps{Columns: "2", Gap: "sm"}, mf.Text("A"), mf.Text("B")).Render()
+	frontendHTML, err := mf.UIGrid(mf.GridProps{Columns: "2", Gap: "sm"}, mf.Text("A"), mf.Text("B")).Render()
 	if err != nil {
 		t.Fatalf("frontend grid render failed: %v", err)
 	}
@@ -588,7 +588,7 @@ func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
 }
 
 func TestComponentChartRendersConfigAndFallback(t *testing.T) {
-	html, err := ComponentChart(ChartProps{
+	html, err := UIChart(ChartProps{
 		Type:        ChartTypeBar,
 		Title:       "Revenue",
 		Description: "Monthly recurring revenue.",
@@ -642,7 +642,7 @@ func TestShellIncludesChartRuntime(t *testing.T) {
 }
 
 func TestFrontendChartComponentMatchesRootOutput(t *testing.T) {
-	rootHTML, err := ComponentChart(ChartProps{
+	rootHTML, err := UIChart(ChartProps{
 		Type:   ChartTypeBar,
 		Title:  "Orders",
 		Labels: []string{"Open", "Closed"},
@@ -653,7 +653,7 @@ func TestFrontendChartComponentMatchesRootOutput(t *testing.T) {
 	if err != nil {
 		t.Fatalf("root chart render failed: %v", err)
 	}
-	frontendHTML, err := mf.ComponentChart(mf.ChartProps{
+	frontendHTML, err := mf.UIChart(mf.ChartProps{
 		Type:   mf.ChartTypeBar,
 		Title:  "Orders",
 		Labels: []string{"Open", "Closed"},
@@ -675,7 +675,7 @@ func TestComponentDataFrameRendersPrimitiveAndNodeValues(t *testing.T) {
 		rdf.NewSeriesInt64("Age", nil, int64(42), nil),
 		rdf.NewSeriesMixed("Role", nil, DivClass("badge", Text("Admin")), "Viewer"),
 	)
-	html, err := ComponentDataFrame(df, TableProps{
+	html, err := UIDataFrame(df, TableProps{
 		EmptyTitle:       "No rows",
 		EmptyDescription: "Add rows to continue.",
 	}).Render()
@@ -695,7 +695,7 @@ func TestComponentDataFrameOverridesExplicitColumnsWithDataFrameNames(t *testing
 		rdf.NewSeriesString("Name", nil, "Aiko"),
 		rdf.NewSeriesString("Role", nil, "Admin"),
 	)
-	html, err := ComponentDataFrame(df, TableProps{
+	html, err := UIDataFrame(df, TableProps{
 		Columns: []TableColumn{{Label: "Display Name"}, {Label: "Team Role"}},
 	}).Render()
 	if err != nil {
@@ -720,7 +720,7 @@ func TestComponentDataFrameChartBuildsChartDatasets(t *testing.T) {
 		rdf.NewSeriesInt64("Signups", nil, int64(12), int64(18)),
 		rdf.NewSeriesString("Revenue", nil, "120.5", "180.25"),
 	)
-	html, err := ComponentDataFrameChart(df, DataFrameChartProps{
+	html, err := UIDataFrameChart(df, DataFrameChartProps{
 		Chart: ChartProps{
 			Type:  ChartTypeBar,
 			Title: "Growth",
@@ -750,7 +750,7 @@ func TestComponentDataFrameChartBuildsChartDatasets(t *testing.T) {
 
 func TestComponentDataFrameFromCSVUsesDataFrameGoImports(t *testing.T) {
 	reader := strings.NewReader("name,role\nAiko,Admin\nKen,Viewer\n")
-	node, err := ComponentDataFrameFromCSV(reader, TableProps{})
+	node, err := UIDataFrameFromCSV(reader, TableProps{})
 	if err != nil {
 		t.Fatalf("csv import failed: %v", err)
 	}
@@ -768,7 +768,7 @@ func TestComponentDataFrameFromCSVUsesDataFrameGoImports(t *testing.T) {
 
 func TestComponentDataFrameFromTSVDefaultsToTabDelimiter(t *testing.T) {
 	reader := strings.NewReader("name\trole\nAiko\tAdmin\n")
-	node, err := ComponentDataFrameFromTSV(reader, TableProps{})
+	node, err := UIDataFrameFromTSV(reader, TableProps{})
 	if err != nil {
 		t.Fatalf("tsv import failed: %v", err)
 	}

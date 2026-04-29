@@ -21,7 +21,7 @@ Only consider adding a new component when all of the following are true:
 
 - Align names with existing public API patterns.
 - The current accepted naming examples are:
-  - Component entry points: `ComponentButton`, `ComponentInput`, `ComponentModal`
+  - Component entry points: `UIButton`, `UIInput`, `UIModal`
   - Props types: `ComponentProps`, `TextFieldProps`, `FormRowProps`
   - Form primitives: `FormRow`, `TextField`
 - `Ui` prefix names are **not required** by the current standard.
@@ -29,7 +29,7 @@ Only consider adding a new component when all of the following are true:
 ### 2.2 New API Compatibility Policy (Single Rule)
 
 - For newly added public components, use the `Component*` prefix as the default.
-  - Example: `ComponentDatePicker`, `ComponentTabs`
+  - Example: `ComponentDatePicker`, `UITabs`
 - Keep existing non-`Component*` APIs (for example `FormRow`, `TextField`) as-is for backward compatibility.
 - Do not introduce new prefixes in the same layer (`Ui*`, `Base*`, `Core*` etc.) unless an approved RFC explicitly updates this guideline.
 
@@ -120,7 +120,7 @@ The following checks are mandatory for every component-related PR.
 - Good (current rule: `Component*`, `*Props`, existing API names remain intact):
 
 ```go
-button := ComponentButton("Save", ComponentProps{Variant: "primary", Size: "sm"})
+button := UIButton("Save", ComponentProps{Variant: "primary", Size: "sm"})
 row := FormRow(FormRowProps{
     Label: "Email",
     Control: TextField(TextFieldProps{Name: "email", Type: "email"}),

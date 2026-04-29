@@ -23,17 +23,17 @@ type DataFrameChartProps struct {
 	Series      []DataFrameChartSeries
 }
 
-// ComponentDataFrame renders a github.com/rocketlaunchr/dataframe-go DataFrame
+// UIDataFrame renders a github.com/rocketlaunchr/dataframe-go DataFrame
 // as a table component.
 //
 // Values are converted as follows:
 //   - nil => empty text cell
 //   - Node => rendered directly
 //   - all others => fmt.Sprint(value) wrapped in Text(...)
-func ComponentDataFrame(df *rdf.DataFrame, props TableProps) Node {
+func UIDataFrame(df *rdf.DataFrame, props TableProps) Node {
 	tableProps := props
 	if df == nil {
-		return ComponentTable(tableProps)
+		return UITable(tableProps)
 	}
 
 	columnNames := df.Names()
@@ -64,23 +64,23 @@ func ComponentDataFrame(df *rdf.DataFrame, props TableProps) Node {
 	}
 
 	tableProps.Rows = rows
-	return ComponentTable(tableProps)
+	return UITable(tableProps)
 }
 
-// ComponentDataFrameChart renders dataframe columns through ComponentChart.
+// UIDataFrameChart renders dataframe columns through UIChart.
 //
 // LabelColumn selects the x-axis labels. If blank, the first dataframe column is
 // used. Series selects numeric columns. If blank, every column after LabelColumn
 // is rendered as a dataset.
-func ComponentDataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
+func UIDataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	chartProps := props.Chart
 	if df == nil {
-		return ComponentChart(chartProps)
+		return UIChart(chartProps)
 	}
 
 	columnNames := df.Names()
 	if len(columnNames) == 0 {
-		return ComponentChart(chartProps)
+		return UIChart(chartProps)
 	}
 
 	labelColumn := strings.TrimSpace(props.LabelColumn)
@@ -125,7 +125,7 @@ func ComponentDataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node 
 
 	chartProps.Labels = labels
 	chartProps.Datasets = datasets
-	return ComponentChart(chartProps)
+	return UIChart(chartProps)
 }
 
 func chartFloat(value any) float64 {

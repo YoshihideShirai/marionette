@@ -1,6 +1,6 @@
 module github.com/YoshihideShirai/marionette
 
-go 1.22
+go 1.24.0
 
 require (
 	github.com/rocketlaunchr/dataframe-go v0.0.0-20211025052708-a1030444159b
@@ -8,7 +8,7 @@ require (
 )
 
 require (
-	github.com/apache/thrift v0.0.0-20181112125854-24918abba929 // indirect
+	github.com/apache/thrift v0.13.0 // indirect
 	github.com/goccy/go-json v0.7.6 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/google/go-cmp v0.4.0 // indirect
@@ -22,9 +22,9 @@ require (
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/rocketlaunchr/mysql-go v1.1.3 // indirect
 	github.com/xitongsys/parquet-go v1.5.2 // indirect
-	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
+	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
-	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
+	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

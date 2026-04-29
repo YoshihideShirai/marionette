@@ -294,6 +294,33 @@ Template-backed component constructors (`templates/components/*`).
 - `ComponentDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - same loader with `Comma: '\t'` as default.
 
+### Layout / surfaces
+- `ComponentStack(props StackProps, children ...Node) Node`
+  - flex layout for vertical/horizontal stacks.
+  - `Direction`: `vertical`/blank or `horizontal`/`row`.
+  - `Gap`: `none`, `xs`, `sm`, `md`/blank, `lg`, `xl`.
+  - `Align`: `start`, `center`, `end`, blank=`stretch`.
+  - `Justify`: `start`/blank, `center`, `end`, `between`.
+  - `Wrap` adds `flex-wrap`; `Props.Class` appends custom classes.
+- `ComponentGrid(props GridProps, children ...Node) Node`
+  - grid layout with `Columns` values `1`, `2`, `3`/blank, `4`.
+  - `MinColumnWidth`: `sm`, `md`, `lg` switches to auto-fit minmax columns.
+  - `Gap` and `Props.Class` use the same behavior as `ComponentStack`.
+- `ComponentSplit(props SplitProps) Node`
+  - responsive main/aside layout.
+  - `AsideWidth`: `sm`, `md`/blank, `lg`.
+  - `ReverseOnMobile` renders the aside before the main pane visually on mobile.
+- `ComponentPageHeader(props PageHeaderProps) Node`
+  - renders title, description, and optional action node.
+- `ComponentContainer(props ContainerProps, children ...Node) Node`
+  - `MaxWidth`: `sm`, `md`, `lg`/blank, `full`.
+  - `Padding`: `none`, `sm`, `md`/blank, `lg`.
+  - `Centered` adds `mx-auto`.
+- `ComponentCard(props CardProps, children ...Node) Node`
+  - card surface with optional title, description, and action node.
+- `ComponentSection(props SectionProps, children ...Node) Node`
+  - unframed section wrapper with optional title, description, and action node.
+
 #### Example: Convert CSV/TSV data to `ComponentDataFrame`
 
 ```go

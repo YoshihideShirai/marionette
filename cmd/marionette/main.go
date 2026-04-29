@@ -190,21 +190,17 @@ func renderUsersPage(ctx *mb.Context, formState createUserFormState) mf.Node {
 		renderSidebar(),
 		mf.DivClass("min-w-0 space-y-6",
 			mf.FlashAlerts(ctx.Flashes()),
-			mf.DivClass("flex items-start justify-between gap-4",
-				mf.DivClass("space-y-2",
-					mf.DivClass("text-3xl font-bold tracking-tight", mf.Text("Marionette Admin UI")),
-					mf.DivClass("text-base-content/70",
-						mf.Text("Go handlers, htmx actions, and daisyUI components for small admin tools."),
-					),
-				),
-				mf.Element("button", mf.ElementProps{
+			mf.ComponentPageHeader(mf.PageHeaderProps{
+				Title:       "Marionette Admin UI",
+				Description: "Go handlers, htmx actions, and daisyUI components for small admin tools.",
+				Actions: mf.Element("button", mf.ElementProps{
 					Class: "btn btn-outline btn-sm",
 					Attrs: mf.Attrs{
 						"type":    "button",
 						"onclick": "window.mrnToggleTheme && window.mrnToggleTheme()",
 					},
 				}, mf.Text("🌓 Theme")),
-			),
+			}),
 			renderUsersWorkspace(ctx, formState),
 		),
 	)
@@ -222,10 +218,11 @@ func renderUsersWorkspace(ctx *mb.Context, formState createUserFormState) mf.Nod
 	return mf.DivProps(mf.ElementProps{ID: "users-workspace", Class: "space-y-4"},
 		mf.FlashAlerts(ctx.Flashes()),
 		renderDashboardOverview(ctx),
-		mf.DivClass("grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]",
-			renderUsersTable(ctx),
-			renderCreateUserForm(formState),
-		),
+		mf.ComponentSplit(mf.SplitProps{
+			Main:  renderUsersTable(ctx),
+			Aside: renderCreateUserForm(formState),
+			Gap:   "lg",
+		}),
 		renderComponentShowcase(ctx),
 		renderDeleteModal(ctx),
 	)
@@ -236,7 +233,7 @@ func renderDashboardOverview(ctx *mb.Context) mf.Node {
 	roles := roleCounts(users)
 	latest := latestStartDate(users)
 
-	return mf.DivClass("grid gap-4 md:grid-cols-3",
+	return mf.ComponentGrid(mf.GridProps{Columns: "3"},
 		statCard("Users", strconv.Itoa(len(users)), "Active demo records", "primary"),
 		statCard("Admins", strconv.Itoa(roles["Admin"]), "High-access seats", "secondary"),
 		statCard("Latest start", latest, "Newest onboarding date", "accent"),
@@ -244,10 +241,10 @@ func renderDashboardOverview(ctx *mb.Context) mf.Node {
 }
 
 func statCard(label, value, caption, tone string) mf.Node {
-	return mf.DivClass("card bg-base-100 shadow-sm",
-		mf.DivClass("card-body gap-2",
+	return mf.ComponentCard(mf.CardProps{},
+		mf.ComponentStack(mf.StackProps{Gap: "sm"},
 			mf.DivClass("text-sm font-medium text-base-content/60", mf.Text(label)),
-			mf.DivClass("flex items-end justify-between gap-3",
+			mf.ComponentStack(mf.StackProps{Direction: "horizontal", Gap: "md", Align: "end", Justify: "between"},
 				mf.DivClass("text-3xl font-bold", mf.Text(value)),
 				mf.DivClass("badge badge-"+tone, mf.Text("live")),
 			),

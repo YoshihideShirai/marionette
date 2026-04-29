@@ -1,0 +1,16 @@
+{{define "components/card" -}}
+<section class="{{.Class}}">
+  <div class="card-body gap-4">
+    {{- if or .Title .Description .Actions}}
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div class="space-y-1">
+        {{if .Title}}<h2 class="card-title">{{.Title}}</h2>{{end}}
+        {{if .Description}}<p class="text-sm text-base-content/60">{{.Description}}</p>{{end}}
+      </div>
+      {{if .Actions}}<div class="flex flex-wrap items-center gap-2">{{.Actions}}</div>{{end}}
+    </div>
+    {{- end}}
+    {{range .Children}}{{.}}{{end}}
+  </div>
+</section>
+{{- end}}

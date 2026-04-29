@@ -22,7 +22,14 @@ This page lists Marionette UI components. The target component set is managed in
 12. [ComponentCheckbox](#componentcheckbox)
 13. [ComponentRadioGroup](#componentradiogroup)
 14. [ComponentSwitch](#componentswitch)
-15. [Feedback Demo](#feedback-demo)
+15. [ComponentStack](#componentstack)
+16. [ComponentGrid](#componentgrid)
+17. [ComponentSplit](#componentsplit)
+18. [ComponentPageHeader](#componentpageheader)
+19. [ComponentContainer](#componentcontainer)
+20. [ComponentCard](#componentcard)
+21. [ComponentSection](#componentsection)
+22. [Feedback Demo](#feedback-demo)
 
 ---
 
@@ -282,6 +289,121 @@ Switch-style boolean control for settings and toggles.
 
 - Golden sample: [`switch.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/switch.golden.html)
 - Template: [`templates/components/switch.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/switch.html)
+
+---
+
+## ComponentStack
+
+### Purpose
+
+Flex stack for vertical and horizontal layout rhythm.
+
+### Key props
+
+- `Direction` (`vertical`, `horizontal`)
+- `Gap` (`none`, `xs`, `sm`, `md`, `lg`, `xl`)
+- `Align`, `Justify`, `Wrap`
+- `Props.Class`
+
+### Visual
+
+<iframe src="./examples/layout.html" title="Layout components example" style="width:100%;min-height:520px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+- Golden sample: [`stack.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/stack.golden.html)
+- Template: [`templates/components/stack.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/stack.html)
+
+## ComponentGrid
+
+### Purpose
+
+Responsive grid for cards, summaries, and repeated panels.
+
+### Key props
+
+- `Columns` (`1`, `2`, `3`, `4`)
+- `MinColumnWidth` (`sm`, `md`, `lg`)
+- `Gap`
+- `Props.Class`
+
+- Golden sample: [`grid.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/grid.golden.html)
+- Template: [`templates/components/grid.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/grid.html)
+
+## ComponentSplit
+
+### Purpose
+
+Responsive main/aside layout for admin workspaces.
+
+### Key props
+
+- `Main`, `Aside`
+- `AsideWidth` (`sm`, `md`, `lg`)
+- `ReverseOnMobile`
+- `Gap`, `Props.Class`
+
+- Golden sample: [`split.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/split.golden.html)
+- Template: [`templates/components/split.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/split.html)
+
+## ComponentPageHeader
+
+### Purpose
+
+Page heading layout with title, description, and actions.
+
+### Key props
+
+- `Title`, `Description`
+- `Actions`
+- `Props.Class`
+
+- Golden sample: [`page_header.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/page_header.golden.html)
+- Template: [`templates/components/page_header.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/page_header.html)
+
+## ComponentContainer
+
+### Purpose
+
+Width and padding wrapper for page-level content.
+
+### Key props
+
+- `MaxWidth` (`sm`, `md`, `lg`, `full`)
+- `Padding` (`none`, `sm`, `md`, `lg`)
+- `Centered`
+- `Props.Class`
+
+- Golden sample: [`container.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/container.golden.html)
+- Template: [`templates/components/container.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/container.html)
+
+## ComponentCard
+
+### Purpose
+
+Card surface with optional header actions.
+
+### Key props
+
+- `Title`, `Description`
+- `Actions`
+- `Props.Class`
+
+- Golden sample: [`card.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/card.golden.html)
+- Template: [`templates/components/card.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/card.html)
+
+## ComponentSection
+
+### Purpose
+
+Unframed section wrapper with consistent header spacing.
+
+### Key props
+
+- `Title`, `Description`
+- `Actions`
+- `Props.Class`
+
+- Golden sample: [`section.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/section.golden.html)
+- Template: [`templates/components/section.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/section.html)
 
 ---
 

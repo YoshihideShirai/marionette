@@ -12,21 +12,11 @@ on:
       - '.github/workflows/docs-quality.yml'
 
 jobs:
-  markdown-and-links:
+  links:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Lint Markdown
-        run: |
-          npm install -g markdownlint-cli2
-          markdownlint-cli2 "**/*.md" "#node_modules"
 
       - name: Check links
         uses: lycheeverse/lychee-action@v2

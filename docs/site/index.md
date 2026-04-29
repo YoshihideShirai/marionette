@@ -32,4 +32,4 @@ Marionette is a Go-first UI framework for building admin interfaces. Application
 
 ## Governance
 
-- Documentation quality checks run via `.github/workflows/docs-quality.yml`.
+- Documentation link checks run via `.github/workflows/docs-quality.yml` (lychee).

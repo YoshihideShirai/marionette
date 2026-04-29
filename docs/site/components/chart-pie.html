@@ -231,6 +231,15 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/chart-pie.html" title="Chart: Pie example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">share := mf.ComponentChart(mf.ChartProps{
+    Type:   mf.ChartTypePie,
+    Labels: []string{&quot;Desktop&quot;, &quot;Mobile&quot;, &quot;Tablet&quot;},
+    Datasets: []mf.ChartDataset{{
+        Data: []float64{62, 29, 9},
+    }},
+})
+</code></pre>
 
         </div>
       </main>

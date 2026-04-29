@@ -221,6 +221,14 @@
       <main class="docs-main">
         <div class="docs-content">
           <h1 id="componenttoast">ComponentToast</h1>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">toast := mf.ComponentToast(mf.ToastProps{
+    Title:       &quot;Saved&quot;,
+    Description: &quot;User settings were updated.&quot;,
+    Icon:        &quot;✓&quot;,
+    Props:       mf.ComponentProps{Variant: &quot;success&quot;, Size: &quot;md&quot;},
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/toast.golden.html"><code>toast.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/toast.html"><code>templates/components/toast.html</code></a></li>

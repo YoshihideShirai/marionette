@@ -231,6 +231,15 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/chart-line.html" title="Chart: Line example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">trend := mf.ComponentChart(mf.ChartProps{
+    Type:   mf.ChartTypeLine,
+    Labels: []string{&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;},
+    Datasets: []mf.ChartDataset{{
+        Label: &quot;Signups&quot;, Data: []float64{12, 19, 14},
+    }},
+})
+</code></pre>
 
         </div>
       </main>

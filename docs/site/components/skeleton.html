@@ -221,6 +221,12 @@
       <main class="docs-main">
         <div class="docs-content">
           <h1 id="componentskeleton">ComponentSkeleton</h1>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">loadingCard := mf.ComponentCard(mf.CardProps{Title: &quot;Loading&quot;}, mf.ComponentSkeleton(mf.SkeletonProps{
+    Lines: 3,
+    Props: mf.ComponentProps{Size: &quot;md&quot;},
+}))
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/skeleton.golden.html"><code>skeleton.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/skeleton.html"><code>templates/components/skeleton.html</code></a></li>

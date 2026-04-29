@@ -224,6 +224,16 @@
 <ul>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/dataframe.go"><code>dataframe.go</code></a></li>
 </ul>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">df := dataframe.LoadRecords(
+    []struct{ Name string; Role string }{
+        {Name: &quot;Aiko&quot;, Role: &quot;Admin&quot;},
+        {Name: &quot;Ken&quot;, Role: &quot;Viewer&quot;},
+    },
+)
+
+table := mf.ComponentDataFrame(df, mf.DataFrameProps{})
+</code></pre>
 
         </div>
       </main>

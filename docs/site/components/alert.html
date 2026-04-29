@@ -221,6 +221,14 @@
       <main class="docs-main">
         <div class="docs-content">
           <h1 id="componentalert">ComponentAlert</h1>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">alert := mf.ComponentAlert(mf.AlertProps{
+    Title:       &quot;Permission denied&quot;,
+    Description: &quot;You do not have access to this workspace.&quot;,
+    Icon:        &quot;!&quot;,
+    Props:       mf.ComponentProps{Variant: &quot;error&quot;, Size: &quot;md&quot;},
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/alert.golden.html"><code>alert.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/alert.html"><code>templates/components/alert.html</code></a></li>

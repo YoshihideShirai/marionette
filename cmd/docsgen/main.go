@@ -486,6 +486,10 @@ func usageSnippet(id string) string {
     Variant: "secondary",
     Size:    "sm",
 })`,
+		"theme-toggle-button": `themeToggle := mf.ComponentThemeToggleButton("/toggle-theme", "Toggle theme", mf.ComponentProps{
+    Variant: "ghost",
+    Size:    "sm",
+})`,
 		"input": `startDate := mf.ComponentInputWithOptions("start_date", "2030-01-01", mf.InputOptions{
     Type:        "date",
     Placeholder: "Start date",
@@ -558,6 +562,10 @@ func usageSnippet(id string) string {
     PrevHref:   "/?page=1&per_page=10",
     NextHref:   "/?page=3&per_page=10",
 })`,
+		"form": `profileForm := mf.ComponentForm("/users", "post", mf.ComponentButton("Save", mf.ComponentProps{
+    Variant: "primary",
+    Size:    "sm",
+}))`,
 		"form-field": `nameField := mf.ComponentFormField(
     mf.ComponentInput("name", "", mf.ComponentProps{Size: "sm"}),
     mf.FormFieldProps{
@@ -615,6 +623,22 @@ func usageSnippet(id string) string {
     Checked: true,
     Props:   mf.ComponentProps{Size: "sm"},
 })`,
+		"toast": `toast := mf.ComponentToast(mf.ToastProps{
+    Title:       "Saved",
+    Description: "User settings were updated.",
+    Icon:        "✓",
+    Props:       mf.ComponentProps{Variant: "success", Size: "md"},
+})`,
+		"alert": `alert := mf.ComponentAlert(mf.AlertProps{
+    Title:       "Permission denied",
+    Description: "You do not have access to this workspace.",
+    Icon:        "!",
+    Props:       mf.ComponentProps{Variant: "error", Size: "md"},
+})`,
+		"skeleton": `loadingCard := mf.ComponentCard(mf.CardProps{Title: "Loading"}, mf.ComponentSkeleton(mf.SkeletonProps{
+    Lines: 3,
+    Props: mf.ComponentProps{Size: "md"},
+}))`,
 		"stack": `stack := mf.ComponentStack(
     mf.StackProps{
         Direction: "horizontal",
@@ -690,6 +714,63 @@ alert := mf.ComponentAlert(mf.AlertProps{
     Description: "An error occurred. Please wait a moment and try again.",
     Icon:        "!",
     Props:       mf.ComponentProps{Variant: "error", Size: "lg"},
+})`,
+		"chart-line": `trend := mf.ComponentChart(mf.ChartProps{
+    Type:   mf.ChartTypeLine,
+    Labels: []string{"Mon", "Tue", "Wed"},
+    Datasets: []mf.ChartDataset{{
+        Label: "Signups", Data: []float64{12, 19, 14},
+    }},
+})`,
+		"chart-bar": `breakdown := mf.ComponentChart(mf.ChartProps{
+    Type:   mf.ChartTypeBar,
+    Labels: []string{"Admin", "Editor", "Viewer"},
+    Datasets: []mf.ChartDataset{{
+        Label: "Users", Data: []float64{4, 7, 13},
+    }},
+})`,
+		"chart-pie": `share := mf.ComponentChart(mf.ChartProps{
+    Type:   mf.ChartTypePie,
+    Labels: []string{"Desktop", "Mobile", "Tablet"},
+    Datasets: []mf.ChartDataset{{
+        Data: []float64{62, 29, 9},
+    }},
+})`,
+		"chart-doughnut": `conversion := mf.ComponentChart(mf.ChartProps{
+    Type:   mf.ChartTypeDoughnut,
+    Labels: []string{"Converted", "Dropped"},
+    Datasets: []mf.ChartDataset{{
+        Data: []float64{72, 28},
+    }},
+})`,
+		"chart-scatter": `correlation := mf.ComponentChart(mf.ChartProps{
+    Type: mf.ChartTypeScatter,
+    Datasets: []mf.ChartDataset{{
+        Label: "Sessions",
+        Points: []mf.ChartPoint{
+            {X: 4, Y: 12},
+            {X: 8, Y: 26},
+            {X: 12, Y: 33},
+        },
+    }},
+})`,
+		"overlay-system": `modal := mf.ComponentModal(mf.ModalProps{
+    Title: "Overlay demo",
+    Body:  mf.Text("Use modal, drawer, and popover together for rich flows."),
+    Open:  true,
+})`,
+		"dataframe": `df := dataframe.LoadRecords(
+    []struct{ Name string; Role string }{
+        {Name: "Aiko", Role: "Admin"},
+        {Name: "Ken", Role: "Viewer"},
+    },
+)
+
+table := mf.ComponentDataFrame(df, mf.DataFrameProps{})`,
+		"dataframe-chart": `chart := mf.ComponentDataFrameChart(df, mf.DataFrameChartProps{
+    Type:      mf.ChartTypeBar,
+    LabelCol:  "month",
+    ValueCols: []string{"signups"},
 })`,
 	}
 	return snippets[id]

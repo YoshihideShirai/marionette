@@ -308,14 +308,16 @@ func ComponentSubmitButton(label string, props ComponentProps) Node {
 }
 
 func ComponentThemeToggleButton(props ComponentProps) Node {
-	attrs := Attrs{"type": "button", "onclick": "window.mrnToggleTheme && window.mrnToggleTheme()"}
-	if props.Disabled {
-		attrs["disabled"] = "disabled"
+	return templateNode{
+		name: "components/theme_toggle_button",
+		data: struct {
+			Class    string
+			Disabled bool
+		}{
+			Class:    buttonClass(props),
+			Disabled: props.Disabled,
+		},
 	}
-	return Element("button", ElementProps{
-		Class: buttonClass(props),
-		Attrs: attrs,
-	}, Text("🌓 Theme"))
 }
 
 func componentButton(label, buttonType string, props ComponentProps) Node {

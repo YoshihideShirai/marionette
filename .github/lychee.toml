@@ -1,4 +1,4 @@
-verbose = true
+verbose = "info"
 no_progress = true
 accept = [200, 206, 429]
 max_retries = 3

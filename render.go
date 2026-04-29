@@ -15,6 +15,7 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script>
       (function() {
         var root = document.documentElement;
@@ -33,6 +34,42 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
             localStorage.setItem(key, next);
           } catch (e) {}
         };
+      })();
+    </script>
+    <script>
+      (function() {
+        var charts = new WeakMap();
+
+        function initCharts(root) {
+          if (!window.Chart) return;
+          var scope = root || document;
+          var canvases = scope.querySelectorAll ? scope.querySelectorAll("[data-mrn-chart]") : [];
+          canvases.forEach(function(canvas) {
+            var container = canvas.closest("[data-mrn-chart-root]");
+            if (!container) return;
+            var configEl = container.querySelector("[data-mrn-chart-config]");
+            if (!configEl) return;
+
+            var config;
+            try {
+              config = JSON.parse(configEl.textContent || "{}");
+            } catch (e) {
+              return;
+            }
+
+            var existing = charts.get(canvas);
+            if (existing) existing.destroy();
+            charts.set(canvas, new window.Chart(canvas, config));
+          });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+          initCharts(document);
+        });
+        document.addEventListener("htmx:afterSwap", function(event) {
+          initCharts(event.detail && event.detail.elt ? event.detail.elt : document);
+        });
+        window.mrnInitCharts = initCharts;
       })();
     </script>
   </head>

@@ -459,6 +459,8 @@ func iframeFor(entry componentEntry) string {
 		height = "220px"
 	case "table", "modal":
 		height = "320px"
+	case "chart":
+		height = "420px"
 	case "textarea":
 		height = "240px"
 	case "feedback":
@@ -523,6 +525,26 @@ func usageSnippet(id string) string {
                 mf.DivClass("badge", mf.Text("Admin")),
             },
         },
+    },
+})`,
+		"chart": `signupsChart := mf.ComponentChart(mf.ChartProps{
+    Type:        mf.ChartTypeLine,
+    Title:       "Weekly signups",
+    Description: "New accounts by weekday.",
+    Labels:      []string{"Mon", "Tue", "Wed", "Thu", "Fri"},
+    Datasets: []mf.ChartDataset{
+        {
+            Label:           "Signups",
+            Data:            []float64{12, 19, 14, 22, 18},
+            BorderColor:     "#2563eb",
+            BackgroundColor: "rgba(37, 99, 235, 0.16)",
+            Fill:            true,
+            Tension:         0.3,
+        },
+    },
+    Options: mf.ChartOptions{
+        BeginAtZero: true,
+        YAxisLabel:  "Users",
     },
 })`,
 		"pagination": `pager := mf.ComponentPagination(mf.PaginationProps{

@@ -1,0 +1,39 @@
+<figure class="card bg-base-100 shadow-sm" data-mrn-chart-root>
+  <div class="card-body gap-4">
+    <figcaption class="space-y-1">
+        <h2 class="card-title">Weekly signups</h2>
+        <p class="text-sm text-base-content/60">New accounts by weekday.</p>
+      </figcaption>
+    <div class="relative w-full" style="height: 260px;">
+      <canvas data-mrn-chart role="img" aria-label="Weekly signups">
+        <p>Weekly signups data is available in the fallback table below.</p>
+      </canvas>
+    </div>
+    <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":"rgba(37, 99, 235, 0.16)","borderColor":"#2563eb","data":[12,19,14],"fill":true,"label":"Signups","tension":0.3}],"labels":["Mon","Tue","Wed"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":true}},"responsive":true,"scales":{"x":{},"y":{"beginAtZero":true,"title":{"display":true,"text":"Users"}}}},"type":"line"}</script>
+    <details class="sr-only">
+      <summary>Weekly signups data is available in the fallback table below.</summary>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Label</th>
+            <th scope="col">Signups</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <th scope="row">Mon</th>
+              <td>12</td>
+            </tr>
+          <tr>
+              <th scope="row">Tue</th>
+              <td>19</td>
+            </tr>
+          <tr>
+              <th scope="row">Wed</th>
+              <td>14</td>
+            </tr>
+          </tbody>
+      </table>
+    </details>
+  </div>
+</figure>

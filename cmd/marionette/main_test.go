@@ -155,3 +155,44 @@ func TestUsersPageIncludesThemeToggleButton(t *testing.T) {
 		t.Fatalf("expected theme toggle button onclick handler, got %q", body)
 	}
 }
+
+func TestUsersPageIncludesChartExamples(t *testing.T) {
+	app := buildApp()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	for _, want := range []string{
+		"Onboarding trend",
+		"Role distribution",
+		`data-mrn-chart`,
+		`"type":"line"`,
+		`"type":"bar"`,
+		`htmx:afterSwap`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected %q in response, got %q", want, body)
+		}
+	}
+}
+
+func TestMonthlyStartCountsGroupsUsersByMonth(t *testing.T) {
+	labels, data := monthlyStartCounts([]user{
+		{StartDate: "2024-03-18"},
+		{StartDate: "2024-03-25"},
+		{StartDate: "2025-01-10"},
+		{StartDate: "invalid"},
+	})
+
+	if got, want := strings.Join(labels, ","), "2024-03,2025-01"; got != want {
+		t.Fatalf("expected labels %q, got %q", want, got)
+	}
+	if len(data) != 2 || data[0] != 2 || data[1] != 1 {
+		t.Fatalf("expected grouped data [2 1], got %v", data)
+	}
+}

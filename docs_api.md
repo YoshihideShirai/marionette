@@ -271,11 +271,21 @@ Template-backed component constructors (`templates/components/*`).
 ### Data display
 - `ComponentTable(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
+- `ComponentChart(props ChartProps) Node`
+  - renders a Chart.js-backed chart from Go props.
+  - blank `Type` defaults to `ChartTypeLine`; blank `Height` defaults to `320`.
+  - `ChartDataset.Data` renders scalar values; `ChartDataset.Points` renders `{x,y}` values for scatter-style charts.
+  - chart config is JSON-encoded and embedded next to a `<canvas data-mrn-chart>`.
+  - includes `role="img"`, an accessible label, canvas fallback text, and a screen-reader fallback table.
 - `ComponentDataFrame(df *dataframe.DataFrame, props TableProps) Node`
   - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `ComponentTable`.
   - `df.Names()` is mapped to `TableColumn.Label` and overrides `props.Columns`.
   - each row is read by `df.Row(row, true, dataframe.SeriesName)`.
   - cell conversion: `nil` => empty text, `Node` => rendered directly, all others => `fmt.Sprint(value)`.
+- `ComponentDataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`
+  - maps a dataframe label column and numeric series columns into `ComponentChart`.
+  - blank `LabelColumn` uses the first dataframe column.
+  - blank `Series` renders every column after the label column as a dataset.
 - `ComponentPagination(props PaginationProps) Node`
   - `Page < 1` defaults to `1`.
   - `TotalPages < 1` defaults to `1`.
@@ -355,6 +365,31 @@ func tableFromTSV(path string) (mrn.Node, error) {
         EmptyDescription: "TSV is empty.",
     })
 }
+```
+
+#### Example: Render a chart
+
+```go
+chart := mrn.ComponentChart(mrn.ChartProps{
+    Type:        mrn.ChartTypeLine,
+    Title:       "Weekly signups",
+    Description: "New accounts by weekday.",
+    Labels:      []string{"Mon", "Tue", "Wed", "Thu", "Fri"},
+    Datasets: []mrn.ChartDataset{
+        {
+            Label:           "Signups",
+            Data:            []float64{12, 19, 14, 22, 18},
+            BorderColor:     "#2563eb",
+            BackgroundColor: "rgba(37, 99, 235, 0.16)",
+            Fill:            true,
+            Tension:         0.3,
+        },
+    },
+    Options: mrn.ChartOptions{
+        BeginAtZero: true,
+        YAxisLabel:  "Users",
+    },
+})
 ```
 
 ---

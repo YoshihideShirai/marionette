@@ -587,6 +587,88 @@ func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
 	}
 }
 
+func TestComponentChartRendersConfigAndFallback(t *testing.T) {
+	html, err := ComponentChart(ChartProps{
+		Type:        ChartTypeBar,
+		Title:       "Revenue",
+		Description: "Monthly recurring revenue.",
+		Labels:      []string{"Jan", "Feb"},
+		Datasets: []ChartDataset{
+			{Label: "Actual", Data: []float64{12.5, 18}, BackgroundColor: "#2563eb"},
+		},
+		Options: ChartOptions{
+			BeginAtZero: true,
+			XAxisLabel:  "Month",
+			YAxisLabel:  "USD",
+		},
+		Height: 240,
+	}).Render()
+	if err != nil {
+		t.Fatalf("chart render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`data-mrn-chart-root`,
+		`data-mrn-chart`,
+		`data-mrn-chart-config`,
+		`"type":"bar"`,
+		`"labels":["Jan","Feb"]`,
+		`"beginAtZero":true`,
+		`Revenue data is available in the fallback table below.`,
+		`<th scope="row">Jan</th>`,
+		`<td>12.5</td>`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestShellIncludesChartRuntime(t *testing.T) {
+	html, err := shell(`<div></div>`)
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`cdn.jsdelivr.net/npm/chart.js@4`,
+		`window.mrnInitCharts`,
+		`htmx:afterSwap`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in shell", want)
+		}
+	}
+}
+
+func TestFrontendChartComponentMatchesRootOutput(t *testing.T) {
+	rootHTML, err := ComponentChart(ChartProps{
+		Type:   ChartTypeBar,
+		Title:  "Orders",
+		Labels: []string{"Open", "Closed"},
+		Datasets: []ChartDataset{
+			{Label: "Count", Data: []float64{4, 9}},
+		},
+	}).Render()
+	if err != nil {
+		t.Fatalf("root chart render failed: %v", err)
+	}
+	frontendHTML, err := mf.ComponentChart(mf.ChartProps{
+		Type:   mf.ChartTypeBar,
+		Title:  "Orders",
+		Labels: []string{"Open", "Closed"},
+		Datasets: []mf.ChartDataset{
+			{Label: "Count", Data: []float64{4, 9}},
+		},
+	}).Render()
+	if err != nil {
+		t.Fatalf("frontend chart render failed: %v", err)
+	}
+	if rootHTML != frontendHTML {
+		t.Fatalf("expected frontend output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+	}
+}
+
 func TestComponentDataFrameRendersPrimitiveAndNodeValues(t *testing.T) {
 	df := rdf.NewDataFrame(
 		rdf.NewSeriesString("Name", nil, "Aiko", "Ken"),
@@ -628,6 +710,40 @@ func TestComponentDataFrameOverridesExplicitColumnsWithDataFrameNames(t *testing
 	for _, notWant := range []string{"Display Name", "Team Role"} {
 		if strings.Contains(got, notWant) {
 			t.Fatalf("did not expect %q in %q", notWant, got)
+		}
+	}
+}
+
+func TestComponentDataFrameChartBuildsChartDatasets(t *testing.T) {
+	df := rdf.NewDataFrame(
+		rdf.NewSeriesString("Month", nil, "Jan", "Feb"),
+		rdf.NewSeriesInt64("Signups", nil, int64(12), int64(18)),
+		rdf.NewSeriesString("Revenue", nil, "120.5", "180.25"),
+	)
+	html, err := ComponentDataFrameChart(df, DataFrameChartProps{
+		Chart: ChartProps{
+			Type:  ChartTypeBar,
+			Title: "Growth",
+		},
+		LabelColumn: "Month",
+		Series: []DataFrameChartSeries{
+			{Column: "Signups", Label: "New users"},
+			{Column: "Revenue"},
+		},
+	}).Render()
+	if err != nil {
+		t.Fatalf("dataframe chart render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`"labels":["Jan","Feb"]`,
+		`"label":"New users"`,
+		`"data":[12,18]`,
+		`"label":"Revenue"`,
+		`"data":[120.5,180.25]`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
 		}
 	}
 }

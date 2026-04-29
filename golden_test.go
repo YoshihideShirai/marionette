@@ -79,6 +79,30 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			}),
 		},
 		{
+			name: "chart",
+			node: ComponentChart(ChartProps{
+				Type:        ChartTypeLine,
+				Title:       "Weekly signups",
+				Description: "New accounts by weekday.",
+				Labels:      []string{"Mon", "Tue", "Wed"},
+				Datasets: []ChartDataset{
+					{
+						Label:           "Signups",
+						Data:            []float64{12, 19, 14},
+						BorderColor:     "#2563eb",
+						BackgroundColor: "rgba(37, 99, 235, 0.16)",
+						Fill:            true,
+						Tension:         0.3,
+					},
+				},
+				Options: ChartOptions{
+					BeginAtZero: true,
+					YAxisLabel:  "Users",
+				},
+				Height: 260,
+			}),
+		},
+		{
 			name: "pagination",
 			node: ComponentPagination(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
 		},

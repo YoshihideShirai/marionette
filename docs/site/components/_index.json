@@ -69,7 +69,7 @@
       "name": "ComponentTabs",
       "group": "Components",
       "golden": "testdata/golden/tabs.golden.html",
-      "example": "docs/site/components/examples/navigation.html",
+      "example": "docs/site/components/examples/tabs.html",
       "template": "templates/components/tabs.html"
     },
     {
@@ -77,7 +77,7 @@
       "name": "ComponentBreadcrumb",
       "group": "Components",
       "golden": "testdata/golden/breadcrumb.golden.html",
-      "example": "docs/site/components/examples/navigation.html",
+      "example": "docs/site/components/examples/breadcrumb.html",
       "template": "templates/components/breadcrumb.html"
     },
     {
@@ -85,7 +85,7 @@
       "name": "ComponentTextarea",
       "group": "Components",
       "golden": "testdata/golden/textarea.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/textarea.html",
       "template": "templates/components/textarea.html"
     },
     {
@@ -93,7 +93,7 @@
       "name": "ComponentCheckbox",
       "group": "Components",
       "golden": "testdata/golden/checkbox.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/checkbox.html",
       "template": "templates/components/checkbox.html"
     },
     {
@@ -101,7 +101,7 @@
       "name": "ComponentRadioGroup",
       "group": "Components",
       "golden": "testdata/golden/radio_group.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/radio_group.html",
       "template": "templates/components/radio_group.html"
     },
     {
@@ -109,7 +109,7 @@
       "name": "ComponentSwitch",
       "group": "Components",
       "golden": "testdata/golden/switch.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/switch.html",
       "template": "templates/components/switch.html"
     },
     {

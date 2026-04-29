@@ -209,6 +209,7 @@ var componentTemplate = template.Must(template.New("component-docs").Funcs(templ
 `))
 
 var mdHrefRe = regexp.MustCompile(`href="([^"]+?)\.md"`)
+var iframeRe = regexp.MustCompile(`<iframe[^>]*></iframe>`)
 
 func main() {
 	if err := generate("docs/site/index.md"); err != nil {
@@ -402,11 +403,20 @@ func fallbackComponentSection(entry componentEntry) string {
 }
 
 func ensureExamplePreview(section string, entry componentEntry) string {
-	if strings.Contains(section, "<iframe") || entry.Example == "" || !strings.HasPrefix(entry.Example, "docs/site/components/") {
+	if entry.Example == "" || !strings.HasPrefix(entry.Example, "docs/site/components/") {
 		return section
 	}
 
-	insert := "\n### Visual\n\n" + iframeFor(entry) + "\n"
+	iframe := iframeFor(entry)
+	src := strings.TrimPrefix(entry.Example, "docs/site/components/")
+	if strings.Contains(section, "<iframe") {
+		if strings.Contains(section, `src="./`+src+`"`) {
+			return section
+		}
+		return iframeRe.ReplaceAllString(section, iframe)
+	}
+
+	insert := "\n### Visual\n\n" + iframe + "\n"
 	marker := "- Golden sample:"
 	if idx := strings.Index(section, marker); idx >= 0 {
 		return strings.TrimSpace(section[:idx]) + insert + "\n" + strings.TrimSpace(section[idx:]) + "\n"
@@ -425,9 +435,13 @@ func iframeFor(entry componentEntry) string {
 		height = "200px"
 	case "empty-state", "form-field":
 		height = "260px"
+	case "checkbox", "radio-group", "switch", "tabs", "breadcrumb":
+		height = "220px"
 	case "table", "modal":
 		height = "320px"
-	case "tabs", "breadcrumb", "feedback":
+	case "textarea":
+		height = "240px"
+	case "feedback":
 		height = "420px"
 	case "stack", "page-header", "container", "card", "section":
 		height = "320px"

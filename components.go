@@ -163,6 +163,59 @@ type SwitchComponentProps struct {
 	Props   ComponentProps
 }
 
+type StackProps struct {
+	Direction string
+	Gap       string
+	Align     string
+	Justify   string
+	Wrap      bool
+	Props     ComponentProps
+}
+
+type GridProps struct {
+	Columns        string
+	Gap            string
+	MinColumnWidth string
+	Props          ComponentProps
+}
+
+type SplitProps struct {
+	Main            Node
+	Aside           Node
+	AsideWidth      string
+	ReverseOnMobile bool
+	Gap             string
+	Props           ComponentProps
+}
+
+type PageHeaderProps struct {
+	Title       string
+	Description string
+	Actions     Node
+	Props       ComponentProps
+}
+
+type ContainerProps struct {
+	MaxWidth string
+	Padding  string
+	Centered bool
+	Props    ComponentProps
+}
+
+type CardProps struct {
+	Title       string
+	Description string
+	Actions     Node
+	Props       ComponentProps
+}
+
+type SectionProps struct {
+	Title       string
+	Description string
+	Actions     Node
+	Props       ComponentProps
+}
+
 type templateNode struct {
 	name string
 	data any
@@ -612,6 +665,139 @@ func ComponentSwitch(props SwitchComponentProps) Node {
 	}
 }
 
+func ComponentStack(props StackProps, children ...Node) Node {
+	return layoutChildrenNode("components/stack", stackClass(props), children)
+}
+
+func ComponentGrid(props GridProps, children ...Node) Node {
+	return layoutChildrenNode("components/grid", gridClass(props), children)
+}
+
+func ComponentSplit(props SplitProps) Node {
+	mainHTML, err := renderNode(props.Main)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	asideHTML, err := renderNode(props.Aside)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/split",
+		data: struct {
+			Class           string
+			MainClass       string
+			AsideClass      string
+			Main            template.HTML
+			Aside           template.HTML
+			ReverseOnMobile bool
+		}{
+			Class:           splitClass(props),
+			MainClass:       splitPaneClass("main", props.ReverseOnMobile),
+			AsideClass:      splitPaneClass("aside", props.ReverseOnMobile),
+			Main:            mainHTML,
+			Aside:           asideHTML,
+			ReverseOnMobile: props.ReverseOnMobile,
+		},
+	}
+}
+
+func ComponentPageHeader(props PageHeaderProps) Node {
+	actionsHTML, err := renderNode(props.Actions)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/page_header",
+		data: struct {
+			Class       string
+			Title       string
+			Description string
+			Actions     template.HTML
+		}{
+			Class:       pageHeaderClass(props.Props),
+			Title:       strings.TrimSpace(props.Title),
+			Description: strings.TrimSpace(props.Description),
+			Actions:     actionsHTML,
+		},
+	}
+}
+
+func ComponentContainer(props ContainerProps, children ...Node) Node {
+	return layoutChildrenNode("components/container", containerClass(props), children)
+}
+
+func ComponentCard(props CardProps, children ...Node) Node {
+	childHTML, err := renderNodes(children)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	actionsHTML, err := renderNode(props.Actions)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/card",
+		data: struct {
+			Class       string
+			Title       string
+			Description string
+			Actions     template.HTML
+			Children    []template.HTML
+		}{
+			Class:       cardClass(props.Props),
+			Title:       strings.TrimSpace(props.Title),
+			Description: strings.TrimSpace(props.Description),
+			Actions:     actionsHTML,
+			Children:    childHTML,
+		},
+	}
+}
+
+func ComponentSection(props SectionProps, children ...Node) Node {
+	childHTML, err := renderNodes(children)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	actionsHTML, err := renderNode(props.Actions)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/section",
+		data: struct {
+			Class       string
+			Title       string
+			Description string
+			Actions     template.HTML
+			Children    []template.HTML
+		}{
+			Class:       sectionClass(props.Props),
+			Title:       strings.TrimSpace(props.Title),
+			Description: strings.TrimSpace(props.Description),
+			Actions:     actionsHTML,
+			Children:    childHTML,
+		},
+	}
+}
+
+func layoutChildrenNode(name, className string, children []Node) Node {
+	childHTML, err := renderNodes(children)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: name,
+		data: struct {
+			Class    string
+			Children []template.HTML
+		}{
+			Class:    className,
+			Children: childHTML,
+		},
+	}
+}
+
 func loadComponentTemplates() (*template.Template, error) {
 	componentTemplatesOnce.Do(func() {
 		_, currentFile, _, ok := runtime.Caller(0)
@@ -645,6 +831,18 @@ func renderNode(node Node) (template.HTML, error) {
 		return "", nil
 	}
 	return node.Render()
+}
+
+func renderNodes(nodes []Node) ([]template.HTML, error) {
+	rendered := make([]template.HTML, 0, len(nodes))
+	for _, node := range nodes {
+		html, err := renderNode(node)
+		if err != nil {
+			return nil, err
+		}
+		rendered = append(rendered, html)
+	}
+	return rendered, nil
 }
 
 type renderErrorNode struct {
@@ -836,6 +1034,180 @@ func feedbackSizeClass(size string) string {
 		return "ui-feedback-" + size
 	default:
 		return "ui-feedback-md"
+	}
+}
+
+func stackClass(props StackProps) string {
+	base := []string{"flex", stackDirectionClass(props.Direction), gapClass(props.Gap), alignClass(props.Align), justifyClass(props.Justify)}
+	if props.Wrap {
+		base = append(base, "flex-wrap")
+	}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func stackDirectionClass(direction string) string {
+	switch strings.TrimSpace(direction) {
+	case "horizontal", "row":
+		return "flex-row"
+	default:
+		return "flex-col"
+	}
+}
+
+func gridClass(props GridProps) string {
+	base := []string{"grid", gapClass(props.Gap), gridColumnsClass(props.Columns, props.MinColumnWidth)}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func splitClass(props SplitProps) string {
+	base := []string{"grid", "items-start", gapClass(props.Gap), splitColumnsClass(props.AsideWidth)}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func splitPaneClass(pane string, reverseOnMobile bool) string {
+	base := []string{"min-w-0"}
+	if !reverseOnMobile {
+		return joinClass(base...)
+	}
+	if pane == "main" {
+		base = append(base, "order-2", "lg:order-1")
+	} else {
+		base = append(base, "order-1", "lg:order-2")
+	}
+	return joinClass(base...)
+}
+
+func pageHeaderClass(props ComponentProps) string {
+	return joinClass("flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between", props.Class)
+}
+
+func containerClass(props ContainerProps) string {
+	base := []string{containerMaxWidthClass(props.MaxWidth), containerPaddingClass(props.Padding)}
+	if props.Centered {
+		base = append(base, "mx-auto")
+	}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func cardClass(props ComponentProps) string {
+	return joinClass("card bg-base-100 shadow-sm", props.Class)
+}
+
+func sectionClass(props ComponentProps) string {
+	return joinClass("space-y-4", props.Class)
+}
+
+func gapClass(gap string) string {
+	switch strings.TrimSpace(gap) {
+	case "none", "0":
+		return "gap-0"
+	case "xs":
+		return "gap-1"
+	case "sm":
+		return "gap-2"
+	case "lg":
+		return "gap-6"
+	case "xl":
+		return "gap-8"
+	default:
+		return "gap-4"
+	}
+}
+
+func alignClass(align string) string {
+	switch strings.TrimSpace(align) {
+	case "start":
+		return "items-start"
+	case "center":
+		return "items-center"
+	case "end":
+		return "items-end"
+	default:
+		return "items-stretch"
+	}
+}
+
+func justifyClass(justify string) string {
+	switch strings.TrimSpace(justify) {
+	case "center":
+		return "justify-center"
+	case "end":
+		return "justify-end"
+	case "between":
+		return "justify-between"
+	default:
+		return "justify-start"
+	}
+}
+
+func gridColumnsClass(columns, minColumnWidth string) string {
+	switch strings.TrimSpace(minColumnWidth) {
+	case "sm":
+		return "grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]"
+	case "md":
+		return "grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]"
+	case "lg":
+		return "grid-cols-[repeat(auto-fit,minmax(22rem,1fr))]"
+	}
+
+	switch strings.TrimSpace(columns) {
+	case "1":
+		return "grid-cols-1"
+	case "2":
+		return "grid-cols-1 md:grid-cols-2"
+	case "4":
+		return "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+	default:
+		return "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+	}
+}
+
+func splitColumnsClass(asideWidth string) string {
+	switch strings.TrimSpace(asideWidth) {
+	case "sm":
+		return "lg:grid-cols-[minmax(0,1fr)_16rem]"
+	case "lg":
+		return "lg:grid-cols-[minmax(0,1fr)_28rem]"
+	default:
+		return "lg:grid-cols-[minmax(0,1fr)_22rem]"
+	}
+}
+
+func containerMaxWidthClass(maxWidth string) string {
+	switch strings.TrimSpace(maxWidth) {
+	case "sm":
+		return "max-w-3xl"
+	case "md":
+		return "max-w-5xl"
+	case "full":
+		return "max-w-none"
+	default:
+		return "max-w-7xl"
+	}
+}
+
+func containerPaddingClass(padding string) string {
+	switch strings.TrimSpace(padding) {
+	case "none", "0":
+		return "p-0"
+	case "sm":
+		return "p-3"
+	case "lg":
+		return "p-8"
+	default:
+		return "p-6"
 	}
 }
 

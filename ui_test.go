@@ -5,6 +5,7 @@ import (
 	"sync"
 	"testing"
 
+	mf "github.com/YoshihideShirai/marionette/frontend"
 	rdf "github.com/rocketlaunchr/dataframe-go"
 )
 
@@ -474,6 +475,115 @@ func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
 		if !strings.Contains(string(skeletonHTML), want) {
 			t.Fatalf("expected %q in %q", want, skeletonHTML)
 		}
+	}
+}
+
+func TestLayoutComponentsRenderClassesAndContent(t *testing.T) {
+	stackHTML, err := ComponentStack(
+		StackProps{Direction: "horizontal", Gap: "sm", Align: "center", Justify: "between", Wrap: true, Props: ComponentProps{Class: "w-full"}},
+		Text("Left"),
+		Text("Right"),
+	).Render()
+	if err != nil {
+		t.Fatalf("stack render failed: %v", err)
+	}
+	for _, want := range []string{"flex-row", "gap-2", "items-center", "justify-between", "flex-wrap", "w-full", "Left", "Right"} {
+		if !strings.Contains(string(stackHTML), want) {
+			t.Fatalf("expected %q in %q", want, stackHTML)
+		}
+	}
+
+	gridHTML, err := ComponentGrid(
+		GridProps{Columns: "4", Gap: "lg"},
+		Text("A"),
+		Text("B"),
+	).Render()
+	if err != nil {
+		t.Fatalf("grid render failed: %v", err)
+	}
+	for _, want := range []string{"grid", "gap-6", "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4", "A", "B"} {
+		if !strings.Contains(string(gridHTML), want) {
+			t.Fatalf("expected %q in %q", want, gridHTML)
+		}
+	}
+
+	splitHTML, err := ComponentSplit(SplitProps{
+		Main:            Text("Main"),
+		Aside:           Text("Aside"),
+		AsideWidth:      "lg",
+		ReverseOnMobile: true,
+	}).Render()
+	if err != nil {
+		t.Fatalf("split render failed: %v", err)
+	}
+	for _, want := range []string{"lg:grid-cols-[minmax(0,1fr)_28rem]", "order-2 lg:order-1", "order-1 lg:order-2", "Main", "Aside"} {
+		if !strings.Contains(string(splitHTML), want) {
+			t.Fatalf("expected %q in %q", want, splitHTML)
+		}
+	}
+}
+
+func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
+	headerHTML, err := ComponentPageHeader(PageHeaderProps{
+		Title:       "Users",
+		Description: "Manage users",
+		Actions:     ComponentButton("Create", ComponentProps{Size: "sm"}),
+	}).Render()
+	if err != nil {
+		t.Fatalf("page header render failed: %v", err)
+	}
+	for _, want := range []string{"<header", "Users", "Manage users", "btn-sm"} {
+		if !strings.Contains(string(headerHTML), want) {
+			t.Fatalf("expected %q in %q", want, headerHTML)
+		}
+	}
+
+	containerHTML, err := ComponentContainer(ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true}, Text("Contained")).Render()
+	if err != nil {
+		t.Fatalf("container render failed: %v", err)
+	}
+	for _, want := range []string{"max-w-5xl", "p-3", "mx-auto", "Contained"} {
+		if !strings.Contains(string(containerHTML), want) {
+			t.Fatalf("expected %q in %q", want, containerHTML)
+		}
+	}
+
+	cardHTML, err := ComponentCard(CardProps{
+		Title:       "Card",
+		Description: "Summary",
+		Actions:     ComponentButton("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+	}, Text("Body")).Render()
+	if err != nil {
+		t.Fatalf("card render failed: %v", err)
+	}
+	for _, want := range []string{"card bg-base-100 shadow-sm", "Card", "Summary", "btn-ghost", "Body"} {
+		if !strings.Contains(string(cardHTML), want) {
+			t.Fatalf("expected %q in %q", want, cardHTML)
+		}
+	}
+
+	sectionHTML, err := ComponentSection(SectionProps{Title: "Section", Description: "Details"}, Text("Content")).Render()
+	if err != nil {
+		t.Fatalf("section render failed: %v", err)
+	}
+	for _, want := range []string{"space-y-4", "Section", "Details", "Content"} {
+		if !strings.Contains(string(sectionHTML), want) {
+			t.Fatalf("expected %q in %q", want, sectionHTML)
+		}
+	}
+}
+
+func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
+	rootHTML, err := ComponentGrid(GridProps{Columns: "2", Gap: "sm"}, Text("A"), Text("B")).Render()
+	if err != nil {
+		t.Fatalf("root grid render failed: %v", err)
+	}
+	frontendHTML, err := mf.ComponentGrid(mf.GridProps{Columns: "2", Gap: "sm"}, mf.Text("A"), mf.Text("B")).Render()
+	if err != nil {
+		t.Fatalf("frontend grid render failed: %v", err)
+	}
+	if rootHTML != frontendHTML {
+		t.Fatalf("expected frontend output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
 	}
 }
 

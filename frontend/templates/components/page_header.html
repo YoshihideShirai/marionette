@@ -1,0 +1,9 @@
+{{define "components/page_header" -}}
+<header class="{{.Class}}">
+  <div class="space-y-1">
+    {{if .Title}}<h1 class="text-3xl font-bold tracking-tight">{{.Title}}</h1>{{end}}
+    {{if .Description}}<p class="text-base-content/70">{{.Description}}</p>{{end}}
+  </div>
+  {{if .Actions}}<div class="flex flex-wrap items-center gap-2">{{.Actions}}</div>{{end}}
+</header>
+{{- end}}

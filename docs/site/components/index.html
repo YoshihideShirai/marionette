@@ -48,6 +48,13 @@
 <li><a href="#componentcheckbox">ComponentCheckbox</a></li>
 <li><a href="#componentradiogroup">ComponentRadioGroup</a></li>
 <li><a href="#componentswitch">ComponentSwitch</a></li>
+<li><a href="#componentstack">ComponentStack</a></li>
+<li><a href="#componentgrid">ComponentGrid</a></li>
+<li><a href="#componentsplit">ComponentSplit</a></li>
+<li><a href="#componentpageheader">ComponentPageHeader</a></li>
+<li><a href="#componentcontainer">ComponentContainer</a></li>
+<li><a href="#componentcard">ComponentCard</a></li>
+<li><a href="#componentsection">ComponentSection</a></li>
 <li><a href="#feedback-demo">Feedback Demo</a></li>
 </ol>
 <hr>
@@ -291,8 +298,160 @@
 </li>
 </ul>
 <hr>
-<h2 id="feedback-demo">Feedback Demo</h2>
+<h2 id="componentstack">ComponentStack</h2>
 <h3 id="purpose-14">Purpose</h3>
+<p>Flex stack for vertical and horizontal layout rhythm.</p>
+<h3 id="key-props-14">Key props</h3>
+<ul>
+<li><code>Direction</code> (<code>vertical</code>, <code>horizontal</code>)</li>
+<li><code>Gap</code> (<code>none</code>, <code>xs</code>, <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>)</li>
+<li><code>Align</code>, <code>Justify</code>, <code>Wrap</code></li>
+<li><code>Props.Class</code></li>
+</ul>
+<h3 id="visual-10">Visual</h3>
+<iframe src="./examples/layout.html" title="Layout components example" style="width:100%;min-height:520px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<ul>
+<li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/stack.golden.html"><code>stack.golden.html</code></a></li>
+<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/stack.html"><code>templates/components/stack.html</code></a></li>
+</ul>
+<h2 id="componentgrid">ComponentGrid</h2>
+<h3 id="purpose-15">Purpose</h3>
+<p>Responsive grid for cards, summaries, and repeated panels.</p>
+<h3 id="key-props-15">Key props</h3>
+<ul>
+<li>
+<p><code>Columns</code> (<code>1</code>, <code>2</code>, <code>3</code>, <code>4</code>)</p>
+</li>
+<li>
+<p><code>MinColumnWidth</code> (<code>sm</code>, <code>md</code>, <code>lg</code>)</p>
+</li>
+<li>
+<p><code>Gap</code></p>
+</li>
+<li>
+<p><code>Props.Class</code></p>
+</li>
+<li>
+<p>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/grid.golden.html"><code>grid.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/grid.html"><code>templates/components/grid.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentsplit">ComponentSplit</h2>
+<h3 id="purpose-16">Purpose</h3>
+<p>Responsive main/aside layout for admin workspaces.</p>
+<h3 id="key-props-16">Key props</h3>
+<ul>
+<li>
+<p><code>Main</code>, <code>Aside</code></p>
+</li>
+<li>
+<p><code>AsideWidth</code> (<code>sm</code>, <code>md</code>, <code>lg</code>)</p>
+</li>
+<li>
+<p><code>ReverseOnMobile</code></p>
+</li>
+<li>
+<p><code>Gap</code>, <code>Props.Class</code></p>
+</li>
+<li>
+<p>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/split.golden.html"><code>split.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/split.html"><code>templates/components/split.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentpageheader">ComponentPageHeader</h2>
+<h3 id="purpose-17">Purpose</h3>
+<p>Page heading layout with title, description, and actions.</p>
+<h3 id="key-props-17">Key props</h3>
+<ul>
+<li>
+<p><code>Title</code>, <code>Description</code></p>
+</li>
+<li>
+<p><code>Actions</code></p>
+</li>
+<li>
+<p><code>Props.Class</code></p>
+</li>
+<li>
+<p>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/page_header.golden.html"><code>page_header.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/page_header.html"><code>templates/components/page_header.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentcontainer">ComponentContainer</h2>
+<h3 id="purpose-18">Purpose</h3>
+<p>Width and padding wrapper for page-level content.</p>
+<h3 id="key-props-18">Key props</h3>
+<ul>
+<li>
+<p><code>MaxWidth</code> (<code>sm</code>, <code>md</code>, <code>lg</code>, <code>full</code>)</p>
+</li>
+<li>
+<p><code>Padding</code> (<code>none</code>, <code>sm</code>, <code>md</code>, <code>lg</code>)</p>
+</li>
+<li>
+<p><code>Centered</code></p>
+</li>
+<li>
+<p><code>Props.Class</code></p>
+</li>
+<li>
+<p>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/container.golden.html"><code>container.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/container.html"><code>templates/components/container.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentcard">ComponentCard</h2>
+<h3 id="purpose-19">Purpose</h3>
+<p>Card surface with optional header actions.</p>
+<h3 id="key-props-19">Key props</h3>
+<ul>
+<li>
+<p><code>Title</code>, <code>Description</code></p>
+</li>
+<li>
+<p><code>Actions</code></p>
+</li>
+<li>
+<p><code>Props.Class</code></p>
+</li>
+<li>
+<p>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/card.golden.html"><code>card.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/card.html"><code>templates/components/card.html</code></a></p>
+</li>
+</ul>
+<h2 id="componentsection">ComponentSection</h2>
+<h3 id="purpose-20">Purpose</h3>
+<p>Unframed section wrapper with consistent header spacing.</p>
+<h3 id="key-props-20">Key props</h3>
+<ul>
+<li>
+<p><code>Title</code>, <code>Description</code></p>
+</li>
+<li>
+<p><code>Actions</code></p>
+</li>
+<li>
+<p><code>Props.Class</code></p>
+</li>
+<li>
+<p>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/section.golden.html"><code>section.golden.html</code></a></p>
+</li>
+<li>
+<p>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/section.html"><code>templates/components/section.html</code></a></p>
+</li>
+</ul>
+<hr>
+<h2 id="feedback-demo">Feedback Demo</h2>
+<h3 id="purpose-21">Purpose</h3>
 <p>Unified demo for <code>Toast</code>, <code>Alert</code>, <code>EmptyState</code>, and <code>Skeleton</code> added under <code>ui/feedback/</code>.</p>
 <ul>
 <li>Variant: <code>success</code> / <code>info</code> / <code>warning</code> / <code>error</code></li>
@@ -300,7 +459,7 @@
 <li>Accessibility: <code>role</code>, <code>aria-live</code>, <code>aria-busy</code></li>
 <li>Tokens: <code>ui/feedback/tokens.css</code></li>
 </ul>
-<h3 id="visual-10">Visual</h3>
+<h3 id="visual-11">Visual</h3>
 <iframe src="./examples/feedback.html" title="Feedback components demo" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <ul>
 <li>Demo source: <a href="https://github.com/YoshihideShirai/marionette/blob/main/ui/feedback/stories.html"><code>ui/feedback/stories.html</code></a></li>
@@ -310,7 +469,7 @@
 <h2 id="optional-demo-screenshot">Optional demo screenshot</h2>
 <p>Place a demo screenshot from <code>cmd/marionette/main.go</code> under <code>docs/site/assets/</code> when browser-capture tooling is available.</p>
 <h2 id="overlay-system-demo">Overlay System Demo</h2>
-<h3 id="purpose-15">Purpose</h3>
+<h3 id="purpose-22">Purpose</h3>
 <p>A demo that validates <code>Modal</code>, <code>Drawer</code>, <code>Popover</code>, and <code>Tooltip</code> in <code>ui/overlay/</code>, powered by shared <code>overlay-core</code> logic.</p>
 <ul>
 <li>Esc-key close</li>
@@ -319,7 +478,7 @@
 <li>Unified portal target (<code>#ui-overlay-root</code>)</li>
 <li>Reusable z-index / scroll-lock rules</li>
 </ul>
-<h3 id="visual-11">Visual</h3>
+<h3 id="visual-12">Visual</h3>
 <blockquote>
 <p>Live iframe preview is omitted in GitHub Pages because <code>ui/overlay/</code> is outside the published <code>docs/site/</code> artifact. Use the links below to view source assets.</p>
 </blockquote>

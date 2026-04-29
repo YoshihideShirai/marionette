@@ -144,6 +144,66 @@ func TestTemplateRenderingGolden(t *testing.T) {
 				Props:   ComponentProps{Size: "sm"},
 			}),
 		},
+		{
+			name: "stack",
+			node: ComponentStack(
+				StackProps{Direction: "horizontal", Gap: "sm", Align: "center", Justify: "between", Wrap: true, Props: ComponentProps{Class: "w-full"}},
+				Text("Left"),
+				ComponentButton("Right", ComponentProps{Variant: "secondary", Size: "sm"}),
+			),
+		},
+		{
+			name: "grid",
+			node: ComponentGrid(
+				GridProps{Columns: "3", Gap: "lg"},
+				DivClass("card bg-base-100 p-4", Text("One")),
+				DivClass("card bg-base-100 p-4", Text("Two")),
+				DivClass("card bg-base-100 p-4", Text("Three")),
+			),
+		},
+		{
+			name: "split",
+			node: ComponentSplit(SplitProps{
+				Main:            DivClass("card bg-base-100 p-4", Text("Main")),
+				Aside:           DivClass("card bg-base-100 p-4", Text("Aside")),
+				AsideWidth:      "md",
+				ReverseOnMobile: true,
+				Gap:             "lg",
+			}),
+		},
+		{
+			name: "page_header",
+			node: ComponentPageHeader(PageHeaderProps{
+				Title:       "Users",
+				Description: "Manage account records.",
+				Actions:     ComponentButton("Create", ComponentProps{Size: "sm"}),
+			}),
+		},
+		{
+			name: "container",
+			node: ComponentContainer(
+				ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true},
+				Text("Contained"),
+			),
+		},
+		{
+			name: "card",
+			node: ComponentCard(
+				CardProps{
+					Title:       "Summary",
+					Description: "Current workspace status.",
+					Actions:     ComponentButton("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+				},
+				Text("Ready"),
+			),
+		},
+		{
+			name: "section",
+			node: ComponentSection(
+				SectionProps{Title: "Details", Description: "Supporting information."},
+				Text("Section body"),
+			),
+		},
 	}
 
 	for _, tc := range tests {

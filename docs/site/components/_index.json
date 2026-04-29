@@ -99,6 +99,55 @@
       "template": "templates/components/switch.html"
     },
     {
+      "id": "stack",
+      "name": "ComponentStack",
+      "golden": "testdata/golden/stack.golden.html",
+      "example": "docs/site/components/examples/layout.html",
+      "template": "templates/components/stack.html"
+    },
+    {
+      "id": "grid",
+      "name": "ComponentGrid",
+      "golden": "testdata/golden/grid.golden.html",
+      "example": "docs/site/components/examples/layout.html",
+      "template": "templates/components/grid.html"
+    },
+    {
+      "id": "split",
+      "name": "ComponentSplit",
+      "golden": "testdata/golden/split.golden.html",
+      "example": "docs/site/components/examples/layout.html",
+      "template": "templates/components/split.html"
+    },
+    {
+      "id": "page-header",
+      "name": "ComponentPageHeader",
+      "golden": "testdata/golden/page_header.golden.html",
+      "example": "docs/site/components/examples/layout.html",
+      "template": "templates/components/page_header.html"
+    },
+    {
+      "id": "container",
+      "name": "ComponentContainer",
+      "golden": "testdata/golden/container.golden.html",
+      "example": "docs/site/components/examples/layout.html",
+      "template": "templates/components/container.html"
+    },
+    {
+      "id": "card",
+      "name": "ComponentCard",
+      "golden": "testdata/golden/card.golden.html",
+      "example": "docs/site/components/examples/layout.html",
+      "template": "templates/components/card.html"
+    },
+    {
+      "id": "section",
+      "name": "ComponentSection",
+      "golden": "testdata/golden/section.golden.html",
+      "example": "docs/site/components/examples/layout.html",
+      "template": "templates/components/section.html"
+    },
+    {
       "id": "overlay-system",
       "name": "OverlaySystemDemo",
       "example": "ui/overlay/stories.html",

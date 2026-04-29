@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Marionette ドキュメント" lang="ja" languageSwitcherPath="/marionette/en/">
+  <h1>Marionette ドキュメント</h1>
+  <p class="lead">Goだけで管理UIを構築し、htmxで部分更新するMarionetteのドキュメントです。</p>
+
+  <section class="top-section" aria-labelledby="quick-start-ja">
+    <h2 id="quick-start-ja">Quick Start</h2>
+    <p>初見でも3分以内に試せる最短ルートです。</p>
+    <ol>
+      <li>フル機能デモを起動: <code>go run ./cmd/marionette</code></li>
+      <li>最小構成サンプルを起動: <code>go run ./cmd/simple-sample</code></li>
+      <li>APIを確認: <a href="/marionette/docs_api.md">docs_api.md</a></li>
+    </ol>
+  </section>
+
+  <section class="top-section" aria-labelledby="pathways-ja">
+    <h2 id="pathways-ja">目的別リンク</h2>
+    <div class="top-cards">
+      <a class="top-card" href="/marionette/ja/components/"><h3>Components Gallery</h3><p>試す: UIコンポーネントの見た目と構造を確認する。</p></a>
+      <a class="top-card" href="/marionette/docs_api.md"><h3>API Docs</h3><p>学ぶ: Page / Action / Context などのAPI仕様を把握する。</p></a>
+    </div>
+  </section>
+</BaseLayout>

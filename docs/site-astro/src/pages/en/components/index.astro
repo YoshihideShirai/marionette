@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import catalog from '../../../data/components-index.json';
+
+const cards = catalog.components;
+const groups = ['Components', 'Layout', 'Data', 'Chart'] as const;
+const selectedGroup = Astro.url.searchParams.get('group');
+const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ? selectedGroup : 'All';
+const visibleCards =
+  initialGroup === 'All' ? cards : cards.filter((component) => component.group === initialGroup);
+---
+<BaseLayout title="Components Gallery">
+  <h1>Components Gallery</h1>
+  <p class="lead">Displays each component visual sample in an iframe.</p>
+
+  <nav class="group-filter" aria-label="Component group filter">
+    {['All', ...groups].map((group) => {
+      const href = group === 'All' ? './' : `./?group=${encodeURIComponent(group)}`;
+      const active = group === initialGroup;
+
+      return (
+        <a href={href} class:list={{ chip: true, active }} aria-current={active ? 'page' : undefined}>
+          {group}
+        </a>
+      );
+    })}
+  </nav>
+
+  <label class="search-field">
+    <span>Search components</span>
+    <input
+      id="component-search"
+      type="search"
+      placeholder="Filter by name or description"
+      autocomplete="off"
+    />
+  </label>
+
+  <div class="grid" data-component-grid>
+    {visibleCards.map((component) => {
+      return (
+        <article
+          class="card"
+          data-component-card
+          data-name={component.name.toLowerCase()}
+          data-description={component.description.toLowerCase()}
+        >
+          <header class="card-header">
+            <h2><a href={`./${component.id}/`}>{component.name}</a></h2>
+            {!component.example && <span class="badge">Example pending</span>}
+          </header>
+          <p>{component.description}</p>
+          {component.example && (
+            <iframe src={component.example} title={`${component.name} example`} loading="lazy" />
+          )}
+        </article>
+      );
+    })}
+  </div>
+
+  <p class="empty" data-empty-state hidden>No components matched your search.</p>
+
+  <script>
+    const input = document.querySelector('#component-search');
+    const cards = Array.from(document.querySelectorAll('[data-component-card]'));
+    const emptyState = document.querySelector('[data-empty-state]');
+
+    const applySearch = () => {
+      const keyword = (input?.value ?? '').trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const name = card.dataset.name ?? '';
+        const description = card.dataset.description ?? '';
+        const isMatch = !keyword || name.includes(keyword) || description.includes(keyword);
+        card.hidden = !isMatch;
+        if (isMatch) visibleCount += 1;
+      });
+
+      if (emptyState) {
+        emptyState.hidden = visibleCount > 0;
+      }
+    };
+
+    input?.addEventListener('input', applySearch);
+  </script>
+
+  <style>
+    .group-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .chip {
+      border: 1px solid var(--sl-color-gray-4);
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+      color: inherit;
+    }
+
+    .chip.active {
+      border-color: var(--sl-color-accent-high);
+      background: var(--sl-color-accent-low);
+    }
+
+    .search-field {
+      display: grid;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      max-width: 28rem;
+    }
+
+    .search-field input {
+      width: 100%;
+      padding: 0.55rem 0.7rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--sl-color-gray-4);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .badge {
+      border: 1px solid var(--sl-color-orange-high);
+      background: var(--sl-color-orange-low);
+      color: var(--sl-color-orange-high);
+      border-radius: 999px;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .empty {
+      margin-top: 1rem;
+      color: var(--sl-color-gray-2);
+    }
+  </style>
+</BaseLayout>

@@ -1,99 +1,16 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Marionette Docs (Astro)">
-  <div class="lang-switch" role="group" aria-label="Language switcher">
-    <button type="button" class="lang-btn" data-lang-btn="ja">日本語</button>
-    <button type="button" class="lang-btn" data-lang-btn="en">English</button>
-  </div>
-
-  <div data-lang="ja">
-    <h1>Marionette ドキュメント</h1>
-    <p class="lead">Goだけで管理UIを構築し、htmxで部分更新するMarionetteのドキュメントです。</p>
-
-    <section class="top-section" aria-labelledby="quick-start-ja">
-      <h2 id="quick-start-ja">Quick Start</h2>
-      <p>初見でも3分以内に試せる最短ルートです。</p>
-      <ol>
-        <li>フル機能デモを起動: <code>go run ./cmd/marionette</code></li>
-        <li>最小構成サンプルを起動: <code>go run ./cmd/simple-sample</code></li>
-        <li>APIを確認: <a href="/marionette/docs_api.md">docs_api.md</a></li>
-      </ol>
-    </section>
-
-    <section class="top-section" aria-labelledby="overview-3min-ja">
-      <h2 id="overview-3min-ja">3分でわかるMarionette</h2>
-      <ul>
-        <li><strong>Architecture:</strong> Goバックエンドがルーティング・状態管理・イベント処理を担当し、フロントはhtmxがHTMLの部分差し替えを担当します。</li>
-        <li><strong>Run example:</strong> <code>go run ./cmd/marionette</code> で管理UIデモを起動し、<code>http://127.0.0.1:8080</code> で挙動を確認できます。</li>
-        <li><strong>API Documentation:</strong> 主要APIの詳細は <a href="/marionette/docs_api.md">docs_api.md</a> を参照してください。</li>
-      </ul>
-    </section>
-
-    <section class="top-section" aria-labelledby="pathways-ja">
-      <h2 id="pathways-ja">目的別リンク</h2>
-      <div class="top-cards">
-        <a class="top-card" href="/marionette/components/"><h3>Components Gallery</h3><p>試す: UIコンポーネントの見た目と構造を確認する。</p></a>
-        <a class="top-card" href="/marionette/docs_api.md"><h3>API Docs</h3><p>学ぶ: Page / Action / Context などのAPI仕様を把握する。</p></a>
-        <a class="top-card" href="/marionette/CONTRIBUTING.md"><h3>Contributing</h3><p>貢献する: 開発フローやコントリビュート手順を確認する。</p></a>
-      </div>
-    </section>
-  </div>
-
-  <div data-lang="en" hidden>
-    <h1>Marionette Documentation</h1>
-    <p class="lead">Build admin UIs in Go, with htmx-driven partial updates on the frontend.</p>
-
-    <section class="top-section" aria-labelledby="quick-start-en">
-      <h2 id="quick-start-en">Quick Start</h2>
-      <p>The fastest path to try Marionette in under three minutes.</p>
-      <ol>
-        <li>Run the full demo: <code>go run ./cmd/marionette</code></li>
-        <li>Run the minimal sample: <code>go run ./cmd/simple-sample</code></li>
-        <li>Read the API reference: <a href="/marionette/docs_api.md">docs_api.md</a></li>
-      </ol>
-    </section>
-
-    <section class="top-section" aria-labelledby="overview-3min-en">
-      <h2 id="overview-3min-en">Marionette in 3 Minutes</h2>
-      <ul>
-        <li><strong>Architecture:</strong> Go handles routing, state, and events, while htmx handles incremental HTML swaps.</li>
-        <li><strong>Run example:</strong> Start with <code>go run ./cmd/marionette</code> and open <code>http://127.0.0.1:8080</code>.</li>
-        <li><strong>API Documentation:</strong> See <a href="/marionette/docs_api.md">docs_api.md</a> for API details.</li>
-      </ul>
-    </section>
-
-    <section class="top-section" aria-labelledby="pathways-en">
-      <h2 id="pathways-en">Navigate by Goal</h2>
-      <div class="top-cards">
-        <a class="top-card" href="/marionette/components/"><h3>Components Gallery</h3><p>Try: Explore component visuals and structure.</p></a>
-        <a class="top-card" href="/marionette/docs_api.md"><h3>API Docs</h3><p>Learn: Understand Page / Action / Context APIs.</p></a>
-        <a class="top-card" href="/marionette/CONTRIBUTING.md"><h3>Contributing</h3><p>Contribute: Check development and contribution flow.</p></a>
-      </div>
-    </section>
-  </div>
-
-  <script>
-    const containers = document.querySelectorAll('[data-lang]');
-    const buttons = document.querySelectorAll('[data-lang-btn]');
-
-    const applyLang = (lang) => {
-      containers.forEach((el) => {
-        el.hidden = el.getAttribute('data-lang') !== lang;
-      });
-      buttons.forEach((btn) => {
-        const active = btn.getAttribute('data-lang-btn') === lang;
-        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      });
-      localStorage.setItem('marionette-doc-lang', lang);
-    };
-
-    const stored = localStorage.getItem('marionette-doc-lang');
-    const browser = navigator.language?.toLowerCase().startsWith('ja') ? 'ja' : 'en';
-    applyLang(stored || browser);
-
-    buttons.forEach((btn) => {
-      btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang-btn') || 'ja'));
-    });
-  </script>
-</BaseLayout>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Marionette Docs</title>
+  </head>
+  <body>
+    <script>
+      const lang = navigator.language?.toLowerCase().startsWith('ja') ? 'ja' : 'en';
+      window.location.replace(`/marionette/${lang}/`);
+    </script>
+    <p>Redirecting to your language page...</p>
+  </body>
+</html>

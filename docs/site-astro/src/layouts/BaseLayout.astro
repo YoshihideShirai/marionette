@@ -1,8 +1,14 @@
 ---
 import '../styles/global.css';
-const { title = 'Marionette Docs' } = Astro.props;
+
+const {
+  title = 'Marionette Docs',
+  lang = 'en',
+  languageSwitcherPath = '/marionette/',
+} = Astro.props;
+const isJa = lang === 'ja';
 ---
-<html lang="ja">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,31 +25,18 @@ const { title = 'Marionette Docs' } = Astro.props;
   </head>
   <body>
     <header class="site-header">
-      <a href="/marionette/" class="brand">Marionette Docs</a>
+      <a href={isJa ? '/marionette/ja/' : '/marionette/en/'} class="brand">Marionette Docs</a>
       <nav class="site-nav">
-        <a href="/marionette/">Home</a>
-        <a href="/marionette/components/">Components</a>
+        <a href={isJa ? '/marionette/ja/' : '/marionette/en/'}>{isJa ? 'ホーム' : 'Home'}</a>
+        <a href={isJa ? '/marionette/ja/components/' : '/marionette/en/components/'}>{isJa ? 'コンポーネント' : 'Components'}</a>
+        <a href={languageSwitcherPath} hreflang={isJa ? 'en' : 'ja'}>{isJa ? 'English' : '日本語'}</a>
         <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙 Dark</button>
       </nav>
     </header>
     <main class="container">
-      {Astro.url.pathname.includes('/components/') && !Astro.url.pathname.endsWith('/components/') && (
-        <p class="back-link"><a href="../">← Components 一覧へ戻る</a></p>
-      )}
       <slot />
     </main>
   </body>
-  <style>
-    .back-link {
-      margin: 0.75rem 0 1rem;
-    }
-
-    .back-link a {
-      color: var(--sl-color-text-accent);
-      text-decoration: none;
-      font-weight: 600;
-    }
-  </style>
   <script is:inline>
     (() => {
       const key = 'marionette-docs-theme';

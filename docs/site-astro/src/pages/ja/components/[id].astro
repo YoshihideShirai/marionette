@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import catalog from '../../../data/components-index.json';
+
+export function getStaticPaths() {
+  return catalog.components.map((component) => ({
+    params: { id: component.id },
+    props: { component },
+  }));
+}
+
+const { component } = Astro.props;
+const fallbackPath = `/marionette/en/components/${component.id}/`;
+---
+<BaseLayout title={`${component.name} (English)`} lang="ja" languageSwitcherPath={fallbackPath}>
+  <h1>未翻訳ページ</h1>
+  <p>このコンポーネント詳細はまだ日本語化されていません。英語ページへ移動します。</p>
+  <p><a href={fallbackPath}>Open English page</a></p>
+</BaseLayout>

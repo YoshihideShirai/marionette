@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import catalog from '../../../data/components-index.json';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 export function getStaticPaths() {
   return catalog.components.map((component) => ({
@@ -11,6 +13,23 @@ export function getStaticPaths() {
 
 const { component } = Astro.props;
 const pageTitle = `${component.name} | Components`;
+
+const visualSourcePathCandidates = [component.template, component.golden].filter(
+  (value) => typeof value === 'string' && value.startsWith('ui/'),
+);
+
+let visualSourcePath = null;
+let visualSourceCode = null;
+
+for (const candidate of visualSourcePathCandidates) {
+  const absolutePath = resolve(process.cwd(), '..', '..', '..', candidate);
+  if (!existsSync(absolutePath)) {
+    continue;
+  }
+  visualSourcePath = candidate;
+  visualSourceCode = readFileSync(absolutePath, 'utf8');
+  break;
+}
 ---
 <BaseLayout title={pageTitle}>
   <article class="detail">
@@ -42,6 +61,16 @@ const pageTitle = `${component.name} | Components`;
         </div>
       </dl>
     </section>
+
+    {visualSourceCode ? (
+      <section>
+        <h2>Visual Source</h2>
+        <p>
+          This visual implementation is sourced from <code>{visualSourcePath}</code>.
+        </p>
+        <pre><code>{visualSourceCode}</code></pre>
+      </section>
+    ) : null}
   </article>
 
   <style>
@@ -78,6 +107,19 @@ const pageTitle = `${component.name} | Components`;
 
     dd {
       margin: 0.25rem 0 0;
+    }
+
+    pre {
+      overflow-x: auto;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      background: var(--sl-color-black);
+      color: var(--sl-color-white);
+    }
+
+    code {
+      white-space: pre;
     }
   </style>
 </BaseLayout>

@@ -17,8 +17,8 @@ const { title = 'Marionette Docs' } = Astro.props;
       </nav>
     </header>
     <main class="container">
-      {Astro.url.pathname.startsWith('/components/') && Astro.url.pathname !== '/components/' && (
-        <p class="back-link"><a href="/components/">← Components 一覧へ戻る</a></p>
+      {Astro.url.pathname.includes('/components/') && !Astro.url.pathname.endsWith('/components/') && (
+        <p class="back-link"><a href="../">← Components 一覧へ戻る</a></p>
       )}
       <slot />
     </main>

@@ -1,16 +1,20 @@
 ## Summary
 
-- Change details:
-- Background:
+<!-- What changed and why? -->
 
-## Change Checklist
+## Docs impact
 
-- [ ] Specified the target component(s)
-- [ ] Verified state variations (for example: default / loading / disabled / error)
-- [ ] Completed accessibility verification (keyboard support, ARIA, labels)
+- [ ] User-facing behavior changed and docs were updated in `docs/site/`.
+- [ ] Architecture/conventions changed and docs were updated in `docs/`.
+- [ ] No docs updates needed (explain why).
 
 ## Validation
 
-- [ ] Verified behavior locally
-- [ ] Confirmed no unexpected impact on existing functionality
-- [ ] Updated documentation where required
+- [ ] `go test ./...`
+- [ ] Manually verified docs links/pages touched in this PR.
+
+## Checklist
+
+- [ ] Scope is small and reviewable.
+- [ ] Breaking changes are called out.
+- [ ] Follow-up work is tracked.

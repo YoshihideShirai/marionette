@@ -99,3 +99,14 @@ Detailed API reference is available here:
 
 - The Pages deploy workflow publishes `docs/site/` via GitHub Actions.
 - Before enabling deploys, set repository **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
+
+## Documentation
+
+Start with the published docs hub:
+
+- `docs/site/index.md` (GitHub Pages source)
+- Quickstart: `docs/site/getting-started.md`
+- Framework overview: `docs/site/framework-overview.md`
+- Components gallery: `docs/site/components/index.md`
+- Contribution guide: `CONTRIBUTING.md`
+

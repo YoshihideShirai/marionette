@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import catalog from '../../../data/components-index.json';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 export function getStaticPaths() {
   return catalog.components.map((component) => ({
@@ -10,10 +12,128 @@ export function getStaticPaths() {
 }
 
 const { component } = Astro.props;
-const fallbackPath = `/marionette/en/components/${component.id}/`;
+const pageTitle = `${component.name} | コンポーネント`;
+
+const visualSourcePathCandidates = [component.template, component.golden].filter(
+  (value) => typeof value === 'string' && value.length > 0,
+);
+
+let visualSourcePath = null;
+let visualSourceCode = null;
+
+const goSourcePath = `docs/site-astro/public/examples/go/${component.id}.go`;
+const goSourceAbsolutePath = resolve(process.cwd(), '..', '..', '..', goSourcePath);
+const goSourceCode = existsSync(goSourceAbsolutePath) ? readFileSync(goSourceAbsolutePath, 'utf8') : null;
+
+for (const candidate of visualSourcePathCandidates) {
+  const absolutePath = resolve(process.cwd(), '..', '..', '..', candidate);
+  if (!existsSync(absolutePath)) {
+    continue;
+  }
+  visualSourcePath = candidate;
+  visualSourceCode = readFileSync(absolutePath, 'utf8');
+  break;
+}
 ---
-<BaseLayout title={`${component.name} (English)`} lang="ja" languageSwitcherPath={fallbackPath}>
-  <h1>未翻訳ページ</h1>
-  <p>このコンポーネント詳細はまだ日本語化されていません。英語ページへ移動します。</p>
-  <p><a href={fallbackPath}>Open English page</a></p>
+<BaseLayout title={pageTitle} lang="ja" languageSwitcherPath={`/marionette/en/components/${component.id}/`}>
+  <article class="detail">
+    <header>
+      <p class="eyebrow">コンポーネント詳細</p>
+      <h1>{component.name}</h1>
+      <p>{component.description}</p>
+    </header>
+
+    <section>
+      <h2>サンプル</h2>
+      {component.example ? (
+        <iframe src={component.example} title={`${component.name} のサンプル`} loading="lazy" />
+      ) : (
+        <p>サンプルはまだ公開されていません。</p>
+      )}
+    </section>
+
+    <section>
+      <h2>参照情報</h2>
+      <dl>
+        <div>
+          <dt>テンプレート</dt>
+          <dd><code>{component.template ?? 'N/A'}</code></dd>
+        </div>
+        <div>
+          <dt>ゴールデン</dt>
+          <dd><code>{component.golden ?? 'N/A'}</code></dd>
+        </div>
+      </dl>
+    </section>
+
+    {visualSourceCode ? (
+      <section>
+        <h2>ビジュアル実装ソース</h2>
+        <p>
+          このビジュアル実装は <code>{visualSourcePath}</code> を参照しています。
+        </p>
+        <pre><code>{visualSourceCode}</code></pre>
+      </section>
+    ) : null}
+
+    {goSourceCode ? (
+      <section>
+        <h2>Go（Marionette）サンプル</h2>
+        <p>
+          この実装例は Go の Marionette を使っています。ソース: <code>{goSourcePath}</code>
+        </p>
+        <pre><code>{goSourceCode}</code></pre>
+      </section>
+    ) : null}
+  </article>
+
+  <style>
+    .detail {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .eyebrow {
+      margin-bottom: 0.25rem;
+      color: var(--sl-color-gray-2);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    iframe {
+      width: 100%;
+      min-height: 320px;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 0.75rem;
+      background: white;
+    }
+
+    dl {
+      display: grid;
+      gap: 0.75rem;
+      margin: 0;
+    }
+
+    dt {
+      font-weight: 700;
+    }
+
+    dd {
+      margin: 0.25rem 0 0;
+    }
+
+    pre {
+      overflow-x: auto;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      background: var(--sl-color-black);
+      color: var(--sl-color-white);
+    }
+
+    code {
+      white-space: pre;
+    }
+  </style>
 </BaseLayout>

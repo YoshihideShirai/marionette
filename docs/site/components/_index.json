@@ -49,6 +49,14 @@
       "template": "templates/components/table.html"
     },
     {
+      "id": "chart",
+      "name": "ComponentChart",
+      "group": "Components",
+      "golden": "testdata/golden/chart.golden.html",
+      "example": "docs/site/components/examples/chart.html",
+      "template": "templates/components/chart.html"
+    },
+    {
       "id": "pagination",
       "name": "ComponentPagination",
       "group": "Components",

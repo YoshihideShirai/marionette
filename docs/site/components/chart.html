@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Feedback Demo</title>
+    <title>ComponentChart</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -133,7 +133,7 @@
               
                 <a href="./table.html">ComponentTable</a>
               
-                <a href="./chart.html">ComponentChart</a>
+                <a href="./chart.html" aria-current="page">ComponentChart</a>
               
                 <a href="./pagination.html">ComponentPagination</a>
               
@@ -151,7 +151,7 @@
               
                 <a href="./switch.html">ComponentSwitch</a>
               
-                <a href="./feedback.html" aria-current="page">Feedback Demo</a>
+                <a href="./feedback.html">Feedback Demo</a>
               
                 <a href="./overlay-system.html">Overlay System Demo</a>
               
@@ -182,36 +182,43 @@
       </aside>
       <main class="docs-main">
         <div class="docs-content">
-          <h1 id="feedback-demo">Feedback Demo</h1>
+          <h1 id="componentchart">ComponentChart</h1>
 <h3 id="purpose">Purpose</h3>
-<p>Unified demo for <code>Toast</code>, <code>Alert</code>, <code>EmptyState</code>, and <code>Skeleton</code> added under <code>ui/feedback/</code>.</p>
+<p>Chart.js-backed data visualization component rendered from Go props.</p>
+<h3 id="key-props">Key props</h3>
 <ul>
-<li>Variant: <code>success</code> / <code>info</code> / <code>warning</code> / <code>error</code></li>
-<li>Size: <code>sm</code> / <code>md</code> / <code>lg</code></li>
-<li>Accessibility: <code>role</code>, <code>aria-live</code>, <code>aria-busy</code></li>
-<li>Tokens: <code>ui/feedback/tokens.css</code></li>
+<li><code>Type</code> (<code>line</code>, <code>bar</code>, <code>pie</code>, <code>doughnut</code>, <code>scatter</code>)</li>
+<li><code>Labels</code></li>
+<li><code>Datasets</code> (<code>Label</code>, <code>Data</code> or <code>Points</code>, colors, <code>Fill</code>, <code>Tension</code>)</li>
+<li><code>Options</code> (<code>BeginAtZero</code>, <code>Stacked</code>, <code>HideLegend</code>, axis labels)</li>
 </ul>
 <h3 id="visual">Visual</h3>
-<iframe src="./examples/feedback.html" title="Feedback components demo" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<iframe src="./examples/chart.html" title="ComponentChart example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">toast := mf.ComponentToast(mf.ToastProps{
-    Title:       &quot;Toast / Default&quot;,
-    Description: &quot;Saved successfully.&quot;,
-    Icon:        &quot;✓&quot;,
-    Props:       mf.ComponentProps{Variant: &quot;success&quot;, Size: &quot;md&quot;},
-})
-
-alert := mf.ComponentAlert(mf.AlertProps{
-    Title:       &quot;Alert / Long content&quot;,
-    Description: &quot;An error occurred. Please wait a moment and try again.&quot;,
-    Icon:        &quot;!&quot;,
-    Props:       mf.ComponentProps{Variant: &quot;error&quot;, Size: &quot;lg&quot;},
+<pre><code class="language-go">signupsChart := mf.ComponentChart(mf.ChartProps{
+    Type:        mf.ChartTypeLine,
+    Title:       &quot;Weekly signups&quot;,
+    Description: &quot;New accounts by weekday.&quot;,
+    Labels:      []string{&quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;},
+    Datasets: []mf.ChartDataset{
+        {
+            Label:           &quot;Signups&quot;,
+            Data:            []float64{12, 19, 14, 22, 18},
+            BorderColor:     &quot;#2563eb&quot;,
+            BackgroundColor: &quot;rgba(37, 99, 235, 0.16)&quot;,
+            Fill:            true,
+            Tension:         0.3,
+        },
+    },
+    Options: mf.ChartOptions{
+        BeginAtZero: true,
+        YAxisLabel:  &quot;Users&quot;,
+    },
 })
 </code></pre>
 <ul>
-<li>Demo source: <a href="https://github.com/YoshihideShirai/marionette/blob/main/ui/feedback/stories.html"><code>ui/feedback/stories.html</code></a></li>
-<li>Tokens: <a href="https://github.com/YoshihideShirai/marionette/blob/main/ui/feedback/tokens.css"><code>ui/feedback/tokens.css</code></a></li>
-<li>Templates: <code>templates/components/{toast,alert,empty_state,skeleton}.html</code></li>
+<li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/chart.golden.html"><code>chart.golden.html</code></a></li>
+<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/chart.html"><code>templates/components/chart.html</code></a></li>
 </ul>
 
         </div>

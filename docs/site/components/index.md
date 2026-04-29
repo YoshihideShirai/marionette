@@ -14,22 +14,23 @@ This page lists Marionette UI components. The target component set is managed in
 4. [ComponentModal](#componentmodal)
 5. [ComponentEmptyState](#componentemptystate)
 6. [ComponentTable](#componenttable)
-7. [ComponentPagination](#componentpagination)
-8. [ComponentFormField](#componentformfield)
-9. [ComponentTabs](#componenttabs)
-10. [ComponentBreadcrumb](#componentbreadcrumb)
-11. [ComponentTextarea](#componenttextarea)
-12. [ComponentCheckbox](#componentcheckbox)
-13. [ComponentRadioGroup](#componentradiogroup)
-14. [ComponentSwitch](#componentswitch)
-15. [ComponentStack](#componentstack)
-16. [ComponentGrid](#componentgrid)
-17. [ComponentSplit](#componentsplit)
-18. [ComponentPageHeader](#componentpageheader)
-19. [ComponentContainer](#componentcontainer)
-20. [ComponentCard](#componentcard)
-21. [ComponentSection](#componentsection)
-22. [Feedback Demo](#feedback-demo)
+7. [ComponentChart](#componentchart)
+8. [ComponentPagination](#componentpagination)
+9. [ComponentFormField](#componentformfield)
+10. [ComponentTabs](#componenttabs)
+11. [ComponentBreadcrumb](#componentbreadcrumb)
+12. [ComponentTextarea](#componenttextarea)
+13. [ComponentCheckbox](#componentcheckbox)
+14. [ComponentRadioGroup](#componentradiogroup)
+15. [ComponentSwitch](#componentswitch)
+16. [ComponentStack](#componentstack)
+17. [ComponentGrid](#componentgrid)
+18. [ComponentSplit](#componentsplit)
+19. [ComponentPageHeader](#componentpageheader)
+20. [ComponentContainer](#componentcontainer)
+21. [ComponentCard](#componentcard)
+22. [ComponentSection](#componentsection)
+23. [Feedback Demo](#feedback-demo)
 
 ---
 
@@ -147,6 +148,26 @@ Tabular list UI rendered from column and row definitions.
 
 - Golden sample: [`table.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/table.golden.html)
 - Template: [`templates/components/table.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/table.html)
+
+## ComponentChart
+
+### Purpose
+
+Chart.js-backed data visualization component rendered from Go props.
+
+### Key props
+
+- `Type` (`line`, `bar`, `pie`, `doughnut`, `scatter`)
+- `Labels`
+- `Datasets` (`Label`, `Data` or `Points`, colors, `Fill`, `Tension`)
+- `Options` (`BeginAtZero`, `Stacked`, `HideLegend`, axis labels)
+
+### Visual
+
+<iframe src="./examples/chart.html" title="ComponentChart example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+- Golden sample: [`chart.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/chart.golden.html)
+- Template: [`templates/components/chart.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/chart.html)
 
 ## ComponentPagination
 

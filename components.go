@@ -2,6 +2,7 @@ package marionette
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"path/filepath"
@@ -99,6 +100,57 @@ type TableProps struct {
 	Rows             []TableComponentRow
 	EmptyTitle       string
 	EmptyDescription string
+}
+
+type ChartType string
+
+const (
+	ChartTypeBar      ChartType = "bar"
+	ChartTypeLine     ChartType = "line"
+	ChartTypePie      ChartType = "pie"
+	ChartTypeDoughnut ChartType = "doughnut"
+	ChartTypeScatter  ChartType = "scatter"
+)
+
+type ChartDataset struct {
+	Label           string
+	Data            []float64
+	Points          []ChartPoint
+	BackgroundColor string
+	BorderColor     string
+	Fill            bool
+	Tension         float64
+}
+
+type ChartPoint struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+}
+
+type ChartOptions struct {
+	BeginAtZero bool
+	Stacked     bool
+	HideLegend  bool
+	AspectRatio float64
+	XAxisLabel  string
+	YAxisLabel  string
+}
+
+type ChartProps struct {
+	Type        ChartType
+	Title       string
+	Description string
+	Labels      []string
+	Datasets    []ChartDataset
+	Options     ChartOptions
+	AriaLabel   string
+	Height      int
+	Props       ComponentProps
+}
+
+type chartFallbackRow struct {
+	Label  string
+	Values []string
 }
 
 type PaginationProps struct {
@@ -511,6 +563,50 @@ func ComponentTable(props TableProps) Node {
 	}
 }
 
+func ComponentChart(props ChartProps) Node {
+	config, err := chartConfigJSON(props)
+	if err != nil {
+		return renderErrorNode{err: err}
+	}
+	height := props.Height
+	if height <= 0 {
+		height = 320
+	}
+	ariaLabel := strings.TrimSpace(props.AriaLabel)
+	if ariaLabel == "" {
+		ariaLabel = strings.TrimSpace(props.Title)
+	}
+	if ariaLabel == "" {
+		ariaLabel = "Chart"
+	}
+	return templateNode{
+		name: "components/chart",
+		data: struct {
+			Class        string
+			Title        string
+			Description  string
+			AriaLabel    string
+			Height       int
+			Config       template.JS
+			Labels       []string
+			Datasets     []ChartDataset
+			Rows         []chartFallbackRow
+			FallbackText string
+		}{
+			Class:        chartClass(props.Props),
+			Title:        strings.TrimSpace(props.Title),
+			Description:  strings.TrimSpace(props.Description),
+			AriaLabel:    ariaLabel,
+			Height:       height,
+			Config:       template.JS(config),
+			Labels:       props.Labels,
+			Datasets:     props.Datasets,
+			Rows:         chartFallbackRows(props),
+			FallbackText: chartFallbackText(props),
+		},
+	}
+}
+
 func ComponentPagination(props PaginationProps) Node {
 	page := props.Page
 	if page < 1 {
@@ -534,6 +630,114 @@ func ComponentPagination(props PaginationProps) Node {
 			NextHref:   strings.TrimSpace(props.NextHref),
 		},
 	}
+}
+
+func chartConfigJSON(props ChartProps) (string, error) {
+	chartType := strings.TrimSpace(string(props.Type))
+	if chartType == "" {
+		chartType = string(ChartTypeLine)
+	}
+
+	datasets := make([]map[string]any, 0, len(props.Datasets))
+	for _, dataset := range props.Datasets {
+		data := any(dataset.Data)
+		if len(dataset.Points) > 0 {
+			data = dataset.Points
+		}
+		item := map[string]any{
+			"label": strings.TrimSpace(dataset.Label),
+			"data":  data,
+		}
+		if color := strings.TrimSpace(dataset.BackgroundColor); color != "" {
+			item["backgroundColor"] = color
+		}
+		if color := strings.TrimSpace(dataset.BorderColor); color != "" {
+			item["borderColor"] = color
+		}
+		if dataset.Fill {
+			item["fill"] = true
+		}
+		if dataset.Tension > 0 {
+			item["tension"] = dataset.Tension
+		}
+		datasets = append(datasets, item)
+	}
+
+	options := map[string]any{
+		"responsive":          true,
+		"maintainAspectRatio": false,
+		"plugins": map[string]any{
+			"legend": map[string]any{"display": !props.Options.HideLegend},
+		},
+	}
+	if props.Options.AspectRatio > 0 {
+		options["maintainAspectRatio"] = true
+		options["aspectRatio"] = props.Options.AspectRatio
+	}
+
+	if chartType != string(ChartTypePie) && chartType != string(ChartTypeDoughnut) {
+		options["scales"] = chartScales(props.Options)
+	}
+
+	payload := map[string]any{
+		"type": chartType,
+		"data": map[string]any{
+			"labels":   props.Labels,
+			"datasets": datasets,
+		},
+		"options": options,
+	}
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
+func chartScales(options ChartOptions) map[string]any {
+	x := map[string]any{}
+	y := map[string]any{
+		"beginAtZero": options.BeginAtZero,
+	}
+	if options.Stacked {
+		x["stacked"] = true
+		y["stacked"] = true
+	}
+	if label := strings.TrimSpace(options.XAxisLabel); label != "" {
+		x["title"] = map[string]any{"display": true, "text": label}
+	}
+	if label := strings.TrimSpace(options.YAxisLabel); label != "" {
+		y["title"] = map[string]any{"display": true, "text": label}
+	}
+	return map[string]any{"x": x, "y": y}
+}
+
+func chartFallbackText(props ChartProps) string {
+	title := strings.TrimSpace(props.Title)
+	if title == "" {
+		title = "Chart"
+	}
+	return title + " data is available in the fallback table below."
+}
+
+func chartFallbackRows(props ChartProps) []chartFallbackRow {
+	rows := make([]chartFallbackRow, 0, len(props.Labels))
+	for i, label := range props.Labels {
+		values := make([]string, 0, len(props.Datasets))
+		for _, dataset := range props.Datasets {
+			if i < len(dataset.Points) {
+				values = append(values, fmt.Sprintf("%g, %g", dataset.Points[i].X, dataset.Points[i].Y))
+				continue
+			}
+			if i >= len(dataset.Data) {
+				values = append(values, "")
+				continue
+			}
+			values = append(values, fmt.Sprint(dataset.Data[i]))
+		}
+		rows = append(rows, chartFallbackRow{Label: label, Values: values})
+	}
+	return rows
 }
 
 func ComponentTabs(props TabsProps) Node {
@@ -1107,6 +1311,10 @@ func cardClass(props ComponentProps) string {
 
 func sectionClass(props ComponentProps) string {
 	return joinClass("space-y-4", props.Class)
+}
+
+func chartClass(props ComponentProps) string {
+	return joinClass("card bg-base-100 shadow-sm", props.Class)
 }
 
 func gapClass(gap string) string {

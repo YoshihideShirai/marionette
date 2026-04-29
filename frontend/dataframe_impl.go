@@ -2,10 +2,26 @@ package frontend
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	rdf "github.com/rocketlaunchr/dataframe-go"
 )
+
+type DataFrameChartSeries struct {
+	Column          string
+	Label           string
+	BackgroundColor string
+	BorderColor     string
+	Fill            bool
+	Tension         float64
+}
+
+type DataFrameChartProps struct {
+	Chart       ChartProps
+	LabelColumn string
+	Series      []DataFrameChartSeries
+}
 
 // ComponentDataFrame renders a github.com/rocketlaunchr/dataframe-go DataFrame
 // as a table component.
@@ -49,4 +65,94 @@ func ComponentDataFrame(df *rdf.DataFrame, props TableProps) Node {
 
 	tableProps.Rows = rows
 	return ComponentTable(tableProps)
+}
+
+// ComponentDataFrameChart renders dataframe columns through ComponentChart.
+//
+// LabelColumn selects the x-axis labels. If blank, the first dataframe column is
+// used. Series selects numeric columns. If blank, every column after LabelColumn
+// is rendered as a dataset.
+func ComponentDataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
+	chartProps := props.Chart
+	if df == nil {
+		return ComponentChart(chartProps)
+	}
+
+	columnNames := df.Names()
+	if len(columnNames) == 0 {
+		return ComponentChart(chartProps)
+	}
+
+	labelColumn := strings.TrimSpace(props.LabelColumn)
+	if labelColumn == "" {
+		labelColumn = columnNames[0]
+	}
+
+	series := props.Series
+	if len(series) == 0 {
+		for _, name := range columnNames {
+			if name == labelColumn {
+				continue
+			}
+			series = append(series, DataFrameChartSeries{Column: name, Label: name})
+		}
+	}
+
+	labels := make([]string, 0, df.NRows())
+	datasets := make([]ChartDataset, len(series))
+	for i, item := range series {
+		label := strings.TrimSpace(item.Label)
+		if label == "" {
+			label = strings.TrimSpace(item.Column)
+		}
+		datasets[i] = ChartDataset{
+			Label:           label,
+			BackgroundColor: strings.TrimSpace(item.BackgroundColor),
+			BorderColor:     strings.TrimSpace(item.BorderColor),
+			Fill:            item.Fill,
+			Tension:         item.Tension,
+			Data:            make([]float64, 0, df.NRows()),
+		}
+	}
+
+	for row := 0; row < df.NRows(); row++ {
+		rowData := df.Row(row, true, rdf.SeriesName)
+		labels = append(labels, fmt.Sprint(rowData[labelColumn]))
+		for i, item := range series {
+			datasets[i].Data = append(datasets[i].Data, chartFloat(rowData[strings.TrimSpace(item.Column)]))
+		}
+	}
+
+	chartProps.Labels = labels
+	chartProps.Datasets = datasets
+	return ComponentChart(chartProps)
+}
+
+func chartFloat(value any) float64 {
+	switch v := value.(type) {
+	case nil:
+		return 0
+	case float64:
+		return v
+	case float32:
+		return float64(v)
+	case int:
+		return float64(v)
+	case int64:
+		return float64(v)
+	case int32:
+		return float64(v)
+	case uint:
+		return float64(v)
+	case uint64:
+		return float64(v)
+	case uint32:
+		return float64(v)
+	default:
+		n, err := strconv.ParseFloat(strings.TrimSpace(fmt.Sprint(v)), 64)
+		if err != nil {
+			return 0
+		}
+		return n
+	}
 }

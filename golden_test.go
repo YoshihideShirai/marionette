@@ -19,11 +19,11 @@ func TestTemplateRenderingGolden(t *testing.T) {
 	}{
 		{
 			name: "button",
-			node: UIButton("Save", ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"}),
+			node: ButtonComponent("Save", ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"}),
 		},
 		{
 			name: "input",
-			node: UIInputWithOptions("start_date", "2030-01-01", InputOptions{
+			node: InputWithOptions("start_date", "2030-01-01", InputOptions{
 				Type:        "date",
 				Placeholder: "Start date",
 				Min:         "2024-01-01",
@@ -34,44 +34,44 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "select",
-			node: UISelect("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
+			node: SelectComponent("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
 		},
 		{
 			name: "form_field",
-			node: UIFormField(
-				UIInputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Size: "sm"}}),
+			node: FormFieldComponent(
+				InputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Size: "sm"}}),
 				FormFieldProps{Label: "Name", Required: true, Hint: "Enter a display name.", Error: "Name is required."},
 			),
 		},
 		{
 			name: "modal_open",
-			node: UIModal(ModalProps{
+			node: Modal(ModalProps{
 				Title:   "Delete user",
 				Body:    Text("Confirm deletion"),
-				Actions: UIButton("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
+				Actions: ButtonComponent("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
 				Open:    true,
 			}),
 		},
 
 		{
 			name: "toast",
-			node: UIToast(ToastProps{Title: "Saved", Description: "All changes were synced.", Icon: "✓", Props: ComponentProps{Variant: "success", Size: "sm"}}),
+			node: Toast(ToastProps{Title: "Saved", Description: "All changes were synced.", Icon: "✓", Props: ComponentProps{Variant: "success", Size: "sm"}}),
 		},
 		{
 			name: "alert",
-			node: UIAlert(AlertProps{Title: "Request failed", Description: "Try again later.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}),
+			node: Alert(AlertProps{Title: "Request failed", Description: "Try again later.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}),
 		},
 		{
 			name: "skeleton",
-			node: UISkeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}),
+			node: Skeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}),
 		},
 		{
 			name: "empty_state",
-			node: UIEmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}),
+			node: EmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}),
 		},
 		{
 			name: "table",
-			node: UITable(TableProps{
+			node: TableComponent(TableProps{
 				Columns:          []TableColumn{{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true}, {Label: "Role"}},
 				Rows:             []TableComponentRow{{Cells: []Node{Text("Aiko"), DivClass("badge", Text("Admin"))}}},
 				EmptyTitle:       "No users",
@@ -80,7 +80,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "chart",
-			node: UIChart(ChartProps{
+			node: Chart(ChartProps{
 				Type:        ChartTypeLine,
 				Title:       "Weekly signups",
 				Description: "New accounts by weekday.",
@@ -104,11 +104,11 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "pagination",
-			node: UIPagination(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
+			node: Pagination(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
 		},
 		{
 			name: "tabs",
-			node: UITabs(TabsProps{
+			node: Tabs(TabsProps{
 				AriaLabel: "user sections",
 				Items: []TabsItem{
 					{Label: "Profile", Href: "/users/1/profile", Active: true},
@@ -119,7 +119,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "breadcrumb",
-			node: UIBreadcrumb(BreadcrumbProps{
+			node: Breadcrumb(BreadcrumbProps{
 				Items: []BreadcrumbItem{
 					{Label: "Home", Href: "/"},
 					{Label: "Users", Href: "/users"},
@@ -129,7 +129,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "textarea",
-			node: UITextarea("notes", "hello", TextareaOptions{
+			node: TextareaComponent("notes", "hello", TextareaOptions{
 				Placeholder: "Memo",
 				Rows:        4,
 				Required:    true,
@@ -138,7 +138,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "checkbox",
-			node: UICheckbox(CheckboxComponentProps{
+			node: CheckboxComponent(CheckboxComponentProps{
 				Name:    "active",
 				Value:   "1",
 				Label:   "Active user",
@@ -148,7 +148,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "radio_group",
-			node: UIRadioGroup(RadioGroupComponentProps{
+			node: RadioGroupComponent(RadioGroupComponentProps{
 				Name:      "role",
 				AriaLabel: "role",
 				Items: []RadioItem{
@@ -160,7 +160,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "switch",
-			node: UISwitch(SwitchComponentProps{
+			node: SwitchComponent(SwitchComponentProps{
 				Name:    "notify",
 				Value:   "1",
 				Label:   "Enable notifications",
@@ -170,15 +170,15 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "stack",
-			node: UIStack(
+			node: Stack(
 				StackProps{Direction: "horizontal", Gap: "sm", Align: "center", Justify: "between", Wrap: true, Props: ComponentProps{Class: "w-full"}},
 				Text("Left"),
-				UIButton("Right", ComponentProps{Variant: "secondary", Size: "sm"}),
+				ButtonComponent("Right", ComponentProps{Variant: "secondary", Size: "sm"}),
 			),
 		},
 		{
 			name: "grid",
-			node: UIGrid(
+			node: Grid(
 				GridProps{Columns: "3", Gap: "lg"},
 				DivClass("card bg-base-100 p-4", Text("One")),
 				DivClass("card bg-base-100 p-4", Text("Two")),
@@ -187,7 +187,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "split",
-			node: UISplit(SplitProps{
+			node: Split(SplitProps{
 				Main:            DivClass("card bg-base-100 p-4", Text("Main")),
 				Aside:           DivClass("card bg-base-100 p-4", Text("Aside")),
 				AsideWidth:      "md",
@@ -197,40 +197,40 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "page_header",
-			node: UIPageHeader(PageHeaderProps{
+			node: PageHeader(PageHeaderProps{
 				Title:       "Users",
 				Description: "Manage account records.",
-				Actions:     UIButton("Create", ComponentProps{Size: "sm"}),
+				Actions:     ButtonComponent("Create", ComponentProps{Size: "sm"}),
 			}),
 		},
 		{
 			name: "container",
-			node: UIContainer(
+			node: ContainerComponent(
 				ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true},
 				Text("Contained"),
 			),
 		},
 		{
 			name: "card",
-			node: UICard(
+			node: Card(
 				CardProps{
 					Title:       "Summary",
 					Description: "Current workspace status.",
-					Actions:     UIButton("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+					Actions:     ButtonComponent("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
 				},
 				Text("Ready"),
 			),
 		},
 		{
 			name: "section",
-			node: UISection(
+			node: Section(
 				SectionProps{Title: "Details", Description: "Supporting information."},
 				Text("Section body"),
 			),
 		},
 		{
 			name: "markdown",
-			node: UIMarkdown(MarkdownProps{
+			node: Markdown(MarkdownProps{
 				Content: "# Heading\n\n- one\n- two\n\n**bold**",
 				Props:   ComponentProps{Class: "max-w-none"},
 			}),

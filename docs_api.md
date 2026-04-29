@@ -242,98 +242,98 @@ Flash lifecycle on next request:
 Template-backed component constructors (`templates/components/*`).
 
 ### Buttons / inputs / field wrappers
-- `UIButton(label string, props ComponentProps) Node`
-- `UISubmitButton(label string, props ComponentProps) Node`
-- `UIInput(name, value string, props ComponentProps) Node`
-  - uses `UIInputWithOptions` with defaults:
+- `ButtonComponent(label string, props ComponentProps) Node`
+- `SubmitButton(label string, props ComponentProps) Node`
+- `InputComponent(name, value string, props ComponentProps) Node`
+  - uses `InputWithOptions` with defaults:
     - `Type: "text"`
     - `Placeholder: strings.TrimSpace(name)`.
-- `UIInputWithOptions(name, value string, options InputOptions) Node`
+- `InputWithOptions(name, value string, options InputOptions) Node`
   - blank `options.Type` defaults to `"text"`.
-- `UITextarea(name, value string, options TextareaOptions) Node`
+- `TextareaComponent(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` defaults to `3`.
-- `UIForm(props FormProps, children ...Node) Node`
+- `FormComponent(props FormProps, children ...Node) Node`
   - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
-- `UIFormField(control Node, props FormFieldProps) Node`
+- `FormFieldComponent(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
-- `UISelect(name string, options []SelectOption, props ComponentProps) Node`
+- `SelectComponent(name string, options []SelectOption, props ComponentProps) Node`
 
 ### Overlay / feedback
-- `UIModal(props ModalProps) Node`
+- `Modal(props ModalProps) Node`
   - renders `Body` and `Actions` nodes first.
   - if either render fails, returns render error node.
-- `UIToast(props ToastProps) Node`
+- `Toast(props ToastProps) Node`
   - blank `Live` defaults to `"polite"`.
-- `UIAlert(props AlertProps) Node`
-- `UISkeleton(props SkeletonProps) Node`
+- `Alert(props AlertProps) Node`
+- `Skeleton(props SkeletonProps) Node`
   - `Rows <= 0` defaults to `3`.
-- `UIEmptyState(props EmptyStateProps) Node`
+- `EmptyState(props EmptyStateProps) Node`
   - `Rows <= 0` defaults to `3`.
 
 ### Data display
-- `UITable(props TableProps) Node`
+- `TableComponent(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
-- `UIChart(props ChartProps) Node`
+- `Chart(props ChartProps) Node`
   - renders a Chart.js-backed chart from Go props.
   - blank `Type` defaults to `ChartTypeLine`; blank `Height` defaults to `320`.
   - `ChartDataset.Data` renders scalar values; `ChartDataset.Points` renders `{x,y}` values for scatter-style charts.
   - chart config is JSON-encoded and embedded next to a `<canvas data-mrn-chart>`.
   - includes `role="img"`, an accessible label, canvas fallback text, and a screen-reader fallback table.
-- `UIDataFrame(df *dataframe.DataFrame, props TableProps) Node`
-  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `UITable`.
+- `DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node`
+  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `TableComponent`.
   - `df.Names()` is mapped to `TableColumn.Label` and overrides `props.Columns`.
   - each row is read by `df.Row(row, true, dataframe.SeriesName)`.
   - cell conversion: `nil` => empty text, `Node` => rendered directly, all others => `fmt.Sprint(value)`.
-- `UIDataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`
-  - maps a dataframe label column and numeric series columns into `UIChart`.
+- `DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`
+  - maps a dataframe label column and numeric series columns into `Chart`.
   - blank `LabelColumn` uses the first dataframe column.
   - blank `Series` renders every column after the label column as a dataset.
-- `UIPagination(props PaginationProps) Node`
+- `Pagination(props PaginationProps) Node`
   - `Page < 1` defaults to `1`.
   - `TotalPages < 1` defaults to `1`.
-- `UITabs(props TabsProps) Node`
+- `Tabs(props TabsProps) Node`
   - blank `AriaLabel` defaults to `"tabs"`.
   - supports active/disabled states and link/button tab items.
-- `UIBreadcrumb(props BreadcrumbProps) Node`
+- `Breadcrumb(props BreadcrumbProps) Node`
   - blank `AriaLabel` defaults to `"breadcrumb"`.
   - supports active/current breadcrumb items.
-- `UICheckbox(props CheckboxComponentProps) Node`
-- `UIRadioGroup(props RadioGroupComponentProps) Node`
+- `CheckboxComponent(props CheckboxComponentProps) Node`
+- `RadioGroupComponent(props RadioGroupComponentProps) Node`
   - blank `AriaLabel` defaults to `"radio group"`.
-- `UISwitch(props SwitchComponentProps) Node`
-- `UIDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+- `SwitchComponent(props SwitchComponentProps) Node`
+- `DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
-- `UIDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+- `DataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - same loader with `Comma: '\t'` as default.
 
 ### Layout / surfaces
-- `UIStack(props StackProps, children ...Node) Node`
+- `Stack(props StackProps, children ...Node) Node`
   - flex layout for vertical/horizontal stacks.
   - `Direction`: `vertical`/blank or `horizontal`/`row`.
   - `Gap`: `none`, `xs`, `sm`, `md`/blank, `lg`, `xl`.
   - `Align`: `start`, `center`, `end`, blank=`stretch`.
   - `Justify`: `start`/blank, `center`, `end`, `between`.
   - `Wrap` adds `flex-wrap`; `Props.Class` appends custom classes.
-- `UIGrid(props GridProps, children ...Node) Node`
+- `Grid(props GridProps, children ...Node) Node`
   - grid layout with `Columns` values `1`, `2`, `3`/blank, `4`.
   - `MinColumnWidth`: `sm`, `md`, `lg` switches to auto-fit minmax columns.
-  - `Gap` and `Props.Class` use the same behavior as `UIStack`.
-- `UISplit(props SplitProps) Node`
+  - `Gap` and `Props.Class` use the same behavior as `Stack`.
+- `Split(props SplitProps) Node`
   - responsive main/aside layout.
   - `AsideWidth`: `sm`, `md`/blank, `lg`.
   - `ReverseOnMobile` renders the aside before the main pane visually on mobile.
-- `UIPageHeader(props PageHeaderProps) Node`
+- `PageHeader(props PageHeaderProps) Node`
   - renders title, description, and optional action node.
-- `UIContainer(props ContainerProps, children ...Node) Node`
+- `ContainerComponent(props ContainerProps, children ...Node) Node`
   - `MaxWidth`: `sm`, `md`, `lg`/blank, `full`.
   - `Padding`: `none`, `sm`, `md`/blank, `lg`.
   - `Centered` adds `mx-auto`.
-- `UICard(props CardProps, children ...Node) Node`
+- `Card(props CardProps, children ...Node) Node`
   - card surface with optional title, description, and action node.
-- `UISection(props SectionProps, children ...Node) Node`
+- `Section(props SectionProps, children ...Node) Node`
   - unframed section wrapper with optional title, description, and action node.
 
-#### Example: Convert CSV/TSV data to `UIDataFrame`
+#### Example: Convert CSV/TSV data to `DataFrameComponent`
 
 ```go
 import (
@@ -349,7 +349,7 @@ func tableFromCSV(path string) (mrn.Node, error) {
     }
     defer f.Close()
 
-    return mrn.UIDataFrameFromCSV(f, mrn.TableProps{
+    return mrn.DataFrameFromCSV(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "CSV is empty.",
     })
@@ -362,7 +362,7 @@ func tableFromTSV(path string) (mrn.Node, error) {
     }
     defer f.Close()
 
-    return mrn.UIDataFrameFromTSV(f, mrn.TableProps{
+    return mrn.DataFrameFromTSV(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "TSV is empty.",
     })
@@ -372,7 +372,7 @@ func tableFromTSV(path string) (mrn.Node, error) {
 #### Example: Render a chart
 
 ```go
-chart := mrn.UIChart(mrn.ChartProps{
+chart := mrn.Chart(mrn.ChartProps{
     Type:        mrn.ChartTypeLine,
     Title:       "Weekly signups",
     Description: "New accounts by weekday.",

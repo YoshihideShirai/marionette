@@ -7,7 +7,7 @@
       "golden": "testdata/golden/button.golden.html",
       "example": "/marionette/examples/button.html",
       "template": "templates/components/button.tmpl",
-      "description": "Primary/secondary action button variants."
+      "description": "Primary/secondary action button variants Visual: ui/form/stories.html."
     },
     {
       "id": "theme-toggle-button",
@@ -24,7 +24,7 @@
       "golden": "testdata/golden/input.golden.html",
       "example": "/marionette/examples/input.html",
       "template": "templates/components/input.tmpl",
-      "description": "Single-line text and value input control."
+      "description": "Single-line text and value input control Visual: ui/form/stories.html."
     },
     {
       "id": "select",
@@ -33,7 +33,7 @@
       "golden": "testdata/golden/select.golden.html",
       "example": "/marionette/examples/select.html",
       "template": "templates/components/select.tmpl",
-      "description": "Dropdown control for choosing one option."
+      "description": "Dropdown control for choosing one option Visual: ui/form/stories.html."
     },
     {
       "id": "modal",
@@ -42,7 +42,7 @@
       "golden": "testdata/golden/modal_open.golden.html",
       "example": "/marionette/examples/modal.html",
       "template": "templates/components/modal.html",
-      "description": "Overlay dialog for confirmations and detail tasks."
+      "description": "Overlay dialog for confirmations and detail tasks Visual: ui/overlay/stories.html."
     },
     {
       "id": "empty-state",
@@ -51,7 +51,7 @@
       "golden": "testdata/golden/empty_state.golden.html",
       "example": "/marionette/examples/empty_state.html",
       "template": "templates/components/empty_state.html",
-      "description": "No-data and loading empty-state presentation."
+      "description": "No-data and loading empty-state presentation Visual: ui/feedback/stories.html."
     },
     {
       "id": "table",
@@ -118,7 +118,7 @@
       "golden": "testdata/golden/pagination.golden.html",
       "example": "/marionette/examples/pagination.html",
       "template": "templates/components/pagination.tmpl",
-      "description": "Previous/next pager with current page state."
+      "description": "Previous/next pager with current page state Visual: ui/navigation/stories.html."
     },
     {
       "id": "form",
@@ -135,7 +135,7 @@
       "golden": "testdata/golden/form_field.golden.html",
       "example": "/marionette/examples/form_field.html",
       "template": "templates/components/form_field.html",
-      "description": "Labeled field wrapper with hint and error text."
+      "description": "Labeled field wrapper with hint and error text Visual: ui/form/stories.html."
     },
     {
       "id": "tabs",
@@ -144,7 +144,7 @@
       "golden": "testdata/golden/tabs.golden.html",
       "example": "/marionette/examples/tabs.html",
       "template": "templates/components/tabs.html",
-      "description": "Tabbed navigation for switching related views."
+      "description": "Tabbed navigation for switching related views Visual: ui/navigation/stories.html."
     },
     {
       "id": "breadcrumb",
@@ -153,7 +153,7 @@
       "golden": "testdata/golden/breadcrumb.golden.html",
       "example": "/marionette/examples/breadcrumb.html",
       "template": "templates/components/breadcrumb.html",
-      "description": "Hierarchical path navigation trail."
+      "description": "Hierarchical path navigation trail Visual: ui/navigation/stories.html."
     },
     {
       "id": "textarea",
@@ -162,7 +162,7 @@
       "golden": "testdata/golden/textarea.golden.html",
       "example": "/marionette/examples/textarea.html",
       "template": "templates/components/textarea.html",
-      "description": "Multiline text input control."
+      "description": "Multiline text input control Visual: ui/form/stories.html."
     },
     {
       "id": "checkbox",
@@ -171,7 +171,7 @@
       "golden": "testdata/golden/checkbox.golden.html",
       "example": "/marionette/examples/checkbox.html",
       "template": "templates/components/checkbox.html",
-      "description": "Boolean checkbox input with label."
+      "description": "Boolean checkbox input with label Visual: ui/form/stories.html."
     },
     {
       "id": "radio-group",
@@ -180,7 +180,7 @@
       "golden": "testdata/golden/radio_group.golden.html",
       "example": "/marionette/examples/radio_group.html",
       "template": "templates/components/radio_group.html",
-      "description": "Exclusive multi-option radio selection group."
+      "description": "Exclusive multi-option radio selection group Visual: ui/form/stories.html."
     },
     {
       "id": "switch",
@@ -189,7 +189,7 @@
       "golden": "testdata/golden/switch.golden.html",
       "example": "/marionette/examples/switch.html",
       "template": "templates/components/switch.html",
-      "description": "Toggle-style boolean switch control."
+      "description": "Toggle-style boolean switch control Visual: ui/form/stories.html."
     },
     {
       "id": "stack",
@@ -258,7 +258,7 @@
       "id": "toast",
       "name": "UIToast",
       "group": "Components",
-      "description": "Transient toast notification component.",
+      "description": "Transient toast notification component Visual: ui/feedback/stories.html.",
       "golden": "testdata/golden/toast.golden.html",
       "template": "templates/components/toast.html",
       "example": null
@@ -267,7 +267,7 @@
       "id": "alert",
       "name": "UIAlert",
       "group": "Components",
-      "description": "Inline alert message component.",
+      "description": "Inline alert message component Visual: ui/feedback/stories.html.",
       "golden": "testdata/golden/alert.golden.html",
       "template": "templates/components/alert.html",
       "example": null
@@ -276,7 +276,7 @@
       "id": "skeleton",
       "name": "UISkeleton",
       "group": "Components",
-      "description": "Loading placeholder skeleton blocks.",
+      "description": "Loading placeholder skeleton blocks Visual: ui/feedback/stories.html.",
       "golden": "testdata/golden/skeleton.golden.html",
       "template": "templates/components/skeleton.html",
       "example": null
@@ -288,7 +288,7 @@
       "example": "/marionette/examples/feedback.html",
       "template": "ui/feedback/stories.html",
       "golden": "ui/feedback/stories.html",
-      "description": "Toast/alert/empty/skeleton feedback demo."
+      "description": "Toast/alert/empty/skeleton feedback demo Visual: ui/feedback/stories.html."
     },
     {
       "id": "overlay-system",
@@ -297,7 +297,7 @@
       "example": null,
       "template": "ui/overlay/overlay-core.js",
       "golden": "ui/overlay/README.md",
-      "description": "Modal/drawer/popover/tooltip overlay demo."
+      "description": "Modal/drawer/popover/tooltip overlay demo Visual: ui/overlay/stories.html."
     },
     {
       "id": "dataframe",

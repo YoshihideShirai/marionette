@@ -73,6 +73,13 @@
       "description": "Previous/next pager with current page state."
     },
     {
+      "id": "form",
+      "name": "ComponentForm",
+      "group": "Components",
+      "description": "Form element wrapper for method/action and child controls.",
+      "template": "components.go"
+    },
+    {
       "id": "form-field",
       "name": "ComponentFormField",
       "group": "Components",
@@ -199,6 +206,30 @@
       "description": "Section block with consistent heading spacing."
     },
     {
+      "id": "toast",
+      "name": "ComponentToast",
+      "group": "Components",
+      "description": "Transient toast notification component.",
+      "golden": "testdata/golden/toast.golden.html",
+      "template": "templates/components/toast.html"
+    },
+    {
+      "id": "alert",
+      "name": "ComponentAlert",
+      "group": "Components",
+      "description": "Inline alert message component.",
+      "golden": "testdata/golden/alert.golden.html",
+      "template": "templates/components/alert.html"
+    },
+    {
+      "id": "skeleton",
+      "name": "ComponentSkeleton",
+      "group": "Components",
+      "description": "Loading placeholder skeleton blocks.",
+      "golden": "testdata/golden/skeleton.golden.html",
+      "template": "templates/components/skeleton.html"
+    },
+    {
       "id": "feedback",
       "name": "Feedback Demo",
       "group": "Components",
@@ -215,6 +246,20 @@
       "template": "ui/overlay/overlay-core.js",
       "golden": "ui/overlay/README.md",
       "description": "Modal/drawer/popover/tooltip overlay demo."
+    },
+    {
+      "id": "dataframe",
+      "name": "ComponentDataFrame",
+      "group": "Data",
+      "description": "Render a gota DataFrame as a table component.",
+      "template": "dataframe.go"
+    },
+    {
+      "id": "dataframe-chart",
+      "name": "ComponentDataFrameChart",
+      "group": "Data",
+      "description": "Build chart datasets from a DataFrame for ComponentChart.",
+      "template": "dataframe.go"
     }
   ]
 }

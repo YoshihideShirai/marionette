@@ -9,8 +9,8 @@ import (
 func RegisterOverlaySystemExample(app *mb.App) {
 	app.Page("/overlay-system", func(ctx *mb.Context) mf.Node {
 		return mf.Div(
-			mf.Element("h1", mf.ElementProps{}, mf.Text("OverlaySystem example")),
-			mf.Element("p", mf.ElementProps{}, mf.Text("Implement this UI with Marionette components.")),
+			mf.H1(mf.Text("OverlaySystem example")),
+			mf.P(mf.Text("Implement this UI with Marionette components.")),
 		)
 	})
 }

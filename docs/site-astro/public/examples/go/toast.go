@@ -9,8 +9,8 @@ import (
 func RegisterToastExample(app *mb.App) {
 	app.Page("/toast", func(ctx *mb.Context) mf.Node {
 		return mf.Div(
-			mf.Element("h1", mf.ElementProps{}, mf.Text("Toast example")),
-			mf.Element("p", mf.ElementProps{}, mf.Text("Implement this UI with Marionette components.")),
+			mf.H1(mf.Text("Toast example")),
+			mf.P(mf.Text("Implement this UI with Marionette components.")),
 		)
 	})
 }

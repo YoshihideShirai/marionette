@@ -47,16 +47,24 @@ func page(ctx *mb.Context) mf.Node {
 				Title:       "Simple Tasks",
 				Description: "Marionette end-to-end sample",
 			}),
-			mf.Element("form", mf.ElementProps{Attrs: mf.Attrs{
-				"hx-post":   "/tasks/create",
-				"hx-target": "#task-list",
-				"hx-swap":   "innerHTML",
-				"class":     "flex gap-2 items-start",
-			}},
-				mf.ComponentInputWithOptions("name", "", mf.InputOptions{
-					Placeholder: "Task name",
-					Required:    true,
-					Props:       mf.ComponentProps{Class: "w-full"},
+			mf.ComponentForm(mf.FormProps{
+				Class: "space-y-3",
+				Attrs: mf.Attrs{
+					"hx-post":   "/tasks/create",
+					"hx-target": "#task-list",
+					"hx-swap":   "innerHTML",
+				},
+			},
+				mf.FormRow(mf.FormRowProps{
+					ID:       "task-name",
+					Label:    "Task",
+					Required: true,
+					Control: mf.TextField(mf.TextFieldProps{
+						ID:          "task-name",
+						Name:        "name",
+						Placeholder: "Task name",
+						Required:    true,
+					}),
 				}),
 				mf.ComponentSubmitButton("Add Task", mf.ComponentProps{}),
 			),

@@ -252,6 +252,8 @@ Template-backed component constructors (`templates/components/*`).
   - blank `options.Type` defaults to `"text"`.
 - `ComponentTextarea(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` defaults to `3`.
+- `ComponentForm(props FormProps, children ...Node) Node`
+  - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
 - `ComponentFormField(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
 - `ComponentSelect(name string, options []SelectOption, props ComponentProps) Node`

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ComponentPagination</title>
+    <title>Chart: Scatter</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -135,7 +135,7 @@
               
                 <a href="./chart.html">ComponentChart</a>
               
-                <a href="./pagination.html" aria-current="page">ComponentPagination</a>
+                <a href="./pagination.html">ComponentPagination</a>
               
                 <a href="./form.html">ComponentForm</a>
               
@@ -199,7 +199,7 @@
               
                 <a href="./chart-doughnut.html">Chart: Doughnut</a>
               
-                <a href="./chart-scatter.html">Chart: Scatter</a>
+                <a href="./chart-scatter.html" aria-current="page">Chart: Scatter</a>
               
             </nav>
           </section>
@@ -218,29 +218,17 @@
       </aside>
       <main class="docs-main">
         <div class="docs-content">
-          <h1 id="componentpagination">ComponentPagination</h1>
+          <h1 id="chart-scatter">Chart: Scatter</h1>
 <h3 id="purpose">Purpose</h3>
-<p>Pagination controls for previous/next navigation and current page display.</p>
-<h3 id="key-props">Key props</h3>
+<p>2軸上に点を配置し、相関・分布・外れ値を観察するためのチャートです。</p>
+<h3 id="heading">使いどころ</h3>
 <ul>
-<li><code>Page</code></li>
-<li><code>TotalPages</code></li>
-<li><code>PrevHref</code>, <code>NextHref</code></li>
+<li>価格とCVRの相関分析</li>
+<li>施策ごとの効果分布比較</li>
+<li>異常値・外れ値の検知</li>
 </ul>
 <h3 id="visual">Visual</h3>
-<iframe src="./examples/pagination.html" title="ComponentPagination example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
-<h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">pager := mf.ComponentPagination(mf.PaginationProps{
-    Page:       2,
-    TotalPages: 4,
-    PrevHref:   &quot;/?page=1&amp;per_page=10&quot;,
-    NextHref:   &quot;/?page=3&amp;per_page=10&quot;,
-})
-</code></pre>
-<ul>
-<li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/pagination.golden.html"><code>pagination.golden.html</code></a></li>
-<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/pagination.tmpl"><code>templates/components/pagination.tmpl</code></a></li>
-</ul>
+<iframe src="./examples/chart.html" title="Chart: Scatter example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
         </div>
       </main>

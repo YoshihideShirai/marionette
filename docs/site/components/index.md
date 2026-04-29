@@ -170,6 +170,87 @@ Chart.js-backed data visualization component rendered from Go props.
 - Golden sample: [`chart.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/chart.golden.html)
 - Template: [`templates/components/chart.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/chart.html)
 
+
+## Chart: Line
+
+### Purpose
+
+時系列データや連続値の変化を、傾向線として追跡するためのチャートです。
+
+### 使いどころ
+
+- 日次・週次のKPI推移
+- 目標値との差分トレンド
+- 複数系列の増減比較
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Line example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Bar
+
+### Purpose
+
+カテゴリごとの値を棒の長さで比較する、最も読み取りやすい比較用チャートです。
+
+### 使いどころ
+
+- 部署別売上、商品別件数などの横比較
+- 月別・四半期別の実績比較
+- 積み上げで構成比も併記したいケース
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Bar example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Pie
+
+### Purpose
+
+全体を100%とした割合を把握するためのチャートです。カテゴリ数が少ない場合に有効です。
+
+### 使いどころ
+
+- チャネル別流入比率
+- プラン別ユーザー構成
+- エラー種別の割合把握
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Pie example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Doughnut
+
+### Purpose
+
+Pieチャートに中央の空白を設けた形式で、中央に補足値を重ねるUIと相性が良いチャートです。
+
+### 使いどころ
+
+- 構成比＋合計値を同時表示
+- 稼働率や達成率のサマリ表示
+- KPIカード内のコンパクトな割合表現
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Doughnut example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Scatter
+
+### Purpose
+
+2軸上に点を配置し、相関・分布・外れ値を観察するためのチャートです。
+
+### 使いどころ
+
+- 価格とCVRの相関分析
+- 施策ごとの効果分布比較
+- 異常値・外れ値の検知
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Scatter example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
 ## ComponentPagination
 
 ### Purpose

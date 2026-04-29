@@ -64,6 +64,46 @@
       "description": "Chart.js-backed data visualization wrapper."
     },
     {
+      "id": "chart-line",
+      "name": "Chart: Line",
+      "group": "Chart",
+      "example": "docs/site/components/examples/chart.html",
+      "template": "templates/components/chart.html",
+      "description": "時系列や連続値の推移を線で可視化するチャート。"
+    },
+    {
+      "id": "chart-bar",
+      "name": "Chart: Bar",
+      "group": "Chart",
+      "example": "docs/site/components/examples/chart.html",
+      "template": "templates/components/chart.html",
+      "description": "カテゴリ間の値比較を棒で可視化するチャート。"
+    },
+    {
+      "id": "chart-pie",
+      "name": "Chart: Pie",
+      "group": "Chart",
+      "example": "docs/site/components/examples/chart.html",
+      "template": "templates/components/chart.html",
+      "description": "全体に対する構成比を円で可視化するチャート。"
+    },
+    {
+      "id": "chart-doughnut",
+      "name": "Chart: Doughnut",
+      "group": "Chart",
+      "example": "docs/site/components/examples/chart.html",
+      "template": "templates/components/chart.html",
+      "description": "Pieに中央余白を持たせ、指標を重ねやすいチャート。"
+    },
+    {
+      "id": "chart-scatter",
+      "name": "Chart: Scatter",
+      "group": "Chart",
+      "example": "docs/site/components/examples/chart.html",
+      "template": "templates/components/chart.html",
+      "description": "2軸の相関や分布を点群で可視化するチャート。"
+    },
+    {
       "id": "pagination",
       "name": "ComponentPagination",
       "group": "Components",

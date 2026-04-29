@@ -126,7 +126,7 @@
       "group": "Components",
       "description": "Form element wrapper for method/action and child controls.",
       "template": "components.go",
-      "example": null
+      "example": "/marionette/examples/form.html"
     },
     {
       "id": "form-field",
@@ -261,7 +261,7 @@
       "description": "Transient toast notification component",
       "golden": "testdata/golden/toast.golden.html",
       "template": "templates/components/toast.html",
-      "example": null
+      "example": "/marionette/examples/toast.html"
     },
     {
       "id": "alert",
@@ -270,7 +270,7 @@
       "description": "Inline alert message component",
       "golden": "testdata/golden/alert.golden.html",
       "template": "templates/components/alert.html",
-      "example": null
+      "example": "/marionette/examples/alert.html"
     },
     {
       "id": "skeleton",
@@ -279,7 +279,7 @@
       "description": "Loading placeholder skeleton blocks",
       "golden": "testdata/golden/skeleton.golden.html",
       "template": "templates/components/skeleton.html",
-      "example": null
+      "example": "/marionette/examples/skeleton.html"
     },
     {
       "id": "feedback",
@@ -294,7 +294,7 @@
       "id": "overlay-system",
       "name": "Overlay System Demo",
       "group": "Components",
-      "example": null,
+      "example": "/marionette/examples/overlay-system.html",
       "template": "ui/overlay/overlay-core.js",
       "golden": "ui/overlay/README.md",
       "description": "Modal/drawer/popover/tooltip overlay demo"
@@ -305,7 +305,7 @@
       "group": "Data",
       "description": "Render a gota DataFrame as a table component.",
       "template": "dataframe.go",
-      "example": null
+      "example": "/marionette/examples/dataframe.html"
     },
     {
       "id": "dataframe-chart",
@@ -313,7 +313,7 @@
       "group": "Data",
       "description": "Build chart datasets from a DataFrame for ComponentChart.",
       "template": "dataframe.go",
-      "example": null
+      "example": "/marionette/examples/dataframe-chart.html"
     }
   ]
 }

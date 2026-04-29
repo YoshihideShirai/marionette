@@ -17,7 +17,21 @@ const { title = 'Marionette Docs' } = Astro.props;
       </nav>
     </header>
     <main class="container">
+      {Astro.url.pathname.includes('/components/') && !Astro.url.pathname.endsWith('/components/') && (
+        <p class="back-link"><a href="../">← Components 一覧へ戻る</a></p>
+      )}
       <slot />
     </main>
   </body>
+  <style>
+    .back-link {
+      margin: 0.75rem 0 1rem;
+    }
+
+    .back-link a {
+      color: var(--sl-color-text-accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
 </html>

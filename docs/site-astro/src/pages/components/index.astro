@@ -46,7 +46,7 @@ const visibleCards =
           data-description={component.description.toLowerCase()}
         >
           <header class="card-header">
-            <h2>{component.name}</h2>
+            <h2><a href={`./${component.id}/`}>{component.name}</a></h2>
             {!component.example && <span class="badge">Example pending</span>}
           </header>
           <p>{component.description}</p>

@@ -67,7 +67,7 @@
       "id": "chart-line",
       "name": "Chart: Line",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart.html",
+      "example": "docs/site/components/examples/chart-line.html",
       "template": "templates/components/chart.html",
       "description": "Line chart for visualizing trends over time or continuous values."
     },
@@ -75,7 +75,7 @@
       "id": "chart-bar",
       "name": "Chart: Bar",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart.html",
+      "example": "docs/site/components/examples/chart-bar.html",
       "template": "templates/components/chart.html",
       "description": "Bar chart for comparing values across categories."
     },
@@ -83,7 +83,7 @@
       "id": "chart-pie",
       "name": "Chart: Pie",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart.html",
+      "example": "docs/site/components/examples/chart-pie.html",
       "template": "templates/components/chart.html",
       "description": "Pie chart for showing part-to-whole proportions."
     },
@@ -91,7 +91,7 @@
       "id": "chart-doughnut",
       "name": "Chart: Doughnut",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart.html",
+      "example": "docs/site/components/examples/chart-doughnut.html",
       "template": "templates/components/chart.html",
       "description": "Doughnut chart with center space for summary metrics."
     },
@@ -99,7 +99,7 @@
       "id": "chart-scatter",
       "name": "Chart: Scatter",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart.html",
+      "example": "docs/site/components/examples/chart-scatter.html",
       "template": "templates/components/chart.html",
       "description": "Scatter chart for visualizing correlation and distribution on two axes."
     },

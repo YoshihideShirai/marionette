@@ -429,8 +429,10 @@ func iframeFor(entry componentEntry) string {
 		height = "320px"
 	case "tabs", "breadcrumb", "feedback":
 		height = "420px"
-	case "stack", "grid", "split", "page-header", "container", "card", "section":
-		height = "520px"
+	case "stack", "page-header", "container", "card", "section":
+		height = "320px"
+	case "grid", "split":
+		height = "380px"
 	}
 
 	src := strings.TrimPrefix(entry.Example, "docs/site/components/")

@@ -117,7 +117,7 @@
       "name": "ComponentStack",
       "group": "Layout",
       "golden": "testdata/golden/stack.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/stack.html",
       "template": "templates/components/stack.html"
     },
     {
@@ -125,7 +125,7 @@
       "name": "ComponentGrid",
       "group": "Layout",
       "golden": "testdata/golden/grid.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/grid.html",
       "template": "templates/components/grid.html"
     },
     {
@@ -133,7 +133,7 @@
       "name": "ComponentSplit",
       "group": "Layout",
       "golden": "testdata/golden/split.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/split.html",
       "template": "templates/components/split.html"
     },
     {
@@ -141,7 +141,7 @@
       "name": "ComponentPageHeader",
       "group": "Layout",
       "golden": "testdata/golden/page_header.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/page_header.html",
       "template": "templates/components/page_header.html"
     },
     {
@@ -149,7 +149,7 @@
       "name": "ComponentContainer",
       "group": "Layout",
       "golden": "testdata/golden/container.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/container.html",
       "template": "templates/components/container.html"
     },
     {
@@ -157,7 +157,7 @@
       "name": "ComponentCard",
       "group": "Layout",
       "golden": "testdata/golden/card.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/card.html",
       "template": "templates/components/card.html"
     },
     {
@@ -165,7 +165,7 @@
       "name": "ComponentSection",
       "group": "Layout",
       "golden": "testdata/golden/section.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/section.html",
       "template": "templates/components/section.html"
     },
     {

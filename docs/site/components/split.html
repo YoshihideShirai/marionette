@@ -192,6 +192,20 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/split.html" title="ComponentSplit example" style="width:100%;min-height:380px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">workspace := mrn.ComponentSplit(mrn.SplitProps{
+    Main: mrn.ComponentCard(
+        mrn.CardProps{Title: &quot;Main workspace&quot;},
+        mrn.Text(&quot;Aiko / Admin / Active&quot;),
+    ),
+    Aside: mrn.ComponentSection(
+        mrn.SectionProps{Title: &quot;Aside panel&quot;},
+        mrn.ComponentButton(&quot;Apply&quot;, mrn.ComponentProps{Variant: &quot;primary&quot;, Size: &quot;sm&quot;}),
+    ),
+    AsideWidth: &quot;md&quot;,
+    Gap:        &quot;lg&quot;,
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/split.golden.html"><code>split.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/split.html"><code>templates/components/split.html</code></a></li>

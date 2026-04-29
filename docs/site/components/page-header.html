@@ -191,6 +191,17 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/page_header.html" title="ComponentPageHeader example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">header := mrn.ComponentPageHeader(mrn.PageHeaderProps{
+    Title:       &quot;Users&quot;,
+    Description: &quot;Manage account records, roles, and invitations.&quot;,
+    Actions: mrn.ComponentStack(
+        mrn.StackProps{Direction: &quot;horizontal&quot;, Gap: &quot;sm&quot;},
+        mrn.ComponentButton(&quot;Export&quot;, mrn.ComponentProps{Variant: &quot;ghost&quot;, Size: &quot;sm&quot;}),
+        mrn.ComponentButton(&quot;Create&quot;, mrn.ComponentProps{Variant: &quot;primary&quot;, Size: &quot;sm&quot;}),
+    ),
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/page_header.golden.html"><code>page_header.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/page_header.html"><code>templates/components/page_header.html</code></a></li>

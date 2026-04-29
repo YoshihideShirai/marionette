@@ -191,6 +191,15 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/select.html" title="ComponentSelect example" style="width:100%;min-height:200px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">roleSelect := mrn.ComponentSelect(&quot;role&quot;, []mrn.SelectOption{
+    {Label: &quot;Admin&quot;, Value: &quot;admin&quot;, Selected: true},
+    {Label: &quot;Viewer&quot;, Value: &quot;viewer&quot;},
+}, mrn.ComponentProps{
+    Variant: &quot;ghost&quot;,
+    Size:    &quot;sm&quot;,
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/select.golden.html"><code>select.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/select.tmpl"><code>templates/components/select.tmpl</code></a></li>

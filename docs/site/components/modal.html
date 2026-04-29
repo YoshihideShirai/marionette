@@ -192,6 +192,17 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/modal.html" title="ComponentModal example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">confirmModal := mrn.ComponentModal(mrn.ModalProps{
+    Title: &quot;Delete user&quot;,
+    Body:  mrn.Text(&quot;Confirm deletion&quot;),
+    Actions: mrn.ComponentButton(&quot;Delete&quot;, mrn.ComponentProps{
+        Variant: &quot;error&quot;,
+        Size:    &quot;sm&quot;,
+    }),
+    Open: true,
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/modal_open.golden.html"><code>modal_open.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/modal.html"><code>templates/components/modal.html</code></a></li>

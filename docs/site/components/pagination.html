@@ -191,6 +191,14 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/pagination.html" title="ComponentPagination example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">pager := mrn.ComponentPagination(mrn.PaginationProps{
+    Page:       2,
+    TotalPages: 4,
+    PrevHref:   &quot;/?page=1&amp;per_page=10&quot;,
+    NextHref:   &quot;/?page=3&amp;per_page=10&quot;,
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/pagination.golden.html"><code>pagination.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/pagination.tmpl"><code>templates/components/pagination.tmpl</code></a></li>

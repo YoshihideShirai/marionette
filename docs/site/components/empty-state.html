@@ -191,6 +191,12 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/empty_state.html" title="ComponentEmptyState example" style="width:100%;min-height:260px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">emptyUsers := mrn.ComponentEmptyState(mrn.EmptyStateProps{
+    Title:       &quot;No users&quot;,
+    Description: &quot;Create one first.&quot;,
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/empty_state.golden.html"><code>empty_state.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/empty_state.html"><code>templates/components/empty_state.html</code></a></li>

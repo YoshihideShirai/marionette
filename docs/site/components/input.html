@@ -191,6 +191,20 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/input.html" title="ComponentInput example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">startDate := mrn.ComponentInputWithOptions(&quot;start_date&quot;, &quot;2030-01-01&quot;, mrn.InputOptions{
+    Type:        &quot;date&quot;,
+    Placeholder: &quot;Start date&quot;,
+    Min:         &quot;2024-01-01&quot;,
+    Max:         &quot;2035-12-31&quot;,
+    Required:    true,
+    Props: mrn.ComponentProps{
+        Variant:  &quot;ghost&quot;,
+        Size:     &quot;sm&quot;,
+        Disabled: true,
+    },
+})
+</code></pre>
 <ul>
 <li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/input.golden.html"><code>input.golden.html</code></a></li>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/input.tmpl"><code>templates/components/input.tmpl</code></a></li>

@@ -273,6 +273,7 @@ func generateComponents(indexPath, catalogPath string) error {
 			section = fallbackComponentSection(entry)
 		}
 		section = ensureExamplePreview(section, entry)
+		section = ensureUsageExample(section, entry)
 
 		rendered, err := renderMarkdown([]byte(section))
 		if err != nil {
@@ -424,6 +425,25 @@ func ensureExamplePreview(section string, entry componentEntry) string {
 	return strings.TrimSpace(section) + insert
 }
 
+func ensureUsageExample(section string, entry componentEntry) string {
+	snippet := usageSnippet(entry.ID)
+	if snippet == "" || strings.Contains(section, "### Go usage") {
+		return section
+	}
+
+	block := "### Go usage\n\n```go\n" + strings.TrimSpace(snippet) + "\n```\n"
+	iframe := iframeRe.FindString(section)
+	if iframe == "" {
+		marker := "- Golden sample:"
+		if idx := strings.Index(section, marker); idx >= 0 {
+			return strings.TrimSpace(section[:idx]) + "\n\n" + block + "\n" + strings.TrimSpace(section[idx:]) + "\n"
+		}
+		return strings.TrimSpace(section) + "\n\n" + block
+	}
+
+	return strings.Replace(section, iframe, iframe+"\n\n"+block, 1)
+}
+
 func iframeFor(entry componentEntry) string {
 	height := "320px"
 	switch entry.ID {
@@ -451,6 +471,201 @@ func iframeFor(entry componentEntry) string {
 
 	src := strings.TrimPrefix(entry.Example, "docs/site/components/")
 	return fmt.Sprintf(`<iframe src="./%s" title="%s example" style="width:100%%;min-height:%s;border:1px solid #e5e7eb;border-radius:8px;"></iframe>`, src, entry.Name, height)
+}
+
+func usageSnippet(id string) string {
+	snippets := map[string]string{
+		"button": `saveButton := mrn.ComponentButton("Save", mrn.ComponentProps{
+    Variant: "secondary",
+    Size:    "sm",
+})`,
+		"input": `startDate := mrn.ComponentInputWithOptions("start_date", "2030-01-01", mrn.InputOptions{
+    Type:        "date",
+    Placeholder: "Start date",
+    Min:         "2024-01-01",
+    Max:         "2035-12-31",
+    Required:    true,
+    Props: mrn.ComponentProps{
+        Variant:  "ghost",
+        Size:     "sm",
+        Disabled: true,
+    },
+})`,
+		"select": `roleSelect := mrn.ComponentSelect("role", []mrn.SelectOption{
+    {Label: "Admin", Value: "admin", Selected: true},
+    {Label: "Viewer", Value: "viewer"},
+}, mrn.ComponentProps{
+    Variant: "ghost",
+    Size:    "sm",
+})`,
+		"modal": `confirmModal := mrn.ComponentModal(mrn.ModalProps{
+    Title: "Delete user",
+    Body:  mrn.Text("Confirm deletion"),
+    Actions: mrn.ComponentButton("Delete", mrn.ComponentProps{
+        Variant: "error",
+        Size:    "sm",
+    }),
+    Open: true,
+})`,
+		"empty-state": `emptyUsers := mrn.ComponentEmptyState(mrn.EmptyStateProps{
+    Title:       "No users",
+    Description: "Create one first.",
+})`,
+		"table": `usersTable := mrn.ComponentTable(mrn.TableProps{
+    Columns: []mrn.TableColumn{
+        {Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true},
+        {Label: "Role"},
+    },
+    Rows: []mrn.TableComponentRow{
+        {
+            Cells: []mrn.Node{
+                mrn.Text("Aiko"),
+                mrn.DivClass("badge", mrn.Text("Admin")),
+            },
+        },
+    },
+})`,
+		"pagination": `pager := mrn.ComponentPagination(mrn.PaginationProps{
+    Page:       2,
+    TotalPages: 4,
+    PrevHref:   "/?page=1&per_page=10",
+    NextHref:   "/?page=3&per_page=10",
+})`,
+		"form-field": `nameField := mrn.ComponentFormField(
+    mrn.ComponentInput("name", "", mrn.ComponentProps{Size: "sm"}),
+    mrn.FormFieldProps{
+        Label:    "Name",
+        Required: true,
+        Hint:     "Enter a display name.",
+        Error:    "Name is required.",
+    },
+)`,
+		"tabs": `tabs := mrn.ComponentTabs(mrn.TabsProps{
+    AriaLabel: "user sections",
+    Items: []mrn.TabsItem{
+        {Label: "Profile", Href: "/users/1/profile", Active: true},
+        {Label: "Permissions", Href: "/users/1/permissions"},
+        {Label: "Audit", Disabled: true},
+    },
+})`,
+		"breadcrumb": `breadcrumb := mrn.ComponentBreadcrumb(mrn.BreadcrumbProps{
+    Items: []mrn.BreadcrumbItem{
+        {Label: "Home", Href: "/"},
+        {Label: "Users", Href: "/users"},
+        {Label: "Aiko", Active: true},
+    },
+})`,
+		"textarea": `notes := mrn.ComponentTextarea("notes", "hello", mrn.TextareaOptions{
+    Placeholder: "Memo",
+    Rows:        4,
+    Required:    true,
+    Props: mrn.ComponentProps{
+        Variant: "ghost",
+        Size:    "sm",
+    },
+})`,
+		"checkbox": `activeUser := mrn.ComponentCheckbox(mrn.CheckboxComponentProps{
+    Name:    "active",
+    Value:   "1",
+    Label:   "Active user",
+    Checked: true,
+    Props:   mrn.ComponentProps{Size: "sm"},
+})`,
+		"radio-group": `roleGroup := mrn.ComponentRadioGroup(mrn.RadioGroupComponentProps{
+    Name:      "role",
+    AriaLabel: "role",
+    Items: []mrn.RadioItem{
+        {Label: "Admin", Value: "admin", Checked: true},
+        {Label: "Editor", Value: "editor"},
+        {Label: "Viewer", Value: "viewer", Disabled: true},
+    },
+    Props: mrn.ComponentProps{Size: "sm"},
+})`,
+		"switch": `notifications := mrn.ComponentSwitch(mrn.SwitchComponentProps{
+    Name:    "notify",
+    Value:   "1",
+    Label:   "Enable notifications",
+    Checked: true,
+    Props:   mrn.ComponentProps{Size: "sm"},
+})`,
+		"stack": `stack := mrn.ComponentStack(
+    mrn.StackProps{
+        Direction: "horizontal",
+        Gap:       "sm",
+        Align:     "center",
+        Justify:   "between",
+        Wrap:      true,
+    },
+    mrn.Text("Aiko Tanaka"),
+    mrn.DivClass("badge badge-primary", mrn.Text("Admin")),
+    mrn.ComponentButton("Open", mrn.ComponentProps{Variant: "secondary", Size: "sm"}),
+)`,
+		"grid": `summaryGrid := mrn.ComponentGrid(
+    mrn.GridProps{Columns: "3", Gap: "lg"},
+    mrn.ComponentCard(mrn.CardProps{}, mrn.Text("Users: 24")),
+    mrn.ComponentCard(mrn.CardProps{}, mrn.Text("Admins: 4")),
+    mrn.ComponentCard(mrn.CardProps{}, mrn.Text("Pending: 7")),
+)`,
+		"split": `workspace := mrn.ComponentSplit(mrn.SplitProps{
+    Main: mrn.ComponentCard(
+        mrn.CardProps{Title: "Main workspace"},
+        mrn.Text("Aiko / Admin / Active"),
+    ),
+    Aside: mrn.ComponentSection(
+        mrn.SectionProps{Title: "Aside panel"},
+        mrn.ComponentButton("Apply", mrn.ComponentProps{Variant: "primary", Size: "sm"}),
+    ),
+    AsideWidth: "md",
+    Gap:        "lg",
+})`,
+		"page-header": `header := mrn.ComponentPageHeader(mrn.PageHeaderProps{
+    Title:       "Users",
+    Description: "Manage account records, roles, and invitations.",
+    Actions: mrn.ComponentStack(
+        mrn.StackProps{Direction: "horizontal", Gap: "sm"},
+        mrn.ComponentButton("Export", mrn.ComponentProps{Variant: "ghost", Size: "sm"}),
+        mrn.ComponentButton("Create", mrn.ComponentProps{Variant: "primary", Size: "sm"}),
+    ),
+})`,
+		"container": `page := mrn.ComponentContainer(
+    mrn.ContainerProps{
+        MaxWidth: "md",
+        Padding:  "md",
+        Centered: true,
+    },
+    mrn.Text("Centered page container"),
+)`,
+		"card": `card := mrn.ComponentCard(
+    mrn.CardProps{
+        Title:       "Workspace summary",
+        Description: "Header, description, actions, then body content.",
+        Actions:     mrn.ComponentButton("Edit", mrn.ComponentProps{Variant: "ghost", Size: "sm"}),
+    },
+    mrn.Text("Active: 24"),
+)`,
+		"section": `section := mrn.ComponentSection(
+    mrn.SectionProps{
+        Title:       "Recent activity",
+        Description: "An unframed content section with consistent header spacing.",
+        Actions:     mrn.ComponentButton("View all", mrn.ComponentProps{Variant: "secondary", Size: "sm"}),
+    },
+    mrn.Text("Aiko updated a role"),
+)`,
+		"feedback": `toast := mrn.ComponentToast(mrn.ToastProps{
+    Title:       "Toast / Default",
+    Description: "Saved successfully.",
+    Icon:        "✓",
+    Props:       mrn.ComponentProps{Variant: "success", Size: "md"},
+})
+
+alert := mrn.ComponentAlert(mrn.AlertProps{
+    Title:       "Alert / Long content",
+    Description: "An error occurred. Please wait a moment and try again.",
+    Icon:        "!",
+    Props:       mrn.ComponentProps{Variant: "error", Size: "lg"},
+})`,
+	}
+	return snippets[id]
 }
 
 func writeComponentPage(path, title, activeID string, groups []componentGroup, body template.HTML) error {

@@ -1,22 +1,16 @@
-//go:build ignore
-// +build ignore
-
-package main
+package goexamples
 
 import (
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
 )
 
-func main() {
-	app := mb.New()
-
-	app.Page("/", func(ctx *mb.Context) mf.Node {
+// RegisterSkeletonExample wires a Marionette page used in docs snippets.
+func RegisterSkeletonExample(app *mb.App) {
+	app.Page("/skeleton", func(ctx *mb.Context) mf.Node {
 		return mf.Div(
-			mf.H1(mf.Text("UISkeleton example")),
-			mf.P(mf.Text("Render this component with Marionette frontend nodes.")),
+			mf.Element("h1", mf.ElementProps{}, mf.Text("Skeleton example")),
+			mf.Element("p", mf.ElementProps{}, mf.Text("Implement this UI with Marionette components.")),
 		)
 	})
-
-	app.Run(":8080")
 }

@@ -67,7 +67,16 @@ func buildApp() *mb.App {
 	app.Set("loading", false)
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
+		return renderDashboardPage(ctx)
+	})
+	app.Page("/users", func(ctx *mb.Context) mf.Node {
 		return renderUsersPage(ctx, defaultCreateUserFormState())
+	})
+	app.Page("/analytics", func(ctx *mb.Context) mf.Node {
+		return renderAnalyticsPage(ctx)
+	})
+	app.Page("/settings", func(ctx *mb.Context) mf.Node {
+		return renderSettingsPage(ctx)
 	})
 
 	app.Action("users/create", func(ctx *mb.Context) mf.Node {
@@ -186,32 +195,107 @@ func getUsers(ctx *mb.Context) []user {
 }
 
 func renderUsersPage(ctx *mb.Context, formState createUserFormState) mf.Node {
+	header := mf.ComponentPageHeader(mf.PageHeaderProps{
+		Title:       "User Administration",
+		Description: "A CRUD demo combining forms, tables, and modals.",
+		Actions:     themeToggleButton(),
+	})
+	return renderShell(ctx, "/users", header, renderUsersWorkspace(ctx, formState))
+}
+
+func renderSidebar(active string) mf.Node {
+	return mf.Sidebar("Marionette", "Admin Console",
+		sidebarLink("Dashboard", "/", active == "/"),
+		sidebarLink("Users", "/users", active == "/users"),
+		sidebarLink("Analytics", "/analytics", active == "/analytics"),
+		sidebarLink("Settings", "/settings", active == "/settings"),
+	).Note("Demo workspace", "In-memory data for admin UI prototyping.")
+}
+
+func sidebarLink(label, href string, active bool) mf.SidebarItem {
+	link := mf.SidebarLink(label, href)
+	if active {
+		return link.Active()
+	}
+	return link
+}
+
+func renderShell(ctx *mb.Context, activePath string, header, content mf.Node) mf.Node {
 	return mf.DivProps(mf.ElementProps{ID: "app", Class: "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]"},
-		renderSidebar(),
+		renderSidebar(activePath),
 		mf.DivClass("min-w-0 space-y-6",
 			mf.FlashAlerts(ctx.Flashes()),
-			mf.ComponentPageHeader(mf.PageHeaderProps{
-				Title:       "Marionette Admin UI",
-				Description: "Go handlers, htmx actions, and daisyUI components for small admin tools.",
-				Actions: mf.Element("button", mf.ElementProps{
-					Class: "btn btn-outline btn-sm",
-					Attrs: mf.Attrs{
-						"type":    "button",
-						"onclick": "window.mrnToggleTheme && window.mrnToggleTheme()",
-					},
-				}, mf.Text("🌓 Theme")),
-			}),
-			renderUsersWorkspace(ctx, formState),
+			header,
+			mf.DivProps(mf.ElementProps{ID: "main-content", Class: "space-y-6"}, content),
 		),
 	)
 }
+func themeToggleButton() mf.Node {
+	return mf.Element("button", mf.ElementProps{
+		Class: "btn btn-outline btn-sm",
+		Attrs: mf.Attrs{"type": "button", "onclick": "window.mrnToggleTheme && window.mrnToggleTheme()"},
+	}, mf.Text("🌓 Theme"))
+}
 
-func renderSidebar() mf.Node {
-	return mf.Sidebar("Marionette", "Admin Console",
-		mf.SidebarLink("Users", "/").Active(),
-		mf.SidebarLink("Teams", "/"),
-		mf.SidebarLink("Settings", "/"),
-	).Note("Demo workspace", "In-memory data for admin UI prototyping.")
+func renderDashboardPage(ctx *mb.Context) mf.Node {
+	users := getUsers(ctx)
+	header := mf.ComponentPageHeader(mf.PageHeaderProps{
+		Title:       "Operations Dashboard",
+		Description: "Top-level overview of operational health and activity.",
+		Actions:     themeToggleButton(),
+	})
+	content := mf.ComponentStack(mf.StackProps{Gap: "lg"},
+		renderDashboardOverview(ctx),
+		renderDashboardCharts(ctx),
+		mf.ComponentGrid(mf.GridProps{MinColumnWidth: "lg", Gap: "lg"},
+			mf.ComponentCard(mf.CardProps{}, mf.ComponentEmptyState(mf.EmptyStateProps{
+				Title:       "Pending approvals",
+				Description: "No approvals are currently waiting.",
+				Icon:        "✓",
+			})),
+			mf.ComponentCard(mf.CardProps{}, mf.ComponentTable(mf.TableProps{
+				Columns: []mf.TableColumn{{Label: "Metric"}, {Label: "Value"}},
+				Rows: []mf.TableComponentRow{
+					{Cells: []mf.Node{mf.Text("Total users"), mf.Text(strconv.Itoa(len(users)))}},
+					{Cells: []mf.Node{mf.Text("Latest start"), mf.Text(latestStartDate(users))}},
+				},
+			})),
+		),
+	)
+	return renderShell(ctx, "/", header, content)
+}
+
+func renderAnalyticsPage(ctx *mb.Context) mf.Node {
+	header := mf.ComponentPageHeader(mf.PageHeaderProps{Title: "Analytics", Description: "A chart-first, two-column analytics layout.", Actions: themeToggleButton()})
+	content := mf.ComponentSplit(mf.SplitProps{
+		Gap: "lg",
+		Main: mf.ComponentStack(mf.StackProps{Gap: "lg"},
+			renderDashboardCharts(ctx),
+			mf.ComponentAlert(mf.AlertProps{Title: "Insight", Description: "Editors are growing steadily month-over-month.", Props: mf.ComponentProps{Variant: "info"}}),
+		),
+		Aside: mf.ComponentStack(mf.StackProps{Gap: "md"},
+			roleMixRow("Admin", roleCounts(getUsers(ctx))["Admin"]),
+			roleMixRow("Editor", roleCounts(getUsers(ctx))["Editor"]),
+			roleMixRow("Viewer", roleCounts(getUsers(ctx))["Viewer"]),
+		),
+	})
+	return renderShell(ctx, "/analytics", header, content)
+}
+
+func renderSettingsPage(ctx *mb.Context) mf.Node {
+	header := mf.ComponentPageHeader(mf.PageHeaderProps{Title: "Settings", Description: "A form-heavy vertical layout for configuration flows.", Actions: themeToggleButton()})
+	content := mf.ComponentStack(mf.StackProps{Gap: "lg"},
+		mf.ComponentCard(mf.CardProps{},
+			mf.Form("users/reset",
+				mf.FormRow(mf.FormRowProps{ID: "org-name", Label: "Organization name", Control: mf.TextField(mf.TextFieldProps{ID: "org-name", Name: "org-name", Value: "Marionette Labs"})}),
+				mf.FormRow(mf.FormRowProps{ID: "timezone", Label: "Timezone", Control: mf.Select(mf.SelectFieldProps{ID: "timezone", Name: "timezone", Options: []mf.SelectOption{{Label: "UTC", Value: "UTC", Selected: true}, {Label: "Asia/Tokyo", Value: "Asia/Tokyo"}}})}),
+				mf.Switch(mf.SwitchProps{ID: "audit", Name: "audit", Value: "yes", Checked: true, Label: "Enable audit log"}),
+				mf.DivClass("pt-3", mf.ComponentSubmitButton("Save settings", mf.ComponentProps{Variant: "primary"})),
+			),
+		),
+		mf.ComponentToast(mf.ToastProps{Title: "Tip", Description: "This page demonstrates form-heavy layout variation.", Props: mf.ComponentProps{Variant: "info"}}),
+	)
+	return renderShell(ctx, "/settings", header, content)
 }
 
 func renderUsersWorkspace(ctx *mb.Context, formState createUserFormState) mf.Node {
@@ -407,7 +491,7 @@ func pageLink(page, perPage int, sortKey string, totalPages int) string {
 	if strings.TrimSpace(sortKey) != "" {
 		query.Set("sort", sortKey)
 	}
-	return "/?" + query.Encode()
+	return "/users?" + query.Encode()
 }
 
 func isLoading(ctx *mb.Context) bool {
@@ -436,7 +520,7 @@ func usersTableColumns(activeSort string, pg pagination) []mf.TableColumn {
 		query.Set("sort", key)
 		query.Set("page", strconv.Itoa(pg.Page))
 		query.Set("per_page", strconv.Itoa(pg.PerPage))
-		return "/?" + query.Encode()
+		return "/users?" + query.Encode()
 	}
 	return []mf.TableColumn{
 		{Label: "Name", SortKey: "name", SortHref: sortedQuery("name"), SortActive: activeSort == "name"},

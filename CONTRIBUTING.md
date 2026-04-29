@@ -29,3 +29,15 @@ When changing architecture or conventions, update:
 - [ ] Documentation is updated or marked N/A.
 - [ ] Tests are added/updated where appropriate.
 - [ ] No new `.ts` / `.tsx` files were added without approval.
+
+## Ownership and review
+
+- Ownership rules are defined in `.github/CODEOWNERS`.
+- Use the PR template in `.github/pull_request_template.md`.
+- Keep user docs (`docs/site/`) and engineering docs (`docs/`) updates in separate commits when possible.
+
+## Documentation authoring
+
+- Use `docs/site/templates/page-template.md` for new user-facing pages.
+- Link related pages at the bottom to improve navigation.
+- Prefer short, task-oriented pages over long mixed-reference pages.

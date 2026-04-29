@@ -1,0 +1,12 @@
+# Default owner
+* @YoshihideShirai
+
+# Public docs
+/docs/site/ @YoshihideShirai
+
+# Engineering docs and policy
+/docs/ @YoshihideShirai
+
+# Contribution and workflow
+/CONTRIBUTING.md @YoshihideShirai
+/.github/ @YoshihideShirai

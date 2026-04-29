@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Components Gallery</title>
+    <title>ComponentContainer</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -168,7 +168,7 @@
               
                 <a href="./page-header.html">ComponentPageHeader</a>
               
-                <a href="./container.html">ComponentContainer</a>
+                <a href="./container.html" aria-current="page">ComponentContainer</a>
               
                 <a href="./card.html">ComponentCard</a>
               
@@ -180,37 +180,32 @@
       </aside>
       <main class="docs-main">
         <div class="docs-content">
-          <h1>Components Gallery</h1>
-<p>Marionette UI docs are split into one page per component. Use the sidebar to jump between pages, grouped by general components and layout primitives.</p>
-<h2>Components</h2>
-<div class="docs-index-grid">
-<a class="docs-link-card" href="./button.html"><strong>ComponentButton</strong><span>templates/components/button.tmpl</span></a>
-<a class="docs-link-card" href="./input.html"><strong>ComponentInput</strong><span>templates/components/input.tmpl</span></a>
-<a class="docs-link-card" href="./select.html"><strong>ComponentSelect</strong><span>templates/components/select.tmpl</span></a>
-<a class="docs-link-card" href="./modal.html"><strong>ComponentModal</strong><span>templates/components/modal.html</span></a>
-<a class="docs-link-card" href="./empty-state.html"><strong>ComponentEmptyState</strong><span>templates/components/empty_state.html</span></a>
-<a class="docs-link-card" href="./table.html"><strong>ComponentTable</strong><span>templates/components/table.html</span></a>
-<a class="docs-link-card" href="./pagination.html"><strong>ComponentPagination</strong><span>templates/components/pagination.tmpl</span></a>
-<a class="docs-link-card" href="./form-field.html"><strong>ComponentFormField</strong><span>templates/components/form_field.html</span></a>
-<a class="docs-link-card" href="./tabs.html"><strong>ComponentTabs</strong><span>templates/components/tabs.html</span></a>
-<a class="docs-link-card" href="./breadcrumb.html"><strong>ComponentBreadcrumb</strong><span>templates/components/breadcrumb.html</span></a>
-<a class="docs-link-card" href="./textarea.html"><strong>ComponentTextarea</strong><span>templates/components/textarea.html</span></a>
-<a class="docs-link-card" href="./checkbox.html"><strong>ComponentCheckbox</strong><span>templates/components/checkbox.html</span></a>
-<a class="docs-link-card" href="./radio-group.html"><strong>ComponentRadioGroup</strong><span>templates/components/radio_group.html</span></a>
-<a class="docs-link-card" href="./switch.html"><strong>ComponentSwitch</strong><span>templates/components/switch.html</span></a>
-<a class="docs-link-card" href="./feedback.html"><strong>Feedback Demo</strong><span>templates/components/{toast,alert,empty_state,skeleton}.html</span></a>
-<a class="docs-link-card" href="./overlay-system.html"><strong>Overlay System Demo</strong><span>ui/overlay/overlay-core.js</span></a>
-</div>
-<h2>Layout</h2>
-<div class="docs-index-grid">
-<a class="docs-link-card" href="./stack.html"><strong>ComponentStack</strong><span>templates/components/stack.html</span></a>
-<a class="docs-link-card" href="./grid.html"><strong>ComponentGrid</strong><span>templates/components/grid.html</span></a>
-<a class="docs-link-card" href="./split.html"><strong>ComponentSplit</strong><span>templates/components/split.html</span></a>
-<a class="docs-link-card" href="./page-header.html"><strong>ComponentPageHeader</strong><span>templates/components/page_header.html</span></a>
-<a class="docs-link-card" href="./container.html"><strong>ComponentContainer</strong><span>templates/components/container.html</span></a>
-<a class="docs-link-card" href="./card.html"><strong>ComponentCard</strong><span>templates/components/card.html</span></a>
-<a class="docs-link-card" href="./section.html"><strong>ComponentSection</strong><span>templates/components/section.html</span></a>
-</div>
+          <h1 id="componentcontainer">ComponentContainer</h1>
+<h3 id="purpose">Purpose</h3>
+<p>Width and padding wrapper for page-level content.</p>
+<h3 id="key-props">Key props</h3>
+<ul>
+<li><code>MaxWidth</code> (<code>sm</code>, <code>md</code>, <code>lg</code>, <code>full</code>)</li>
+<li><code>Padding</code> (<code>none</code>, <code>sm</code>, <code>md</code>, <code>lg</code>)</li>
+<li><code>Centered</code></li>
+<li><code>Props.Class</code></li>
+</ul>
+<h3 id="visual">Visual</h3>
+<iframe src="./examples/container.html" title="ComponentContainer example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">page := mf.ComponentContainer(
+    mf.ContainerProps{
+        MaxWidth: &quot;md&quot;,
+        Padding:  &quot;md&quot;,
+        Centered: true,
+    },
+    mf.Text(&quot;Centered page container&quot;),
+)
+</code></pre>
+<ul>
+<li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/container.golden.html"><code>container.golden.html</code></a></li>
+<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/container.html"><code>templates/components/container.html</code></a></li>
+</ul>
 
         </div>
       </main>

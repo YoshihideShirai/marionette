@@ -307,7 +307,7 @@ Flex stack for vertical and horizontal layout rhythm.
 
 ### Visual
 
-<iframe src="./examples/layout.html" title="Layout components example" style="width:100%;min-height:520px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<iframe src="./examples/stack.html" title="ComponentStack example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 
 - Golden sample: [`stack.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/stack.golden.html)
 - Template: [`templates/components/stack.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/stack.html)

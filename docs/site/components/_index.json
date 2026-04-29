@@ -3,6 +3,7 @@
     {
       "id": "button",
       "name": "ComponentButton",
+      "group": "Components",
       "golden": "testdata/golden/button.golden.html",
       "example": "docs/site/components/examples/button.html",
       "template": "templates/components/button.tmpl"
@@ -10,6 +11,7 @@
     {
       "id": "input",
       "name": "ComponentInput",
+      "group": "Components",
       "golden": "testdata/golden/input.golden.html",
       "example": "docs/site/components/examples/input.html",
       "template": "templates/components/input.tmpl"
@@ -17,6 +19,7 @@
     {
       "id": "select",
       "name": "ComponentSelect",
+      "group": "Components",
       "golden": "testdata/golden/select.golden.html",
       "example": "docs/site/components/examples/select.html",
       "template": "templates/components/select.tmpl"
@@ -24,6 +27,7 @@
     {
       "id": "modal",
       "name": "ComponentModal",
+      "group": "Components",
       "golden": "testdata/golden/modal_open.golden.html",
       "example": "docs/site/components/examples/modal.html",
       "template": "templates/components/modal.html"
@@ -31,6 +35,7 @@
     {
       "id": "empty-state",
       "name": "ComponentEmptyState",
+      "group": "Components",
       "golden": "testdata/golden/empty_state.golden.html",
       "example": "docs/site/components/examples/empty_state.html",
       "template": "templates/components/empty_state.html"
@@ -38,6 +43,7 @@
     {
       "id": "table",
       "name": "ComponentTable",
+      "group": "Components",
       "golden": "testdata/golden/table.golden.html",
       "example": "docs/site/components/examples/table.html",
       "template": "templates/components/table.html"
@@ -45,6 +51,7 @@
     {
       "id": "pagination",
       "name": "ComponentPagination",
+      "group": "Components",
       "golden": "testdata/golden/pagination.golden.html",
       "example": "docs/site/components/examples/pagination.html",
       "template": "templates/components/pagination.tmpl"
@@ -52,6 +59,7 @@
     {
       "id": "form-field",
       "name": "ComponentFormField",
+      "group": "Components",
       "golden": "testdata/golden/form_field.golden.html",
       "example": "docs/site/components/examples/form_field.html",
       "template": "templates/components/form_field.html"
@@ -59,97 +67,119 @@
     {
       "id": "tabs",
       "name": "ComponentTabs",
+      "group": "Components",
       "golden": "testdata/golden/tabs.golden.html",
-      "example": "docs/site/components/examples/navigation.html",
+      "example": "docs/site/components/examples/tabs.html",
       "template": "templates/components/tabs.html"
     },
     {
       "id": "breadcrumb",
       "name": "ComponentBreadcrumb",
+      "group": "Components",
       "golden": "testdata/golden/breadcrumb.golden.html",
-      "example": "docs/site/components/examples/navigation.html",
+      "example": "docs/site/components/examples/breadcrumb.html",
       "template": "templates/components/breadcrumb.html"
     },
     {
       "id": "textarea",
       "name": "ComponentTextarea",
+      "group": "Components",
       "golden": "testdata/golden/textarea.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/textarea.html",
       "template": "templates/components/textarea.html"
     },
     {
       "id": "checkbox",
       "name": "ComponentCheckbox",
+      "group": "Components",
       "golden": "testdata/golden/checkbox.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/checkbox.html",
       "template": "templates/components/checkbox.html"
     },
     {
       "id": "radio-group",
       "name": "ComponentRadioGroup",
+      "group": "Components",
       "golden": "testdata/golden/radio_group.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/radio_group.html",
       "template": "templates/components/radio_group.html"
     },
     {
       "id": "switch",
       "name": "ComponentSwitch",
+      "group": "Components",
       "golden": "testdata/golden/switch.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "docs/site/components/examples/switch.html",
       "template": "templates/components/switch.html"
     },
     {
       "id": "stack",
       "name": "ComponentStack",
+      "group": "Layout",
       "golden": "testdata/golden/stack.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/stack.html",
       "template": "templates/components/stack.html"
     },
     {
       "id": "grid",
       "name": "ComponentGrid",
+      "group": "Layout",
       "golden": "testdata/golden/grid.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/grid.html",
       "template": "templates/components/grid.html"
     },
     {
       "id": "split",
       "name": "ComponentSplit",
+      "group": "Layout",
       "golden": "testdata/golden/split.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/split.html",
       "template": "templates/components/split.html"
     },
     {
       "id": "page-header",
       "name": "ComponentPageHeader",
+      "group": "Layout",
       "golden": "testdata/golden/page_header.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/page_header.html",
       "template": "templates/components/page_header.html"
     },
     {
       "id": "container",
       "name": "ComponentContainer",
+      "group": "Layout",
       "golden": "testdata/golden/container.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/container.html",
       "template": "templates/components/container.html"
     },
     {
       "id": "card",
       "name": "ComponentCard",
+      "group": "Layout",
       "golden": "testdata/golden/card.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/card.html",
       "template": "templates/components/card.html"
     },
     {
       "id": "section",
       "name": "ComponentSection",
+      "group": "Layout",
       "golden": "testdata/golden/section.golden.html",
-      "example": "docs/site/components/examples/layout.html",
+      "example": "docs/site/components/examples/section.html",
       "template": "templates/components/section.html"
     },
     {
+      "id": "feedback",
+      "name": "Feedback Demo",
+      "group": "Components",
+      "example": "docs/site/components/examples/feedback.html",
+      "template": "templates/components/{toast,alert,empty_state,skeleton}.html",
+      "golden": "ui/feedback/stories.html"
+    },
+    {
       "id": "overlay-system",
-      "name": "OverlaySystemDemo",
+      "name": "Overlay System Demo",
+      "group": "Components",
       "example": "ui/overlay/stories.html",
       "template": "ui/overlay/overlay-core.js",
       "golden": "ui/overlay/README.md"

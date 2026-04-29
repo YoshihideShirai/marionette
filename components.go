@@ -39,6 +39,14 @@ type FormFieldProps struct {
 	Error    string
 }
 
+type FormProps struct {
+	ID     string
+	Class  string
+	Method string
+	Action string
+	Attrs  Attrs
+}
+
 type InputOptions struct {
 	Type        string
 	Placeholder string
@@ -380,6 +388,24 @@ func ComponentTextarea(name, value string, options TextareaOptions) Node {
 			Disabled:    options.Props.Disabled,
 		},
 	}
+}
+
+func ComponentForm(props FormProps, children ...Node) Node {
+	attrs := make(Attrs, len(props.Attrs)+2)
+	for key, value := range props.Attrs {
+		attrs[key] = value
+	}
+	if method := strings.TrimSpace(props.Method); method != "" {
+		attrs["method"] = method
+	}
+	if action := strings.TrimSpace(props.Action); action != "" {
+		attrs["action"] = action
+	}
+	return Element("form", ElementProps{
+		ID:    strings.TrimSpace(props.ID),
+		Class: strings.TrimSpace(props.Class),
+		Attrs: attrs,
+	}, children...)
 }
 
 func ComponentFormField(control Node, props FormFieldProps) Node {

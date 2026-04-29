@@ -16,21 +16,22 @@ This page lists Marionette UI components. The target component set is managed in
 6. [ComponentTable](#componenttable)
 7. [ComponentChart](#componentchart)
 8. [ComponentPagination](#componentpagination)
-9. [ComponentFormField](#componentformfield)
-10. [ComponentTabs](#componenttabs)
-11. [ComponentBreadcrumb](#componentbreadcrumb)
-12. [ComponentTextarea](#componenttextarea)
-13. [ComponentCheckbox](#componentcheckbox)
-14. [ComponentRadioGroup](#componentradiogroup)
-15. [ComponentSwitch](#componentswitch)
-16. [ComponentStack](#componentstack)
-17. [ComponentGrid](#componentgrid)
-18. [ComponentSplit](#componentsplit)
-19. [ComponentPageHeader](#componentpageheader)
-20. [ComponentContainer](#componentcontainer)
-21. [ComponentCard](#componentcard)
-22. [ComponentSection](#componentsection)
-23. [Feedback Demo](#feedback-demo)
+9. [ComponentForm](#componentform)
+10. [ComponentFormField](#componentformfield)
+11. [ComponentTabs](#componenttabs)
+12. [ComponentBreadcrumb](#componentbreadcrumb)
+13. [ComponentTextarea](#componenttextarea)
+14. [ComponentCheckbox](#componentcheckbox)
+15. [ComponentRadioGroup](#componentradiogroup)
+16. [ComponentSwitch](#componentswitch)
+17. [ComponentStack](#componentstack)
+18. [ComponentGrid](#componentgrid)
+19. [ComponentSplit](#componentsplit)
+20. [ComponentPageHeader](#componentpageheader)
+21. [ComponentContainer](#componentcontainer)
+22. [ComponentCard](#componentcard)
+23. [ComponentSection](#componentsection)
+24. [Feedback Demo](#feedback-demo)
 
 ---
 
@@ -187,6 +188,35 @@ Pagination controls for previous/next navigation and current page display.
 
 - Golden sample: [`pagination.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/pagination.golden.html)
 - Template: [`templates/components/pagination.tmpl`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/pagination.tmpl)
+
+## ComponentForm
+
+### Purpose
+
+Form container component for submit scope and behavior attributes.
+
+### Key props
+
+- `ID`, `Class`
+- `Method`, `Action`
+- `Attrs` (extra passthrough attributes such as `hx-post`, `hx-target`, `hx-swap`)
+- `children` (form controls / buttons)
+
+### Example
+
+```go
+mf.ComponentForm(mf.FormProps{
+  Class: "space-y-3",
+  Attrs: mf.Attrs{
+    "hx-post":   "/tasks/create",
+    "hx-target": "#task-list",
+    "hx-swap":   "innerHTML",
+  },
+},
+  mf.FormRow(mf.FormRowProps{/* ... */}),
+  mf.ComponentSubmitButton("Add Task", mf.ComponentProps{}),
+)
+```
 
 ## ComponentFormField
 

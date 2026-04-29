@@ -231,10 +231,7 @@ func renderShell(ctx *mb.Context, activePath string, header, content mf.Node) mf
 	)
 }
 func themeToggleButton() mf.Node {
-	return mf.Element("button", mf.ElementProps{
-		Class: "btn btn-outline btn-sm",
-		Attrs: mf.Attrs{"type": "button", "onclick": "window.mrnToggleTheme && window.mrnToggleTheme()"},
-	}, mf.Text("🌓 Theme"))
+	return mf.ComponentThemeToggleButton(mf.ComponentProps{Variant: "outline", Size: "sm"})
 }
 
 func renderDashboardPage(ctx *mb.Context) mf.Node {
@@ -784,6 +781,10 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 						Icon:        "0",
 						Props:       mf.ComponentProps{Size: "sm"},
 					}),
+				),
+				mf.DivClass("rounded-box border border-base-300 bg-base-100 p-3",
+					mf.DivClass("mb-2 text-sm text-base-content/60", mf.Text("Theme toggle component")),
+					mf.ComponentThemeToggleButton(mf.ComponentProps{Variant: "outline", Size: "sm"}),
 				),
 			),
 		),

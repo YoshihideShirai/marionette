@@ -69,7 +69,7 @@
       "group": "Chart",
       "example": "docs/site/components/examples/chart.html",
       "template": "templates/components/chart.html",
-      "description": "時系列や連続値の推移を線で可視化するチャート。"
+      "description": "Line chart for visualizing trends over time or continuous values."
     },
     {
       "id": "chart-bar",
@@ -77,7 +77,7 @@
       "group": "Chart",
       "example": "docs/site/components/examples/chart.html",
       "template": "templates/components/chart.html",
-      "description": "カテゴリ間の値比較を棒で可視化するチャート。"
+      "description": "Bar chart for comparing values across categories."
     },
     {
       "id": "chart-pie",
@@ -85,7 +85,7 @@
       "group": "Chart",
       "example": "docs/site/components/examples/chart.html",
       "template": "templates/components/chart.html",
-      "description": "全体に対する構成比を円で可視化するチャート。"
+      "description": "Pie chart for showing part-to-whole proportions."
     },
     {
       "id": "chart-doughnut",
@@ -93,7 +93,7 @@
       "group": "Chart",
       "example": "docs/site/components/examples/chart.html",
       "template": "templates/components/chart.html",
-      "description": "Pieに中央余白を持たせ、指標を重ねやすいチャート。"
+      "description": "Doughnut chart with center space for summary metrics."
     },
     {
       "id": "chart-scatter",
@@ -101,7 +101,7 @@
       "group": "Chart",
       "example": "docs/site/components/examples/chart.html",
       "template": "templates/components/chart.html",
-      "description": "2軸の相関や分布を点群で可視化するチャート。"
+      "description": "Scatter chart for visualizing correlation and distribution on two axes."
     },
     {
       "id": "pagination",

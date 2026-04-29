@@ -170,6 +170,87 @@ Chart.js-backed data visualization component rendered from Go props.
 - Golden sample: [`chart.golden.html`](https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/chart.golden.html)
 - Template: [`templates/components/chart.html`](https://github.com/YoshihideShirai/marionette/blob/main/templates/components/chart.html)
 
+
+## Chart: Line
+
+### Purpose
+
+A chart for tracking trends across time-series or continuous values.
+
+### When to use
+
+- Daily or weekly KPI trends
+- Trend vs. target values
+- Change comparison across multiple series
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Line example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Bar
+
+### Purpose
+
+A highly readable chart for comparing category values by bar length.
+
+### When to use
+
+- Side-by-side comparison (e.g., revenue by team, count by product)
+- Monthly or quarterly performance comparison
+- Stacked view when you also need composition
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Bar example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Pie
+
+### Purpose
+
+A chart for understanding part-to-whole ratios (best with a small number of categories).
+
+### When to use
+
+- Acquisition ratio by channel
+- User composition by plan
+- Error-type share overview
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Pie example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Doughnut
+
+### Purpose
+
+A pie-style chart with center space, useful for overlaying summary values.
+
+### When to use
+
+- Show composition and total value together
+- Utilization or attainment summary
+- Compact ratio display inside KPI cards
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Doughnut example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
+## Chart: Scatter
+
+### Purpose
+
+A chart that places points on two axes to inspect correlation, distribution, and outliers.
+
+### When to use
+
+- Correlation analysis (e.g., price vs. CVR)
+- Distribution comparison across initiatives
+- Outlier and anomaly detection
+
+### Visual
+
+<iframe src="./examples/chart.html" title="Chart: Scatter example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+
 ## ComponentPagination
 
 ### Purpose

@@ -22,12 +22,13 @@ type componentIndex struct {
 }
 
 type componentEntry struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Group    string `json:"group"`
-	Golden   string `json:"golden"`
-	Example  string `json:"example"`
-	Template string `json:"template"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Group       string `json:"group"`
+	Description string `json:"description"`
+	Golden      string `json:"golden"`
+	Example     string `json:"example"`
+	Template    string `json:"template"`
 }
 
 type componentGroup struct {
@@ -374,12 +375,16 @@ func componentIndexBody(groups []componentGroup) (template.HTML, error) {
 	for _, group := range groups {
 		fmt.Fprintf(&body, "<h2>%s</h2>\n<div class=\"docs-index-grid\">\n", template.HTMLEscapeString(group.Name))
 		for _, entry := range group.Components {
+			detail := entry.Description
+			if detail == "" {
+				detail = entry.Template
+			}
 			fmt.Fprintf(
 				&body,
 				"<a class=\"docs-link-card\" href=\"%s\"><strong>%s</strong><span>%s</span></a>\n",
 				template.HTMLEscapeString(componentHref(entry)),
 				template.HTMLEscapeString(entry.Name),
-				template.HTMLEscapeString(entry.Template),
+				template.HTMLEscapeString(detail),
 			)
 		}
 		body.WriteString("</div>\n")

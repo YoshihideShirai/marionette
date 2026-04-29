@@ -6,7 +6,8 @@
       "group": "Components",
       "golden": "testdata/golden/button.golden.html",
       "example": "docs/site/components/examples/button.html",
-      "template": "templates/components/button.tmpl"
+      "template": "templates/components/button.tmpl",
+      "description": "Primary/secondary action button variants."
     },
     {
       "id": "input",
@@ -14,7 +15,8 @@
       "group": "Components",
       "golden": "testdata/golden/input.golden.html",
       "example": "docs/site/components/examples/input.html",
-      "template": "templates/components/input.tmpl"
+      "template": "templates/components/input.tmpl",
+      "description": "Single-line text and value input control."
     },
     {
       "id": "select",
@@ -22,7 +24,8 @@
       "group": "Components",
       "golden": "testdata/golden/select.golden.html",
       "example": "docs/site/components/examples/select.html",
-      "template": "templates/components/select.tmpl"
+      "template": "templates/components/select.tmpl",
+      "description": "Dropdown control for choosing one option."
     },
     {
       "id": "modal",
@@ -30,7 +33,8 @@
       "group": "Components",
       "golden": "testdata/golden/modal_open.golden.html",
       "example": "docs/site/components/examples/modal.html",
-      "template": "templates/components/modal.html"
+      "template": "templates/components/modal.html",
+      "description": "Overlay dialog for confirmations and detail tasks."
     },
     {
       "id": "empty-state",
@@ -38,7 +42,8 @@
       "group": "Components",
       "golden": "testdata/golden/empty_state.golden.html",
       "example": "docs/site/components/examples/empty_state.html",
-      "template": "templates/components/empty_state.html"
+      "template": "templates/components/empty_state.html",
+      "description": "No-data and loading empty-state presentation."
     },
     {
       "id": "table",
@@ -46,7 +51,8 @@
       "group": "Components",
       "golden": "testdata/golden/table.golden.html",
       "example": "docs/site/components/examples/table.html",
-      "template": "templates/components/table.html"
+      "template": "templates/components/table.html",
+      "description": "Column/row data table with sort affordances."
     },
     {
       "id": "chart",
@@ -54,7 +60,8 @@
       "group": "Components",
       "golden": "testdata/golden/chart.golden.html",
       "example": "docs/site/components/examples/chart.html",
-      "template": "templates/components/chart.html"
+      "template": "templates/components/chart.html",
+      "description": "Chart.js-backed data visualization wrapper."
     },
     {
       "id": "pagination",
@@ -62,7 +69,8 @@
       "group": "Components",
       "golden": "testdata/golden/pagination.golden.html",
       "example": "docs/site/components/examples/pagination.html",
-      "template": "templates/components/pagination.tmpl"
+      "template": "templates/components/pagination.tmpl",
+      "description": "Previous/next pager with current page state."
     },
     {
       "id": "form-field",
@@ -70,7 +78,8 @@
       "group": "Components",
       "golden": "testdata/golden/form_field.golden.html",
       "example": "docs/site/components/examples/form_field.html",
-      "template": "templates/components/form_field.html"
+      "template": "templates/components/form_field.html",
+      "description": "Labeled field wrapper with hint and error text."
     },
     {
       "id": "tabs",
@@ -78,7 +87,8 @@
       "group": "Components",
       "golden": "testdata/golden/tabs.golden.html",
       "example": "docs/site/components/examples/tabs.html",
-      "template": "templates/components/tabs.html"
+      "template": "templates/components/tabs.html",
+      "description": "Tabbed navigation for switching related views."
     },
     {
       "id": "breadcrumb",
@@ -86,7 +96,8 @@
       "group": "Components",
       "golden": "testdata/golden/breadcrumb.golden.html",
       "example": "docs/site/components/examples/breadcrumb.html",
-      "template": "templates/components/breadcrumb.html"
+      "template": "templates/components/breadcrumb.html",
+      "description": "Hierarchical path navigation trail."
     },
     {
       "id": "textarea",
@@ -94,7 +105,8 @@
       "group": "Components",
       "golden": "testdata/golden/textarea.golden.html",
       "example": "docs/site/components/examples/textarea.html",
-      "template": "templates/components/textarea.html"
+      "template": "templates/components/textarea.html",
+      "description": "Multiline text input control."
     },
     {
       "id": "checkbox",
@@ -102,7 +114,8 @@
       "group": "Components",
       "golden": "testdata/golden/checkbox.golden.html",
       "example": "docs/site/components/examples/checkbox.html",
-      "template": "templates/components/checkbox.html"
+      "template": "templates/components/checkbox.html",
+      "description": "Boolean checkbox input with label."
     },
     {
       "id": "radio-group",
@@ -110,7 +123,8 @@
       "group": "Components",
       "golden": "testdata/golden/radio_group.golden.html",
       "example": "docs/site/components/examples/radio_group.html",
-      "template": "templates/components/radio_group.html"
+      "template": "templates/components/radio_group.html",
+      "description": "Exclusive multi-option radio selection group."
     },
     {
       "id": "switch",
@@ -118,7 +132,8 @@
       "group": "Components",
       "golden": "testdata/golden/switch.golden.html",
       "example": "docs/site/components/examples/switch.html",
-      "template": "templates/components/switch.html"
+      "template": "templates/components/switch.html",
+      "description": "Toggle-style boolean switch control."
     },
     {
       "id": "stack",
@@ -126,7 +141,8 @@
       "group": "Layout",
       "golden": "testdata/golden/stack.golden.html",
       "example": "docs/site/components/examples/stack.html",
-      "template": "templates/components/stack.html"
+      "template": "templates/components/stack.html",
+      "description": "Flex-based vertical/horizontal stack layout."
     },
     {
       "id": "grid",
@@ -134,7 +150,8 @@
       "group": "Layout",
       "golden": "testdata/golden/grid.golden.html",
       "example": "docs/site/components/examples/grid.html",
-      "template": "templates/components/grid.html"
+      "template": "templates/components/grid.html",
+      "description": "Responsive grid layout for repeated content."
     },
     {
       "id": "split",
@@ -142,7 +159,8 @@
       "group": "Layout",
       "golden": "testdata/golden/split.golden.html",
       "example": "docs/site/components/examples/split.html",
-      "template": "templates/components/split.html"
+      "template": "templates/components/split.html",
+      "description": "Main/aside split layout primitive."
     },
     {
       "id": "page-header",
@@ -150,7 +168,8 @@
       "group": "Layout",
       "golden": "testdata/golden/page_header.golden.html",
       "example": "docs/site/components/examples/page_header.html",
-      "template": "templates/components/page_header.html"
+      "template": "templates/components/page_header.html",
+      "description": "Page title, description, and action header."
     },
     {
       "id": "container",
@@ -158,7 +177,8 @@
       "group": "Layout",
       "golden": "testdata/golden/container.golden.html",
       "example": "docs/site/components/examples/container.html",
-      "template": "templates/components/container.html"
+      "template": "templates/components/container.html",
+      "description": "Width and padding container wrapper."
     },
     {
       "id": "card",
@@ -166,7 +186,8 @@
       "group": "Layout",
       "golden": "testdata/golden/card.golden.html",
       "example": "docs/site/components/examples/card.html",
-      "template": "templates/components/card.html"
+      "template": "templates/components/card.html",
+      "description": "Card surface with optional header metadata."
     },
     {
       "id": "section",
@@ -174,7 +195,8 @@
       "group": "Layout",
       "golden": "testdata/golden/section.golden.html",
       "example": "docs/site/components/examples/section.html",
-      "template": "templates/components/section.html"
+      "template": "templates/components/section.html",
+      "description": "Section block with consistent heading spacing."
     },
     {
       "id": "feedback",
@@ -182,7 +204,8 @@
       "group": "Components",
       "example": "docs/site/components/examples/feedback.html",
       "template": "templates/components/{toast,alert,empty_state,skeleton}.html",
-      "golden": "ui/feedback/stories.html"
+      "golden": "ui/feedback/stories.html",
+      "description": "Toast/alert/empty/skeleton feedback demo."
     },
     {
       "id": "overlay-system",
@@ -190,7 +213,8 @@
       "group": "Components",
       "example": "ui/overlay/stories.html",
       "template": "ui/overlay/overlay-core.js",
-      "golden": "ui/overlay/README.md"
+      "golden": "ui/overlay/README.md",
+      "description": "Modal/drawer/popover/tooltip overlay demo."
     }
   ]
 }

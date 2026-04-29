@@ -41,19 +41,27 @@ func main() {
 
 func page(ctx *mb.Context) mf.Node {
 	tasks := ctx.Get("tasks").([]task)
-	return mf.DivClass("space-y-4",
-		mf.Element("h1", mf.ElementProps{Class: "text-2xl font-bold"}, mf.Text("Simple Tasks")),
-		mf.Element("p", mf.ElementProps{Class: "text-sm opacity-80"}, mf.Text("Marionette end-to-end sample")),
-		mf.Element("form", mf.ElementProps{Attrs: mf.Attrs{
-			"hx-post":   "/tasks/create",
-			"hx-target": "#task-list",
-			"hx-swap":   "innerHTML",
-			"class":     "flex gap-2",
-		}},
-			mf.Element("input", mf.ElementProps{Attrs: mf.Attrs{"name": "name", "placeholder": "Task name", "class": "input input-bordered w-full"}}),
-			mf.Element("button", mf.ElementProps{Attrs: mf.Attrs{"type": "submit", "class": "btn btn-primary"}}, mf.Text("Add Task")),
+	return mf.ComponentContainer(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
+		mf.ComponentStack(mf.StackProps{Direction: "column", Gap: "6"},
+			mf.ComponentPageHeader(mf.PageHeaderProps{
+				Title:       "Simple Tasks",
+				Description: "Marionette end-to-end sample",
+			}),
+			mf.Element("form", mf.ElementProps{Attrs: mf.Attrs{
+				"hx-post":   "/tasks/create",
+				"hx-target": "#task-list",
+				"hx-swap":   "innerHTML",
+				"class":     "flex gap-2 items-start",
+			}},
+				mf.ComponentInputWithOptions("name", "", mf.InputOptions{
+					Placeholder: "Task name",
+					Required:    true,
+					Props:       mf.ComponentProps{Class: "w-full"},
+				}),
+				mf.ComponentSubmitButton("Add Task", mf.ComponentProps{}),
+			),
+			mf.DivID("task-list", taskList(tasks)),
 		),
-		mf.DivID("task-list", taskList(tasks)),
 	)
 }
 
@@ -69,5 +77,16 @@ func taskList(tasks []task) mf.Node {
 			mf.Text(t.Name),
 		))
 	}
-	return mf.Table([]string{"ID", "Name"}, rows...)
+	return mf.ComponentTable(mf.TableProps{
+		Columns: []mf.TableColumn{{Label: "ID"}, {Label: "Name"}},
+		Rows:    toComponentRows(rows),
+	})
+}
+
+func toComponentRows(rows []mf.TableRowData) []mf.TableComponentRow {
+	converted := make([]mf.TableComponentRow, 0, len(rows))
+	for _, row := range rows {
+		converted = append(converted, mf.TableComponentRow{Cells: row.Cells})
+	}
+	return converted
 }

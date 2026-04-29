@@ -26,5 +26,9 @@ jobs:
             --verbose
             --exclude-mail
             --accept 200,206,429
+            --exclude "http://127.0.0.1:8080"
+            --exclude "http://127.0.0.1:8081"
+            --exclude "http://localhost"
+            --exclude "https://github.com/.*/blob/main/.*"
             "**/*.md"
           fail: true

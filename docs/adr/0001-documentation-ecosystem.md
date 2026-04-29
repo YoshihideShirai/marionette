@@ -16,7 +16,7 @@ Mixing both concerns in a single surface makes navigation and maintenance harder
 
 Adopt a 3-layer documentation ecosystem:
 
-1. **Public docs (`docs/site/`)**
+1. **Public docs (`docs/site-astro/`)**
    - Quickstart, framework overview, components, cookbook, changelog.
 2. **Engineering docs (`docs/`)**
    - Architecture policy, component guidelines, future ADRs.

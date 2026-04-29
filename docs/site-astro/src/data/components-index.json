@@ -2,7 +2,7 @@
   "components": [
     {
       "id": "button",
-      "name": "ComponentButton",
+      "name": "UIButton",
       "group": "Components",
       "golden": "testdata/golden/button.golden.html",
       "example": "/marionette/examples/button.html",
@@ -11,7 +11,7 @@
     },
     {
       "id": "theme-toggle-button",
-      "name": "ComponentThemeToggleButton",
+      "name": "UIThemeToggleButton",
       "group": "Components",
       "example": "/marionette/examples/theme-toggle-button.html",
       "template": "frontend/components_impl.go",
@@ -19,7 +19,7 @@
     },
     {
       "id": "input",
-      "name": "ComponentInput",
+      "name": "UIInput",
       "group": "Components",
       "golden": "testdata/golden/input.golden.html",
       "example": "/marionette/examples/input.html",
@@ -28,7 +28,7 @@
     },
     {
       "id": "select",
-      "name": "ComponentSelect",
+      "name": "UISelect",
       "group": "Components",
       "golden": "testdata/golden/select.golden.html",
       "example": "/marionette/examples/select.html",
@@ -37,7 +37,7 @@
     },
     {
       "id": "modal",
-      "name": "ComponentModal",
+      "name": "UIModal",
       "group": "Components",
       "golden": "testdata/golden/modal_open.golden.html",
       "example": "/marionette/examples/modal.html",
@@ -46,7 +46,7 @@
     },
     {
       "id": "empty-state",
-      "name": "ComponentEmptyState",
+      "name": "UIEmptyState",
       "group": "Components",
       "golden": "testdata/golden/empty_state.golden.html",
       "example": "/marionette/examples/empty_state.html",
@@ -55,7 +55,7 @@
     },
     {
       "id": "table",
-      "name": "ComponentTable",
+      "name": "UITable",
       "group": "Components",
       "golden": "testdata/golden/table.golden.html",
       "example": "/marionette/examples/table.html",
@@ -64,7 +64,7 @@
     },
     {
       "id": "chart",
-      "name": "ComponentChart",
+      "name": "UIChart",
       "group": "Components",
       "golden": "testdata/golden/chart.golden.html",
       "example": "/marionette/examples/chart.html",
@@ -73,7 +73,7 @@
     },
     {
       "id": "chart-line",
-      "name": "Chart: Line",
+      "name": "UIChart (Line)",
       "group": "Chart",
       "example": "/marionette/examples/chart-line.html",
       "template": "templates/components/chart.html",
@@ -81,7 +81,7 @@
     },
     {
       "id": "chart-bar",
-      "name": "Chart: Bar",
+      "name": "UIChart (Bar)",
       "group": "Chart",
       "example": "/marionette/examples/chart-bar.html",
       "template": "templates/components/chart.html",
@@ -89,7 +89,7 @@
     },
     {
       "id": "chart-pie",
-      "name": "Chart: Pie",
+      "name": "UIChart (Pie)",
       "group": "Chart",
       "example": "/marionette/examples/chart-pie.html",
       "template": "templates/components/chart.html",
@@ -97,7 +97,7 @@
     },
     {
       "id": "chart-doughnut",
-      "name": "Chart: Doughnut",
+      "name": "UIChart (Doughnut)",
       "group": "Chart",
       "example": "/marionette/examples/chart-doughnut.html",
       "template": "templates/components/chart.html",
@@ -105,7 +105,7 @@
     },
     {
       "id": "chart-scatter",
-      "name": "Chart: Scatter",
+      "name": "UIChart (Scatter)",
       "group": "Chart",
       "example": "/marionette/examples/chart-scatter.html",
       "template": "templates/components/chart.html",
@@ -113,7 +113,7 @@
     },
     {
       "id": "pagination",
-      "name": "ComponentPagination",
+      "name": "UIPagination",
       "group": "Components",
       "golden": "testdata/golden/pagination.golden.html",
       "example": "/marionette/examples/pagination.html",
@@ -122,7 +122,7 @@
     },
     {
       "id": "form",
-      "name": "ComponentForm",
+      "name": "UIForm",
       "group": "Components",
       "description": "Form element wrapper for method/action and child controls.",
       "template": "components.go",
@@ -130,7 +130,7 @@
     },
     {
       "id": "form-field",
-      "name": "ComponentFormField",
+      "name": "UIFormField",
       "group": "Components",
       "golden": "testdata/golden/form_field.golden.html",
       "example": "/marionette/examples/form_field.html",
@@ -139,7 +139,7 @@
     },
     {
       "id": "tabs",
-      "name": "ComponentTabs",
+      "name": "UITabs",
       "group": "Components",
       "golden": "testdata/golden/tabs.golden.html",
       "example": "/marionette/examples/tabs.html",
@@ -148,7 +148,7 @@
     },
     {
       "id": "breadcrumb",
-      "name": "ComponentBreadcrumb",
+      "name": "UIBreadcrumb",
       "group": "Components",
       "golden": "testdata/golden/breadcrumb.golden.html",
       "example": "/marionette/examples/breadcrumb.html",
@@ -157,7 +157,7 @@
     },
     {
       "id": "textarea",
-      "name": "ComponentTextarea",
+      "name": "UITextarea",
       "group": "Components",
       "golden": "testdata/golden/textarea.golden.html",
       "example": "/marionette/examples/textarea.html",
@@ -166,7 +166,7 @@
     },
     {
       "id": "checkbox",
-      "name": "ComponentCheckbox",
+      "name": "UICheckbox",
       "group": "Components",
       "golden": "testdata/golden/checkbox.golden.html",
       "example": "/marionette/examples/checkbox.html",
@@ -175,7 +175,7 @@
     },
     {
       "id": "radio-group",
-      "name": "ComponentRadioGroup",
+      "name": "UIRadioGroup",
       "group": "Components",
       "golden": "testdata/golden/radio_group.golden.html",
       "example": "/marionette/examples/radio_group.html",
@@ -184,7 +184,7 @@
     },
     {
       "id": "switch",
-      "name": "ComponentSwitch",
+      "name": "UISwitch",
       "group": "Components",
       "golden": "testdata/golden/switch.golden.html",
       "example": "/marionette/examples/switch.html",
@@ -193,7 +193,7 @@
     },
     {
       "id": "stack",
-      "name": "ComponentStack",
+      "name": "UIStack",
       "group": "Layout",
       "golden": "testdata/golden/stack.golden.html",
       "example": "/marionette/examples/stack.html",
@@ -202,7 +202,7 @@
     },
     {
       "id": "grid",
-      "name": "ComponentGrid",
+      "name": "UIGrid",
       "group": "Layout",
       "golden": "testdata/golden/grid.golden.html",
       "example": "/marionette/examples/grid.html",
@@ -211,7 +211,7 @@
     },
     {
       "id": "split",
-      "name": "ComponentSplit",
+      "name": "UISplit",
       "group": "Layout",
       "golden": "testdata/golden/split.golden.html",
       "example": "/marionette/examples/split.html",
@@ -220,7 +220,7 @@
     },
     {
       "id": "page-header",
-      "name": "ComponentPageHeader",
+      "name": "UIPageHeader",
       "group": "Layout",
       "golden": "testdata/golden/page_header.golden.html",
       "example": "/marionette/examples/page_header.html",
@@ -229,7 +229,7 @@
     },
     {
       "id": "container",
-      "name": "ComponentContainer",
+      "name": "UIContainer",
       "group": "Layout",
       "golden": "testdata/golden/container.golden.html",
       "example": "/marionette/examples/container.html",
@@ -238,7 +238,7 @@
     },
     {
       "id": "card",
-      "name": "ComponentCard",
+      "name": "UICard",
       "group": "Layout",
       "golden": "testdata/golden/card.golden.html",
       "example": "/marionette/examples/card.html",
@@ -247,7 +247,7 @@
     },
     {
       "id": "section",
-      "name": "ComponentSection",
+      "name": "UISection",
       "group": "Layout",
       "golden": "testdata/golden/section.golden.html",
       "example": "/marionette/examples/section.html",
@@ -256,7 +256,7 @@
     },
     {
       "id": "toast",
-      "name": "ComponentToast",
+      "name": "UIToast",
       "group": "Components",
       "description": "Transient toast notification component.",
       "golden": "testdata/golden/toast.golden.html",
@@ -265,7 +265,7 @@
     },
     {
       "id": "alert",
-      "name": "ComponentAlert",
+      "name": "UIAlert",
       "group": "Components",
       "description": "Inline alert message component.",
       "golden": "testdata/golden/alert.golden.html",
@@ -274,7 +274,7 @@
     },
     {
       "id": "skeleton",
-      "name": "ComponentSkeleton",
+      "name": "UISkeleton",
       "group": "Components",
       "description": "Loading placeholder skeleton blocks.",
       "golden": "testdata/golden/skeleton.golden.html",
@@ -283,10 +283,10 @@
     },
     {
       "id": "feedback",
-      "name": "Feedback Demo",
+      "name": "UIToast / UIAlert / UIEmptyState / UISkeleton",
       "group": "Components",
       "example": "/marionette/examples/feedback.html",
-      "template": "templates/components/{toast,alert,empty_state,skeleton}.html",
+      "template": "ui/feedback/stories.html",
       "golden": "ui/feedback/stories.html",
       "description": "Toast/alert/empty/skeleton feedback demo."
     },
@@ -301,7 +301,7 @@
     },
     {
       "id": "dataframe",
-      "name": "ComponentDataFrame",
+      "name": "UIDataFrame",
       "group": "Data",
       "description": "Render a gota DataFrame as a table component.",
       "template": "dataframe.go",
@@ -309,7 +309,7 @@
     },
     {
       "id": "dataframe-chart",
-      "name": "ComponentDataFrameChart",
+      "name": "UIDataFrameChart",
       "group": "Data",
       "description": "Build chart datasets from a DataFrame for ComponentChart.",
       "template": "dataframe.go",

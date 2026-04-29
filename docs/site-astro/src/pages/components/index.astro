@@ -15,7 +15,7 @@ const visibleCards =
 
   <nav class="group-filter" aria-label="Component group filter">
     {['All', ...groups].map((group) => {
-      const href = group === 'All' ? '/components/' : `/components/?group=${encodeURIComponent(group)}`;
+      const href = group === 'All' ? './' : `./?group=${encodeURIComponent(group)}`;
       const active = group === initialGroup;
 
       return (

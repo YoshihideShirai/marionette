@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ComponentStack</title>
+    <title>ComponentDataFrame</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -170,7 +170,7 @@
             <p class="docs-group-title">Layout</p>
             <nav class="docs-nav" aria-label="Layout">
               
-                <a href="./stack.html" aria-current="page">ComponentStack</a>
+                <a href="./stack.html">ComponentStack</a>
               
                 <a href="./grid.html">ComponentGrid</a>
               
@@ -191,7 +191,7 @@
             <p class="docs-group-title">Data</p>
             <nav class="docs-nav" aria-label="Data">
               
-                <a href="./dataframe.html">ComponentDataFrame</a>
+                <a href="./dataframe.html" aria-current="page">ComponentDataFrame</a>
               
                 <a href="./dataframe-chart.html">ComponentDataFrameChart</a>
               
@@ -201,35 +201,9 @@
       </aside>
       <main class="docs-main">
         <div class="docs-content">
-          <h1 id="componentstack">ComponentStack</h1>
-<h3 id="purpose">Purpose</h3>
-<p>Flex stack for vertical and horizontal layout rhythm.</p>
-<h3 id="key-props">Key props</h3>
+          <h1 id="componentdataframe">ComponentDataFrame</h1>
 <ul>
-<li><code>Direction</code> (<code>vertical</code>, <code>horizontal</code>)</li>
-<li><code>Gap</code> (<code>none</code>, <code>xs</code>, <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>)</li>
-<li><code>Align</code>, <code>Justify</code>, <code>Wrap</code></li>
-<li><code>Props.Class</code></li>
-</ul>
-<h3 id="visual">Visual</h3>
-<iframe src="./examples/stack.html" title="ComponentStack example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
-<h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">stack := mf.ComponentStack(
-    mf.StackProps{
-        Direction: &quot;horizontal&quot;,
-        Gap:       &quot;sm&quot;,
-        Align:     &quot;center&quot;,
-        Justify:   &quot;between&quot;,
-        Wrap:      true,
-    },
-    mf.Text(&quot;Aiko Tanaka&quot;),
-    mf.DivClass(&quot;badge badge-primary&quot;, mf.Text(&quot;Admin&quot;)),
-    mf.ComponentButton(&quot;Open&quot;, mf.ComponentProps{Variant: &quot;secondary&quot;, Size: &quot;sm&quot;}),
-)
-</code></pre>
-<ul>
-<li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/stack.golden.html"><code>stack.golden.html</code></a></li>
-<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/stack.html"><code>templates/components/stack.html</code></a></li>
+<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/dataframe.go"><code>dataframe.go</code></a></li>
 </ul>
 
         </div>

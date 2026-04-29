@@ -7,13 +7,23 @@ const { title = 'Marionette Docs' } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const key = 'marionette-docs-theme';
+        const saved = localStorage.getItem(key);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved ?? (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
   </head>
   <body>
     <header class="site-header">
       <a href="/marionette/" class="brand">Marionette Docs</a>
-      <nav>
+      <nav class="site-nav">
         <a href="/marionette/">Home</a>
         <a href="/marionette/components/">Components</a>
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙 Dark</button>
       </nav>
     </header>
     <main class="container">
@@ -34,4 +44,28 @@ const { title = 'Marionette Docs' } = Astro.props;
       font-weight: 600;
     }
   </style>
+  <script is:inline>
+    (() => {
+      const key = 'marionette-docs-theme';
+      const root = document.documentElement;
+      const button = document.getElementById('theme-toggle');
+      if (!button) return;
+
+      const syncLabel = () => {
+        const dark = root.getAttribute('data-theme') === 'dark';
+        button.textContent = dark ? '☀️ Light' : '🌙 Dark';
+        button.setAttribute('aria-pressed', String(dark));
+      };
+
+      button.addEventListener('click', () => {
+        const current = root.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem(key, next);
+        syncLabel();
+      });
+
+      syncLabel();
+    })();
+  </script>
 </html>

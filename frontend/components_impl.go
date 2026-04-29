@@ -307,6 +307,19 @@ func ComponentSubmitButton(label string, props ComponentProps) Node {
 	return componentButton(label, "submit", props)
 }
 
+func ComponentThemeToggleButton(props ComponentProps) Node {
+	return templateNode{
+		name: "components/theme_toggle_button",
+		data: struct {
+			Class    string
+			Disabled bool
+		}{
+			Class:    buttonClass(props),
+			Disabled: props.Disabled,
+		},
+	}
+}
+
 func componentButton(label, buttonType string, props ComponentProps) Node {
 	return templateNode{
 		name: "components/button",

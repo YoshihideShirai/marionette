@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ComponentRadioGroup</title>
+    <title>ComponentThemeToggleButton</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -123,7 +123,7 @@
               
                 <a href="./button.html">ComponentButton</a>
               
-                <a href="./theme-toggle-button.html">ComponentThemeToggleButton</a>
+                <a href="./theme-toggle-button.html" aria-current="page">ComponentThemeToggleButton</a>
               
                 <a href="./input.html">ComponentInput</a>
               
@@ -151,7 +151,7 @@
               
                 <a href="./checkbox.html">ComponentCheckbox</a>
               
-                <a href="./radio-group.html" aria-current="page">ComponentRadioGroup</a>
+                <a href="./radio-group.html">ComponentRadioGroup</a>
               
                 <a href="./switch.html">ComponentSwitch</a>
               
@@ -220,32 +220,11 @@
       </aside>
       <main class="docs-main">
         <div class="docs-content">
-          <h1 id="componentradiogroup">ComponentRadioGroup</h1>
-<h3 id="purpose">Purpose</h3>
-<p>Exclusive selection group rendered from item definitions.</p>
-<h3 id="key-props">Key props</h3>
-<ul>
-<li><code>Name</code>, <code>AriaLabel</code></li>
-<li><code>Items</code> (<code>Label</code>, <code>Value</code>, <code>Checked</code>, <code>Disabled</code>)</li>
-<li><code>Props</code> (<code>Size</code>, <code>Disabled</code>, <code>Class</code>)</li>
-</ul>
+          <h1 id="componentthemetogglebutton">ComponentThemeToggleButton</h1>
 <h3 id="visual">Visual</h3>
-<iframe src="./examples/radio_group.html" title="ComponentRadioGroup example" style="width:100%;min-height:220px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
-<h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">roleGroup := mf.ComponentRadioGroup(mf.RadioGroupComponentProps{
-    Name:      &quot;role&quot;,
-    AriaLabel: &quot;role&quot;,
-    Items: []mf.RadioItem{
-        {Label: &quot;Admin&quot;, Value: &quot;admin&quot;, Checked: true},
-        {Label: &quot;Editor&quot;, Value: &quot;editor&quot;},
-        {Label: &quot;Viewer&quot;, Value: &quot;viewer&quot;, Disabled: true},
-    },
-    Props: mf.ComponentProps{Size: &quot;sm&quot;},
-})
-</code></pre>
+<iframe src="./examples/theme-toggle-button.html" title="ComponentThemeToggleButton example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <ul>
-<li>Golden sample: <a href="https://github.com/YoshihideShirai/marionette/blob/main/testdata/golden/radio_group.golden.html"><code>radio_group.golden.html</code></a></li>
-<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/templates/components/radio_group.html"><code>templates/components/radio_group.html</code></a></li>
+<li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/frontend/components_impl.go"><code>frontend/components_impl.go</code></a></li>
 </ul>
 
         </div>

@@ -10,6 +10,14 @@
       "description": "Primary/secondary action button variants."
     },
     {
+      "id": "theme-toggle-button",
+      "name": "ComponentThemeToggleButton",
+      "group": "Components",
+      "example": "docs/site/components/examples/theme-toggle-button.html",
+      "template": "frontend/components_impl.go",
+      "description": "Marionette built-in theme toggle action button."
+    },
+    {
       "id": "input",
       "name": "ComponentInput",
       "group": "Components",

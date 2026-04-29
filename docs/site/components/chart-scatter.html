@@ -231,6 +231,19 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/chart-scatter.html" title="Chart: Scatter example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">correlation := mf.ComponentChart(mf.ChartProps{
+    Type: mf.ChartTypeScatter,
+    Datasets: []mf.ChartDataset{{
+        Label: &quot;Sessions&quot;,
+        Points: []mf.ChartPoint{
+            {X: 4, Y: 12},
+            {X: 8, Y: 26},
+            {X: 12, Y: 33},
+        },
+    }},
+})
+</code></pre>
 
         </div>
       </main>

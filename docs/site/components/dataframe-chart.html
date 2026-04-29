@@ -224,6 +224,13 @@
 <ul>
 <li>Template: <a href="https://github.com/YoshihideShirai/marionette/blob/main/dataframe.go"><code>dataframe.go</code></a></li>
 </ul>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">chart := mf.ComponentDataFrameChart(df, mf.DataFrameChartProps{
+    Type:      mf.ChartTypeBar,
+    LabelCol:  &quot;month&quot;,
+    ValueCols: []string{&quot;signups&quot;},
+})
+</code></pre>
 
         </div>
       </main>

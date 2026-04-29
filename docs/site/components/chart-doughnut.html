@@ -231,6 +231,15 @@
 </ul>
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/chart-doughnut.html" title="Chart: Doughnut example" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
+<h3 id="go-usage">Go usage</h3>
+<pre><code class="language-go">conversion := mf.ComponentChart(mf.ChartProps{
+    Type:   mf.ChartTypeDoughnut,
+    Labels: []string{&quot;Converted&quot;, &quot;Dropped&quot;},
+    Datasets: []mf.ChartDataset{{
+        Data: []float64{72, 28},
+    }},
+})
+</code></pre>
 
         </div>
       </main>

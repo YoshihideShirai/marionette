@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ComponentRadioGroup example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-base-100 p-6 text-base-content">
+    <main class="max-w-xl">
+      <fieldset class="flex flex-wrap gap-3 rounded-box border border-base-300 p-4" aria-label="role">
+        <label class="label cursor-pointer justify-start gap-2">
+          <input type="radio" name="role" value="admin" class="radio radio-sm" checked />
+          <span class="label-text">Admin</span>
+        </label>
+        <label class="label cursor-pointer justify-start gap-2">
+          <input type="radio" name="role" value="editor" class="radio radio-sm" />
+          <span class="label-text">Editor</span>
+        </label>
+        <label class="label cursor-pointer justify-start gap-2">
+          <input type="radio" name="role" value="viewer" class="radio radio-sm" disabled />
+          <span class="label-text opacity-60">Viewer</span>
+        </label>
+      </fieldset>
+    </main>
+  </body>
+</html>

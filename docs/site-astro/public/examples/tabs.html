@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ComponentTabs example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-base-100 p-6 text-base-content">
+    <main class="max-w-2xl space-y-4">
+      <div role="tablist" aria-label="user sections" class="tabs tabs-boxed">
+        <a role="tab" href="/users/1/profile" class="tab tab-active" aria-selected="true" aria-current="page">Profile</a>
+        <a role="tab" href="/users/1/permissions" class="tab" aria-selected="false">Permissions</a>
+        <button role="tab" type="button" class="tab pointer-events-none opacity-50" aria-selected="false" aria-disabled="true">Audit</button>
+      </div>
+      <section class="rounded-box border border-base-300 p-4 text-sm text-base-content/70">Active tab content appears below the tablist.</section>
+    </main>
+  </body>
+</html>

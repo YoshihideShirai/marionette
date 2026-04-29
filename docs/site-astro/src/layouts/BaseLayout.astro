@@ -1,0 +1,23 @@
+---
+import '../styles/global.css';
+const { title = 'Marionette Docs' } = Astro.props;
+---
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a href="/marionette/" class="brand">Marionette Docs</a>
+      <nav>
+        <a href="/marionette/">Home</a>
+        <a href="/marionette/components/">Components</a>
+      </nav>
+    </header>
+    <main class="container">
+      <slot />
+    </main>
+  </body>
+</html>

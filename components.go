@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/yuin/goldmark"
 )
 
 // ComponentProps defines shared style knobs for template components.
@@ -274,6 +276,11 @@ type SectionProps struct {
 	Description string
 	Actions     Node
 	Props       ComponentProps
+}
+
+type MarkdownProps struct {
+	Content string
+	Props   ComponentProps
 }
 
 type templateNode struct {
@@ -1007,6 +1014,23 @@ func UISection(props SectionProps, children ...Node) Node {
 			Description: strings.TrimSpace(props.Description),
 			Actions:     actionsHTML,
 			Children:    childHTML,
+		},
+	}
+}
+
+func UIMarkdown(props MarkdownProps) Node {
+	var out bytes.Buffer
+	if err := goldmark.Convert([]byte(strings.TrimSpace(props.Content)), &out); err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/markdown",
+		data: struct {
+			Class   string
+			Content template.HTML
+		}{
+			Class:   strings.TrimSpace(props.Props.Class),
+			Content: template.HTML(out.String()),
 		},
 	}
 }

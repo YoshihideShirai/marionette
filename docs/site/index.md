@@ -16,6 +16,7 @@ Marionette is a Go-first UI framework for building admin interfaces. Application
 - [Components gallery](./components/index.md)
 - [Cookbook](./cookbook/index.md)
 - [Changelog](./changelog.md)
+- [Sitemap](./sitemap.md)
 
 ## Engineering docs (for contributors)
 
@@ -27,3 +28,8 @@ Marionette is a Go-first UI framework for building admin interfaces. Application
 
 - API reference: [`docs_api.md`](https://github.com/YoshihideShirai/marionette/blob/main/docs_api.md)
 - Repository README: [`README.md`](../../README.md)
+
+
+## Governance
+
+- Documentation quality checks run via `.github/workflows/docs-quality.yml`.

@@ -228,6 +228,13 @@ func TestTemplateRenderingGolden(t *testing.T) {
 				Text("Section body"),
 			),
 		},
+		{
+			name: "markdown",
+			node: UIMarkdown(MarkdownProps{
+				Content: "# Heading\n\n- one\n- two\n\n**bold**",
+				Props:   ComponentProps{Class: "max-w-none"},
+			}),
+		},
 	}
 
 	for _, tc := range tests {

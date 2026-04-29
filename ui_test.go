@@ -228,6 +228,29 @@ func TestLoadComponentTemplatesCachesParsedTemplates(t *testing.T) {
 	}
 }
 
+func TestMarkdownRendersHTMLAndFiltersRawHTML(t *testing.T) {
+	html, err := UIMarkdown(MarkdownProps{
+		Content: "# Title\n\n<script>alert(1)</script>\n\n**bold**",
+		Props:   ComponentProps{Class: "max-w-none"},
+	}).Render()
+	if err != nil {
+		t.Fatalf("markdown render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`<article class="prose max-w-none">`,
+		`<h1>Title</h1>`,
+		`<strong>bold</strong>`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+	if strings.Contains(got, "<script>") {
+		t.Fatalf("expected raw html to be filtered, got %q", got)
+	}
+}
+
 func TestComponentInputWithOptionsRendersDateConstraints(t *testing.T) {
 	html, err := UIInputWithOptions("start_date", "2030-01-01", InputOptions{
 		Type:     "date",

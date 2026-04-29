@@ -5,7 +5,7 @@
       "name": "ComponentButton",
       "group": "Components",
       "golden": "testdata/golden/button.golden.html",
-      "example": "docs/site/components/examples/button.html",
+      "example": "/marionette/examples/button.html",
       "template": "templates/components/button.tmpl",
       "description": "Primary/secondary action button variants."
     },
@@ -13,7 +13,7 @@
       "id": "theme-toggle-button",
       "name": "ComponentThemeToggleButton",
       "group": "Components",
-      "example": "docs/site/components/examples/theme-toggle-button.html",
+      "example": "/marionette/examples/theme-toggle-button.html",
       "template": "frontend/components_impl.go",
       "description": "Marionette built-in theme toggle action button."
     },
@@ -22,7 +22,7 @@
       "name": "ComponentInput",
       "group": "Components",
       "golden": "testdata/golden/input.golden.html",
-      "example": "docs/site/components/examples/input.html",
+      "example": "/marionette/examples/input.html",
       "template": "templates/components/input.tmpl",
       "description": "Single-line text and value input control."
     },
@@ -31,7 +31,7 @@
       "name": "ComponentSelect",
       "group": "Components",
       "golden": "testdata/golden/select.golden.html",
-      "example": "docs/site/components/examples/select.html",
+      "example": "/marionette/examples/select.html",
       "template": "templates/components/select.tmpl",
       "description": "Dropdown control for choosing one option."
     },
@@ -40,7 +40,7 @@
       "name": "ComponentModal",
       "group": "Components",
       "golden": "testdata/golden/modal_open.golden.html",
-      "example": "docs/site/components/examples/modal.html",
+      "example": "/marionette/examples/modal.html",
       "template": "templates/components/modal.html",
       "description": "Overlay dialog for confirmations and detail tasks."
     },
@@ -49,7 +49,7 @@
       "name": "ComponentEmptyState",
       "group": "Components",
       "golden": "testdata/golden/empty_state.golden.html",
-      "example": "docs/site/components/examples/empty_state.html",
+      "example": "/marionette/examples/empty_state.html",
       "template": "templates/components/empty_state.html",
       "description": "No-data and loading empty-state presentation."
     },
@@ -58,7 +58,7 @@
       "name": "ComponentTable",
       "group": "Components",
       "golden": "testdata/golden/table.golden.html",
-      "example": "docs/site/components/examples/table.html",
+      "example": "/marionette/examples/table.html",
       "template": "templates/components/table.html",
       "description": "Column/row data table with sort affordances."
     },
@@ -67,7 +67,7 @@
       "name": "ComponentChart",
       "group": "Components",
       "golden": "testdata/golden/chart.golden.html",
-      "example": "docs/site/components/examples/chart.html",
+      "example": "/marionette/examples/chart.html",
       "template": "templates/components/chart.html",
       "description": "Chart.js-backed data visualization wrapper."
     },
@@ -75,7 +75,7 @@
       "id": "chart-line",
       "name": "Chart: Line",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart-line.html",
+      "example": "/marionette/examples/chart-line.html",
       "template": "templates/components/chart.html",
       "description": "Line chart for visualizing trends over time or continuous values."
     },
@@ -83,7 +83,7 @@
       "id": "chart-bar",
       "name": "Chart: Bar",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart-bar.html",
+      "example": "/marionette/examples/chart-bar.html",
       "template": "templates/components/chart.html",
       "description": "Bar chart for comparing values across categories."
     },
@@ -91,7 +91,7 @@
       "id": "chart-pie",
       "name": "Chart: Pie",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart-pie.html",
+      "example": "/marionette/examples/chart-pie.html",
       "template": "templates/components/chart.html",
       "description": "Pie chart for showing part-to-whole proportions."
     },
@@ -99,7 +99,7 @@
       "id": "chart-doughnut",
       "name": "Chart: Doughnut",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart-doughnut.html",
+      "example": "/marionette/examples/chart-doughnut.html",
       "template": "templates/components/chart.html",
       "description": "Doughnut chart with center space for summary metrics."
     },
@@ -107,7 +107,7 @@
       "id": "chart-scatter",
       "name": "Chart: Scatter",
       "group": "Chart",
-      "example": "docs/site/components/examples/chart-scatter.html",
+      "example": "/marionette/examples/chart-scatter.html",
       "template": "templates/components/chart.html",
       "description": "Scatter chart for visualizing correlation and distribution on two axes."
     },
@@ -116,7 +116,7 @@
       "name": "ComponentPagination",
       "group": "Components",
       "golden": "testdata/golden/pagination.golden.html",
-      "example": "docs/site/components/examples/pagination.html",
+      "example": "/marionette/examples/pagination.html",
       "template": "templates/components/pagination.tmpl",
       "description": "Previous/next pager with current page state."
     },
@@ -125,14 +125,15 @@
       "name": "ComponentForm",
       "group": "Components",
       "description": "Form element wrapper for method/action and child controls.",
-      "template": "components.go"
+      "template": "components.go",
+      "example": null
     },
     {
       "id": "form-field",
       "name": "ComponentFormField",
       "group": "Components",
       "golden": "testdata/golden/form_field.golden.html",
-      "example": "docs/site/components/examples/form_field.html",
+      "example": "/marionette/examples/form_field.html",
       "template": "templates/components/form_field.html",
       "description": "Labeled field wrapper with hint and error text."
     },
@@ -141,7 +142,7 @@
       "name": "ComponentTabs",
       "group": "Components",
       "golden": "testdata/golden/tabs.golden.html",
-      "example": "docs/site/components/examples/tabs.html",
+      "example": "/marionette/examples/tabs.html",
       "template": "templates/components/tabs.html",
       "description": "Tabbed navigation for switching related views."
     },
@@ -150,7 +151,7 @@
       "name": "ComponentBreadcrumb",
       "group": "Components",
       "golden": "testdata/golden/breadcrumb.golden.html",
-      "example": "docs/site/components/examples/breadcrumb.html",
+      "example": "/marionette/examples/breadcrumb.html",
       "template": "templates/components/breadcrumb.html",
       "description": "Hierarchical path navigation trail."
     },
@@ -159,7 +160,7 @@
       "name": "ComponentTextarea",
       "group": "Components",
       "golden": "testdata/golden/textarea.golden.html",
-      "example": "docs/site/components/examples/textarea.html",
+      "example": "/marionette/examples/textarea.html",
       "template": "templates/components/textarea.html",
       "description": "Multiline text input control."
     },
@@ -168,7 +169,7 @@
       "name": "ComponentCheckbox",
       "group": "Components",
       "golden": "testdata/golden/checkbox.golden.html",
-      "example": "docs/site/components/examples/checkbox.html",
+      "example": "/marionette/examples/checkbox.html",
       "template": "templates/components/checkbox.html",
       "description": "Boolean checkbox input with label."
     },
@@ -177,7 +178,7 @@
       "name": "ComponentRadioGroup",
       "group": "Components",
       "golden": "testdata/golden/radio_group.golden.html",
-      "example": "docs/site/components/examples/radio_group.html",
+      "example": "/marionette/examples/radio_group.html",
       "template": "templates/components/radio_group.html",
       "description": "Exclusive multi-option radio selection group."
     },
@@ -186,7 +187,7 @@
       "name": "ComponentSwitch",
       "group": "Components",
       "golden": "testdata/golden/switch.golden.html",
-      "example": "docs/site/components/examples/switch.html",
+      "example": "/marionette/examples/switch.html",
       "template": "templates/components/switch.html",
       "description": "Toggle-style boolean switch control."
     },
@@ -195,7 +196,7 @@
       "name": "ComponentStack",
       "group": "Layout",
       "golden": "testdata/golden/stack.golden.html",
-      "example": "docs/site/components/examples/stack.html",
+      "example": "/marionette/examples/stack.html",
       "template": "templates/components/stack.html",
       "description": "Flex-based vertical/horizontal stack layout."
     },
@@ -204,7 +205,7 @@
       "name": "ComponentGrid",
       "group": "Layout",
       "golden": "testdata/golden/grid.golden.html",
-      "example": "docs/site/components/examples/grid.html",
+      "example": "/marionette/examples/grid.html",
       "template": "templates/components/grid.html",
       "description": "Responsive grid layout for repeated content."
     },
@@ -213,7 +214,7 @@
       "name": "ComponentSplit",
       "group": "Layout",
       "golden": "testdata/golden/split.golden.html",
-      "example": "docs/site/components/examples/split.html",
+      "example": "/marionette/examples/split.html",
       "template": "templates/components/split.html",
       "description": "Main/aside split layout primitive."
     },
@@ -222,7 +223,7 @@
       "name": "ComponentPageHeader",
       "group": "Layout",
       "golden": "testdata/golden/page_header.golden.html",
-      "example": "docs/site/components/examples/page_header.html",
+      "example": "/marionette/examples/page_header.html",
       "template": "templates/components/page_header.html",
       "description": "Page title, description, and action header."
     },
@@ -231,7 +232,7 @@
       "name": "ComponentContainer",
       "group": "Layout",
       "golden": "testdata/golden/container.golden.html",
-      "example": "docs/site/components/examples/container.html",
+      "example": "/marionette/examples/container.html",
       "template": "templates/components/container.html",
       "description": "Width and padding container wrapper."
     },
@@ -240,7 +241,7 @@
       "name": "ComponentCard",
       "group": "Layout",
       "golden": "testdata/golden/card.golden.html",
-      "example": "docs/site/components/examples/card.html",
+      "example": "/marionette/examples/card.html",
       "template": "templates/components/card.html",
       "description": "Card surface with optional header metadata."
     },
@@ -249,7 +250,7 @@
       "name": "ComponentSection",
       "group": "Layout",
       "golden": "testdata/golden/section.golden.html",
-      "example": "docs/site/components/examples/section.html",
+      "example": "/marionette/examples/section.html",
       "template": "templates/components/section.html",
       "description": "Section block with consistent heading spacing."
     },
@@ -259,7 +260,8 @@
       "group": "Components",
       "description": "Transient toast notification component.",
       "golden": "testdata/golden/toast.golden.html",
-      "template": "templates/components/toast.html"
+      "template": "templates/components/toast.html",
+      "example": null
     },
     {
       "id": "alert",
@@ -267,7 +269,8 @@
       "group": "Components",
       "description": "Inline alert message component.",
       "golden": "testdata/golden/alert.golden.html",
-      "template": "templates/components/alert.html"
+      "template": "templates/components/alert.html",
+      "example": null
     },
     {
       "id": "skeleton",
@@ -275,13 +278,14 @@
       "group": "Components",
       "description": "Loading placeholder skeleton blocks.",
       "golden": "testdata/golden/skeleton.golden.html",
-      "template": "templates/components/skeleton.html"
+      "template": "templates/components/skeleton.html",
+      "example": null
     },
     {
       "id": "feedback",
       "name": "Feedback Demo",
       "group": "Components",
-      "example": "docs/site/components/examples/feedback.html",
+      "example": "/marionette/examples/feedback.html",
       "template": "templates/components/{toast,alert,empty_state,skeleton}.html",
       "golden": "ui/feedback/stories.html",
       "description": "Toast/alert/empty/skeleton feedback demo."
@@ -290,7 +294,7 @@
       "id": "overlay-system",
       "name": "Overlay System Demo",
       "group": "Components",
-      "example": "ui/overlay/stories.html",
+      "example": null,
       "template": "ui/overlay/overlay-core.js",
       "golden": "ui/overlay/README.md",
       "description": "Modal/drawer/popover/tooltip overlay demo."
@@ -300,14 +304,16 @@
       "name": "ComponentDataFrame",
       "group": "Data",
       "description": "Render a gota DataFrame as a table component.",
-      "template": "dataframe.go"
+      "template": "dataframe.go",
+      "example": null
     },
     {
       "id": "dataframe-chart",
       "name": "ComponentDataFrameChart",
       "group": "Data",
       "description": "Build chart datasets from a DataFrame for ComponentChart.",
-      "template": "dataframe.go"
+      "template": "dataframe.go",
+      "example": null
     }
   ]
 }

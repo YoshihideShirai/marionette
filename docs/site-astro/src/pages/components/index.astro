@@ -2,20 +2,23 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import catalog from '../../data/components-index.json';
 
-const cards = catalog.components.filter((c) => c.example);
+const cards = catalog.components;
 ---
 <BaseLayout title="Components Gallery">
   <h1>Components Gallery</h1>
-  <p class="lead">各コンポーネントのvisualサンプルをiframeで表示します。</p>
+  <p class="lead">Displays each component visual sample in an iframe.</p>
 
   <div class="grid">
     {cards.map((component) => {
-      const examplePath = component.example.replace('docs/site/components/examples/', '/marionette/examples/');
       return (
         <article class="card">
           <h2>{component.name}</h2>
           <p>{component.description}</p>
-          <iframe src={examplePath} title={`${component.name} example`} loading="lazy" />
+          {component.example ? (
+            <iframe src={component.example} title={`${component.name} example`} loading="lazy" />
+          ) : (
+            <p class="pending">Sample coming soon</p>
+          )}
         </article>
       );
     })}

@@ -242,98 +242,98 @@ Flash lifecycle on next request:
 Template-backed component constructors (`templates/components/*`).
 
 ### Buttons / inputs / field wrappers
-- `ButtonComponent(label string, props ComponentProps) Node`
-- `SubmitButtonComponent(label string, props ComponentProps) Node`
-- `InputComponent(name, value string, props ComponentProps) Node`
-  - uses `InputWithOptionsComponent` with defaults:
+- `UIButton(label string, props ComponentProps) Node`
+- `UISubmitButton(label string, props ComponentProps) Node`
+- `UIInput(name, value string, props ComponentProps) Node`
+  - uses `UIInputWithOptions` with defaults:
     - `Type: "text"`
     - `Placeholder: strings.TrimSpace(name)`.
-- `InputWithOptionsComponent(name, value string, options InputOptions) Node`
+- `UIInputWithOptions(name, value string, options InputOptions) Node`
   - blank `options.Type` defaults to `"text"`.
-- `TextareaComponent(name, value string, options TextareaOptions) Node`
+- `UITextarea(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` defaults to `3`.
-- `FormComponent(props FormProps, children ...Node) Node`
+- `UIForm(props FormProps, children ...Node) Node`
   - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
-- `FormFieldComponent(control Node, props FormFieldProps) Node`
+- `UIFormField(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
-- `SelectComponent(name string, options []SelectOption, props ComponentProps) Node`
+- `UISelect(name string, options []SelectOption, props ComponentProps) Node`
 
 ### Overlay / feedback
-- `ModalComponent(props ModalProps) Node`
+- `UIModal(props ModalProps) Node`
   - renders `Body` and `Actions` nodes first.
   - if either render fails, returns render error node.
-- `ToastComponent(props ToastProps) Node`
+- `UIToast(props ToastProps) Node`
   - blank `Live` defaults to `"polite"`.
-- `AlertComponent(props AlertProps) Node`
-- `SkeletonComponent(props SkeletonProps) Node`
+- `UIAlert(props AlertProps) Node`
+- `UISkeleton(props SkeletonProps) Node`
   - `Rows <= 0` defaults to `3`.
-- `EmptyStateComponent(props EmptyStateProps) Node`
+- `UIEmptyState(props EmptyStateProps) Node`
   - `Rows <= 0` defaults to `3`.
 
 ### Data display
-- `TableComponent(props TableProps) Node`
+- `UITable(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
-- `ChartComponent(props ChartProps) Node`
+- `UIChart(props ChartProps) Node`
   - renders a Chart.js-backed chart from Go props.
   - blank `Type` defaults to `ChartTypeLine`; blank `Height` defaults to `320`.
   - `ChartDataset.Data` renders scalar values; `ChartDataset.Points` renders `{x,y}` values for scatter-style charts.
   - chart config is JSON-encoded and embedded next to a `<canvas data-mrn-chart>`.
   - includes `role="img"`, an accessible label, canvas fallback text, and a screen-reader fallback table.
-- `DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node`
-  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `TableComponent`.
+- `UIDataFrame(df *dataframe.DataFrame, props TableProps) Node`
+  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `UITable`.
   - `df.Names()` is mapped to `TableColumn.Label` and overrides `props.Columns`.
   - each row is read by `df.Row(row, true, dataframe.SeriesName)`.
   - cell conversion: `nil` => empty text, `Node` => rendered directly, all others => `fmt.Sprint(value)`.
-- `DataFrameChartComponent(df *dataframe.DataFrame, props DataFrameChartProps) Node`
-  - maps a dataframe label column and numeric series columns into `ChartComponent`.
+- `UIDataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`
+  - maps a dataframe label column and numeric series columns into `UIChart`.
   - blank `LabelColumn` uses the first dataframe column.
   - blank `Series` renders every column after the label column as a dataset.
-- `PaginationComponent(props PaginationProps) Node`
+- `UIPagination(props PaginationProps) Node`
   - `Page < 1` defaults to `1`.
   - `TotalPages < 1` defaults to `1`.
-- `TabsComponent(props TabsProps) Node`
+- `UITabs(props TabsProps) Node`
   - blank `AriaLabel` defaults to `"tabs"`.
   - supports active/disabled states and link/button tab items.
-- `BreadcrumbComponent(props BreadcrumbProps) Node`
+- `UIBreadcrumb(props BreadcrumbProps) Node`
   - blank `AriaLabel` defaults to `"breadcrumb"`.
   - supports active/current breadcrumb items.
-- `CheckboxComponent(props CheckboxComponentProps) Node`
-- `RadioGroupComponent(props RadioGroupComponentProps) Node`
+- `UICheckbox(props CheckboxComponentProps) Node`
+- `UIRadioGroup(props RadioGroupComponentProps) Node`
   - blank `AriaLabel` defaults to `"radio group"`.
-- `SwitchComponent(props SwitchComponentProps) Node`
-- `DataFrameFromCSVComponent(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+- `UISwitch(props SwitchComponentProps) Node`
+- `UIDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
-- `DataFrameFromTSVComponent(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+- `UIDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - same loader with `Comma: '\t'` as default.
 
 ### Layout / surfaces
-- `StackComponent(props StackProps, children ...Node) Node`
+- `UIStack(props StackProps, children ...Node) Node`
   - flex layout for vertical/horizontal stacks.
   - `Direction`: `vertical`/blank or `horizontal`/`row`.
   - `Gap`: `none`, `xs`, `sm`, `md`/blank, `lg`, `xl`.
   - `Align`: `start`, `center`, `end`, blank=`stretch`.
   - `Justify`: `start`/blank, `center`, `end`, `between`.
   - `Wrap` adds `flex-wrap`; `Props.Class` appends custom classes.
-- `GridComponent(props GridProps, children ...Node) Node`
+- `UIGrid(props GridProps, children ...Node) Node`
   - grid layout with `Columns` values `1`, `2`, `3`/blank, `4`.
   - `MinColumnWidth`: `sm`, `md`, `lg` switches to auto-fit minmax columns.
-  - `Gap` and `Props.Class` use the same behavior as `StackComponent`.
-- `SplitComponent(props SplitProps) Node`
+  - `Gap` and `Props.Class` use the same behavior as `UIStack`.
+- `UISplit(props SplitProps) Node`
   - responsive main/aside layout.
   - `AsideWidth`: `sm`, `md`/blank, `lg`.
   - `ReverseOnMobile` renders the aside before the main pane visually on mobile.
-- `PageHeaderComponent(props PageHeaderProps) Node`
+- `UIPageHeader(props PageHeaderProps) Node`
   - renders title, description, and optional action node.
-- `ContainerComponent(props ContainerProps, children ...Node) Node`
+- `UIContainer(props ContainerProps, children ...Node) Node`
   - `MaxWidth`: `sm`, `md`, `lg`/blank, `full`.
   - `Padding`: `none`, `sm`, `md`/blank, `lg`.
   - `Centered` adds `mx-auto`.
-- `CardComponent(props CardProps, children ...Node) Node`
+- `UICard(props CardProps, children ...Node) Node`
   - card surface with optional title, description, and action node.
-- `SectionComponent(props SectionProps, children ...Node) Node`
+- `UISection(props SectionProps, children ...Node) Node`
   - unframed section wrapper with optional title, description, and action node.
 
-#### Example: Convert CSV/TSV data to `DataFrameComponent`
+#### Example: Convert CSV/TSV data to `UIDataFrame`
 
 ```go
 import (
@@ -349,7 +349,7 @@ func tableFromCSV(path string) (mrn.Node, error) {
     }
     defer f.Close()
 
-    return mrn.DataFrameFromCSVComponent(f, mrn.TableProps{
+    return mrn.UIDataFrameFromCSV(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "CSV is empty.",
     })
@@ -362,7 +362,7 @@ func tableFromTSV(path string) (mrn.Node, error) {
     }
     defer f.Close()
 
-    return mrn.DataFrameFromTSVComponent(f, mrn.TableProps{
+    return mrn.UIDataFrameFromTSV(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "TSV is empty.",
     })
@@ -372,7 +372,7 @@ func tableFromTSV(path string) (mrn.Node, error) {
 #### Example: Render a chart
 
 ```go
-chart := mrn.ChartComponent(mrn.ChartProps{
+chart := mrn.UIChart(mrn.ChartProps{
     Type:        mrn.ChartTypeLine,
     Title:       "Weekly signups",
     Description: "New accounts by weekday.",

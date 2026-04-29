@@ -482,15 +482,15 @@ func iframeFor(entry componentEntry) string {
 
 func usageSnippet(id string) string {
 	snippets := map[string]string{
-		"button": `saveButton := mf.ButtonComponent("Save", mf.ComponentProps{
+		"button": `saveButton := mf.UIButton("Save", mf.ComponentProps{
     Variant: "secondary",
     Size:    "sm",
 })`,
-		"theme-toggle-button": `themeToggle := mf.ThemeToggleButtonComponent("/toggle-theme", "Toggle theme", mf.ComponentProps{
+		"theme-toggle-button": `themeToggle := mf.UIThemeToggleButton("/toggle-theme", "Toggle theme", mf.ComponentProps{
     Variant: "ghost",
     Size:    "sm",
 })`,
-		"input": `startDate := mf.InputWithOptionsComponent("start_date", "2030-01-01", mf.InputOptions{
+		"input": `startDate := mf.UIInputWithOptions("start_date", "2030-01-01", mf.InputOptions{
     Type:        "date",
     Placeholder: "Start date",
     Min:         "2024-01-01",
@@ -502,27 +502,27 @@ func usageSnippet(id string) string {
         Disabled: true,
     },
 })`,
-		"select": `roleSelect := mf.SelectComponent("role", []mf.SelectOption{
+		"select": `roleSelect := mf.UISelect("role", []mf.SelectOption{
     {Label: "Admin", Value: "admin", Selected: true},
     {Label: "Viewer", Value: "viewer"},
 }, mf.ComponentProps{
     Variant: "ghost",
     Size:    "sm",
 })`,
-		"modal": `confirmModal := mf.ModalComponent(mf.ModalProps{
+		"modal": `confirmModal := mf.UIModal(mf.ModalProps{
     Title: "Delete user",
     Body:  mf.Text("Confirm deletion"),
-    Actions: mf.ButtonComponent("Delete", mf.ComponentProps{
+    Actions: mf.UIButton("Delete", mf.ComponentProps{
         Variant: "error",
         Size:    "sm",
     }),
     Open: true,
 })`,
-		"empty-state": `emptyUsers := mf.EmptyStateComponent(mf.EmptyStateProps{
+		"empty-state": `emptyUsers := mf.UIEmptyState(mf.EmptyStateProps{
     Title:       "No users",
     Description: "Create one first.",
 })`,
-		"table": `usersTable := mf.TableComponent(mf.TableProps{
+		"table": `usersTable := mf.UITable(mf.TableProps{
     Columns: []mf.TableColumn{
         {Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true},
         {Label: "Role"},
@@ -536,7 +536,7 @@ func usageSnippet(id string) string {
         },
     },
 })`,
-		"chart": `signupsChart := mf.ChartComponent(mf.ChartProps{
+		"chart": `signupsChart := mf.UIChart(mf.ChartProps{
     Type:        mf.ChartTypeLine,
     Title:       "Weekly signups",
     Description: "New accounts by weekday.",
@@ -556,18 +556,18 @@ func usageSnippet(id string) string {
         YAxisLabel:  "Users",
     },
 })`,
-		"pagination": `pager := mf.PaginationComponent(mf.PaginationProps{
+		"pagination": `pager := mf.UIPagination(mf.PaginationProps{
     Page:       2,
     TotalPages: 4,
     PrevHref:   "/?page=1&per_page=10",
     NextHref:   "/?page=3&per_page=10",
 })`,
-		"form": `profileForm := mf.FormComponent("/users", "post", mf.ButtonComponent("Save", mf.ComponentProps{
+		"form": `profileForm := mf.UIForm("/users", "post", mf.UIButton("Save", mf.ComponentProps{
     Variant: "primary",
     Size:    "sm",
 }))`,
-		"form-field": `nameField := mf.FormFieldComponent(
-    mf.InputComponent("name", "", mf.ComponentProps{Size: "sm"}),
+		"form-field": `nameField := mf.UIFormField(
+    mf.UIInput("name", "", mf.ComponentProps{Size: "sm"}),
     mf.FormFieldProps{
         Label:    "Name",
         Required: true,
@@ -575,7 +575,7 @@ func usageSnippet(id string) string {
         Error:    "Name is required.",
     },
 )`,
-		"tabs": `tabs := mf.TabsComponent(mf.TabsProps{
+		"tabs": `tabs := mf.UITabs(mf.TabsProps{
     AriaLabel: "user sections",
     Items: []mf.TabsItem{
         {Label: "Profile", Href: "/users/1/profile", Active: true},
@@ -583,14 +583,14 @@ func usageSnippet(id string) string {
         {Label: "Audit", Disabled: true},
     },
 })`,
-		"breadcrumb": `breadcrumb := mf.BreadcrumbComponent(mf.BreadcrumbProps{
+		"breadcrumb": `breadcrumb := mf.UIBreadcrumb(mf.BreadcrumbProps{
     Items: []mf.BreadcrumbItem{
         {Label: "Home", Href: "/"},
         {Label: "Users", Href: "/users"},
         {Label: "Aiko", Active: true},
     },
 })`,
-		"textarea": `notes := mf.TextareaComponent("notes", "hello", mf.TextareaOptions{
+		"textarea": `notes := mf.UITextarea("notes", "hello", mf.TextareaOptions{
     Placeholder: "Memo",
     Rows:        4,
     Required:    true,
@@ -599,14 +599,14 @@ func usageSnippet(id string) string {
         Size:    "sm",
     },
 })`,
-		"checkbox": `activeUser := mf.CheckboxComponent(mf.CheckboxComponentProps{
+		"checkbox": `activeUser := mf.UICheckbox(mf.CheckboxComponentProps{
     Name:    "active",
     Value:   "1",
     Label:   "Active user",
     Checked: true,
     Props:   mf.ComponentProps{Size: "sm"},
 })`,
-		"radio-group": `roleGroup := mf.RadioGroupComponent(mf.RadioGroupComponentProps{
+		"radio-group": `roleGroup := mf.UIRadioGroup(mf.RadioGroupComponentProps{
     Name:      "role",
     AriaLabel: "role",
     Items: []mf.RadioItem{
@@ -616,30 +616,30 @@ func usageSnippet(id string) string {
     },
     Props: mf.ComponentProps{Size: "sm"},
 })`,
-		"switch": `notifications := mf.SwitchComponent(mf.SwitchComponentProps{
+		"switch": `notifications := mf.UISwitch(mf.SwitchComponentProps{
     Name:    "notify",
     Value:   "1",
     Label:   "Enable notifications",
     Checked: true,
     Props:   mf.ComponentProps{Size: "sm"},
 })`,
-		"toast": `toast := mf.ToastComponent(mf.ToastProps{
+		"toast": `toast := mf.UIToast(mf.ToastProps{
     Title:       "Saved",
     Description: "User settings were updated.",
     Icon:        "✓",
     Props:       mf.ComponentProps{Variant: "success", Size: "md"},
 })`,
-		"alert": `alert := mf.AlertComponent(mf.AlertProps{
+		"alert": `alert := mf.UIAlert(mf.AlertProps{
     Title:       "Permission denied",
     Description: "You do not have access to this workspace.",
     Icon:        "!",
     Props:       mf.ComponentProps{Variant: "error", Size: "md"},
 })`,
-		"skeleton": `loadingCard := mf.CardComponent(mf.CardProps{Title: "Loading"}, mf.SkeletonComponent(mf.SkeletonProps{
+		"skeleton": `loadingCard := mf.UICard(mf.CardProps{Title: "Loading"}, mf.UISkeleton(mf.SkeletonProps{
     Lines: 3,
     Props: mf.ComponentProps{Size: "md"},
 }))`,
-		"stack": `stack := mf.StackComponent(
+		"stack": `stack := mf.UIStack(
     mf.StackProps{
         Direction: "horizontal",
         Gap:       "sm",
@@ -649,36 +649,36 @@ func usageSnippet(id string) string {
     },
     mf.Text("Aiko Tanaka"),
     mf.DivClass("badge badge-primary", mf.Text("Admin")),
-    mf.ButtonComponent("Open", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
+    mf.UIButton("Open", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
 )`,
-		"grid": `summaryGrid := mf.GridComponent(
+		"grid": `summaryGrid := mf.UIGrid(
     mf.GridProps{Columns: "3", Gap: "lg"},
-    mf.CardComponent(mf.CardProps{}, mf.Text("Users: 24")),
-    mf.CardComponent(mf.CardProps{}, mf.Text("Admins: 4")),
-    mf.CardComponent(mf.CardProps{}, mf.Text("Pending: 7")),
+    mf.UICard(mf.CardProps{}, mf.Text("Users: 24")),
+    mf.UICard(mf.CardProps{}, mf.Text("Admins: 4")),
+    mf.UICard(mf.CardProps{}, mf.Text("Pending: 7")),
 )`,
-		"split": `workspace := mf.SplitComponent(mf.SplitProps{
-    Main: mf.CardComponent(
+		"split": `workspace := mf.UISplit(mf.SplitProps{
+    Main: mf.UICard(
         mf.CardProps{Title: "Main workspace"},
         mf.Text("Aiko / Admin / Active"),
     ),
-    Aside: mf.SectionComponent(
+    Aside: mf.UISection(
         mf.SectionProps{Title: "Aside panel"},
-        mf.ButtonComponent("Apply", mf.ComponentProps{Variant: "primary", Size: "sm"}),
+        mf.UIButton("Apply", mf.ComponentProps{Variant: "primary", Size: "sm"}),
     ),
     AsideWidth: "md",
     Gap:        "lg",
 })`,
-		"page-header": `header := mf.PageHeaderComponent(mf.PageHeaderProps{
+		"page-header": `header := mf.UIPageHeader(mf.PageHeaderProps{
     Title:       "Users",
     Description: "Manage account records, roles, and invitations.",
-    Actions: mf.StackComponent(
+    Actions: mf.UIStack(
         mf.StackProps{Direction: "horizontal", Gap: "sm"},
-        mf.ButtonComponent("Export", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
-        mf.ButtonComponent("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
+        mf.UIButton("Export", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
+        mf.UIButton("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
     ),
 })`,
-		"container": `page := mf.ContainerComponent(
+		"container": `page := mf.UIContainer(
     mf.ContainerProps{
         MaxWidth: "md",
         Padding:  "md",
@@ -686,64 +686,64 @@ func usageSnippet(id string) string {
     },
     mf.Text("Centered page container"),
 )`,
-		"card": `card := mf.CardComponent(
+		"card": `card := mf.UICard(
     mf.CardProps{
         Title:       "Workspace summary",
         Description: "Header, description, actions, then body content.",
-        Actions:     mf.ButtonComponent("Edit", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
+        Actions:     mf.UIButton("Edit", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
     },
     mf.Text("Active: 24"),
 )`,
-		"section": `section := mf.SectionComponent(
+		"section": `section := mf.UISection(
     mf.SectionProps{
         Title:       "Recent activity",
         Description: "An unframed content section with consistent header spacing.",
-        Actions:     mf.ButtonComponent("View all", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
+        Actions:     mf.UIButton("View all", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
     },
     mf.Text("Aiko updated a role"),
 )`,
-		"feedback": `toast := mf.ToastComponent(mf.ToastProps{
+		"feedback": `toast := mf.UIToast(mf.ToastProps{
     Title:       "Toast / Default",
     Description: "Saved successfully.",
     Icon:        "✓",
     Props:       mf.ComponentProps{Variant: "success", Size: "md"},
 })
 
-alert := mf.AlertComponent(mf.AlertProps{
+alert := mf.UIAlert(mf.AlertProps{
     Title:       "Alert / Long content",
     Description: "An error occurred. Please wait a moment and try again.",
     Icon:        "!",
     Props:       mf.ComponentProps{Variant: "error", Size: "lg"},
 })`,
-		"chart-line": `trend := mf.ChartComponent(mf.ChartProps{
+		"chart-line": `trend := mf.UIChart(mf.ChartProps{
     Type:   mf.ChartTypeLine,
     Labels: []string{"Mon", "Tue", "Wed"},
     Datasets: []mf.ChartDataset{{
         Label: "Signups", Data: []float64{12, 19, 14},
     }},
 })`,
-		"chart-bar": `breakdown := mf.ChartComponent(mf.ChartProps{
+		"chart-bar": `breakdown := mf.UIChart(mf.ChartProps{
     Type:   mf.ChartTypeBar,
     Labels: []string{"Admin", "Editor", "Viewer"},
     Datasets: []mf.ChartDataset{{
         Label: "Users", Data: []float64{4, 7, 13},
     }},
 })`,
-		"chart-pie": `share := mf.ChartComponent(mf.ChartProps{
+		"chart-pie": `share := mf.UIChart(mf.ChartProps{
     Type:   mf.ChartTypePie,
     Labels: []string{"Desktop", "Mobile", "Tablet"},
     Datasets: []mf.ChartDataset{{
         Data: []float64{62, 29, 9},
     }},
 })`,
-		"chart-doughnut": `conversion := mf.ChartComponent(mf.ChartProps{
+		"chart-doughnut": `conversion := mf.UIChart(mf.ChartProps{
     Type:   mf.ChartTypeDoughnut,
     Labels: []string{"Converted", "Dropped"},
     Datasets: []mf.ChartDataset{{
         Data: []float64{72, 28},
     }},
 })`,
-		"chart-scatter": `correlation := mf.ChartComponent(mf.ChartProps{
+		"chart-scatter": `correlation := mf.UIChart(mf.ChartProps{
     Type: mf.ChartTypeScatter,
     Datasets: []mf.ChartDataset{{
         Label: "Sessions",
@@ -754,7 +754,7 @@ alert := mf.AlertComponent(mf.AlertProps{
         },
     }},
 })`,
-		"overlay-system": `modal := mf.ModalComponent(mf.ModalProps{
+		"overlay-system": `modal := mf.UIModal(mf.ModalProps{
     Title: "Overlay demo",
     Body:  mf.Text("Use modal, drawer, and popover together for rich flows."),
     Open:  true,
@@ -766,8 +766,8 @@ alert := mf.AlertComponent(mf.AlertProps{
     },
 )
 
-table := mf.DataFrameComponent(df, mf.DataFrameProps{})`,
-		"dataframe-chart": `chart := mf.DataFrameChartComponent(df, mf.DataFrameChartProps{
+table := mf.UIDataFrame(df, mf.DataFrameProps{})`,
+		"dataframe-chart": `chart := mf.UIDataFrameChart(df, mf.DataFrameChartProps{
     Type:      mf.ChartTypeBar,
     LabelCol:  "month",
     ValueCols: []string{"signups"},

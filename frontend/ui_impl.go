@@ -160,7 +160,7 @@ func TableRow(cells ...Node) TableRowData {
 	return TableRowData{Cells: cells}
 }
 
-func DataFrameFromCSVComponent(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
+func UIDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
 	if r == nil {
 		return nil, fmt.Errorf("csv reader is nil")
 	}
@@ -168,10 +168,10 @@ func DataFrameFromCSVComponent(r io.ReadSeeker, props TableProps, opts ...datafr
 	if err != nil {
 		return nil, err
 	}
-	return DataFrameComponent(df, props), nil
+	return UIDataFrame(df, props), nil
 }
 
-func DataFrameFromTSVComponent(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
+func UIDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
 	tsvOpts := make([]dataframeimports.CSVLoadOptions, len(opts))
 	copy(tsvOpts, opts)
 	if len(tsvOpts) == 0 {
@@ -179,7 +179,7 @@ func DataFrameFromTSVComponent(r io.ReadSeeker, props TableProps, opts ...datafr
 	} else if tsvOpts[0].Comma == 0 {
 		tsvOpts[0].Comma = '\t'
 	}
-	return DataFrameFromCSVComponent(r, props, tsvOpts...)
+	return UIDataFrameFromCSV(r, props, tsvOpts...)
 }
 
 func (t table) Render() (template.HTML, error) {

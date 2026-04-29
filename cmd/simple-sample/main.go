@@ -41,13 +41,13 @@ func main() {
 
 func page(ctx *mb.Context) mf.Node {
 	tasks := ctx.Get("tasks").([]task)
-	return mf.ContainerComponent(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
-		mf.StackComponent(mf.StackProps{Direction: "column", Gap: "6"},
-			mf.PageHeaderComponent(mf.PageHeaderProps{
+	return mf.UIContainer(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
+		mf.UIStack(mf.StackProps{Direction: "column", Gap: "6"},
+			mf.UIPageHeader(mf.PageHeaderProps{
 				Title:       "Simple Tasks",
 				Description: "Marionette end-to-end sample",
 			}),
-			mf.FormComponent(mf.FormProps{
+			mf.UIForm(mf.FormProps{
 				Class: "space-y-3",
 				Attrs: mf.Attrs{
 					"hx-post":   "/tasks/create",
@@ -66,7 +66,7 @@ func page(ctx *mb.Context) mf.Node {
 						Required:    true,
 					}),
 				}),
-				mf.SubmitButtonComponent("Add Task", mf.ComponentProps{}),
+				mf.UISubmitButton("Add Task", mf.ComponentProps{}),
 			),
 			mf.DivID("task-list", taskList(tasks)),
 		),
@@ -85,7 +85,7 @@ func taskList(tasks []task) mf.Node {
 			mf.Text(t.Name),
 		))
 	}
-	return mf.TableComponent(mf.TableProps{
+	return mf.UITable(mf.TableProps{
 		Columns: []mf.TableColumn{{Label: "ID"}, {Label: "Name"}},
 		Rows:    toComponentRows(rows),
 	})

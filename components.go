@@ -299,11 +299,11 @@ func (n templateNode) Render() (template.HTML, error) {
 	return template.HTML(out.String()), nil
 }
 
-func ButtonComponent(label string, props ComponentProps) Node {
+func UIButton(label string, props ComponentProps) Node {
 	return componentButton(label, "button", props)
 }
 
-func SubmitButtonComponent(label string, props ComponentProps) Node {
+func UISubmitButton(label string, props ComponentProps) Node {
 	return componentButton(label, "submit", props)
 }
 
@@ -324,15 +324,15 @@ func componentButton(label, buttonType string, props ComponentProps) Node {
 	}
 }
 
-func InputComponent(name, value string, props ComponentProps) Node {
-	return InputWithOptionsComponent(name, value, InputOptions{
+func UIInput(name, value string, props ComponentProps) Node {
+	return UIInputWithOptions(name, value, InputOptions{
 		Type:        "text",
 		Placeholder: strings.TrimSpace(name),
 		Props:       props,
 	})
 }
 
-func InputWithOptionsComponent(name, value string, options InputOptions) Node {
+func UIInputWithOptions(name, value string, options InputOptions) Node {
 	inputType := strings.TrimSpace(options.Type)
 	if inputType == "" {
 		inputType = "text"
@@ -363,7 +363,7 @@ func InputWithOptionsComponent(name, value string, options InputOptions) Node {
 	}
 }
 
-func TextareaComponent(name, value string, options TextareaOptions) Node {
+func UITextarea(name, value string, options TextareaOptions) Node {
 	rows := options.Rows
 	if rows <= 0 {
 		rows = 3
@@ -390,7 +390,7 @@ func TextareaComponent(name, value string, options TextareaOptions) Node {
 	}
 }
 
-func FormComponent(props FormProps, children ...Node) Node {
+func UIForm(props FormProps, children ...Node) Node {
 	attrs := make(Attrs, len(props.Attrs)+2)
 	for key, value := range props.Attrs {
 		attrs[key] = value
@@ -408,7 +408,7 @@ func FormComponent(props FormProps, children ...Node) Node {
 	}, children...)
 }
 
-func FormFieldComponent(control Node, props FormFieldProps) Node {
+func UIFormField(control Node, props FormFieldProps) Node {
 	controlHTML, err := renderNode(control)
 	if err != nil {
 		return renderErrorNode{err: err}
@@ -431,7 +431,7 @@ func FormFieldComponent(control Node, props FormFieldProps) Node {
 	}
 }
 
-func SelectComponent(name string, options []SelectOption, props ComponentProps) Node {
+func UISelect(name string, options []SelectOption, props ComponentProps) Node {
 	return templateNode{
 		name: "components/select",
 		data: struct {
@@ -448,7 +448,7 @@ func SelectComponent(name string, options []SelectOption, props ComponentProps) 
 	}
 }
 
-func ModalComponent(props ModalProps) Node {
+func UIModal(props ModalProps) Node {
 	bodyHTML, err := renderNode(props.Body)
 	if err != nil {
 		return renderErrorNode{err: err}
@@ -473,7 +473,7 @@ func ModalComponent(props ModalProps) Node {
 	}
 }
 
-func ToastComponent(props ToastProps) Node {
+func UIToast(props ToastProps) Node {
 	live := strings.TrimSpace(props.Live)
 	if live == "" {
 		live = "polite"
@@ -496,7 +496,7 @@ func ToastComponent(props ToastProps) Node {
 	}
 }
 
-func AlertComponent(props AlertProps) Node {
+func UIAlert(props AlertProps) Node {
 	return templateNode{
 		name: "components/alert",
 		data: struct {
@@ -513,7 +513,7 @@ func AlertComponent(props AlertProps) Node {
 	}
 }
 
-func SkeletonComponent(props SkeletonProps) Node {
+func UISkeleton(props SkeletonProps) Node {
 	rows := props.Rows
 	if rows <= 0 {
 		rows = 3
@@ -530,7 +530,7 @@ func SkeletonComponent(props SkeletonProps) Node {
 	}
 }
 
-func EmptyStateComponent(props EmptyStateProps) Node {
+func UIEmptyState(props EmptyStateProps) Node {
 	rows := props.Rows
 	if rows <= 0 {
 		rows = 3
@@ -555,7 +555,7 @@ func EmptyStateComponent(props EmptyStateProps) Node {
 	}
 }
 
-func TableComponent(props TableProps) Node {
+func UITable(props TableProps) Node {
 	rows := make([]struct {
 		Cells []template.HTML
 	}, 0, len(props.Rows))
@@ -589,7 +589,7 @@ func TableComponent(props TableProps) Node {
 	}
 }
 
-func ChartComponent(props ChartProps) Node {
+func UIChart(props ChartProps) Node {
 	config, err := chartConfigJSON(props)
 	if err != nil {
 		return renderErrorNode{err: err}
@@ -633,7 +633,7 @@ func ChartComponent(props ChartProps) Node {
 	}
 }
 
-func PaginationComponent(props PaginationProps) Node {
+func UIPagination(props PaginationProps) Node {
 	page := props.Page
 	if page < 1 {
 		page = 1
@@ -766,7 +766,7 @@ func chartFallbackRows(props ChartProps) []chartFallbackRow {
 	return rows
 }
 
-func TabsComponent(props TabsProps) Node {
+func UITabs(props TabsProps) Node {
 	items := make([]TabsItem, 0, len(props.Items))
 	for _, item := range props.Items {
 		items = append(items, TabsItem{
@@ -794,7 +794,7 @@ func TabsComponent(props TabsProps) Node {
 	}
 }
 
-func BreadcrumbComponent(props BreadcrumbProps) Node {
+func UIBreadcrumb(props BreadcrumbProps) Node {
 	items := make([]BreadcrumbItem, 0, len(props.Items))
 	for _, item := range props.Items {
 		items = append(items, BreadcrumbItem{
@@ -821,7 +821,7 @@ func BreadcrumbComponent(props BreadcrumbProps) Node {
 	}
 }
 
-func CheckboxComponent(props CheckboxComponentProps) Node {
+func UICheckbox(props CheckboxComponentProps) Node {
 	return templateNode{
 		name: "components/checkbox",
 		data: struct {
@@ -842,7 +842,7 @@ func CheckboxComponent(props CheckboxComponentProps) Node {
 	}
 }
 
-func RadioGroupComponent(props RadioGroupComponentProps) Node {
+func UIRadioGroup(props RadioGroupComponentProps) Node {
 	items := make([]RadioItem, 0, len(props.Items))
 	for _, item := range props.Items {
 		items = append(items, RadioItem{
@@ -874,7 +874,7 @@ func RadioGroupComponent(props RadioGroupComponentProps) Node {
 	}
 }
 
-func SwitchComponent(props SwitchComponentProps) Node {
+func UISwitch(props SwitchComponentProps) Node {
 	return templateNode{
 		name: "components/switch",
 		data: struct {
@@ -895,15 +895,15 @@ func SwitchComponent(props SwitchComponentProps) Node {
 	}
 }
 
-func StackComponent(props StackProps, children ...Node) Node {
+func UIStack(props StackProps, children ...Node) Node {
 	return layoutChildrenNode("components/stack", stackClass(props), children)
 }
 
-func GridComponent(props GridProps, children ...Node) Node {
+func UIGrid(props GridProps, children ...Node) Node {
 	return layoutChildrenNode("components/grid", gridClass(props), children)
 }
 
-func SplitComponent(props SplitProps) Node {
+func UISplit(props SplitProps) Node {
 	mainHTML, err := renderNode(props.Main)
 	if err != nil {
 		return renderErrorNode{err: err}
@@ -932,7 +932,7 @@ func SplitComponent(props SplitProps) Node {
 	}
 }
 
-func PageHeaderComponent(props PageHeaderProps) Node {
+func UIPageHeader(props PageHeaderProps) Node {
 	actionsHTML, err := renderNode(props.Actions)
 	if err != nil {
 		return renderErrorNode{err: err}
@@ -953,11 +953,11 @@ func PageHeaderComponent(props PageHeaderProps) Node {
 	}
 }
 
-func ContainerComponent(props ContainerProps, children ...Node) Node {
+func UIContainer(props ContainerProps, children ...Node) Node {
 	return layoutChildrenNode("components/container", containerClass(props), children)
 }
 
-func CardComponent(props CardProps, children ...Node) Node {
+func UICard(props CardProps, children ...Node) Node {
 	childHTML, err := renderNodes(children)
 	if err != nil {
 		return renderErrorNode{err: err}
@@ -984,7 +984,7 @@ func CardComponent(props CardProps, children ...Node) Node {
 	}
 }
 
-func SectionComponent(props SectionProps, children ...Node) Node {
+func UISection(props SectionProps, children ...Node) Node {
 	childHTML, err := renderNodes(children)
 	if err != nil {
 		return renderErrorNode{err: err}

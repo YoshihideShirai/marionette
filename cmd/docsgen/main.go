@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/yuin/goldmark"
@@ -14,6 +16,24 @@ import (
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
 )
+
+type componentIndex struct {
+	Components []componentEntry `json:"components"`
+}
+
+type componentEntry struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Group    string `json:"group"`
+	Golden   string `json:"golden"`
+	Example  string `json:"example"`
+	Template string `json:"template"`
+}
+
+type componentGroup struct {
+	Name       string
+	Components []componentEntry
+}
 
 var pageTemplate = template.Must(template.New("docs").Parse(`<!doctype html>
 <html lang="en">
@@ -47,19 +67,157 @@ var pageTemplate = template.Must(template.New("docs").Parse(`<!doctype html>
 </html>
 `))
 
+var componentTemplate = template.Must(template.New("component-docs").Funcs(template.FuncMap{
+	"componentHref": componentHref,
+}).Parse(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{.Title}}</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --border: color-mix(in oklab, canvasText 16%, transparent);
+        --muted: color-mix(in oklab, canvasText 68%, transparent);
+        --surface: color-mix(in oklab, canvas 94%, canvasText 6%);
+        --active: color-mix(in oklab, #2563eb 14%, canvas);
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 0;
+        line-height: 1.65;
+      }
+      a { color: #2563eb; }
+      .docs-shell {
+        display: grid;
+        grid-template-columns: 18rem minmax(0, 1fr);
+        min-height: 100vh;
+      }
+      .docs-sidebar {
+        border-right: 1px solid var(--border);
+        padding: 1.25rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: auto;
+      }
+      .docs-brand {
+        display: inline-flex;
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-decoration: none;
+      }
+      .docs-group { margin-top: 1.25rem; }
+      .docs-group-title {
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        margin: 0 0 0.35rem;
+        text-transform: uppercase;
+      }
+      .docs-nav {
+        display: grid;
+        gap: 0.1rem;
+      }
+      .docs-nav a {
+        border-radius: 8px;
+        color: inherit;
+        display: block;
+        font-size: 0.92rem;
+        line-height: 1.3;
+        padding: 0.45rem 0.55rem;
+        text-decoration: none;
+      }
+      .docs-nav a:hover,
+      .docs-nav a[aria-current="page"] {
+        background: var(--active);
+        color: #1d4ed8;
+      }
+      .docs-main {
+        min-width: 0;
+        padding: 2rem;
+      }
+      .docs-content {
+        max-width: 960px;
+      }
+      .docs-index-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+        margin-top: 1.25rem;
+      }
+      .docs-link-card {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        display: block;
+        padding: 1rem;
+        text-decoration: none;
+      }
+      .docs-link-card strong { color: canvasText; display: block; }
+      .docs-link-card span { color: var(--muted); display: block; font-size: 0.9rem; margin-top: 0.25rem; }
+      pre {
+        background: var(--surface);
+        border-radius: 8px;
+        overflow-x: auto;
+        padding: 0.75rem;
+      }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      iframe {
+        background: white;
+        max-width: 100%;
+      }
+      @media (max-width: 760px) {
+        .docs-shell { display: block; }
+        .docs-sidebar {
+          border-bottom: 1px solid var(--border);
+          border-right: 0;
+          height: auto;
+          max-height: 55vh;
+          position: static;
+        }
+        .docs-main { padding: 1.25rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="docs-shell">
+      <aside class="docs-sidebar">
+        <a class="docs-brand" href="./index.html">Components Gallery</a>
+        {{range .Groups}}
+          <section class="docs-group">
+            <p class="docs-group-title">{{.Name}}</p>
+            <nav class="docs-nav" aria-label="{{.Name}}">
+              {{range .Components}}
+                <a href="{{componentHref .}}"{{if eq $.ActiveID .ID}} aria-current="page"{{end}}>{{.Name}}</a>
+              {{end}}
+            </nav>
+          </section>
+        {{end}}
+      </aside>
+      <main class="docs-main">
+        <div class="docs-content">
+          {{.Body}}
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+`))
+
 var mdHrefRe = regexp.MustCompile(`href="([^"]+?)\.md"`)
 
 func main() {
-	targets := []string{
-		"docs/site/index.md",
-		"docs/site/components/index.md",
+	if err := generate("docs/site/index.md"); err != nil {
+		fmt.Fprintf(os.Stderr, "generate docs/site/index.md: %v\n", err)
+		os.Exit(1)
 	}
-
-	for _, path := range targets {
-		if err := generate(path); err != nil {
-			fmt.Fprintf(os.Stderr, "generate %s: %v\n", path, err)
-			os.Exit(1)
-		}
+	if err := generateComponents("docs/site/components/index.md", "docs/site/components/_index.json"); err != nil {
+		fmt.Fprintf(os.Stderr, "generate components: %v\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -69,18 +227,10 @@ func generate(path string) error {
 		return err
 	}
 
-	md := goldmark.New(
-		goldmark.WithExtensions(extension.GFM),
-		goldmark.WithParserOptions(parser.WithAutoHeadingID()),
-		goldmark.WithRendererOptions(html.WithUnsafe()),
-	)
-
-	var body bytes.Buffer
-	if err := md.Convert(src, &body); err != nil {
+	renderedBody, err := renderMarkdown(src)
+	if err != nil {
 		return err
 	}
-
-	renderedBody := template.HTML(rewriteMarkdownLinks(body.String()))
 	title := docTitle(src, filepath.Base(path))
 
 	var out bytes.Buffer
@@ -93,6 +243,229 @@ func generate(path string) error {
 
 	htmlPath := path[:len(path)-len(filepath.Ext(path))] + ".html"
 	return os.WriteFile(htmlPath, out.Bytes(), 0o644)
+}
+
+func generateComponents(indexPath, catalogPath string) error {
+	src, err := os.ReadFile(indexPath)
+	if err != nil {
+		return err
+	}
+
+	catalog, err := readComponentIndex(catalogPath)
+	if err != nil {
+		return err
+	}
+	groups := groupedComponents(catalog.Components)
+	sections := componentSections(src)
+
+	body, err := componentIndexBody(groups)
+	if err != nil {
+		return err
+	}
+	if err := writeComponentPage(indexPath[:len(indexPath)-len(filepath.Ext(indexPath))]+".html", "Components Gallery", "", groups, body); err != nil {
+		return err
+	}
+
+	for _, entry := range catalog.Components {
+		section, ok := sections[entry.Name]
+		if !ok {
+			section = fallbackComponentSection(entry)
+		}
+		section = ensureExamplePreview(section, entry)
+
+		rendered, err := renderMarkdown([]byte(section))
+		if err != nil {
+			return fmt.Errorf("render %s: %w", entry.Name, err)
+		}
+
+		path := filepath.Join(filepath.Dir(indexPath), entry.ID+".html")
+		if err := writeComponentPage(path, entry.Name, entry.ID, groups, rendered); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func readComponentIndex(path string) (componentIndex, error) {
+	src, err := os.ReadFile(path)
+	if err != nil {
+		return componentIndex{}, err
+	}
+
+	var catalog componentIndex
+	if err := json.Unmarshal(src, &catalog); err != nil {
+		return componentIndex{}, err
+	}
+	for i := range catalog.Components {
+		if catalog.Components[i].Group == "" {
+			catalog.Components[i].Group = "Components"
+		}
+	}
+	return catalog, nil
+}
+
+func groupedComponents(entries []componentEntry) []componentGroup {
+	order := []string{"Components", "Layout"}
+	seen := map[string]bool{}
+	for _, entry := range entries {
+		if !seen[entry.Group] && !slices.Contains(order, entry.Group) {
+			order = append(order, entry.Group)
+		}
+		seen[entry.Group] = true
+	}
+
+	var groups []componentGroup
+	for _, name := range order {
+		var group componentGroup
+		group.Name = name
+		for _, entry := range entries {
+			if entry.Group == name {
+				group.Components = append(group.Components, entry)
+			}
+		}
+		if len(group.Components) > 0 {
+			groups = append(groups, group)
+		}
+	}
+	return groups
+}
+
+func componentSections(src []byte) map[string]string {
+	lines := strings.Split(string(src), "\n")
+	sections := map[string]string{}
+
+	for i := 0; i < len(lines); i++ {
+		if !strings.HasPrefix(lines[i], "## ") {
+			continue
+		}
+
+		title := strings.TrimSpace(strings.TrimPrefix(lines[i], "## "))
+		if title == "Contents" {
+			continue
+		}
+
+		start := i
+		end := len(lines)
+		for j := i + 1; j < len(lines); j++ {
+			if strings.HasPrefix(lines[j], "## ") {
+				end = j
+				break
+			}
+		}
+
+		sectionLines := append([]string{}, lines[start:end]...)
+		sectionLines[0] = "# " + title
+		sections[title] = strings.TrimSpace(strings.Join(sectionLines, "\n")) + "\n"
+		i = end - 1
+	}
+
+	return sections
+}
+
+func componentIndexBody(groups []componentGroup) (template.HTML, error) {
+	var body bytes.Buffer
+	body.WriteString(`<h1>Components Gallery</h1>
+<p>Marionette UI docs are split into one page per component. Use the sidebar to jump between pages, grouped by general components and layout primitives.</p>
+`)
+
+	for _, group := range groups {
+		fmt.Fprintf(&body, "<h2>%s</h2>\n<div class=\"docs-index-grid\">\n", template.HTMLEscapeString(group.Name))
+		for _, entry := range group.Components {
+			fmt.Fprintf(
+				&body,
+				"<a class=\"docs-link-card\" href=\"%s\"><strong>%s</strong><span>%s</span></a>\n",
+				template.HTMLEscapeString(componentHref(entry)),
+				template.HTMLEscapeString(entry.Name),
+				template.HTMLEscapeString(entry.Template),
+			)
+		}
+		body.WriteString("</div>\n")
+	}
+
+	return template.HTML(body.String()), nil
+}
+
+func fallbackComponentSection(entry componentEntry) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# %s\n\n", entry.Name)
+	if entry.Example != "" && strings.HasPrefix(entry.Example, "docs/site/components/") {
+		fmt.Fprintf(&b, "### Visual\n\n%s\n\n", iframeFor(entry))
+	}
+	if entry.Golden != "" {
+		fmt.Fprintf(&b, "- Golden sample: [`%s`](https://github.com/YoshihideShirai/marionette/blob/main/%s)\n", filepath.Base(entry.Golden), entry.Golden)
+	}
+	if entry.Template != "" {
+		fmt.Fprintf(&b, "- Template: [`%s`](https://github.com/YoshihideShirai/marionette/blob/main/%s)\n", entry.Template, entry.Template)
+	}
+	return b.String()
+}
+
+func ensureExamplePreview(section string, entry componentEntry) string {
+	if strings.Contains(section, "<iframe") || entry.Example == "" || !strings.HasPrefix(entry.Example, "docs/site/components/") {
+		return section
+	}
+
+	insert := "\n### Visual\n\n" + iframeFor(entry) + "\n"
+	marker := "- Golden sample:"
+	if idx := strings.Index(section, marker); idx >= 0 {
+		return strings.TrimSpace(section[:idx]) + insert + "\n" + strings.TrimSpace(section[idx:]) + "\n"
+	}
+	return strings.TrimSpace(section) + insert
+}
+
+func iframeFor(entry componentEntry) string {
+	height := "320px"
+	switch entry.ID {
+	case "button":
+		height = "160px"
+	case "input", "pagination":
+		height = "180px"
+	case "select":
+		height = "200px"
+	case "empty-state", "form-field":
+		height = "260px"
+	case "table", "modal":
+		height = "320px"
+	case "tabs", "breadcrumb", "feedback":
+		height = "420px"
+	case "stack", "grid", "split", "page-header", "container", "card", "section":
+		height = "520px"
+	}
+
+	src := strings.TrimPrefix(entry.Example, "docs/site/components/")
+	return fmt.Sprintf(`<iframe src="./%s" title="%s example" style="width:100%%;min-height:%s;border:1px solid #e5e7eb;border-radius:8px;"></iframe>`, src, entry.Name, height)
+}
+
+func writeComponentPage(path, title, activeID string, groups []componentGroup, body template.HTML) error {
+	var out bytes.Buffer
+	if err := componentTemplate.Execute(&out, map[string]any{
+		"Title":    title,
+		"ActiveID": activeID,
+		"Groups":   groups,
+		"Body":     body,
+	}); err != nil {
+		return err
+	}
+	return os.WriteFile(path, out.Bytes(), 0o644)
+}
+
+func componentHref(entry componentEntry) string {
+	return "./" + entry.ID + ".html"
+}
+
+func renderMarkdown(src []byte) (template.HTML, error) {
+	md := goldmark.New(
+		goldmark.WithExtensions(extension.GFM),
+		goldmark.WithParserOptions(parser.WithAutoHeadingID()),
+		goldmark.WithRendererOptions(html.WithUnsafe()),
+	)
+
+	var body bytes.Buffer
+	if err := md.Convert(src, &body); err != nil {
+		return "", err
+	}
+	return template.HTML(rewriteMarkdownLinks(body.String())), nil
 }
 
 func rewriteMarkdownLinks(s string) string {

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import catalog from '../data/components-index.json';
 
 const {
   title = 'Marionette Docs',
@@ -8,18 +9,34 @@ const {
 } = Astro.props;
 const isJa = lang === 'ja';
 const currentPath = Astro.url.pathname;
+const langRoot = isJa ? '/marionette/ja' : '/marionette/en';
 
-const sidebarItems = isJa
+const topItems = isJa
   ? [
-      { label: 'ホーム', href: '/marionette/ja/' },
-      { label: 'コンポーネント一覧', href: '/marionette/ja/components/' },
+      { label: 'ホーム', href: `${langRoot}/` },
       { label: 'API Docs', href: '/marionette/docs_api.md' },
     ]
   : [
-      { label: 'Home', href: '/marionette/en/' },
-      { label: 'Components', href: '/marionette/en/components/' },
+      { label: 'Home', href: `${langRoot}/` },
       { label: 'API Docs', href: '/marionette/docs_api.md' },
     ];
+
+const groupedComponents = catalog.components.reduce<Record<string, typeof catalog.components>>((acc, component) => {
+  const key = component.group || 'Other';
+  if (!acc[key]) acc[key] = [];
+  acc[key].push(component);
+  return acc;
+}, {});
+
+const groupOrder = ['Components', 'Layout', 'Data', 'Chart'];
+const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
+  const ai = groupOrder.indexOf(a);
+  const bi = groupOrder.indexOf(b);
+  if (ai === -1 && bi === -1) return a.localeCompare(b);
+  if (ai === -1) return 1;
+  if (bi === -1) return -1;
+  return ai - bi;
+});
 ---
 <html lang={lang}>
   <head>
@@ -48,8 +65,8 @@ const sidebarItems = isJa
       <aside class="sidebar" aria-label={isJa ? 'ドキュメントナビゲーション' : 'Documentation navigation'}>
         <p class="sidebar-title">{isJa ? 'コンテンツ' : 'Contents'}</p>
         <nav>
-          <ul>
-            {sidebarItems.map((item) => {
+          <ul class="sidebar-top-list">
+            {topItems.map((item) => {
               const active = currentPath === item.href || currentPath.startsWith(`${item.href}`);
               return (
                 <li>
@@ -58,6 +75,45 @@ const sidebarItems = isJa
               );
             })}
           </ul>
+
+          <details class="sidebar-group" open={currentPath.includes('/components')}>
+            <summary>{isJa ? 'コンポーネント' : 'Components'}</summary>
+            <ul class="sidebar-component-list">
+              <li>
+                <a
+                  href={`${langRoot}/components/`}
+                  class:list={{ active: currentPath === `${langRoot}/components/` }}
+                  aria-current={currentPath === `${langRoot}/components/` ? 'page' : undefined}
+                >
+                  {isJa ? '一覧ページ' : 'Overview'}
+                </a>
+              </li>
+              {sortedGroups.map((group) => {
+                const items = groupedComponents[group].sort((a, b) => a.name.localeCompare(b.name));
+                const hasActive = items.some((component) => currentPath.startsWith(`${langRoot}/components/${component.id}/`));
+                return (
+                  <li>
+                    <details open={hasActive}>
+                      <summary>{group}</summary>
+                      <ul>
+                        {items.map((component) => {
+                          const href = `${langRoot}/components/${component.id}/`;
+                          const active = currentPath === href;
+                          return (
+                            <li>
+                              <a href={href} class:list={{ active }} aria-current={active ? 'page' : undefined}>
+                                {component.name}
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </details>
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
         </nav>
       </aside>
       <section class="container">

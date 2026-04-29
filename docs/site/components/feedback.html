@@ -192,18 +192,18 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/feedback.html" title="Feedback components demo" style="width:100%;min-height:420px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">toast := mrn.ComponentToast(mrn.ToastProps{
+<pre><code class="language-go">toast := mf.ComponentToast(mf.ToastProps{
     Title:       &quot;Toast / Default&quot;,
     Description: &quot;Saved successfully.&quot;,
     Icon:        &quot;✓&quot;,
-    Props:       mrn.ComponentProps{Variant: &quot;success&quot;, Size: &quot;md&quot;},
+    Props:       mf.ComponentProps{Variant: &quot;success&quot;, Size: &quot;md&quot;},
 })
 
-alert := mrn.ComponentAlert(mrn.AlertProps{
+alert := mf.ComponentAlert(mf.AlertProps{
     Title:       &quot;Alert / Long content&quot;,
     Description: &quot;An error occurred. Please wait a moment and try again.&quot;,
     Icon:        &quot;!&quot;,
-    Props:       mrn.ComponentProps{Variant: &quot;error&quot;, Size: &quot;lg&quot;},
+    Props:       mf.ComponentProps{Variant: &quot;error&quot;, Size: &quot;lg&quot;},
 })
 </code></pre>
 <ul>

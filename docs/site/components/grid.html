@@ -193,11 +193,11 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/grid.html" title="ComponentGrid example" style="width:100%;min-height:380px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">summaryGrid := mrn.ComponentGrid(
-    mrn.GridProps{Columns: &quot;3&quot;, Gap: &quot;lg&quot;},
-    mrn.ComponentCard(mrn.CardProps{}, mrn.Text(&quot;Users: 24&quot;)),
-    mrn.ComponentCard(mrn.CardProps{}, mrn.Text(&quot;Admins: 4&quot;)),
-    mrn.ComponentCard(mrn.CardProps{}, mrn.Text(&quot;Pending: 7&quot;)),
+<pre><code class="language-go">summaryGrid := mf.ComponentGrid(
+    mf.GridProps{Columns: &quot;3&quot;, Gap: &quot;lg&quot;},
+    mf.ComponentCard(mf.CardProps{}, mf.Text(&quot;Users: 24&quot;)),
+    mf.ComponentCard(mf.CardProps{}, mf.Text(&quot;Admins: 4&quot;)),
+    mf.ComponentCard(mf.CardProps{}, mf.Text(&quot;Pending: 7&quot;)),
 )
 </code></pre>
 <ul>

@@ -193,17 +193,17 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/stack.html" title="ComponentStack example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">stack := mrn.ComponentStack(
-    mrn.StackProps{
+<pre><code class="language-go">stack := mf.ComponentStack(
+    mf.StackProps{
         Direction: &quot;horizontal&quot;,
         Gap:       &quot;sm&quot;,
         Align:     &quot;center&quot;,
         Justify:   &quot;between&quot;,
         Wrap:      true,
     },
-    mrn.Text(&quot;Aiko Tanaka&quot;),
-    mrn.DivClass(&quot;badge badge-primary&quot;, mrn.Text(&quot;Admin&quot;)),
-    mrn.ComponentButton(&quot;Open&quot;, mrn.ComponentProps{Variant: &quot;secondary&quot;, Size: &quot;sm&quot;}),
+    mf.Text(&quot;Aiko Tanaka&quot;),
+    mf.DivClass(&quot;badge badge-primary&quot;, mf.Text(&quot;Admin&quot;)),
+    mf.ComponentButton(&quot;Open&quot;, mf.ComponentProps{Variant: &quot;secondary&quot;, Size: &quot;sm&quot;}),
 )
 </code></pre>
 <ul>

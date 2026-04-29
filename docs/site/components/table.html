@@ -192,16 +192,16 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/table.html" title="ComponentTable example" style="width:100%;min-height:300px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">usersTable := mrn.ComponentTable(mrn.TableProps{
-    Columns: []mrn.TableColumn{
+<pre><code class="language-go">usersTable := mf.ComponentTable(mf.TableProps{
+    Columns: []mf.TableColumn{
         {Label: &quot;Name&quot;, SortKey: &quot;name&quot;, SortHref: &quot;/?sort=name&quot;, SortActive: true},
         {Label: &quot;Role&quot;},
     },
-    Rows: []mrn.TableComponentRow{
+    Rows: []mf.TableComponentRow{
         {
-            Cells: []mrn.Node{
-                mrn.Text(&quot;Aiko&quot;),
-                mrn.DivClass(&quot;badge&quot;, mrn.Text(&quot;Admin&quot;)),
+            Cells: []mf.Node{
+                mf.Text(&quot;Aiko&quot;),
+                mf.DivClass(&quot;badge&quot;, mf.Text(&quot;Admin&quot;)),
             },
         },
     },

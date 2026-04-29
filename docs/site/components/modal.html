@@ -193,10 +193,10 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/modal.html" title="ComponentModal example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">confirmModal := mrn.ComponentModal(mrn.ModalProps{
+<pre><code class="language-go">confirmModal := mf.ComponentModal(mf.ModalProps{
     Title: &quot;Delete user&quot;,
-    Body:  mrn.Text(&quot;Confirm deletion&quot;),
-    Actions: mrn.ComponentButton(&quot;Delete&quot;, mrn.ComponentProps{
+    Body:  mf.Text(&quot;Confirm deletion&quot;),
+    Actions: mf.ComponentButton(&quot;Delete&quot;, mf.ComponentProps{
         Variant: &quot;error&quot;,
         Size:    &quot;sm&quot;,
     }),

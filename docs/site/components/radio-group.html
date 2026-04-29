@@ -192,15 +192,15 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/radio_group.html" title="ComponentRadioGroup example" style="width:100%;min-height:220px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">roleGroup := mrn.ComponentRadioGroup(mrn.RadioGroupComponentProps{
+<pre><code class="language-go">roleGroup := mf.ComponentRadioGroup(mf.RadioGroupComponentProps{
     Name:      &quot;role&quot;,
     AriaLabel: &quot;role&quot;,
-    Items: []mrn.RadioItem{
+    Items: []mf.RadioItem{
         {Label: &quot;Admin&quot;, Value: &quot;admin&quot;, Checked: true},
         {Label: &quot;Editor&quot;, Value: &quot;editor&quot;},
         {Label: &quot;Viewer&quot;, Value: &quot;viewer&quot;, Disabled: true},
     },
-    Props: mrn.ComponentProps{Size: &quot;sm&quot;},
+    Props: mf.ComponentProps{Size: &quot;sm&quot;},
 })
 </code></pre>
 <ul>

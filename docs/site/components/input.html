@@ -192,13 +192,13 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/input.html" title="ComponentInput example" style="width:100%;min-height:180px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">startDate := mrn.ComponentInputWithOptions(&quot;start_date&quot;, &quot;2030-01-01&quot;, mrn.InputOptions{
+<pre><code class="language-go">startDate := mf.ComponentInputWithOptions(&quot;start_date&quot;, &quot;2030-01-01&quot;, mf.InputOptions{
     Type:        &quot;date&quot;,
     Placeholder: &quot;Start date&quot;,
     Min:         &quot;2024-01-01&quot;,
     Max:         &quot;2035-12-31&quot;,
     Required:    true,
-    Props: mrn.ComponentProps{
+    Props: mf.ComponentProps{
         Variant:  &quot;ghost&quot;,
         Size:     &quot;sm&quot;,
         Disabled: true,

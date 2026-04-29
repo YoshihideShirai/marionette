@@ -192,13 +192,13 @@
 <h3 id="visual">Visual</h3>
 <iframe src="./examples/section.html" title="ComponentSection example" style="width:100%;min-height:320px;border:1px solid #e5e7eb;border-radius:8px;"></iframe>
 <h3 id="go-usage">Go usage</h3>
-<pre><code class="language-go">section := mrn.ComponentSection(
-    mrn.SectionProps{
+<pre><code class="language-go">section := mf.ComponentSection(
+    mf.SectionProps{
         Title:       &quot;Recent activity&quot;,
         Description: &quot;An unframed content section with consistent header spacing.&quot;,
-        Actions:     mrn.ComponentButton(&quot;View all&quot;, mrn.ComponentProps{Variant: &quot;secondary&quot;, Size: &quot;sm&quot;}),
+        Actions:     mf.ComponentButton(&quot;View all&quot;, mf.ComponentProps{Variant: &quot;secondary&quot;, Size: &quot;sm&quot;}),
     },
-    mrn.Text(&quot;Aiko updated a role&quot;),
+    mf.Text(&quot;Aiko updated a role&quot;),
 )
 </code></pre>
 <ul>

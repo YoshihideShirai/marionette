@@ -242,98 +242,98 @@ Flash lifecycle on next request:
 Template-backed component constructors (`templates/components/*`).
 
 ### Buttons / inputs / field wrappers
-- `ComponentButton(label string, props ComponentProps) Node`
-- `ComponentSubmitButton(label string, props ComponentProps) Node`
-- `ComponentInput(name, value string, props ComponentProps) Node`
-  - uses `ComponentInputWithOptions` with defaults:
+- `ButtonComponent(label string, props ComponentProps) Node`
+- `SubmitButtonComponent(label string, props ComponentProps) Node`
+- `InputComponent(name, value string, props ComponentProps) Node`
+  - uses `InputWithOptionsComponent` with defaults:
     - `Type: "text"`
     - `Placeholder: strings.TrimSpace(name)`.
-- `ComponentInputWithOptions(name, value string, options InputOptions) Node`
+- `InputWithOptionsComponent(name, value string, options InputOptions) Node`
   - blank `options.Type` defaults to `"text"`.
-- `ComponentTextarea(name, value string, options TextareaOptions) Node`
+- `TextareaComponent(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` defaults to `3`.
-- `ComponentForm(props FormProps, children ...Node) Node`
+- `FormComponent(props FormProps, children ...Node) Node`
   - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
-- `ComponentFormField(control Node, props FormFieldProps) Node`
+- `FormFieldComponent(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
-- `ComponentSelect(name string, options []SelectOption, props ComponentProps) Node`
+- `SelectComponent(name string, options []SelectOption, props ComponentProps) Node`
 
 ### Overlay / feedback
-- `ComponentModal(props ModalProps) Node`
+- `ModalComponent(props ModalProps) Node`
   - renders `Body` and `Actions` nodes first.
   - if either render fails, returns render error node.
-- `ComponentToast(props ToastProps) Node`
+- `ToastComponent(props ToastProps) Node`
   - blank `Live` defaults to `"polite"`.
-- `ComponentAlert(props AlertProps) Node`
-- `ComponentSkeleton(props SkeletonProps) Node`
+- `AlertComponent(props AlertProps) Node`
+- `SkeletonComponent(props SkeletonProps) Node`
   - `Rows <= 0` defaults to `3`.
-- `ComponentEmptyState(props EmptyStateProps) Node`
+- `EmptyStateComponent(props EmptyStateProps) Node`
   - `Rows <= 0` defaults to `3`.
 
 ### Data display
-- `ComponentTable(props TableProps) Node`
+- `TableComponent(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
-- `ComponentChart(props ChartProps) Node`
+- `ChartComponent(props ChartProps) Node`
   - renders a Chart.js-backed chart from Go props.
   - blank `Type` defaults to `ChartTypeLine`; blank `Height` defaults to `320`.
   - `ChartDataset.Data` renders scalar values; `ChartDataset.Points` renders `{x,y}` values for scatter-style charts.
   - chart config is JSON-encoded and embedded next to a `<canvas data-mrn-chart>`.
   - includes `role="img"`, an accessible label, canvas fallback text, and a screen-reader fallback table.
-- `ComponentDataFrame(df *dataframe.DataFrame, props TableProps) Node`
-  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `ComponentTable`.
+- `DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node`
+  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `TableComponent`.
   - `df.Names()` is mapped to `TableColumn.Label` and overrides `props.Columns`.
   - each row is read by `df.Row(row, true, dataframe.SeriesName)`.
   - cell conversion: `nil` => empty text, `Node` => rendered directly, all others => `fmt.Sprint(value)`.
-- `ComponentDataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`
-  - maps a dataframe label column and numeric series columns into `ComponentChart`.
+- `DataFrameChartComponent(df *dataframe.DataFrame, props DataFrameChartProps) Node`
+  - maps a dataframe label column and numeric series columns into `ChartComponent`.
   - blank `LabelColumn` uses the first dataframe column.
   - blank `Series` renders every column after the label column as a dataset.
-- `ComponentPagination(props PaginationProps) Node`
+- `PaginationComponent(props PaginationProps) Node`
   - `Page < 1` defaults to `1`.
   - `TotalPages < 1` defaults to `1`.
-- `ComponentTabs(props TabsProps) Node`
+- `TabsComponent(props TabsProps) Node`
   - blank `AriaLabel` defaults to `"tabs"`.
   - supports active/disabled states and link/button tab items.
-- `ComponentBreadcrumb(props BreadcrumbProps) Node`
+- `BreadcrumbComponent(props BreadcrumbProps) Node`
   - blank `AriaLabel` defaults to `"breadcrumb"`.
   - supports active/current breadcrumb items.
-- `ComponentCheckbox(props CheckboxComponentProps) Node`
-- `ComponentRadioGroup(props RadioGroupComponentProps) Node`
+- `CheckboxComponent(props CheckboxComponentProps) Node`
+- `RadioGroupComponent(props RadioGroupComponentProps) Node`
   - blank `AriaLabel` defaults to `"radio group"`.
-- `ComponentSwitch(props SwitchComponentProps) Node`
-- `ComponentDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+- `SwitchComponent(props SwitchComponentProps) Node`
+- `DataFrameFromCSVComponent(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
-- `ComponentDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
+- `DataFrameFromTSVComponent(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - same loader with `Comma: '\t'` as default.
 
 ### Layout / surfaces
-- `ComponentStack(props StackProps, children ...Node) Node`
+- `StackComponent(props StackProps, children ...Node) Node`
   - flex layout for vertical/horizontal stacks.
   - `Direction`: `vertical`/blank or `horizontal`/`row`.
   - `Gap`: `none`, `xs`, `sm`, `md`/blank, `lg`, `xl`.
   - `Align`: `start`, `center`, `end`, blank=`stretch`.
   - `Justify`: `start`/blank, `center`, `end`, `between`.
   - `Wrap` adds `flex-wrap`; `Props.Class` appends custom classes.
-- `ComponentGrid(props GridProps, children ...Node) Node`
+- `GridComponent(props GridProps, children ...Node) Node`
   - grid layout with `Columns` values `1`, `2`, `3`/blank, `4`.
   - `MinColumnWidth`: `sm`, `md`, `lg` switches to auto-fit minmax columns.
-  - `Gap` and `Props.Class` use the same behavior as `ComponentStack`.
-- `ComponentSplit(props SplitProps) Node`
+  - `Gap` and `Props.Class` use the same behavior as `StackComponent`.
+- `SplitComponent(props SplitProps) Node`
   - responsive main/aside layout.
   - `AsideWidth`: `sm`, `md`/blank, `lg`.
   - `ReverseOnMobile` renders the aside before the main pane visually on mobile.
-- `ComponentPageHeader(props PageHeaderProps) Node`
+- `PageHeaderComponent(props PageHeaderProps) Node`
   - renders title, description, and optional action node.
-- `ComponentContainer(props ContainerProps, children ...Node) Node`
+- `ContainerComponent(props ContainerProps, children ...Node) Node`
   - `MaxWidth`: `sm`, `md`, `lg`/blank, `full`.
   - `Padding`: `none`, `sm`, `md`/blank, `lg`.
   - `Centered` adds `mx-auto`.
-- `ComponentCard(props CardProps, children ...Node) Node`
+- `CardComponent(props CardProps, children ...Node) Node`
   - card surface with optional title, description, and action node.
-- `ComponentSection(props SectionProps, children ...Node) Node`
+- `SectionComponent(props SectionProps, children ...Node) Node`
   - unframed section wrapper with optional title, description, and action node.
 
-#### Example: Convert CSV/TSV data to `ComponentDataFrame`
+#### Example: Convert CSV/TSV data to `DataFrameComponent`
 
 ```go
 import (
@@ -349,7 +349,7 @@ func tableFromCSV(path string) (mrn.Node, error) {
     }
     defer f.Close()
 
-    return mrn.ComponentDataFrameFromCSV(f, mrn.TableProps{
+    return mrn.DataFrameFromCSVComponent(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "CSV is empty.",
     })
@@ -362,7 +362,7 @@ func tableFromTSV(path string) (mrn.Node, error) {
     }
     defer f.Close()
 
-    return mrn.ComponentDataFrameFromTSV(f, mrn.TableProps{
+    return mrn.DataFrameFromTSVComponent(f, mrn.TableProps{
         EmptyTitle:       "No data",
         EmptyDescription: "TSV is empty.",
     })
@@ -372,7 +372,7 @@ func tableFromTSV(path string) (mrn.Node, error) {
 #### Example: Render a chart
 
 ```go
-chart := mrn.ComponentChart(mrn.ChartProps{
+chart := mrn.ChartComponent(mrn.ChartProps{
     Type:        mrn.ChartTypeLine,
     Title:       "Weekly signups",
     Description: "New accounts by weekday.",

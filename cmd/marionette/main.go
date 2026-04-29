@@ -195,7 +195,7 @@ func getUsers(ctx *mb.Context) []user {
 }
 
 func renderUsersPage(ctx *mb.Context, formState createUserFormState) mf.Node {
-	header := mf.ComponentPageHeader(mf.PageHeaderProps{
+	header := mf.PageHeaderComponent(mf.PageHeaderProps{
 		Title:       "User Administration",
 		Description: "A CRUD demo combining forms, tables, and modals.",
 		Actions:     themeToggleButton(),
@@ -231,26 +231,26 @@ func renderShell(ctx *mb.Context, activePath string, header, content mf.Node) mf
 	)
 }
 func themeToggleButton() mf.Node {
-	return mf.ComponentThemeToggleButton(mf.ComponentProps{Variant: "outline", Size: "sm"})
+	return mf.ThemeToggleButtonComponent(mf.ComponentProps{Variant: "outline", Size: "sm"})
 }
 
 func renderDashboardPage(ctx *mb.Context) mf.Node {
 	users := getUsers(ctx)
-	header := mf.ComponentPageHeader(mf.PageHeaderProps{
+	header := mf.PageHeaderComponent(mf.PageHeaderProps{
 		Title:       "Operations Dashboard",
 		Description: "Top-level overview of operational health and activity.",
 		Actions:     themeToggleButton(),
 	})
-	content := mf.ComponentStack(mf.StackProps{Gap: "lg"},
+	content := mf.StackComponent(mf.StackProps{Gap: "lg"},
 		renderDashboardOverview(ctx),
 		renderDashboardCharts(ctx),
-		mf.ComponentGrid(mf.GridProps{MinColumnWidth: "lg", Gap: "lg"},
-			mf.ComponentCard(mf.CardProps{}, mf.ComponentEmptyState(mf.EmptyStateProps{
+		mf.GridComponent(mf.GridProps{MinColumnWidth: "lg", Gap: "lg"},
+			mf.CardComponent(mf.CardProps{}, mf.EmptyStateComponent(mf.EmptyStateProps{
 				Title:       "Pending approvals",
 				Description: "No approvals are currently waiting.",
 				Icon:        "✓",
 			})),
-			mf.ComponentCard(mf.CardProps{}, mf.ComponentTable(mf.TableProps{
+			mf.CardComponent(mf.CardProps{}, mf.TableComponent(mf.TableProps{
 				Columns: []mf.TableColumn{{Label: "Metric"}, {Label: "Value"}},
 				Rows: []mf.TableComponentRow{
 					{Cells: []mf.Node{mf.Text("Total users"), mf.Text(strconv.Itoa(len(users)))}},
@@ -263,14 +263,14 @@ func renderDashboardPage(ctx *mb.Context) mf.Node {
 }
 
 func renderAnalyticsPage(ctx *mb.Context) mf.Node {
-	header := mf.ComponentPageHeader(mf.PageHeaderProps{Title: "Analytics", Description: "A chart-first, two-column analytics layout.", Actions: themeToggleButton()})
-	content := mf.ComponentSplit(mf.SplitProps{
+	header := mf.PageHeaderComponent(mf.PageHeaderProps{Title: "Analytics", Description: "A chart-first, two-column analytics layout.", Actions: themeToggleButton()})
+	content := mf.SplitComponent(mf.SplitProps{
 		Gap: "lg",
-		Main: mf.ComponentStack(mf.StackProps{Gap: "lg"},
+		Main: mf.StackComponent(mf.StackProps{Gap: "lg"},
 			renderDashboardCharts(ctx),
-			mf.ComponentAlert(mf.AlertProps{Title: "Insight", Description: "Editors are growing steadily month-over-month.", Props: mf.ComponentProps{Variant: "info"}}),
+			mf.AlertComponent(mf.AlertProps{Title: "Insight", Description: "Editors are growing steadily month-over-month.", Props: mf.ComponentProps{Variant: "info"}}),
 		),
-		Aside: mf.ComponentStack(mf.StackProps{Gap: "md"},
+		Aside: mf.StackComponent(mf.StackProps{Gap: "md"},
 			roleMixRow("Admin", roleCounts(getUsers(ctx))["Admin"]),
 			roleMixRow("Editor", roleCounts(getUsers(ctx))["Editor"]),
 			roleMixRow("Viewer", roleCounts(getUsers(ctx))["Viewer"]),
@@ -280,17 +280,17 @@ func renderAnalyticsPage(ctx *mb.Context) mf.Node {
 }
 
 func renderSettingsPage(ctx *mb.Context) mf.Node {
-	header := mf.ComponentPageHeader(mf.PageHeaderProps{Title: "Settings", Description: "A form-heavy vertical layout for configuration flows.", Actions: themeToggleButton()})
-	content := mf.ComponentStack(mf.StackProps{Gap: "lg"},
-		mf.ComponentCard(mf.CardProps{},
+	header := mf.PageHeaderComponent(mf.PageHeaderProps{Title: "Settings", Description: "A form-heavy vertical layout for configuration flows.", Actions: themeToggleButton()})
+	content := mf.StackComponent(mf.StackProps{Gap: "lg"},
+		mf.CardComponent(mf.CardProps{},
 			mf.Form("users/reset",
 				mf.FormRow(mf.FormRowProps{ID: "org-name", Label: "Organization name", Control: mf.TextField(mf.TextFieldProps{ID: "org-name", Name: "org-name", Value: "Marionette Labs"})}),
 				mf.FormRow(mf.FormRowProps{ID: "timezone", Label: "Timezone", Control: mf.Select(mf.SelectFieldProps{ID: "timezone", Name: "timezone", Options: []mf.SelectOption{{Label: "UTC", Value: "UTC", Selected: true}, {Label: "Asia/Tokyo", Value: "Asia/Tokyo"}}})}),
 				mf.Switch(mf.SwitchProps{ID: "audit", Name: "audit", Value: "yes", Checked: true, Label: "Enable audit log"}),
-				mf.DivClass("pt-3", mf.ComponentSubmitButton("Save settings", mf.ComponentProps{Variant: "primary"})),
+				mf.DivClass("pt-3", mf.SubmitButtonComponent("Save settings", mf.ComponentProps{Variant: "primary"})),
 			),
 		),
-		mf.ComponentToast(mf.ToastProps{Title: "Tip", Description: "This page demonstrates form-heavy layout variation.", Props: mf.ComponentProps{Variant: "info"}}),
+		mf.ToastComponent(mf.ToastProps{Title: "Tip", Description: "This page demonstrates form-heavy layout variation.", Props: mf.ComponentProps{Variant: "info"}}),
 	)
 	return renderShell(ctx, "/settings", header, content)
 }
@@ -300,7 +300,7 @@ func renderUsersWorkspace(ctx *mb.Context, formState createUserFormState) mf.Nod
 		mf.FlashAlerts(ctx.Flashes()),
 		renderDashboardOverview(ctx),
 		renderDashboardCharts(ctx),
-		mf.ComponentSplit(mf.SplitProps{
+		mf.SplitComponent(mf.SplitProps{
 			Main:  renderUsersTable(ctx),
 			Aside: renderCreateUserForm(formState),
 			Gap:   "lg",
@@ -315,8 +315,8 @@ func renderDashboardCharts(ctx *mb.Context) mf.Node {
 	monthLabels, monthData := monthlyStartCounts(users)
 	roleLabels, roleData := roleDistribution(users)
 
-	return mf.ComponentGrid(mf.GridProps{MinColumnWidth: "md", Gap: "lg"},
-		mf.ComponentChart(mf.ChartProps{
+	return mf.GridComponent(mf.GridProps{MinColumnWidth: "md", Gap: "lg"},
+		mf.ChartComponent(mf.ChartProps{
 			Type:        mf.ChartTypeLine,
 			Title:       "Onboarding trend",
 			Description: "Users grouped by start month. This chart re-renders after htmx actions.",
@@ -337,7 +337,7 @@ func renderDashboardCharts(ctx *mb.Context) mf.Node {
 			},
 			Height: 260,
 		}),
-		mf.ComponentChart(mf.ChartProps{
+		mf.ChartComponent(mf.ChartProps{
 			Type:        mf.ChartTypeBar,
 			Title:       "Role distribution",
 			Description: "Current permission mix rendered from the same in-memory users.",
@@ -365,7 +365,7 @@ func renderDashboardOverview(ctx *mb.Context) mf.Node {
 	roles := roleCounts(users)
 	latest := latestStartDate(users)
 
-	return mf.ComponentGrid(mf.GridProps{Columns: "3"},
+	return mf.GridComponent(mf.GridProps{Columns: "3"},
 		statCard("Users", strconv.Itoa(len(users)), "Active demo records", "primary"),
 		statCard("Admins", strconv.Itoa(roles["Admin"]), "High-access seats", "secondary"),
 		statCard("Latest start", latest, "Newest onboarding date", "accent"),
@@ -373,10 +373,10 @@ func renderDashboardOverview(ctx *mb.Context) mf.Node {
 }
 
 func statCard(label, value, caption, tone string) mf.Node {
-	return mf.ComponentCard(mf.CardProps{},
-		mf.ComponentStack(mf.StackProps{Gap: "sm"},
+	return mf.CardComponent(mf.CardProps{},
+		mf.StackComponent(mf.StackProps{Gap: "sm"},
 			mf.DivClass("text-sm font-medium text-base-content/60", mf.Text(label)),
-			mf.ComponentStack(mf.StackProps{Direction: "horizontal", Gap: "md", Align: "end", Justify: "between"},
+			mf.StackComponent(mf.StackProps{Direction: "horizontal", Gap: "md", Align: "end", Justify: "between"},
 				mf.DivClass("text-3xl font-bold", mf.Text(value)),
 				mf.DivClass("badge badge-"+tone, mf.Text("live")),
 			),
@@ -401,18 +401,18 @@ func renderUsersTable(ctx *mb.Context) mf.Node {
 				mf.DivClass("flex items-center gap-2",
 					mf.DivClass("badge badge-outline", mf.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
 					mf.Form("users/loading/start",
-						mf.ComponentSubmitButton("Show loading", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
+						mf.SubmitButtonComponent("Show loading", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
 					).Target("#users-workspace"),
 					mf.Form("users/loading/stop",
-						mf.ComponentSubmitButton("Show data", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: !loading}),
+						mf.SubmitButtonComponent("Show data", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: !loading}),
 					).Target("#users-workspace"),
 					mf.Form("users/reset",
-						mf.ComponentSubmitButton("Reset", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
+						mf.SubmitButtonComponent("Reset", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
 					).Target("#users-workspace"),
 				),
 			),
 			mf.DivClass("overflow-hidden rounded-box border border-base-300", tableBody),
-			mf.ComponentPagination(mf.PaginationProps{
+			mf.PaginationComponent(mf.PaginationProps{
 				Page:       pg.Page,
 				TotalPages: pg.TotalPages,
 				PrevHref:   pageLink(pg.Page-1, pg.PerPage, ctx.Query("sort"), pg.TotalPages),
@@ -424,7 +424,7 @@ func renderUsersTable(ctx *mb.Context) mf.Node {
 
 func renderUsersTableBody(users []user, loading bool, sortKey string, pg pagination) mf.Node {
 	if loading {
-		return mf.ComponentEmptyState(mf.EmptyStateProps{
+		return mf.EmptyStateComponent(mf.EmptyStateProps{
 			Skeleton: true,
 			Rows:     5,
 		})
@@ -436,7 +436,7 @@ func renderUsersTableBody(users []user, loading bool, sortKey string, pg paginat
 		rows = append(rows, renderUserRow(u))
 	}
 
-	return mf.ComponentTable(mf.TableProps{
+	return mf.TableComponent(mf.TableProps{
 		Columns:          usersTableColumns(sortKey, pg),
 		Rows:             rows,
 		EmptyTitle:       "No users yet",
@@ -505,7 +505,7 @@ func renderUserRow(u user) mf.TableComponentRow {
 			mf.DivClass("text-sm", mf.Text(u.StartDate)),
 			mf.Form("users/delete/prompt",
 				mf.HiddenInput("id", strconv.Itoa(u.ID)),
-				mf.ComponentSubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
+				mf.SubmitButtonComponent("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
 			).Target("#users-workspace"),
 		},
 	}
@@ -740,8 +740,8 @@ func renderCreateUserForm(form createUserFormState) mf.Node {
 					}),
 				),
 				mf.DivClass("flex flex-wrap gap-2 pt-2",
-					mf.ComponentSubmitButton("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
-					mf.ComponentButton("Preview", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
+					mf.SubmitButtonComponent("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
+					mf.ButtonComponent("Preview", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
 				),
 			).Target("#users-workspace"),
 		),
@@ -760,13 +760,13 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 					mf.DivClass("text-sm text-base-content/60", mf.Text("Alerts, toasts, skeletons, and empty states rendered from Go.")),
 				),
 				mf.DivClass("grid gap-3 md:grid-cols-2",
-					mf.ComponentAlert(mf.AlertProps{
+					mf.AlertComponent(mf.AlertProps{
 						Title:       "Validation feedback",
 						Description: "Form errors, success flashes, and informational alerts share the same feedback API.",
 						Icon:        "!",
 						Props:       mf.ComponentProps{Variant: "info", Size: "sm"},
 					}),
-					mf.ComponentToast(mf.ToastProps{
+					mf.ToastComponent(mf.ToastProps{
 						Title:       "Saved",
 						Description: "Toast markup is available for transient status messages.",
 						Icon:        "OK",
@@ -774,8 +774,8 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 					}),
 				),
 				mf.DivClass("grid gap-3 md:grid-cols-2",
-					mf.ComponentSkeleton(mf.SkeletonProps{Rows: 4, Props: mf.ComponentProps{Size: "sm"}}),
-					mf.ComponentEmptyState(mf.EmptyStateProps{
+					mf.SkeletonComponent(mf.SkeletonProps{Rows: 4, Props: mf.ComponentProps{Size: "sm"}}),
+					mf.EmptyStateComponent(mf.EmptyStateProps{
 						Title:       "No pending reviews",
 						Description: "Empty states can replace tables or panels without extra branching in templates.",
 						Icon:        "0",
@@ -784,7 +784,7 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 				),
 				mf.DivClass("rounded-box border border-base-300 bg-base-100 p-3",
 					mf.DivClass("mb-2 text-sm text-base-content/60", mf.Text("Theme toggle component")),
-					mf.ComponentThemeToggleButton(mf.ComponentProps{Variant: "outline", Size: "sm"}),
+					mf.ThemeToggleButtonComponent(mf.ComponentProps{Variant: "outline", Size: "sm"}),
 				),
 			),
 		),
@@ -819,7 +819,7 @@ func renderDeleteModal(ctx *mb.Context) mf.Node {
 		}
 	}
 
-	return mf.ComponentModal(mf.ModalProps{
+	return mf.ModalComponent(mf.ModalProps{
 		Title: "Delete user",
 		Body: mf.DivClass("space-y-2",
 			mf.Text("Are you sure you want to delete this user?"),
@@ -827,11 +827,11 @@ func renderDeleteModal(ctx *mb.Context) mf.Node {
 		),
 		Actions: mf.DivClass("flex w-full justify-end gap-2",
 			mf.Form("users/delete/cancel",
-				mf.ComponentSubmitButton("Cancel", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
+				mf.SubmitButtonComponent("Cancel", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
 			).Target("#users-workspace"),
 			mf.Form("users/delete/confirm",
 				mf.HiddenInput("id", strconv.Itoa(targetID)),
-				mf.ComponentSubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
+				mf.SubmitButtonComponent("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
 			).Target("#users-workspace"),
 		),
 		Open: ctx.Get("deleteModalOpen") == true,

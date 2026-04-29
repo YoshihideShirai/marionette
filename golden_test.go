@@ -19,11 +19,11 @@ func TestTemplateRenderingGolden(t *testing.T) {
 	}{
 		{
 			name: "button",
-			node: ComponentButton("Save", ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"}),
+			node: ButtonComponent("Save", ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"}),
 		},
 		{
 			name: "input",
-			node: ComponentInputWithOptions("start_date", "2030-01-01", InputOptions{
+			node: InputWithOptionsComponent("start_date", "2030-01-01", InputOptions{
 				Type:        "date",
 				Placeholder: "Start date",
 				Min:         "2024-01-01",
@@ -34,44 +34,44 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "select",
-			node: ComponentSelect("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
+			node: SelectComponent("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
 		},
 		{
 			name: "form_field",
-			node: ComponentFormField(
-				ComponentInputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Size: "sm"}}),
+			node: FormFieldComponent(
+				InputWithOptionsComponent("name", "", InputOptions{Required: true, Props: ComponentProps{Size: "sm"}}),
 				FormFieldProps{Label: "Name", Required: true, Hint: "Enter a display name.", Error: "Name is required."},
 			),
 		},
 		{
 			name: "modal_open",
-			node: ComponentModal(ModalProps{
+			node: ModalComponent(ModalProps{
 				Title:   "Delete user",
 				Body:    Text("Confirm deletion"),
-				Actions: ComponentButton("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
+				Actions: ButtonComponent("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
 				Open:    true,
 			}),
 		},
 
 		{
 			name: "toast",
-			node: ComponentToast(ToastProps{Title: "Saved", Description: "All changes were synced.", Icon: "✓", Props: ComponentProps{Variant: "success", Size: "sm"}}),
+			node: ToastComponent(ToastProps{Title: "Saved", Description: "All changes were synced.", Icon: "✓", Props: ComponentProps{Variant: "success", Size: "sm"}}),
 		},
 		{
 			name: "alert",
-			node: ComponentAlert(AlertProps{Title: "Request failed", Description: "Try again later.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}),
+			node: AlertComponent(AlertProps{Title: "Request failed", Description: "Try again later.", Icon: "!", Props: ComponentProps{Variant: "error", Size: "md"}}),
 		},
 		{
 			name: "skeleton",
-			node: ComponentSkeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}),
+			node: SkeletonComponent(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}),
 		},
 		{
 			name: "empty_state",
-			node: ComponentEmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}),
+			node: EmptyStateComponent(EmptyStateProps{Title: "No users", Description: "Create one first."}),
 		},
 		{
 			name: "table",
-			node: ComponentTable(TableProps{
+			node: TableComponent(TableProps{
 				Columns:          []TableColumn{{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true}, {Label: "Role"}},
 				Rows:             []TableComponentRow{{Cells: []Node{Text("Aiko"), DivClass("badge", Text("Admin"))}}},
 				EmptyTitle:       "No users",
@@ -80,7 +80,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "chart",
-			node: ComponentChart(ChartProps{
+			node: ChartComponent(ChartProps{
 				Type:        ChartTypeLine,
 				Title:       "Weekly signups",
 				Description: "New accounts by weekday.",
@@ -104,11 +104,11 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "pagination",
-			node: ComponentPagination(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
+			node: PaginationComponent(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
 		},
 		{
 			name: "tabs",
-			node: ComponentTabs(TabsProps{
+			node: TabsComponent(TabsProps{
 				AriaLabel: "user sections",
 				Items: []TabsItem{
 					{Label: "Profile", Href: "/users/1/profile", Active: true},
@@ -119,7 +119,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "breadcrumb",
-			node: ComponentBreadcrumb(BreadcrumbProps{
+			node: BreadcrumbComponent(BreadcrumbProps{
 				Items: []BreadcrumbItem{
 					{Label: "Home", Href: "/"},
 					{Label: "Users", Href: "/users"},
@@ -129,7 +129,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "textarea",
-			node: ComponentTextarea("notes", "hello", TextareaOptions{
+			node: TextareaComponent("notes", "hello", TextareaOptions{
 				Placeholder: "Memo",
 				Rows:        4,
 				Required:    true,
@@ -138,7 +138,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "checkbox",
-			node: ComponentCheckbox(CheckboxComponentProps{
+			node: CheckboxComponent(CheckboxComponentProps{
 				Name:    "active",
 				Value:   "1",
 				Label:   "Active user",
@@ -148,7 +148,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "radio_group",
-			node: ComponentRadioGroup(RadioGroupComponentProps{
+			node: RadioGroupComponent(RadioGroupComponentProps{
 				Name:      "role",
 				AriaLabel: "role",
 				Items: []RadioItem{
@@ -160,7 +160,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "switch",
-			node: ComponentSwitch(SwitchComponentProps{
+			node: SwitchComponent(SwitchComponentProps{
 				Name:    "notify",
 				Value:   "1",
 				Label:   "Enable notifications",
@@ -170,15 +170,15 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "stack",
-			node: ComponentStack(
+			node: StackComponent(
 				StackProps{Direction: "horizontal", Gap: "sm", Align: "center", Justify: "between", Wrap: true, Props: ComponentProps{Class: "w-full"}},
 				Text("Left"),
-				ComponentButton("Right", ComponentProps{Variant: "secondary", Size: "sm"}),
+				ButtonComponent("Right", ComponentProps{Variant: "secondary", Size: "sm"}),
 			),
 		},
 		{
 			name: "grid",
-			node: ComponentGrid(
+			node: GridComponent(
 				GridProps{Columns: "3", Gap: "lg"},
 				DivClass("card bg-base-100 p-4", Text("One")),
 				DivClass("card bg-base-100 p-4", Text("Two")),
@@ -187,7 +187,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "split",
-			node: ComponentSplit(SplitProps{
+			node: SplitComponent(SplitProps{
 				Main:            DivClass("card bg-base-100 p-4", Text("Main")),
 				Aside:           DivClass("card bg-base-100 p-4", Text("Aside")),
 				AsideWidth:      "md",
@@ -197,33 +197,33 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "page_header",
-			node: ComponentPageHeader(PageHeaderProps{
+			node: PageHeaderComponent(PageHeaderProps{
 				Title:       "Users",
 				Description: "Manage account records.",
-				Actions:     ComponentButton("Create", ComponentProps{Size: "sm"}),
+				Actions:     ButtonComponent("Create", ComponentProps{Size: "sm"}),
 			}),
 		},
 		{
 			name: "container",
-			node: ComponentContainer(
+			node: ContainerComponent(
 				ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true},
 				Text("Contained"),
 			),
 		},
 		{
 			name: "card",
-			node: ComponentCard(
+			node: CardComponent(
 				CardProps{
 					Title:       "Summary",
 					Description: "Current workspace status.",
-					Actions:     ComponentButton("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+					Actions:     ButtonComponent("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
 				},
 				Text("Ready"),
 			),
 		},
 		{
 			name: "section",
-			node: ComponentSection(
+			node: SectionComponent(
 				SectionProps{Title: "Details", Description: "Supporting information."},
 				Text("Section body"),
 			),

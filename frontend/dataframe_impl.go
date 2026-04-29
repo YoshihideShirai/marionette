@@ -23,17 +23,17 @@ type DataFrameChartProps struct {
 	Series      []DataFrameChartSeries
 }
 
-// ComponentDataFrame renders a github.com/rocketlaunchr/dataframe-go DataFrame
+// DataFrameComponent renders a github.com/rocketlaunchr/dataframe-go DataFrame
 // as a table component.
 //
 // Values are converted as follows:
 //   - nil => empty text cell
 //   - Node => rendered directly
 //   - all others => fmt.Sprint(value) wrapped in Text(...)
-func ComponentDataFrame(df *rdf.DataFrame, props TableProps) Node {
+func DataFrameComponent(df *rdf.DataFrame, props TableProps) Node {
 	tableProps := props
 	if df == nil {
-		return ComponentTable(tableProps)
+		return TableComponent(tableProps)
 	}
 
 	columnNames := df.Names()
@@ -64,23 +64,23 @@ func ComponentDataFrame(df *rdf.DataFrame, props TableProps) Node {
 	}
 
 	tableProps.Rows = rows
-	return ComponentTable(tableProps)
+	return TableComponent(tableProps)
 }
 
-// ComponentDataFrameChart renders dataframe columns through ComponentChart.
+// DataFrameChartComponent renders dataframe columns through ChartComponent.
 //
 // LabelColumn selects the x-axis labels. If blank, the first dataframe column is
 // used. Series selects numeric columns. If blank, every column after LabelColumn
 // is rendered as a dataset.
-func ComponentDataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
+func DataFrameChartComponent(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	chartProps := props.Chart
 	if df == nil {
-		return ComponentChart(chartProps)
+		return ChartComponent(chartProps)
 	}
 
 	columnNames := df.Names()
 	if len(columnNames) == 0 {
-		return ComponentChart(chartProps)
+		return ChartComponent(chartProps)
 	}
 
 	labelColumn := strings.TrimSpace(props.LabelColumn)
@@ -125,7 +125,7 @@ func ComponentDataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node 
 
 	chartProps.Labels = labels
 	chartProps.Datasets = datasets
-	return ComponentChart(chartProps)
+	return ChartComponent(chartProps)
 }
 
 func chartFloat(value any) float64 {

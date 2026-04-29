@@ -1,5 +1,7 @@
 # Marionette
 
+![Marionette concept art](docs/site/assets/concept.png)
+
 Marionette is a Go-first admin UI framework concept inspired by Streamlit, with an htmx front-end runtime.
 
 ## Goals

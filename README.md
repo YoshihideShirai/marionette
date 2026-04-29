@@ -1,6 +1,6 @@
 # Marionette
 
-![Marionette concept art](docs/site/assets/concept.png)
+![Marionette concept art](docs/assets/concept.png)
 
 Marionette is a Go-first admin UI framework concept inspired by Streamlit, with an htmx front-end runtime.
 
@@ -97,16 +97,15 @@ Detailed API reference is available here:
 
 ## GitHub Pages deployment
 
-- The Pages deploy workflow publishes `docs/site/` via GitHub Actions.
+- The Pages deploy workflow publishes `docs/site-astro/` via GitHub Actions.
 - Before enabling deploys, set repository **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
 
 ## Documentation
 
 Start with the published docs hub:
 
-- `docs/site/index.md` (GitHub Pages source)
-- Quickstart: `docs/site/getting-started.md`
-- Framework overview: `docs/site/framework-overview.md`
-- Components gallery: `docs/site/components/index.md`
+- `docs/site-astro/src/pages/index.astro` (site entry)
+- Top page: `/`
+- Components gallery: `/components/`
 - Contribution guide: `CONTRIBUTING.md`
 

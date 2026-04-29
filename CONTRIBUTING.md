@@ -13,10 +13,10 @@ Thank you for helping improve Marionette.
 
 When changing user-visible behavior, update at least one of:
 
-- `docs/site/getting-started.md`
-- `docs/site/framework-overview.md`
-- `docs/site/cookbook/`
-- `docs/site/components/`
+- `docs/site-astro/src/pages/index.astro`
+- `docs/site-astro/src/pages/components/index.astro`
+- `docs/site-astro/src/layouts/`
+- `docs/site-astro/src/styles/`
 
 When changing architecture or conventions, update:
 
@@ -34,10 +34,10 @@ When changing architecture or conventions, update:
 
 - Ownership rules are defined in `.github/CODEOWNERS`.
 - Use the PR template in `.github/pull_request_template.md`.
-- Keep user docs (`docs/site/`) and engineering docs (`docs/`) updates in separate commits when possible.
+- Keep user docs (`docs/site-astro/`) and engineering docs (`docs/`) updates in separate commits when possible.
 
 ## Documentation authoring
 
-- Use `docs/site/templates/page-template.md` for new user-facing pages.
+- Prefer creating reusable Astro layouts/components for new user-facing pages.
 - Link related pages at the bottom to improve navigation.
 - Prefer short, task-oriented pages over long mixed-reference pages.

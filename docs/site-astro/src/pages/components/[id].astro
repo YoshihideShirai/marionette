@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import catalog from '../../data/components-index.json';
+
+export function getStaticPaths() {
+  return catalog.components.map((component) => ({
+    params: { id: component.id },
+    props: { component },
+  }));
+}
+
+const { component } = Astro.props;
+const pageTitle = `${component.name} | Components`;
+---
+<BaseLayout title={pageTitle}>
+  <article class="detail">
+    <header>
+      <p class="eyebrow">Component Detail</p>
+      <h1>{component.name}</h1>
+      <p>{component.description}</p>
+    </header>
+
+    <section>
+      <h2>Example</h2>
+      {component.example ? (
+        <iframe src={component.example} title={`${component.name} example`} loading="lazy" />
+      ) : (
+        <p>Example is not available yet.</p>
+      )}
+    </section>
+
+    <section>
+      <h2>References</h2>
+      <dl>
+        <div>
+          <dt>Template</dt>
+          <dd><code>{component.template ?? 'N/A'}</code></dd>
+        </div>
+        <div>
+          <dt>Golden</dt>
+          <dd><code>{component.golden ?? 'N/A'}</code></dd>
+        </div>
+      </dl>
+    </section>
+  </article>
+
+  <style>
+    .detail {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .eyebrow {
+      margin-bottom: 0.25rem;
+      color: var(--sl-color-gray-2);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    iframe {
+      width: 100%;
+      min-height: 320px;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 0.75rem;
+      background: white;
+    }
+
+    dl {
+      display: grid;
+      gap: 0.75rem;
+      margin: 0;
+    }
+
+    dt {
+      font-weight: 700;
+    }
+
+    dd {
+      margin: 0.25rem 0 0;
+    }
+  </style>
+</BaseLayout>

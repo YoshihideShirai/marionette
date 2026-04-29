@@ -7,6 +7,19 @@ const {
   languageSwitcherPath = '/marionette/',
 } = Astro.props;
 const isJa = lang === 'ja';
+const currentPath = Astro.url.pathname;
+
+const sidebarItems = isJa
+  ? [
+      { label: 'ホーム', href: '/marionette/ja/' },
+      { label: 'コンポーネント一覧', href: '/marionette/ja/components/' },
+      { label: 'API Docs', href: '/marionette/docs_api.md' },
+    ]
+  : [
+      { label: 'Home', href: '/marionette/en/' },
+      { label: 'Components', href: '/marionette/en/components/' },
+      { label: 'API Docs', href: '/marionette/docs_api.md' },
+    ];
 ---
 <html lang={lang}>
   <head>
@@ -27,14 +40,29 @@ const isJa = lang === 'ja';
     <header class="site-header">
       <a href={isJa ? '/marionette/ja/' : '/marionette/en/'} class="brand">Marionette Docs</a>
       <nav class="site-nav">
-        <a href={isJa ? '/marionette/ja/' : '/marionette/en/'}>{isJa ? 'ホーム' : 'Home'}</a>
-        <a href={isJa ? '/marionette/ja/components/' : '/marionette/en/components/'}>{isJa ? 'コンポーネント' : 'Components'}</a>
         <a href={languageSwitcherPath} hreflang={isJa ? 'en' : 'ja'}>{isJa ? 'English' : '日本語'}</a>
         <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙 Dark</button>
       </nav>
     </header>
-    <main class="container">
-      <slot />
+    <main class="docs-shell">
+      <aside class="sidebar" aria-label={isJa ? 'ドキュメントナビゲーション' : 'Documentation navigation'}>
+        <p class="sidebar-title">{isJa ? 'コンテンツ' : 'Contents'}</p>
+        <nav>
+          <ul>
+            {sidebarItems.map((item) => {
+              const active = currentPath === item.href || currentPath.startsWith(`${item.href}`);
+              return (
+                <li>
+                  <a href={item.href} class:list={{ active }} aria-current={active ? 'page' : undefined}>{item.label}</a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </aside>
+      <section class="container">
+        <slot />
+      </section>
     </main>
   </body>
   <script is:inline>

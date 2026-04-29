@@ -218,6 +218,7 @@ func renderUsersWorkspace(ctx *mb.Context, formState createUserFormState) mf.Nod
 	return mf.DivProps(mf.ElementProps{ID: "users-workspace", Class: "space-y-4"},
 		mf.FlashAlerts(ctx.Flashes()),
 		renderDashboardOverview(ctx),
+		renderDashboardCharts(ctx),
 		mf.ComponentSplit(mf.SplitProps{
 			Main:  renderUsersTable(ctx),
 			Aside: renderCreateUserForm(formState),
@@ -225,6 +226,56 @@ func renderUsersWorkspace(ctx *mb.Context, formState createUserFormState) mf.Nod
 		}),
 		renderComponentShowcase(ctx),
 		renderDeleteModal(ctx),
+	)
+}
+
+func renderDashboardCharts(ctx *mb.Context) mf.Node {
+	users := getUsers(ctx)
+	monthLabels, monthData := monthlyStartCounts(users)
+	roleLabels, roleData := roleDistribution(users)
+
+	return mf.ComponentGrid(mf.GridProps{MinColumnWidth: "md", Gap: "lg"},
+		mf.ComponentChart(mf.ChartProps{
+			Type:        mf.ChartTypeLine,
+			Title:       "Onboarding trend",
+			Description: "Users grouped by start month. This chart re-renders after htmx actions.",
+			Labels:      monthLabels,
+			Datasets: []mf.ChartDataset{
+				{
+					Label:           "Starts",
+					Data:            monthData,
+					BorderColor:     "#2563eb",
+					BackgroundColor: "rgba(37, 99, 235, 0.16)",
+					Fill:            true,
+					Tension:         0.35,
+				},
+			},
+			Options: mf.ChartOptions{
+				BeginAtZero: true,
+				YAxisLabel:  "Users",
+			},
+			Height: 260,
+		}),
+		mf.ComponentChart(mf.ChartProps{
+			Type:        mf.ChartTypeBar,
+			Title:       "Role distribution",
+			Description: "Current permission mix rendered from the same in-memory users.",
+			Labels:      roleLabels,
+			Datasets: []mf.ChartDataset{
+				{
+					Label:           "Users",
+					Data:            roleData,
+					BorderColor:     "#7c3aed",
+					BackgroundColor: "rgba(124, 58, 237, 0.24)",
+				},
+			},
+			Options: mf.ChartOptions{
+				BeginAtZero: true,
+				HideLegend:  true,
+				YAxisLabel:  "Users",
+			},
+			Height: 260,
+		}),
 	)
 }
 
@@ -422,6 +473,49 @@ func roleCounts(users []user) map[string]int {
 		counts[u.Role]++
 	}
 	return counts
+}
+
+func monthlyStartCounts(users []user) ([]string, []float64) {
+	counts := map[string]int{}
+	months := make([]string, 0)
+	for _, u := range users {
+		month := startMonth(u.StartDate)
+		if month == "" {
+			continue
+		}
+		if _, ok := counts[month]; !ok {
+			months = append(months, month)
+		}
+		counts[month]++
+	}
+	sort.Strings(months)
+	if len(months) == 0 {
+		return []string{"No data"}, []float64{0}
+	}
+
+	data := make([]float64, 0, len(months))
+	for _, month := range months {
+		data = append(data, float64(counts[month]))
+	}
+	return months, data
+}
+
+func startMonth(raw string) string {
+	parsed, err := time.Parse("2006-01-02", strings.TrimSpace(raw))
+	if err != nil {
+		return ""
+	}
+	return parsed.Format("2006-01")
+}
+
+func roleDistribution(users []user) ([]string, []float64) {
+	roles := roleCounts(users)
+	labels := []string{"Admin", "Editor", "Viewer"}
+	data := make([]float64, 0, len(labels))
+	for _, label := range labels {
+		data = append(data, float64(roles[label]))
+	}
+	return labels, data
 }
 
 func latestStartDate(users []user) string {

@@ -571,6 +571,16 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
+	regionHTML, err := Region(RegionProps{ID: "task-list", Props: ComponentProps{Class: "space-y-3"}}, Text("Tasks")).Render()
+	if err != nil {
+		t.Fatalf("region render failed: %v", err)
+	}
+	for _, want := range []string{`id="task-list"`, `class="space-y-3"`, "Tasks"} {
+		if !strings.Contains(string(regionHTML), want) {
+			t.Fatalf("expected %q in %q", want, regionHTML)
+		}
+	}
+
 	cardHTML, err := Card(CardProps{
 		Title:       "Card",
 		Description: "Summary",
@@ -607,6 +617,34 @@ func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
 	}
 	if rootHTML != frontendHTML {
 		t.Fatalf("expected frontend output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+	}
+
+	rootRegionHTML, err := Region(RegionProps{ID: "tasks"}, Text("Root")).Render()
+	if err != nil {
+		t.Fatalf("root region render failed: %v", err)
+	}
+	frontendRegionHTML, err := mf.Region(mf.RegionProps{ID: "tasks"}, mf.Text("Root")).Render()
+	if err != nil {
+		t.Fatalf("frontend region render failed: %v", err)
+	}
+	if rootRegionHTML != frontendRegionHTML {
+		t.Fatalf("expected frontend region output to match root\nroot:\n%s\nfrontend:\n%s", rootRegionHTML, frontendRegionHTML)
+	}
+}
+
+func TestTableRowValuesConvertsValuesToCells(t *testing.T) {
+	row := TableRowValues(7, "Aiko", nil, Text("Admin"))
+	tableHTML, err := TableComponent(TableProps{
+		Columns: []TableColumn{{Label: "ID"}, {Label: "Name"}, {Label: "Blank"}, {Label: "Role"}},
+		Rows:    []TableComponentRow{row},
+	}).Render()
+	if err != nil {
+		t.Fatalf("table render failed: %v", err)
+	}
+	for _, want := range []string{"7", "Aiko", "Admin"} {
+		if !strings.Contains(string(tableHTML), want) {
+			t.Fatalf("expected %q in %q", want, tableHTML)
+		}
 	}
 }
 

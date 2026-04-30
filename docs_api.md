@@ -280,6 +280,8 @@ Template-backed component constructors (`templates/components/*`).
   - `Rows <= 0` defaults to `3`.
 
 ### Data display
+- `TableRowValues(values ...any) TableComponentRow`
+  - converts `nil` to empty text, `Node` values directly, and other values with `fmt.Sprint`.
 - `TableComponent(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
 - `Chart(props ChartProps) Node`
@@ -337,6 +339,10 @@ Template-backed component constructors (`templates/components/*`).
   - `MaxWidth`: `sm`, `md`, `lg`/blank, `full`.
   - `Padding`: `none`, `sm`, `md`/blank, `lg`.
   - `Centered` adds `mx-auto`.
+- `Region(props RegionProps, children ...Node) Node`
+  - renders an ID-addressable content region for partial updates.
+  - `ID` is required; blank `ID` returns a render error node.
+  - `Props.Class` appends custom classes.
 - `Card(props CardProps, children ...Node) Node`
   - card surface with optional title, description, and action node.
 - `Section(props SectionProps, children ...Node) Node`

@@ -103,6 +103,21 @@ type TableComponentRow struct {
 	Cells []Node
 }
 
+func TableRowValues(values ...any) TableComponentRow {
+	cells := make([]Node, 0, len(values))
+	for _, value := range values {
+		switch v := value.(type) {
+		case nil:
+			cells = append(cells, Text(""))
+		case Node:
+			cells = append(cells, v)
+		default:
+			cells = append(cells, Text(fmt.Sprint(v)))
+		}
+	}
+	return TableComponentRow{Cells: cells}
+}
+
 type TableProps struct {
 	Columns          []TableColumn
 	Rows             []TableComponentRow
@@ -260,6 +275,11 @@ type ContainerProps struct {
 	Padding  string
 	Centered bool
 	Props    ComponentProps
+}
+
+type RegionProps struct {
+	ID    string
+	Props ComponentProps
 }
 
 type CardProps struct {
@@ -968,6 +988,17 @@ func UIPageHeader(props PageHeaderProps) Node {
 
 func UIContainer(props ContainerProps, children ...Node) Node {
 	return layoutChildrenNode("components/container", containerClass(props), children)
+}
+
+func UIRegion(props RegionProps, children ...Node) Node {
+	id := strings.TrimSpace(props.ID)
+	if id == "" {
+		return renderErrorNode{err: fmt.Errorf("region id is required")}
+	}
+	return Element("div", ElementProps{
+		ID:    id,
+		Class: strings.TrimSpace(props.Props.Class),
+	}, children...)
 }
 
 func UICard(props CardProps, children ...Node) Node {

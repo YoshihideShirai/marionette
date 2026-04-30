@@ -247,6 +247,23 @@ type SwitchComponentProps struct {
 	Props   ComponentProps
 }
 
+type BadgeProps struct {
+	Label string
+	Props ComponentProps
+}
+
+type ActionsProps struct {
+	Align string
+	Gap   string
+	Wrap  bool
+	Props ComponentProps
+}
+
+type DividerProps struct {
+	Spacing string
+	Props   ComponentProps
+}
+
 type StackProps struct {
 	Direction string
 	Gap       string
@@ -970,6 +987,24 @@ func UISwitch(props SwitchComponentProps) Node {
 	}
 }
 
+func UIBadge(props BadgeProps) Node {
+	return Element("span", ElementProps{
+		Class: badgeClass(props.Props),
+	}, Text(strings.TrimSpace(props.Label)))
+}
+
+func UIActions(props ActionsProps, children ...Node) Node {
+	return Element("div", ElementProps{
+		Class: actionsClass(props),
+	}, children...)
+}
+
+func UIDivider(props DividerProps) Node {
+	return Element("div", ElementProps{
+		Class: dividerClass(props),
+	})
+}
+
 func UIStack(props StackProps, children ...Node) Node {
 	return layoutChildrenNode("components/stack", stackClass(props), children)
 }
@@ -1322,6 +1357,91 @@ func toggleSizeClass(size string) string {
 		return "toggle-sm"
 	case "lg":
 		return "toggle-lg"
+	default:
+		return ""
+	}
+}
+
+func badgeClass(props ComponentProps) string {
+	base := []string{"badge", badgeVariantClass(props.Variant), badgeSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func badgeVariantClass(variant string) string {
+	switch strings.TrimSpace(variant) {
+	case "primary":
+		return "badge-primary"
+	case "secondary":
+		return "badge-secondary"
+	case "accent":
+		return "badge-accent"
+	case "danger", "error":
+		return "badge-error"
+	case "outline":
+		return "badge-outline"
+	case "ghost":
+		return "badge-ghost"
+	default:
+		return ""
+	}
+}
+
+func badgeSizeClass(size string) string {
+	switch strings.TrimSpace(size) {
+	case "sm":
+		return "badge-sm"
+	case "lg":
+		return "badge-lg"
+	default:
+		return ""
+	}
+}
+
+func actionsClass(props ActionsProps) string {
+	base := []string{"flex", "items-center", gapClass(props.Gap), actionsAlignClass(props.Align)}
+	if props.Wrap {
+		base = append(base, "flex-wrap")
+	}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func actionsAlignClass(align string) string {
+	switch strings.TrimSpace(align) {
+	case "center":
+		return "justify-center"
+	case "end", "right":
+		return "justify-end"
+	case "between":
+		return "justify-between"
+	default:
+		return "justify-start"
+	}
+}
+
+func dividerClass(props DividerProps) string {
+	base := []string{"divider", dividerSpacingClass(props.Spacing)}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func dividerSpacingClass(spacing string) string {
+	switch strings.TrimSpace(spacing) {
+	case "none":
+		return "my-0"
+	case "xs":
+		return "my-1"
+	case "sm":
+		return "my-2"
+	case "lg":
+		return "my-6"
 	default:
 		return ""
 	}

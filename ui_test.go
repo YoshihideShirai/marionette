@@ -607,6 +607,36 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
+	badgeHTML, err := Badge(BadgeProps{Label: "Admin", Props: ComponentProps{Variant: "primary", Size: "sm"}}).Render()
+	if err != nil {
+		t.Fatalf("badge render failed: %v", err)
+	}
+	for _, want := range []string{"badge", "badge-primary", "badge-sm", "Admin"} {
+		if !strings.Contains(string(badgeHTML), want) {
+			t.Fatalf("expected %q in %q", want, badgeHTML)
+		}
+	}
+
+	actionsHTML, err := Actions(ActionsProps{Align: "end", Gap: "sm", Wrap: true, Props: ComponentProps{Class: "w-full"}}, ButtonComponent("Save", ComponentProps{})).Render()
+	if err != nil {
+		t.Fatalf("actions render failed: %v", err)
+	}
+	for _, want := range []string{"flex", "items-center", "gap-2", "justify-end", "flex-wrap", "w-full", "Save"} {
+		if !strings.Contains(string(actionsHTML), want) {
+			t.Fatalf("expected %q in %q", want, actionsHTML)
+		}
+	}
+
+	dividerHTML, err := Divider(DividerProps{Spacing: "xs"}).Render()
+	if err != nil {
+		t.Fatalf("divider render failed: %v", err)
+	}
+	for _, want := range []string{"divider", "my-1"} {
+		if !strings.Contains(string(dividerHTML), want) {
+			t.Fatalf("expected %q in %q", want, dividerHTML)
+		}
+	}
+
 	cardHTML, err := Card(CardProps{
 		Title:       "Card",
 		Description: "Summary",

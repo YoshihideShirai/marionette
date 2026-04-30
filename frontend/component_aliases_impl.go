@@ -50,6 +50,9 @@ func Breadcrumb(props BreadcrumbProps) Node                   { return UIBreadcr
 func CheckboxComponent(props CheckboxComponentProps) Node     { return UICheckbox(props) }
 func RadioGroupComponent(props RadioGroupComponentProps) Node { return UIRadioGroup(props) }
 func SwitchComponent(props SwitchComponentProps) Node         { return UISwitch(props) }
+func Badge(props BadgeProps) Node                             { return UIBadge(props) }
+func Actions(props ActionsProps, children ...Node) Node       { return UIActions(props, children...) }
+func Divider(props DividerProps) Node                         { return UIDivider(props) }
 func Stack(props StackProps, children ...Node) Node           { return UIStack(props, children...) }
 func Grid(props GridProps, children ...Node) Node             { return UIGrid(props, children...) }
 func Split(props SplitProps) Node                             { return UISplit(props) }

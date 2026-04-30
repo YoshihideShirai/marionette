@@ -317,12 +317,21 @@ Template-backed component constructors (`templates/components/*`).
 - `RadioGroupComponent(props RadioGroupComponentProps) Node`
   - blank `AriaLabel` defaults to `"radio group"`.
 - `SwitchComponent(props SwitchComponentProps) Node`
+- `Badge(props BadgeProps) Node`
+  - renders a compact label with `Variant`, `Size`, and custom classes from `ComponentProps`.
 - `DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
 - `DataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - same loader with `Comma: '\t'` as default.
 
 ### Layout / surfaces
+- `Actions(props ActionsProps, children ...Node) Node`
+  - renders a horizontal action group.
+  - `Align`: `start`/blank, `center`, `end`, `between`.
+  - `Gap` uses the same values as `Stack`; `Wrap` adds `flex-wrap`.
+- `Divider(props DividerProps) Node`
+  - renders a visual divider.
+  - `Spacing`: `none`, `xs`, `sm`, `md`/blank, `lg`.
 - `Stack(props StackProps, children ...Node) Node`
   - flex layout for vertical/horizontal stacks.
   - `Direction`: `vertical`/blank or `horizontal`/`row`.

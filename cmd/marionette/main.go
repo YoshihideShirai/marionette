@@ -378,7 +378,7 @@ func statCard(label, value, caption, tone string) mf.Node {
 			mf.DivClass("text-sm font-medium text-base-content/60", mf.Text(label)),
 			mf.Stack(mf.StackProps{Direction: "horizontal", Gap: "md", Align: "end", Justify: "between"},
 				mf.DivClass("text-3xl font-bold", mf.Text(value)),
-				mf.DivClass("badge badge-"+tone, mf.Text("live")),
+				mf.Badge(mf.BadgeProps{Label: "live", Props: mf.ComponentProps{Variant: tone}}),
 			),
 			mf.DivClass("text-sm text-base-content/60", mf.Text(caption)),
 		),
@@ -393,13 +393,13 @@ func renderUsersTable(ctx *mb.Context) mf.Node {
 
 	return mf.DivClass("card bg-base-100 shadow-sm",
 		mf.DivClass("card-body gap-4",
-			mf.DivClass("flex items-center justify-between gap-4",
+			mf.Actions(mf.ActionsProps{Align: "between", Gap: "md"},
 				mf.DivClass("space-y-1",
 					mf.DivClass("text-xl font-semibold", mf.Text("Users")),
 					mf.DivClass("text-sm text-base-content/60", mf.Text("Create and remove users with htmx-backed actions.")),
 				),
-				mf.DivClass("flex items-center gap-2",
-					mf.DivClass("badge badge-outline", mf.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
+				mf.Actions(mf.ActionsProps{Gap: "sm"},
+					mf.Badge(mf.BadgeProps{Label: strconv.Itoa(len(getUsers(ctx))) + " total", Props: mf.ComponentProps{Variant: "outline"}}),
 					mf.ActionForm(mf.ActionFormProps{Action: "users/loading/start", Target: "#users-workspace", Swap: "outerHTML"},
 						mf.SubmitButton("Show loading", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
 					),
@@ -500,7 +500,7 @@ func renderUserRow(u user) mf.TableComponentRow {
 	return mf.TableRowValues(
 		mf.DivClass("font-medium", mf.Text(u.Name)),
 		mf.DivClass("text-sm text-base-content/70", mf.Text(u.Email)),
-		mf.DivClass("badge badge-ghost", mf.Text(u.Role)),
+		mf.Badge(mf.BadgeProps{Label: u.Role, Props: mf.ComponentProps{Variant: "ghost"}}),
 		mf.DivClass("text-sm", mf.Text(u.StartDate)),
 		mf.ActionForm(mf.ActionFormProps{Action: "users/delete/prompt", Target: "#users-workspace", Swap: "outerHTML"},
 			mf.HiddenInput("id", strconv.Itoa(u.ID)),
@@ -608,14 +608,14 @@ func latestStartDate(users []user) string {
 }
 
 func roleBadge(role string) mf.Node {
-	tone := "badge-ghost"
+	tone := "ghost"
 	switch role {
 	case "Admin":
-		tone = "badge-primary"
+		tone = "primary"
 	case "Editor":
-		tone = "badge-secondary"
+		tone = "secondary"
 	}
-	return mf.DivClass("badge "+tone, mf.Text(role))
+	return mf.Badge(mf.BadgeProps{Label: role, Props: mf.ComponentProps{Variant: tone}})
 }
 
 func renderCreateUserForm(form createUserFormState) mf.Node {
@@ -690,7 +690,7 @@ func renderCreateUserForm(form createUserFormState) mf.Node {
 						Required:    true,
 					}),
 				}),
-				mf.DivClass("divider my-1"),
+				mf.Divider(mf.DividerProps{Spacing: "xs"}),
 				mf.FormRow(mf.FormRowProps{
 					ID:          "workspace",
 					Label:       "Workspace",
@@ -737,7 +737,7 @@ func renderCreateUserForm(form createUserFormState) mf.Node {
 						Description: "Access preference.",
 					}),
 				),
-				mf.DivClass("flex flex-wrap gap-2 pt-2",
+				mf.Actions(mf.ActionsProps{Gap: "sm", Wrap: true, Props: mf.ComponentProps{Class: "pt-2"}},
 					mf.SubmitButton("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
 					mf.ButtonComponent("Preview", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
 				),
@@ -801,7 +801,7 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 }
 
 func roleMixRow(role string, count int) mf.Node {
-	return mf.DivClass("flex items-center justify-between rounded-box border border-base-300 px-3 py-2",
+	return mf.Actions(mf.ActionsProps{Align: "between", Props: mf.ComponentProps{Class: "rounded-box border border-base-300 px-3 py-2"}},
 		roleBadge(role),
 		mf.DivClass("text-sm font-medium", mf.Text(strconv.Itoa(count)+" users")),
 	)
@@ -823,7 +823,7 @@ func renderDeleteModal(ctx *mb.Context) mf.Node {
 			mf.Text("Are you sure you want to delete this user?"),
 			mf.DivClass("text-sm text-base-content/70", mf.Text(targetName)),
 		),
-		Actions: mf.DivClass("flex w-full justify-end gap-2",
+		Actions: mf.Actions(mf.ActionsProps{Align: "end", Gap: "sm", Props: mf.ComponentProps{Class: "w-full"}},
 			mf.ActionForm(mf.ActionFormProps{Action: "users/delete/cancel", Target: "#users-workspace", Swap: "outerHTML"},
 				mf.SubmitButton("Cancel", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
 			),

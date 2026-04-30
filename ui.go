@@ -111,6 +111,38 @@ func DivProps(props ElementProps, children ...Node) Node {
 	return Element("div", props, children...)
 }
 
+func H1(children ...Node) Node {
+	return H1Props(ElementProps{}, children...)
+}
+
+func H1Props(props ElementProps, children ...Node) Node {
+	return Element("h1", props, children...)
+}
+
+func H2(children ...Node) Node {
+	return H2Props(ElementProps{}, children...)
+}
+
+func H2Props(props ElementProps, children ...Node) Node {
+	return Element("h2", props, children...)
+}
+
+func H3(children ...Node) Node {
+	return H3Props(ElementProps{}, children...)
+}
+
+func H3Props(props ElementProps, children ...Node) Node {
+	return Element("h3", props, children...)
+}
+
+func H4(children ...Node) Node {
+	return H4Props(ElementProps{}, children...)
+}
+
+func H4Props(props ElementProps, children ...Node) Node {
+	return Element("h4", props, children...)
+}
+
 func elementAttrs(props ElementProps) map[string]string {
 	attrs := make(map[string]string, len(props.Attrs)+2)
 	for key, value := range props.Attrs {

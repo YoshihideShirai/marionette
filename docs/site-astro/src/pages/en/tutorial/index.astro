@@ -12,7 +12,7 @@ func main() {
     app := mb.New()
 
     app.Page("/", func(ctx *mb.Context) mf.Node {
-        return mf.UIContainer(mf.ContainerProps{
+        return mf.Container(mf.ContainerProps{
             MaxWidth: "2xl",
             Centered: true,
         },

@@ -1089,7 +1089,7 @@ func UIPageHeader(props PageHeaderProps) Node {
 	}
 }
 
-func UIContainer(props ContainerProps, children ...Node) Node {
+func Container(props ContainerProps, children ...Node) Node {
 	return layoutChildrenNode("components/container", containerClass(props), children)
 }
 

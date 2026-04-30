@@ -229,7 +229,7 @@
     },
     {
       "id": "container",
-      "name": "ContainerComponent",
+      "name": "Container",
       "group": "Layout",
       "golden": "testdata/golden/container.golden.html",
       "example": "/marionette/examples/container.html",

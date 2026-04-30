@@ -40,7 +40,7 @@ func main() {
 
 func page(ctx *mb.Context) mf.Node {
 	tasks := ctx.Get("tasks").([]task)
-	return mf.UIContainer(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
+	return mf.Container(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "6"},
 			mf.PageHeader(mf.PageHeaderProps{
 				Title:       "Simple Tasks",

@@ -221,12 +221,12 @@ func sidebarLink(label, href string, active bool) mf.SidebarItem {
 }
 
 func renderShell(ctx *mb.Context, activePath string, header, content mf.Node) mf.Node {
-	return mf.DivProps(mf.ElementProps{ID: "app", Class: "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]"},
+	return mf.Region(mf.RegionProps{ID: "app", Props: mf.ComponentProps{Class: "grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]"}},
 		renderSidebar(activePath),
 		mf.DivClass("min-w-0 space-y-6",
 			mf.FlashAlerts(ctx.Flashes()),
 			header,
-			mf.DivProps(mf.ElementProps{ID: "main-content", Class: "space-y-6"}, content),
+			mf.Region(mf.RegionProps{ID: "main-content", Props: mf.ComponentProps{Class: "space-y-6"}}, content),
 		),
 	)
 }
@@ -253,8 +253,8 @@ func renderDashboardPage(ctx *mb.Context) mf.Node {
 			mf.Card(mf.CardProps{}, mf.TableComponent(mf.TableProps{
 				Columns: []mf.TableColumn{{Label: "Metric"}, {Label: "Value"}},
 				Rows: []mf.TableComponentRow{
-					{Cells: []mf.Node{mf.Text("Total users"), mf.Text(strconv.Itoa(len(users)))}},
-					{Cells: []mf.Node{mf.Text("Latest start"), mf.Text(latestStartDate(users))}},
+					mf.TableRowValues("Total users", len(users)),
+					mf.TableRowValues("Latest start", latestStartDate(users)),
 				},
 			})),
 		),
@@ -283,7 +283,7 @@ func renderSettingsPage(ctx *mb.Context) mf.Node {
 	header := mf.PageHeader(mf.PageHeaderProps{Title: "Settings", Description: "A form-heavy vertical layout for configuration flows.", Actions: themeToggleButton()})
 	content := mf.Stack(mf.StackProps{Gap: "lg"},
 		mf.Card(mf.CardProps{},
-			mf.Form("users/reset",
+			mf.ActionForm(mf.ActionFormProps{Action: "users/reset", Target: "#app", Swap: "outerHTML"},
 				mf.FormRow(mf.FormRowProps{ID: "org-name", Label: "Organization name", Control: mf.TextField(mf.TextFieldProps{ID: "org-name", Name: "org-name", Value: "Marionette Labs"})}),
 				mf.FormRow(mf.FormRowProps{ID: "timezone", Label: "Timezone", Control: mf.Select(mf.SelectFieldProps{ID: "timezone", Name: "timezone", Options: []mf.SelectOption{{Label: "UTC", Value: "UTC", Selected: true}, {Label: "Asia/Tokyo", Value: "Asia/Tokyo"}}})}),
 				mf.Switch(mf.SwitchProps{ID: "audit", Name: "audit", Value: "yes", Checked: true, Label: "Enable audit log"}),
@@ -296,7 +296,7 @@ func renderSettingsPage(ctx *mb.Context) mf.Node {
 }
 
 func renderUsersWorkspace(ctx *mb.Context, formState createUserFormState) mf.Node {
-	return mf.DivProps(mf.ElementProps{ID: "users-workspace", Class: "space-y-4"},
+	return mf.Region(mf.RegionProps{ID: "users-workspace", Props: mf.ComponentProps{Class: "space-y-4"}},
 		mf.FlashAlerts(ctx.Flashes()),
 		renderDashboardOverview(ctx),
 		renderDashboardCharts(ctx),
@@ -400,15 +400,15 @@ func renderUsersTable(ctx *mb.Context) mf.Node {
 				),
 				mf.DivClass("flex items-center gap-2",
 					mf.DivClass("badge badge-outline", mf.Text(strconv.Itoa(len(getUsers(ctx)))+" total")),
-					mf.Form("users/loading/start",
+					mf.ActionForm(mf.ActionFormProps{Action: "users/loading/start", Target: "#users-workspace", Swap: "outerHTML"},
 						mf.SubmitButton("Show loading", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: loading}),
-					).Target("#users-workspace"),
-					mf.Form("users/loading/stop",
+					),
+					mf.ActionForm(mf.ActionFormProps{Action: "users/loading/stop", Target: "#users-workspace", Swap: "outerHTML"},
 						mf.SubmitButton("Show data", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: !loading}),
-					).Target("#users-workspace"),
-					mf.Form("users/reset",
+					),
+					mf.ActionForm(mf.ActionFormProps{Action: "users/reset", Target: "#users-workspace", Swap: "outerHTML"},
 						mf.SubmitButton("Reset", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
-					).Target("#users-workspace"),
+					),
 				),
 			),
 			mf.DivClass("overflow-hidden rounded-box border border-base-300", tableBody),
@@ -497,18 +497,16 @@ func isLoading(ctx *mb.Context) bool {
 }
 
 func renderUserRow(u user) mf.TableComponentRow {
-	return mf.TableComponentRow{
-		Cells: []mf.Node{
-			mf.DivClass("font-medium", mf.Text(u.Name)),
-			mf.DivClass("text-sm text-base-content/70", mf.Text(u.Email)),
-			mf.DivClass("badge badge-ghost", mf.Text(u.Role)),
-			mf.DivClass("text-sm", mf.Text(u.StartDate)),
-			mf.Form("users/delete/prompt",
-				mf.HiddenInput("id", strconv.Itoa(u.ID)),
-				mf.SubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
-			).Target("#users-workspace"),
-		},
-	}
+	return mf.TableRowValues(
+		mf.DivClass("font-medium", mf.Text(u.Name)),
+		mf.DivClass("text-sm text-base-content/70", mf.Text(u.Email)),
+		mf.DivClass("badge badge-ghost", mf.Text(u.Role)),
+		mf.DivClass("text-sm", mf.Text(u.StartDate)),
+		mf.ActionForm(mf.ActionFormProps{Action: "users/delete/prompt", Target: "#users-workspace", Swap: "outerHTML"},
+			mf.HiddenInput("id", strconv.Itoa(u.ID)),
+			mf.SubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
+		),
+	)
 }
 
 func usersTableColumns(activeSort string, pg pagination) []mf.TableColumn {
@@ -624,7 +622,7 @@ func renderCreateUserForm(form createUserFormState) mf.Node {
 	return mf.DivClass("card bg-base-100 shadow-sm",
 		mf.DivClass("card-body",
 			mf.DivClass("text-xl font-semibold", mf.Text("Create user")),
-			mf.Form("users/create",
+			mf.ActionForm(mf.ActionFormProps{Action: "users/create", Target: "#users-workspace", Swap: "outerHTML"},
 				mf.FormRow(mf.FormRowProps{
 					ID:          "name",
 					Label:       "Name",
@@ -743,7 +741,7 @@ func renderCreateUserForm(form createUserFormState) mf.Node {
 					mf.SubmitButton("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
 					mf.ButtonComponent("Preview", mf.ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}),
 				),
-			).Target("#users-workspace"),
+			),
 		),
 	)
 }
@@ -826,13 +824,13 @@ func renderDeleteModal(ctx *mb.Context) mf.Node {
 			mf.DivClass("text-sm text-base-content/70", mf.Text(targetName)),
 		),
 		Actions: mf.DivClass("flex w-full justify-end gap-2",
-			mf.Form("users/delete/cancel",
+			mf.ActionForm(mf.ActionFormProps{Action: "users/delete/cancel", Target: "#users-workspace", Swap: "outerHTML"},
 				mf.SubmitButton("Cancel", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
-			).Target("#users-workspace"),
-			mf.Form("users/delete/confirm",
+			),
+			mf.ActionForm(mf.ActionFormProps{Action: "users/delete/confirm", Target: "#users-workspace", Swap: "outerHTML"},
 				mf.HiddenInput("id", strconv.Itoa(targetID)),
 				mf.SubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
-			).Target("#users-workspace"),
+			),
 		),
 		Open: ctx.Get("deleteModalOpen") == true,
 	})

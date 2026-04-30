@@ -291,6 +291,15 @@
       "example": "/marionette/examples/skeleton.html"
     },
     {
+      "id": "progress",
+      "name": "Progress",
+      "group": "Components",
+      "description": "Determinate and indeterminate progress indicator.",
+      "golden": "testdata/golden/progress.golden.html",
+      "template": "templates/components/progress.html",
+      "example": "/marionette/examples/progress.html"
+    },
+    {
       "id": "feedback",
       "name": "Toast / Alert / EmptyState / Skeleton",
       "group": "Components",

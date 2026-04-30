@@ -532,6 +532,34 @@ func TestFeedbackComponentsShareVariantSizeAndA11y(t *testing.T) {
 			t.Fatalf("expected %q in %q", want, skeletonHTML)
 		}
 	}
+
+	progressHTML, err := Progress(ProgressProps{
+		Value:     40,
+		Max:       80,
+		Label:     "Import",
+		ShowValue: true,
+		Props:     ComponentProps{Variant: "success", Size: "sm"},
+	}).Render()
+	if err != nil {
+		t.Fatalf("progress render failed: %v", err)
+	}
+	for _, want := range []string{`progress-success`, `h-1`, `value="40"`, `max="80"`, `aria-label="Import"`, `50%`} {
+		if !strings.Contains(string(progressHTML), want) {
+			t.Fatalf("expected %q in %q", want, progressHTML)
+		}
+	}
+
+	indeterminateHTML, err := Progress(ProgressProps{Indeterminate: true, AriaLabel: "Loading"}).Render()
+	if err != nil {
+		t.Fatalf("indeterminate progress render failed: %v", err)
+	}
+	got := string(indeterminateHTML)
+	if strings.Contains(got, `value="`) {
+		t.Fatalf("expected indeterminate progress without value attribute, got %q", got)
+	}
+	if !strings.Contains(got, `aria-label="Loading"`) {
+		t.Fatalf("expected aria-label in %q", got)
+	}
 }
 
 func TestLayoutComponentsRenderClassesAndContent(t *testing.T) {

@@ -8,6 +8,9 @@ import (
 // RegisterSkeletonExample wires a Marionette page used in docs snippets.
 func RegisterSkeletonExample(app *mb.App) {
 	app.Page("/skeleton", func(ctx *mb.Context) mf.Node {
-		return mf.PageHeader(mf.PageHeaderProps{Title: "Skeleton example", Description: "Implement this UI with Marionette components."})
+		return mf.Skeleton(mf.SkeletonProps{
+			Rows:  4,
+			Props: mf.ComponentProps{Size: "lg"},
+		})
 	})
 }

@@ -741,6 +741,7 @@ func renderCreateUserForm(form createUserFormState) mf.Node {
 func renderComponentShowcase(ctx *mb.Context) mf.Node {
 	users := getUsers(ctx)
 	roles := roleCounts(users)
+	seatLimit := 8
 
 	return mf.Grid(mf.GridProps{Gap: "lg", Props: mf.ComponentProps{Class: "xl:grid-cols-[minmax(0,1fr)_22rem]"}},
 		mf.Card(mf.CardProps{
@@ -774,6 +775,17 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 				mf.UIText(mf.TextProps{Text: "Theme toggle component", Size: "sm", Tone: "muted", Props: mf.ComponentProps{Class: "mb-2"}}),
 				mf.ThemeToggleButton(mf.ComponentProps{Variant: "outline", Size: "sm"}),
 			),
+			mf.Box(mf.BoxProps{Border: true, Tone: "base", Padding: "sm", Props: mf.ComponentProps{Class: "rounded-box"}},
+				mf.Image(mf.ImageProps{
+					Src:         "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+					Alt:         "Desk with laptop and notebook",
+					Caption:     "Image component with responsive framing and a caption.",
+					Width:       900,
+					Height:      600,
+					AspectRatio: "video",
+					ObjectFit:   "cover",
+				}),
+			),
 		),
 		mf.Card(mf.CardProps{
 			Title:       "Role mix",
@@ -782,6 +794,19 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 			roleMixRow("Admin", roles["Admin"]),
 			roleMixRow("Editor", roles["Editor"]),
 			roleMixRow("Viewer", roles["Viewer"]),
+			mf.Divider(mf.DividerProps{Spacing: "sm"}),
+			mf.Progress(mf.ProgressProps{
+				Value:     float64(len(users)),
+				Max:       float64(seatLimit),
+				Label:     "Seats used",
+				ShowValue: true,
+				Props:     mf.ComponentProps{Variant: "primary", Size: "lg"},
+			}),
+			mf.Progress(mf.ProgressProps{
+				Label:         "Sync in progress",
+				Indeterminate: true,
+				Props:         mf.ComponentProps{Variant: "info", Size: "sm"},
+			}),
 		),
 	)
 }

@@ -101,6 +101,16 @@ type SkeletonProps struct {
 	Props ComponentProps
 }
 
+type ProgressProps struct {
+	Value         float64
+	Max           float64
+	Label         string
+	AriaLabel     string
+	ShowValue     bool
+	Indeterminate bool
+	Props         ComponentProps
+}
+
 type TableColumn struct {
 	Label      string
 	SortKey    string
@@ -657,6 +667,53 @@ func UISkeleton(props SkeletonProps) Node {
 		}{
 			Class: feedbackClass("skeleton", props.Props),
 			Rows:  make([]int, rows),
+		},
+	}
+}
+
+func UIProgress(props ProgressProps) Node {
+	maxValue := props.Max
+	if maxValue <= 0 {
+		maxValue = 100
+	}
+	value := props.Value
+	if value < 0 {
+		value = 0
+	}
+	if value > maxValue {
+		value = maxValue
+	}
+	percent := 0.0
+	if maxValue > 0 {
+		percent = value / maxValue * 100
+	}
+	ariaLabel := strings.TrimSpace(props.AriaLabel)
+	if ariaLabel == "" {
+		ariaLabel = strings.TrimSpace(props.Label)
+	}
+	if ariaLabel == "" {
+		ariaLabel = "progress"
+	}
+	return templateNode{
+		name: "components/progress",
+		data: struct {
+			Class         string
+			Label         string
+			AriaLabel     string
+			Value         float64
+			Max           float64
+			Percent       string
+			ShowValue     bool
+			Indeterminate bool
+		}{
+			Class:         progressClass(props.Props),
+			Label:         strings.TrimSpace(props.Label),
+			AriaLabel:     ariaLabel,
+			Value:         value,
+			Max:           maxValue,
+			Percent:       fmt.Sprintf("%.0f%%", percent),
+			ShowValue:     props.ShowValue,
+			Indeterminate: props.Indeterminate,
 		},
 	}
 }
@@ -1801,6 +1858,46 @@ func imageObjectFitClass(objectFit string) string {
 		return "object-scale-down"
 	default:
 		return "object-cover"
+	}
+}
+
+func progressClass(props ComponentProps) string {
+	base := []string{"progress", "w-full", progressVariantClass(props.Variant), progressSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func progressVariantClass(variant string) string {
+	switch strings.TrimSpace(variant) {
+	case "primary":
+		return "progress-primary"
+	case "secondary":
+		return "progress-secondary"
+	case "accent":
+		return "progress-accent"
+	case "success":
+		return "progress-success"
+	case "info":
+		return "progress-info"
+	case "warning":
+		return "progress-warning"
+	case "danger", "error":
+		return "progress-error"
+	default:
+		return ""
+	}
+}
+
+func progressSizeClass(size string) string {
+	switch strings.TrimSpace(size) {
+	case "sm":
+		return "h-1"
+	case "lg":
+		return "h-4"
+	default:
+		return "h-2"
 	}
 }
 

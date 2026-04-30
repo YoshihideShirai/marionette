@@ -30,6 +30,8 @@ func Modal(props ModalProps) Node                                 { return UIMod
 func Toast(props ToastProps) Node                                 { return UIToast(props) }
 func Alert(props AlertProps) Node                                 { return UIAlert(props) }
 func Skeleton(props SkeletonProps) Node                           { return UISkeleton(props) }
+func Progress(props ProgressProps) Node                           { return UIProgress(props) }
+func ProgressComponent(props ProgressProps) Node                  { return UIProgress(props) }
 func EmptyState(props EmptyStateProps) Node                       { return UIEmptyState(props) }
 func TableComponent(props TableProps) Node                        { return Table(props) }
 func Chart(props ChartProps) Node                                 { return UIChart(props) }

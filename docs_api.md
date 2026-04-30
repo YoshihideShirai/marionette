@@ -282,6 +282,10 @@ Template-backed component constructors (`templates/components/*`).
 - `Alert(props AlertProps) Node`
 - `Skeleton(props SkeletonProps) Node`
   - `Rows <= 0` defaults to `3`.
+- `Progress(props ProgressProps) Node`
+  - renders a native `<progress>` element with optional label and percentage text.
+  - `Max <= 0` defaults to `100`; `Value` is clamped into `0..Max`.
+  - `Indeterminate` omits the `value` attribute so browsers render an indeterminate indicator.
 - `EmptyState(props EmptyStateProps) Node`
   - `Rows <= 0` defaults to `3`.
 

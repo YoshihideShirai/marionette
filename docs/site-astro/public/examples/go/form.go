@@ -8,6 +8,12 @@ import (
 // RegisterFormExample wires a Marionette page used in docs snippets.
 func RegisterFormExample(app *mb.App) {
 	app.Page("/form", func(ctx *mb.Context) mf.Node {
-		return mf.PageHeader(mf.PageHeaderProps{Title: "Form example", Description: "Implement this UI with Marionette components."})
+		return mf.FormComponent(mf.FormProps{Method: "post", Action: "/users"},
+			mf.FormFieldComponent(
+				mf.InputComponent("name", "", mf.ComponentProps{}),
+				mf.FormFieldProps{Label: "Name", Required: true, Hint: "Enter a display name."},
+			),
+			mf.SubmitButton("Create user", mf.ComponentProps{Variant: "primary"}),
+		)
 	})
 }

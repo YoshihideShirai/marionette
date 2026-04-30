@@ -181,6 +181,32 @@ func TestUsersPageIncludesChartExamples(t *testing.T) {
 	}
 }
 
+func TestUsersPageIncludesImageAndProgressExamples(t *testing.T) {
+	app := buildApp()
+	req := httptest.NewRequest(http.MethodGet, "/users", nil)
+	rr := httptest.NewRecorder()
+
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	for _, want := range []string{
+		"Image component with responsive framing and a caption.",
+		`alt="Desk with laptop and notebook"`,
+		"Seats used",
+		"Sync in progress",
+		`<progress`,
+		`progress-primary`,
+		`progress-info`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected %q in response, got %q", want, body)
+		}
+	}
+}
+
 func TestMonthlyStartCountsGroupsUsersByMonth(t *testing.T) {
 	labels, data := monthlyStartCounts([]user{
 		{StartDate: "2024-03-18"},

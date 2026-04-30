@@ -66,6 +66,16 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			node: Skeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}),
 		},
 		{
+			name: "progress",
+			node: Progress(ProgressProps{
+				Value:     72,
+				Max:       100,
+				Label:     "Upload progress",
+				ShowValue: true,
+				Props:     ComponentProps{Variant: "success", Size: "lg", Class: "max-w-md"},
+			}),
+		},
+		{
 			name: "empty_state",
 			node: EmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}),
 		},

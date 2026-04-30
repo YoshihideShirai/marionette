@@ -48,6 +48,42 @@ func htmlElement(tag string, props ElementProps, children ...Node) Node {
 	return element{Tag: tag, Attrs: elementAttrs(props), Children: children}
 }
 
+func Text(v string) Node {
+	return textNode(v)
+}
+
+func H1(children ...Node) Node {
+	return H1Props(ElementProps{}, children...)
+}
+
+func H1Props(props ElementProps, children ...Node) Node {
+	return htmlElement("h1", props, children...)
+}
+
+func H2(children ...Node) Node {
+	return H2Props(ElementProps{}, children...)
+}
+
+func H2Props(props ElementProps, children ...Node) Node {
+	return htmlElement("h2", props, children...)
+}
+
+func H3(children ...Node) Node {
+	return H3Props(ElementProps{}, children...)
+}
+
+func H3Props(props ElementProps, children ...Node) Node {
+	return htmlElement("h3", props, children...)
+}
+
+func H4(children ...Node) Node {
+	return H4Props(ElementProps{}, children...)
+}
+
+func H4Props(props ElementProps, children ...Node) Node {
+	return htmlElement("h4", props, children...)
+}
+
 func elementAttrs(props ElementProps) map[string]string {
 	attrs := make(map[string]string, len(props.Attrs)+2)
 	for key, value := range props.Attrs {

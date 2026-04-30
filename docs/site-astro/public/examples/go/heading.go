@@ -8,7 +8,7 @@ import (
 
 func RegisterHeadingExample(app *mb.App) {
 	app.Page("/heading", func(ctx *mb.Context) mf.Node {
-		return mh.Div(
+		return mf.Stack(mf.StackProps{Gap: "sm"},
 			mh.H1(mh.Text("Heading helper example")),
 			mh.H2(mh.Text("H2 subtitle")),
 			mh.H3(mh.Text("H3 section")),

@@ -40,71 +40,27 @@ type ElementProps = lowhtml.ElementProps
 // Raw allows trusted HTML snippets (e.g. full page shell).
 type Raw = lowhtml.Raw
 
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func Text(v string) Node { return lowhtml.Text(v) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func Element(tag string, props ElementProps, children ...Node) Node {
-	return lowhtml.Element(tag, props, children...)
+func textNode(v string) Node {
+	return element{Tag: "span", Text: v}
 }
 
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func Div(children ...Node) Node { return lowhtml.Div(children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func DivID(id string, children ...Node) Node { return lowhtml.DivID(id, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func DivClass(className string, children ...Node) Node {
-	return lowhtml.DivClass(className, children...)
+func htmlElement(tag string, props ElementProps, children ...Node) Node {
+	return element{Tag: tag, Attrs: elementAttrs(props), Children: children}
 }
 
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func DivAttrs(attrs Attrs, children ...Node) Node { return lowhtml.DivAttrs(attrs, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func DivProps(props ElementProps, children ...Node) Node { return lowhtml.DivProps(props, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func Span(children ...Node) Node { return lowhtml.Span(children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func SpanProps(props ElementProps, children ...Node) Node {
-	return lowhtml.SpanProps(props, children...)
+func elementAttrs(props ElementProps) map[string]string {
+	attrs := make(map[string]string, len(props.Attrs)+2)
+	for key, value := range props.Attrs {
+		attrs[key] = value
+	}
+	if props.ID != "" {
+		attrs["id"] = props.ID
+	}
+	if props.Class != "" {
+		attrs["class"] = joinClass(attrs["class"], props.Class)
+	}
+	return attrs
 }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func P(children ...Node) Node { return lowhtml.P(children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func PProps(props ElementProps, children ...Node) Node { return lowhtml.PProps(props, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H1(children ...Node) Node { return lowhtml.H1(children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H1Props(props ElementProps, children ...Node) Node { return lowhtml.H1Props(props, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H2(children ...Node) Node { return lowhtml.H2(children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H2Props(props ElementProps, children ...Node) Node { return lowhtml.H2Props(props, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H3(children ...Node) Node { return lowhtml.H3(children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H3Props(props ElementProps, children ...Node) Node { return lowhtml.H3Props(props, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H4(children ...Node) Node { return lowhtml.H4(children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func H4Props(props ElementProps, children ...Node) Node { return lowhtml.H4Props(props, children...) }
-
-// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
-func Column(children ...Node) Node { return lowhtml.Column(children...) }
 
 type table struct {
 	Headers []string
@@ -381,15 +337,15 @@ func actionPath(action string) string {
 
 func FlashAlerts(flashes []FlashMessage) Node {
 	if len(flashes) == 0 {
-		return DivProps(ElementProps{ID: "flash-alerts", Class: "hidden"})
+		return htmlElement("div", ElementProps{ID: "flash-alerts", Class: "hidden"})
 	}
 
 	children := make([]Node, 0, len(flashes))
 	for _, flash := range flashes {
-		children = append(children, DivClass("alert "+flashLevelClass(flash.Level), Text(flash.Message)))
+		children = append(children, htmlElement("div", ElementProps{Class: "alert " + flashLevelClass(flash.Level)}, textNode(flash.Message)))
 	}
 
-	return DivProps(ElementProps{ID: "flash-alerts", Class: "space-y-2"}, children...)
+	return htmlElement("div", ElementProps{ID: "flash-alerts", Class: "space-y-2"}, children...)
 }
 
 func flashLevelClass(level FlashLevel) string {

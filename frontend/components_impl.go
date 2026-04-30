@@ -117,11 +117,11 @@ func TableRowValues(values ...any) TableComponentRow {
 	for _, value := range values {
 		switch v := value.(type) {
 		case nil:
-			cells = append(cells, Text(""))
+			cells = append(cells, textNode(""))
 		case Node:
 			cells = append(cells, v)
 		default:
-			cells = append(cells, Text(fmt.Sprint(v)))
+			cells = append(cells, textNode(fmt.Sprint(v)))
 		}
 	}
 	return TableComponentRow{Cells: cells}
@@ -486,7 +486,7 @@ func UIForm(props FormProps, children ...Node) Node {
 	if action := strings.TrimSpace(props.Action); action != "" {
 		attrs["action"] = action
 	}
-	return Element("form", ElementProps{
+	return htmlElement("form", ElementProps{
 		ID:    strings.TrimSpace(props.ID),
 		Class: strings.TrimSpace(props.Class),
 		Attrs: attrs,
@@ -519,7 +519,7 @@ func UIActionForm(props ActionFormProps, children ...Node) Node {
 		attrs["hx-swap"] = swap
 	}
 
-	return Element("form", ElementProps{
+	return htmlElement("form", ElementProps{
 		ID:    strings.TrimSpace(props.ID),
 		Class: strings.TrimSpace(props.Props.Class),
 		Attrs: attrs,
@@ -1018,13 +1018,13 @@ func UIBadge(props BadgeProps) Node {
 }
 
 func UIActions(props ActionsProps, children ...Node) Node {
-	return Element("div", ElementProps{
+	return htmlElement("div", ElementProps{
 		Class: actionsClass(props),
 	}, children...)
 }
 
 func UIDivider(props DividerProps) Node {
-	return Element("div", ElementProps{
+	return htmlElement("div", ElementProps{
 		Class: dividerClass(props),
 	})
 }
@@ -1104,14 +1104,14 @@ func UIRegion(props RegionProps, children ...Node) Node {
 	if id == "" {
 		return renderErrorNode{err: fmt.Errorf("region id is required")}
 	}
-	return Element("div", ElementProps{
+	return htmlElement("div", ElementProps{
 		ID:    id,
 		Class: strings.TrimSpace(props.Props.Class),
 	}, children...)
 }
 
 func UIBox(props BoxProps, children ...Node) Node {
-	return Element("div", ElementProps{
+	return htmlElement("div", ElementProps{
 		Class: boxClass(props),
 	}, children...)
 }
@@ -1127,7 +1127,7 @@ func UIAppShell(props AppShellProps) Node {
 	}
 	return Region(RegionProps{ID: id, Props: ComponentProps{Class: appShellClass(props.Props)}},
 		props.Sidebar,
-		Element("div", ElementProps{Class: "min-w-0 space-y-6"},
+		htmlElement("div", ElementProps{Class: "min-w-0 space-y-6"},
 			props.Flashes,
 			props.Header,
 			Region(RegionProps{ID: mainID, Props: ComponentProps{Class: "space-y-6"}}, props.Content),

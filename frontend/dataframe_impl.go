@@ -29,7 +29,7 @@ type DataFrameChartProps struct {
 // Values are converted as follows:
 //   - nil => empty text cell
 //   - Node => rendered directly
-//   - all others => fmt.Sprint(value) wrapped in Text(...)
+//   - all others => fmt.Sprint(value) wrapped in a text node
 func UIDataFrame(df *rdf.DataFrame, props TableProps) Node {
 	tableProps := props
 	if df == nil {
@@ -53,11 +53,11 @@ func UIDataFrame(df *rdf.DataFrame, props TableProps) Node {
 			value := rowData[name]
 			switch v := value.(type) {
 			case nil:
-				cells = append(cells, Text(""))
+				cells = append(cells, textNode(""))
 			case Node:
 				cells = append(cells, v)
 			default:
-				cells = append(cells, Text(fmt.Sprint(v)))
+				cells = append(cells, textNode(fmt.Sprint(v)))
 			}
 		}
 		rows = append(rows, TableComponentRow{Cells: cells})

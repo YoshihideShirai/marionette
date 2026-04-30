@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	mh "github.com/YoshihideShirai/marionette/frontend/html"
 	rdf "github.com/rocketlaunchr/dataframe-go"
 )
 
@@ -713,7 +714,7 @@ func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
 	if err != nil {
 		t.Fatalf("root grid render failed: %v", err)
 	}
-	frontendHTML, err := mf.Grid(mf.GridProps{Columns: "2", Gap: "sm"}, mf.Text("A"), mf.Text("B")).Render()
+	frontendHTML, err := mf.Grid(mf.GridProps{Columns: "2", Gap: "sm"}, mh.Text("A"), mh.Text("B")).Render()
 	if err != nil {
 		t.Fatalf("frontend grid render failed: %v", err)
 	}
@@ -725,7 +726,7 @@ func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
 	if err != nil {
 		t.Fatalf("root region render failed: %v", err)
 	}
-	frontendRegionHTML, err := mf.Region(mf.RegionProps{ID: "tasks"}, mf.Text("Root")).Render()
+	frontendRegionHTML, err := mf.Region(mf.RegionProps{ID: "tasks"}, mh.Text("Root")).Render()
 	if err != nil {
 		t.Fatalf("frontend region render failed: %v", err)
 	}

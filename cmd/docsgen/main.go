@@ -511,7 +511,7 @@ func usageSnippet(id string) string {
 })`,
 		"modal": `confirmModal := mf.Modal(mf.ModalProps{
     Title: "Delete user",
-    Body:  mf.Text("Confirm deletion"),
+    Body:  mf.TextComponent(mf.TextProps{Text: "Confirm deletion"}),
     Actions: mf.ButtonComponent("Delete", mf.ComponentProps{
         Variant: "error",
         Size:    "sm",
@@ -528,12 +528,10 @@ func usageSnippet(id string) string {
         {Label: "Role"},
     },
     Rows: []mf.TableComponentRow{
-        {
-            Cells: []mf.Node{
-                mf.Text("Aiko"),
-                mf.DivClass("badge", mf.Text("Admin")),
-            },
-        },
+        mf.TableRowValues(
+            "Aiko",
+            mf.Badge(mf.BadgeProps{Label: "Admin"}),
+        ),
     },
 })`,
 		"chart": `signupsChart := mf.Chart(mf.ChartProps{
@@ -647,20 +645,20 @@ func usageSnippet(id string) string {
         Justify:   "between",
         Wrap:      true,
     },
-    mf.Text("Aiko Tanaka"),
-    mf.DivClass("badge badge-primary", mf.Text("Admin")),
+    mf.TextComponent(mf.TextProps{Text: "Aiko Tanaka"}),
+    mf.Badge(mf.BadgeProps{Label: "Admin", Props: mf.ComponentProps{Variant: "primary"}}),
     mf.ButtonComponent("Open", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
 )`,
 		"grid": `summaryGrid := mf.Grid(
     mf.GridProps{Columns: "3", Gap: "lg"},
-    mf.Card(mf.CardProps{}, mf.Text("Users: 24")),
-    mf.Card(mf.CardProps{}, mf.Text("Admins: 4")),
-    mf.Card(mf.CardProps{}, mf.Text("Pending: 7")),
+    mf.Card(mf.CardProps{}, mf.TextComponent(mf.TextProps{Text: "Users: 24"})),
+    mf.Card(mf.CardProps{}, mf.TextComponent(mf.TextProps{Text: "Admins: 4"})),
+    mf.Card(mf.CardProps{}, mf.TextComponent(mf.TextProps{Text: "Pending: 7"})),
 )`,
 		"split": `workspace := mf.Split(mf.SplitProps{
     Main: mf.Card(
         mf.CardProps{Title: "Main workspace"},
-        mf.Text("Aiko / Admin / Active"),
+        mf.TextComponent(mf.TextProps{Text: "Aiko / Admin / Active"}),
     ),
     Aside: mf.Section(
         mf.SectionProps{Title: "Aside panel"},
@@ -684,7 +682,7 @@ func usageSnippet(id string) string {
         Padding:  "md",
         Centered: true,
     },
-    mf.Text("Centered page container"),
+    mf.TextComponent(mf.TextProps{Text: "Centered page container"}),
 )`,
 		"card": `card := mf.Card(
     mf.CardProps{
@@ -692,7 +690,7 @@ func usageSnippet(id string) string {
         Description: "Header, description, actions, then body content.",
         Actions:     mf.ButtonComponent("Edit", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
     },
-    mf.Text("Active: 24"),
+    mf.TextComponent(mf.TextProps{Text: "Active: 24"}),
 )`,
 		"section": `section := mf.Section(
     mf.SectionProps{
@@ -700,7 +698,7 @@ func usageSnippet(id string) string {
         Description: "An unframed content section with consistent header spacing.",
         Actions:     mf.ButtonComponent("View all", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
     },
-    mf.Text("Aiko updated a role"),
+    mf.TextComponent(mf.TextProps{Text: "Aiko updated a role"}),
 )`,
 		"feedback": `toast := mf.Toast(mf.ToastProps{
     Title:       "Toast / Default",
@@ -756,7 +754,7 @@ alert := mf.Alert(mf.AlertProps{
 })`,
 		"overlay-system": `modal := mf.Modal(mf.ModalProps{
     Title: "Overlay demo",
-    Body:  mf.Text("Use modal, drawer, and popover together for rich flows."),
+    Body:  mf.TextComponent(mf.TextProps{Text: "Use modal, drawer, and popover together for rich flows."}),
     Open:  true,
 })`,
 		"dataframe": `df := dataframe.LoadRecords(

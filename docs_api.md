@@ -19,8 +19,8 @@ import (
 - Use `mb` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
 - Use `mf` for component APIs such as `ButtonComponent`, `Card`, `TableComponent`, `FormRow`.
 - Use `mh` for advanced low-level node APIs such as `Node`, `Div`, `Element`, `Raw`.
-- `frontend` keeps low-level aliases for compatibility, but new code should import
-  `frontend/html` directly when it needs custom markup.
+- Low-level constructors are intentionally not exposed from `frontend`; import
+  `frontend/html` when custom markup is needed.
 
 ## 2. App
 
@@ -153,8 +153,7 @@ Flash lifecycle on next request:
 
 Low-level HTML constructors live in `github.com/YoshihideShirai/marionette/frontend/html`.
 They are intended for advanced users and component internals. The `frontend`
-package still exposes compatibility aliases for these APIs, but new code should
-prefer the `mh` import shown above.
+package exposes component APIs; use the `mh` import shown above for custom markup.
 
 ### `type Node interface { Render() (template.HTML, error) }`
 - Every UI node renders itself to safe HTML.

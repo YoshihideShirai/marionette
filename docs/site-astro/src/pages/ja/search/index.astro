@@ -1,16 +1,70 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import catalog from '../../../data/components-index.json';
+
+const fallbackPages = [
+  { title: 'ホーム', url: '/marionette/ja/', text: 'Marionette Docs の概要と入口です。' },
+  { title: 'チュートリアル', url: '/marionette/ja/tutorial/', text: 'Marionette アプリケーションを作るためのレッスンです。' },
+  { title: 'バックエンドとフロントエンドのチュートリアル', url: '/marionette/ja/tutorial/backend-frontend/', text: 'リクエストの流れ、Action、フォーム、Region、バックエンド状態を扱います。' },
+  { title: 'API Docs', url: '/marionette/ja/api/', text: 'ヘルパー、Action、レイアウト、フォームコントロールの API リファレンスです。' },
+  { title: 'コンポーネントギャラリー', url: '/marionette/ja/components/', text: 'Marionette コンポーネントのビジュアルサンプルです。' },
+  ...catalog.components.map((component) => ({
+    title: component.name,
+    url: `/marionette/ja/components/${component.id}/`,
+    text: component.description,
+  })),
+];
 ---
 <BaseLayout title="検索 | Marionette Docs" lang="ja" languageSwitcherPath="/marionette/en/search/">
   <h1>検索</h1>
   <p class="lead">ドキュメント全体（チュートリアル・API・コンポーネント）を横断検索できます。</p>
-  <div id="search"></div>
+  <div id="search">
+    <form class="fallback-search" data-fallback-search role="search">
+      <label for="fallback-search-input">ドキュメントを検索</label>
+      <input id="fallback-search-input" type="search" placeholder="ドキュメントとコンポーネントを検索" autocomplete="off" data-fallback-search-input />
+    </form>
+    <p class="fallback-search-count" data-fallback-search-count></p>
+    <ul class="fallback-search-results" data-fallback-search-results>
+      {fallbackPages.map((page) => (
+        <li data-search-item data-search-text={`${page.title} ${page.text}`.toLowerCase()}>
+          <a href={page.url}>{page.title}</a>
+          <p>{page.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
 
   <link rel="stylesheet" href="/marionette/pagefind/pagefind-ui.css" />
   <script is:inline src="/marionette/pagefind/pagefind-ui.js"></script>
   <script is:inline>
     window.addEventListener('DOMContentLoaded', () => {
-      if (!window.PagefindUI) return;
+      const search = document.querySelector('#search');
+      if (!search) return;
+
+      if (!window.PagefindUI) {
+        const input = search.querySelector('[data-fallback-search-input]');
+        const results = Array.from(search.querySelectorAll('[data-search-item]'));
+        const count = search.querySelector('[data-fallback-search-count]');
+        const filter = () => {
+          const query = (input?.value ?? '').trim().toLowerCase();
+          let visibleCount = 0;
+
+          results.forEach((item) => {
+            const text = item.getAttribute('data-search-text') || '';
+            const matched = !query || text.includes(query);
+            item.hidden = !matched;
+            if (matched) visibleCount += 1;
+          });
+
+          if (count) count.textContent = `${visibleCount} 件`;
+        };
+
+        input?.addEventListener('input', filter);
+        filter();
+        return;
+      }
+
+      search.textContent = '';
       new window.PagefindUI({
         element: '#search',
         showSubResults: true,

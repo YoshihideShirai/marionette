@@ -1,16 +1,70 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import catalog from '../../../data/components-index.json';
+
+const fallbackPages = [
+  { title: 'Home', url: '/marionette/en/', text: 'Overview and starting point for Marionette Docs.' },
+  { title: 'Tutorial', url: '/marionette/en/tutorial/', text: 'Lessons for building Marionette applications.' },
+  { title: 'Backend and Frontend Tutorial', url: '/marionette/en/tutorial/backend-frontend/', text: 'Request flow, actions, forms, regions, and backend state.' },
+  { title: 'API Docs', url: '/marionette/en/api/', text: 'API reference for helpers, actions, layout, and form controls.' },
+  { title: 'Components Gallery', url: '/marionette/en/components/', text: 'Visual samples for Marionette components.' },
+  ...catalog.components.map((component) => ({
+    title: component.name,
+    url: `/marionette/en/components/${component.id}/`,
+    text: component.description,
+  })),
+];
 ---
 <BaseLayout title="Search | Marionette Docs" lang="en" languageSwitcherPath="/marionette/ja/search/">
   <h1>Search</h1>
   <p class="lead">Search across all documentation pages and component references.</p>
-  <div id="search"></div>
+  <div id="search">
+    <form class="fallback-search" data-fallback-search role="search">
+      <label for="fallback-search-input">Search docs</label>
+      <input id="fallback-search-input" type="search" placeholder="Search docs and components" autocomplete="off" data-fallback-search-input />
+    </form>
+    <p class="fallback-search-count" data-fallback-search-count></p>
+    <ul class="fallback-search-results" data-fallback-search-results>
+      {fallbackPages.map((page) => (
+        <li data-search-item data-search-text={`${page.title} ${page.text}`.toLowerCase()}>
+          <a href={page.url}>{page.title}</a>
+          <p>{page.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
 
   <link rel="stylesheet" href="/marionette/pagefind/pagefind-ui.css" />
   <script is:inline src="/marionette/pagefind/pagefind-ui.js"></script>
   <script is:inline>
     window.addEventListener('DOMContentLoaded', () => {
-      if (!window.PagefindUI) return;
+      const search = document.querySelector('#search');
+      if (!search) return;
+
+      if (!window.PagefindUI) {
+        const input = search.querySelector('[data-fallback-search-input]');
+        const results = Array.from(search.querySelectorAll('[data-search-item]'));
+        const count = search.querySelector('[data-fallback-search-count]');
+        const filter = () => {
+          const query = (input?.value ?? '').trim().toLowerCase();
+          let visibleCount = 0;
+
+          results.forEach((item) => {
+            const text = item.getAttribute('data-search-text') || '';
+            const matched = !query || text.includes(query);
+            item.hidden = !matched;
+            if (matched) visibleCount += 1;
+          });
+
+          if (count) count.textContent = `${visibleCount} result${visibleCount === 1 ? '' : 's'}`;
+        };
+
+        input?.addEventListener('input', filter);
+        filter();
+        return;
+      }
+
+      search.textContent = '';
       new window.PagefindUI({
         element: '#search',
         showSubResults: true,

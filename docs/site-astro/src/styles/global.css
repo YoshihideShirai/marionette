@@ -78,8 +78,17 @@ button:focus-visible {
 }
 
 .site-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: 700;
   text-decoration: none;
+}
+
+.brand-logo {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
 }
 
 .site-nav {
@@ -202,6 +211,19 @@ h1 {
 
 .lead {
   color: var(--muted);
+}
+
+.concept-figure {
+  margin: var(--space-6) 0 0;
+}
+
+.concept-figure img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .grid {

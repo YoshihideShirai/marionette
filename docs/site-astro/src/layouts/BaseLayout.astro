@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import catalog from '../data/components-index.json';
+import logo from '../../../assets/logo.png';
 
 const {
   title = 'Marionette Docs',
@@ -55,7 +56,10 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
   </head>
   <body>
     <header class="site-header">
-      <a href={isJa ? '/marionette/ja/' : '/marionette/en/'} class="brand">Marionette Docs</a>
+      <a href={isJa ? '/marionette/ja/' : '/marionette/en/'} class="brand">
+        <img src={logo.src} width={logo.width} height={logo.height} alt="" class="brand-logo" />
+        <span>Marionette Docs</span>
+      </a>
       <nav class="site-nav">
         <a href={languageSwitcherPath} hreflang={isJa ? 'en' : 'ja'}>{isJa ? 'English' : '日本語'}</a>
         <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙 Dark</button>

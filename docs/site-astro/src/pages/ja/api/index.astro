@@ -1,0 +1,320 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="APIドキュメント | Marionette" lang="ja" languageSwitcherPath="/marionette/en/api/">
+  <article class="api-docs">
+    <header>
+      <h1>API ドキュメント</h1>
+      <p class="lead">現在のランタイムサーフェスの直接的なAPI リファレンス。ランタイム層で再構成されています。</p>
+    </header>
+
+    <section id="import-path">
+      <h2>インポートパス</h2>
+      <p>ランタイムの役割によってインポートを分割します：</p>
+      <pre><code>{`import (
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+    mh "github.com/YoshihideShirai/marionette/frontend/html"
+)`}</code></pre>
+      <ul>
+        <li>推奨エイリアス: <code>mb</code> (marionette backend), <code>mf</code> (marionette frontend)。</li>
+        <li><code>mb</code> を app/runtime API に使用: <code>New</code>, <code>App</code>, <code>Context</code>, <code>Handler</code>。</li>
+        <li><code>mf</code> をコンポーネント API に使用: <code>ButtonComponent</code>, <code>Card</code>, <code>TableComponent</code>, <code>FormRow</code>。</li>
+        <li><code>mh</code> を低レベルノード API に使用: <code>Node</code>, <code>Div</code>, <code>Element</code>, <code>Raw</code>。</li>
+        <li>低レベルコンストラクタは <code>frontend</code> から意図的に公開されていません。カスタムマークアップが必要な場合は <code>frontend/html</code> をインポートしてください。</li>
+      </ul>
+    </section>
+
+    <section id="app">
+      <h2>App</h2>
+
+      <h3><code>New() *App</code></h3>
+      <ul>
+        <li>新しい <code>*App</code> を返します。</li>
+        <li>内部状態を初期化: <code>state: map[string]any{}</code>, <code>pages: map[string]Handler{}</code>, <code>actions: map[string]Handler{}</code>, <code>cookieSecure: false</code>（デフォルト）。</li>
+      </ul>
+
+      <h3><code>Run(addr string) error</code></h3>
+      <ul>
+        <li><code>http.ListenAndServe(addr, a.Handler())</code> で HTTP サーバーを起動します。</li>
+        <li>サーバー起動前に <code>marionette listening at http://&lt;addr&gt;</code> を stdout にログします。</li>
+        <li><code>ListenAndServe</code> のエラーをそのまま返します。</li>
+      </ul>
+
+      <h3><code>SetCookieSecure(secure bool)</code></h3>
+      <ul>
+        <li>フラッシュクッキー（<code>marionette_flash</code>）の <code>Secure</code> フラグをオン/オフにします。</li>
+        <li>デフォルトは <code>false</code> です。</li>
+        <li>フラッシュ書き込み（<code>Context.AddFlash</code>）とフラッシュクリアの両方に影響します。</li>
+      </ul>
+
+      <h3><code>Handler() http.Handler</code></h3>
+      <ul>
+        <li>登録されたすべてのルートで <code>*http.ServeMux</code> をビルドして返します。</li>
+        <li><code>Page</code> ルート: パスマッチは厳密、メソッドは <code>GET</code> のみ、完全な HTML シェルをレンダリング。</li>
+        <li><code>Action</code> ルート: メソッドは <code>POST</code> のみ、<code>r.ParseForm()</code> を実行、HTML フラグメントのみをレンダリング。</li>
+        <li><code>/</code> が登録されていない場合: <code>GET /</code> は <code>500 Internal Server Error</code> を返します。</li>
+      </ul>
+
+      <h3><code>Page(path string, fn Handler)</code></h3>
+      <ul>
+        <li><code>GET</code> の全ページハンドラを登録します。</li>
+        <li>パス正規化: <code>""</code> → <code>"/"</code>、先頭スラッシュなし → 先頭スラッシュを追加。</li>
+        <li>レンダリング モード: ハンドラ <code>Node</code> を Marionette シェル HTML でラップします。</li>
+      </ul>
+
+      <h3><code>Action(name string, fn Handler)</code></h3>
+      <ul>
+        <li><code>POST</code> のフラグメント ハンドラを登録します。</li>
+        <li>名前正規化: 常に <code>"/" + strings.TrimPrefix(name, "/")</code> として保存。</li>
+        <li>リクエスト フォーム ボディ内の解析失敗 → <code>400</code>。</li>
+        <li>レンダリング モード: ハンドラ <code>Node</code> をフラグメント HTML として返します。</li>
+      </ul>
+
+      <h3><code>Render(fn Handler)</code></h3>
+      <p>ルート ページ登録の互換性エイリアス。<code>Page("/", fn)</code> と同等。</p>
+
+      <h3><code>Handle(name string, fn Handler)</code></h3>
+      <p>アクション登録の互換性エイリアス。<code>Action(name, fn)</code> と同等。</p>
+
+      <h3>App 状態ヘルパー</h3>
+      <p><code>Set(key string, value any)</code>: アプリ共有状態マップにロックして書き込みます。</p>
+      <p><code>GetInt(key string) int</code>: アプリ共有状態を読み取り、<code>int</code> に型アサートします。値がない、または <code>int</code> でない場合は <code>0</code> を返します。</p>
+    </section>
+
+    <section id="context">
+      <h2>Context</h2>
+      <p><code>Context</code> は <code>func(*Context) Node</code> として各ハンドラに渡され、リクエスト/状態へのアクセスを提供します。</p>
+
+      <h3><code>Param(name string) string</code></h3>
+      <p><code>Request.PathValue(name)</code> からパスパラメータを返します。<code>Request</code> が <code>nil</code> の場合は <code>""</code> を返します。</p>
+
+      <h3><code>Query(name string) string</code></h3>
+      <p><code>Request.URL.Query().Get(name)</code> からクエリパラメータを返します。<code>Request</code> が <code>nil</code> の場合は <code>""</code> を返します。</p>
+
+      <h3><code>FormValue(name string) string</code></h3>
+      <p><code>Request.FormValue(name)</code> からフォーム値を返します。<code>Request</code> が <code>nil</code> の場合は <code>""</code> を返します。</p>
+
+      <h3><code>Set(key string, value any)</code></h3>
+      <p>共有状態に書き込みます。コンテキストに親 app がある場合、書き込みは app ミューテックス経由で同期されます。アタッチされた app がない場合、<code>Context.State</code> に直接書き込みます。</p>
+
+      <h3><code>Get(key string) any</code></h3>
+      <p>共有状態を読み取ります。コンテキストに親 app がある場合、読み取りは app ミューテックス経由で同期されます。アタッチされた app がない場合、<code>Context.State</code> から直接読み取ります。</p>
+
+      <h3><code>GetInt(key string) int</code></h3>
+      <p><code>Get</code> + <code>int</code> アサーション。値がない、または <code>int</code> でない場合は <code>0</code> を返します。</p>
+
+      <h3>Flash API</h3>
+      <ul>
+        <li><code>Flashes() []FlashMessage</code>: 現在読み込まれているフラッシュのコピー スナップショットを返します。フラッシュが存在しない場合は <code>nil</code> を返します。</li>
+        <li><code>FlashSuccess(message string)</code> / <code>FlashError(message string)</code> / <code>FlashInfo(message string)</code> / <code>FlashWarn(message string)</code>: <code>AddFlash(level, message)</code> の便利ラッパー。</li>
+        <li><code>AddFlash(level FlashLevel, message string)</code>: メッセージをトリム。トリム後が空 = no-op。フラッシュをコンテキスト フラッシュ リストに追加、クッキー（<code>marionette_flash</code>）にシリアライズ。</li>
+      </ul>
+    </section>
+
+    <section id="low-level-html">
+      <h2>低レベル HTML（frontend/html）</h2>
+      <p>低レベル HTML コンストラクタは <code>github.com/YoshihideShirai/marionette/frontend/html</code> に存在します。高度なユーザーとコンポーネント内部の使用を想定しています。</p>
+
+      <h3><code>type Node interface { Render() (template.HTML, error) }</code></h3>
+      <p>すべての UI ノードは自身を安全な HTML にレンダリングします。レンダリング失敗は最終的に HTTP レスポンスの <code>500 Internal Server Error</code> になります。</p>
+
+      <h3>基本ノード コンストラクタ</h3>
+      <ul>
+        <li><code>Text(v string) Node</code></li>
+        <li><code>Raw(html string)</code> (信頼できる HTML パススルー)</li>
+        <li><code>type Attrs map[string]string</code></li>
+        <li><code>type ElementProps struct { ID string; Class string; Attrs Attrs }</code></li>
+        <li><code>Element(tag string, props ElementProps, children ...Node) Node</code></li>
+        <li><code>Div(children ...Node) Node</code> と関連する便利関数</li>
+      </ul>
+
+      <h3>テーブル / レイアウト ヘルパー</h3>
+      <ul>
+        <li><code>Table(headers []string, rows ...TableRowData) Node</code></li>
+        <li><code>TableRow(cells ...Node) TableRowData</code></li>
+        <li><code>Sidebar(brand, title string, items ...SidebarItem) *sidebar</code></li>
+      </ul>
+    </section>
+
+    <section id="form-apis">
+      <h2>フォーム API</h2>
+
+      <h3><code>FormRow(props FormRowProps) Node</code></h3>
+      <ul>
+        <li><code>props.ID</code> は空でなければなりません。そうでなければエラー ノードをレンダリング。</li>
+        <li><code>props.Control</code> は nil でなければなりません。そうでなければエラー ノードをレンダリング。</li>
+        <li>オプションのラベル、必須マーカー、説明、エラー行をレンダリング。</li>
+      </ul>
+
+      <h3><code>TextField(props TextFieldProps) Node</code></h3>
+      <ul>
+        <li><code>Type</code> は空白の場合 <code>"text"</code> にデフォルト。</li>
+        <li>説明/エラーの存在から <code>aria-describedby</code> を適用。</li>
+        <li>エラーが存在する場合 <code>aria-invalid=true</code> をセット。</li>
+      </ul>
+
+      <h3>その他のフォーム コントロール</h3>
+      <ul>
+        <li><code>Textarea(props TextareaProps) Node</code></li>
+        <li><code>Select(props SelectFieldProps) Node</code></li>
+        <li><code>Checkbox(props CheckboxProps) Node</code></li>
+        <li><code>RadioGroup(props RadioGroupProps) Node</code></li>
+        <li><code>Switch(props SwitchProps) Node</code></li>
+      </ul>
+    </section>
+
+    <section id="component-apis">
+      <h2>コンポーネント API</h2>
+      <p><code>templates/components/*</code> のテンプレート駆動型コンポーネント コンストラクタ。</p>
+
+      <h3>ボタン / 入力</h3>
+      <ul>
+        <li><code>ButtonComponent(label string, props ComponentProps) Node</code></li>
+        <li><code>SubmitButton(label string, props ComponentProps) Node</code></li>
+        <li><code>InputComponent(name, value string, props ComponentProps) Node</code></li>
+        <li><code>TextareaComponent(name, value string, options TextareaOptions) Node</code></li>
+        <li><code>SelectComponent(name string, options []SelectOption, props ComponentProps) Node</code></li>
+      </ul>
+
+      <h3>オーバーレイ / フィードバック</h3>
+      <ul>
+        <li><code>Modal(props ModalProps) Node</code></li>
+        <li><code>Toast(props ToastProps) Node</code></li>
+        <li><code>Alert(props AlertProps) Node</code></li>
+        <li><code>Skeleton(props SkeletonProps) Node</code></li>
+        <li><code>EmptyState(props EmptyStateProps) Node</code></li>
+      </ul>
+
+      <h3>データ表示</h3>
+      <ul>
+        <li><code>TableComponent(props TableProps) Node</code></li>
+        <li><code>Chart(props ChartProps) Node</code></li>
+        <li><code>DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node</code></li>
+        <li><code>DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node</code></li>
+        <li><code>Pagination(props PaginationProps) Node</code></li>
+      </ul>
+
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li><code>Tabs(props TabsProps) Node</code></li>
+        <li><code>Breadcrumb(props BreadcrumbProps) Node</code></li>
+        <li><code>CheckboxComponent(props CheckboxComponentProps) Node</code></li>
+        <li><code>RadioGroupComponent(props RadioGroupComponentProps) Node</code></li>
+        <li><code>SwitchComponent(props SwitchComponentProps) Node</code></li>
+      </ul>
+
+      <h3>レイアウト / サーフェス</h3>
+      <ul>
+        <li><code>Stack(props StackProps, children ...Node) Node</code></li>
+        <li><code>Grid(props GridProps, children ...Node) Node</code></li>
+        <li><code>Split(props SplitProps) Node</code></li>
+        <li><code>Card(props CardProps, children ...Node) Node</code></li>
+        <li><code>Section(props SectionProps, children ...Node) Node</code></li>
+        <li><code>ContainerComponent(props ContainerProps, children ...Node) Node</code></li>
+        <li><code>PageHeader(props PageHeaderProps) Node</code></li>
+      </ul>
+    </section>
+
+    <section id="runtime">
+      <h2>ランタイム</h2>
+
+      <h3>Handler 型</h3>
+      <pre><code>{`type Handler func(*Context) Node`}</code></pre>
+      <p><code>Page</code>, <code>Action</code>, <code>Render</code>, <code>Handle</code> で共有。</p>
+
+      <h3>HTTP / レンダリング失敗動作</h3>
+      <ul>
+        <li><code>Page</code> エンドポイント + 非<code>GET</code> メソッド: <code>405 Method Not Allowed</code></li>
+        <li><code>Action</code> エンドポイント + 非<code>POST</code> メソッド: <code>405 Method Not Allowed</code></li>
+        <li><code>Action</code> リクエスト <code>ParseForm</code> 失敗: <code>400 Bad Request</code></li>
+        <li>ノード レンダリング失敗: <code>500 Internal Server Error</code></li>
+        <li>ルート ページ不足: <code>GET /</code> は <code>500 Internal Server Error</code> を返す</li>
+      </ul>
+
+      <h3>レスポンス コンテンツ タイプ</h3>
+      <p>全ページとフラグメント両方が以下をセット: <code>Content-Type: text/html; charset=utf-8</code></p>
+    </section>
+
+    <nav class="api-nav">
+      <a href="/marionette/ja/components/">← コンポーネント ギャラリー</a>
+    </nav>
+  </article>
+
+  <style>
+    .api-docs {
+      display: grid;
+      gap: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .api-docs header {
+      margin-bottom: 1rem;
+    }
+
+    .api-docs h2 {
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      border-bottom: 1px solid var(--sl-color-gray-5);
+      padding-bottom: 0.5rem;
+    }
+
+    .api-docs h3 {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .api-docs code {
+      background: var(--sl-color-gray-7);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .api-docs pre {
+      overflow-x: auto;
+      background: var(--sl-color-black);
+      color: var(--sl-color-white);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .api-docs pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .api-docs ul, .api-docs ol {
+      margin: 0.5rem 0 1rem;
+      padding-left: 1.5rem;
+    }
+
+    .api-docs li {
+      margin-bottom: 0.375rem;
+    }
+
+    .api-nav {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--sl-color-gray-5);
+    }
+
+    .api-nav a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--sl-color-gray-7);
+      border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .api-nav a:hover {
+      background: var(--sl-color-gray-6);
+    }
+  </style>
+</BaseLayout>

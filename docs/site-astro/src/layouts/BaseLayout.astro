@@ -15,11 +15,11 @@ const langRoot = isJa ? '/marionette/ja' : '/marionette/en';
 const topItems = isJa
   ? [
       { label: 'ホーム', href: `${langRoot}/` },
-      { label: 'API Docs', href: '/marionette/docs_api.md' },
+      { label: 'API Docs', href: `${langRoot}/api/` },
     ]
   : [
       { label: 'Home', href: `${langRoot}/` },
-      { label: 'API Docs', href: '/marionette/docs_api.md' },
+      { label: 'API Docs', href: `${langRoot}/api/` },
     ];
 
 const groupedComponents = catalog.components.reduce<Record<string, typeof catalog.components>>((acc, component) => {

@@ -7,7 +7,7 @@ import (
 
 func RegisterRadioGroupExample(app *mb.App) {
 	app.Page("/radio-group", func(ctx *mb.Context) mf.Node {
-		return mf.RadioGroupComponent(mf.RadioGroupComponentProps{
+		return mf.RadioGroup(mf.RadioGroupComponentProps{
 			Name:      "role",
 			AriaLabel: "Role",
 			Items: []mf.RadioItem{

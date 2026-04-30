@@ -252,13 +252,13 @@ Template-backed component constructors (`templates/components/*`).
 ### Buttons / inputs / field wrappers
 - `Button(label string, props ComponentProps) Node`
 - `SubmitButton(label string, props ComponentProps) Node`
-- `InputComponent(name, value string, props ComponentProps) Node`
+- `Input(name, value string, props ComponentProps) Node`
   - uses `InputWithOptions` with defaults:
     - `Type: "text"`
     - `Placeholder: strings.TrimSpace(name)`.
 - `InputWithOptions(name, value string, options InputOptions) Node`
   - blank `options.Type` defaults to `"text"`.
-- `TextareaComponent(name, value string, options TextareaOptions) Node`
+- `Textarea(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` defaults to `3`.
 - `FormComponent(props FormProps, children ...Node) Node`
   - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
@@ -271,7 +271,7 @@ Template-backed component constructors (`templates/components/*`).
   - renders a hidden form field.
 - `FormFieldComponent(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
-- `SelectComponent(name string, options []SelectOption, props ComponentProps) Node`
+- `Select(name string, options []SelectOption, props ComponentProps) Node`
 
 ### Overlay / feedback
 - `Modal(props ModalProps) Node`
@@ -323,10 +323,10 @@ Template-backed component constructors (`templates/components/*`).
 - `Breadcrumb(props BreadcrumbProps) Node`
   - blank `AriaLabel` defaults to `"breadcrumb"`.
   - supports active/current breadcrumb items.
-- `CheckboxComponent(props CheckboxComponentProps) Node`
-- `RadioGroupComponent(props RadioGroupComponentProps) Node`
+- `Checkbox(props CheckboxComponentProps) Node`
+- `RadioGroup(props RadioGroupComponentProps) Node`
   - blank `AriaLabel` defaults to `"radio group"`.
-- `SwitchComponent(props SwitchComponentProps) Node`
+- `Switch(props SwitchComponentProps) Node`
 - `Badge(props BadgeProps) Node`
   - renders a compact label with `Variant`, `Size`, and custom classes from `ComponentProps`.
 - `UIText(props TextProps) Node`

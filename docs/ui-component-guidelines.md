@@ -21,7 +21,7 @@ Only consider adding a new component when all of the following are true:
 
 - Align names with existing public API patterns.
 - The current accepted naming examples are:
-  - Component entry points: `Button`, `InputComponent`, `Modal`
+  - Component entry points: `Button`, `Input`, `Modal`
   - Props types: `ComponentProps`, `TextFieldProps`, `FormRowProps`
   - Form primitives: `FormRow`, `TextField`
 - `Ui` prefix names are **not required** by the current standard.

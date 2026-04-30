@@ -27,7 +27,7 @@
     },
     {
       "id": "input",
-      "name": "InputComponent",
+      "name": "Input",
       "group": "Components",
       "golden": "testdata/golden/input.golden.html",
       "example": "/marionette/examples/input.html",
@@ -36,7 +36,7 @@
     },
     {
       "id": "select",
-      "name": "SelectComponent",
+      "name": "Select",
       "group": "Components",
       "golden": "testdata/golden/select.golden.html",
       "example": "/marionette/examples/select.html",
@@ -174,7 +174,7 @@
     },
     {
       "id": "textarea",
-      "name": "TextareaComponent",
+      "name": "Textarea",
       "group": "Components",
       "golden": "testdata/golden/textarea.golden.html",
       "example": "/marionette/examples/textarea.html",
@@ -183,7 +183,7 @@
     },
     {
       "id": "checkbox",
-      "name": "CheckboxComponent",
+      "name": "Checkbox",
       "group": "Components",
       "golden": "testdata/golden/checkbox.golden.html",
       "example": "/marionette/examples/checkbox.html",
@@ -192,7 +192,7 @@
     },
     {
       "id": "radio-group",
-      "name": "RadioGroupComponent",
+      "name": "RadioGroup",
       "group": "Components",
       "golden": "testdata/golden/radio_group.golden.html",
       "example": "/marionette/examples/radio_group.html",
@@ -201,7 +201,7 @@
     },
     {
       "id": "switch",
-      "name": "SwitchComponent",
+      "name": "Switch",
       "group": "Components",
       "golden": "testdata/golden/switch.golden.html",
       "example": "/marionette/examples/switch.html",

@@ -502,7 +502,7 @@ func usageSnippet(id string) string {
         Disabled: true,
     },
 })`,
-		"select": `roleSelect := mf.UISelect("role", []mf.SelectOption{
+		"select": `roleSelect := mf.Select("role", []mf.SelectOption{
     {Label: "Admin", Value: "admin", Selected: true},
     {Label: "Viewer", Value: "viewer"},
 }, mf.ComponentProps{
@@ -565,7 +565,7 @@ func usageSnippet(id string) string {
     Size:    "sm",
 }))`,
 		"form-field": `nameField := mf.UIFormField(
-    mf.UIInput("name", "", mf.ComponentProps{Size: "sm"}),
+    mf.Input("name", "", mf.ComponentProps{Size: "sm"}),
     mf.FormFieldProps{
         Label:    "Name",
         Required: true,
@@ -588,7 +588,7 @@ func usageSnippet(id string) string {
         {Label: "Aiko", Active: true},
     },
 })`,
-		"textarea": `notes := mf.UITextarea("notes", "hello", mf.TextareaOptions{
+		"textarea": `notes := mf.Textarea("notes", "hello", mf.TextareaOptions{
     Placeholder: "Memo",
     Rows:        4,
     Required:    true,
@@ -597,14 +597,14 @@ func usageSnippet(id string) string {
         Size:    "sm",
     },
 })`,
-		"checkbox": `activeUser := mf.UICheckbox(mf.CheckboxComponentProps{
+		"checkbox": `activeUser := mf.Checkbox(mf.CheckboxComponentProps{
     Name:    "active",
     Value:   "1",
     Label:   "Active user",
     Checked: true,
     Props:   mf.ComponentProps{Size: "sm"},
 })`,
-		"radio-group": `roleGroup := mf.UIRadioGroup(mf.RadioGroupComponentProps{
+		"radio-group": `roleGroup := mf.RadioGroup(mf.RadioGroupComponentProps{
     Name:      "role",
     AriaLabel: "role",
     Items: []mf.RadioItem{
@@ -614,7 +614,7 @@ func usageSnippet(id string) string {
     },
     Props: mf.ComponentProps{Size: "sm"},
 })`,
-		"switch": `notifications := mf.UISwitch(mf.SwitchComponentProps{
+		"switch": `notifications := mf.Switch(mf.SwitchComponentProps{
     Name:    "notify",
     Value:   "1",
     Label:   "Enable notifications",

@@ -7,7 +7,7 @@ import (
 
 func RegisterSwitchExample(app *mb.App) {
 	app.Page("/switch", func(ctx *mb.Context) mf.Node {
-		return mf.SwitchComponent(mf.SwitchComponentProps{
+		return mf.Switch(mf.SwitchComponentProps{
 			Name:    "notifications",
 			Value:   "enabled",
 			Label:   "Enable notifications",

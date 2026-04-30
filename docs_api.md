@@ -11,12 +11,16 @@ Split imports by runtime role:
 import (
     mb "github.com/YoshihideShirai/marionette/backend"
     mf "github.com/YoshihideShirai/marionette/frontend"
+    mh "github.com/YoshihideShirai/marionette/frontend/html"
 )
 ```
 
 - Recommended aliases: `mb` (marionette backend), `mf` (marionette frontend).
 - Use `mb` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
-- Use `mf` for UI node APIs such as `Node`, `Div`, `Element`, `Table`.
+- Use `mf` for component APIs such as `ButtonComponent`, `Card`, `TableComponent`, `FormRow`.
+- Use `mh` for advanced low-level node APIs such as `Node`, `Div`, `Element`, `Raw`.
+- Low-level constructors are intentionally not exposed from `frontend`; import
+  `frontend/html` when custom markup is needed.
 
 ## 2. App
 
@@ -145,7 +149,11 @@ Flash lifecycle on next request:
 
 ---
 
-## 4. Core Node
+## 4. Low-level HTML (`frontend/html`)
+
+Low-level HTML constructors live in `github.com/YoshihideShirai/marionette/frontend/html`.
+They are intended for advanced users and component internals. The `frontend`
+package exposes component APIs; use the `mh` import shown above for custom markup.
 
 ### `type Node interface { Render() (template.HTML, error) }`
 - Every UI node renders itself to safe HTML.
@@ -254,6 +262,13 @@ Template-backed component constructors (`templates/components/*`).
   - `Rows <= 0` defaults to `3`.
 - `FormComponent(props FormProps, children ...Node) Node`
   - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
+- `ActionForm(props ActionFormProps, children ...Node) Node`
+  - renders a form wired to Marionette/HTMX action updates.
+  - blank `Method` defaults to `post`; supported methods are `post` and `get`.
+  - renders standard `action`/`method` attributes plus `hx-post` or `hx-get`.
+  - optional `Target` and `Swap` render `hx-target` and `hx-swap`.
+- `HiddenField(name, value string) Node`
+  - renders a hidden form field.
 - `FormFieldComponent(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
 - `SelectComponent(name string, options []SelectOption, props ComponentProps) Node`
@@ -271,6 +286,8 @@ Template-backed component constructors (`templates/components/*`).
   - `Rows <= 0` defaults to `3`.
 
 ### Data display
+- `TableRowValues(values ...any) TableComponentRow`
+  - converts `nil` to empty text, `Node` values directly, and other values with `fmt.Sprint`.
 - `TableComponent(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
 - `Chart(props ChartProps) Node`
@@ -301,12 +318,27 @@ Template-backed component constructors (`templates/components/*`).
 - `RadioGroupComponent(props RadioGroupComponentProps) Node`
   - blank `AriaLabel` defaults to `"radio group"`.
 - `SwitchComponent(props SwitchComponentProps) Node`
+- `Badge(props BadgeProps) Node`
+  - renders a compact label with `Variant`, `Size`, and custom classes from `ComponentProps`.
+- `TextComponent(props TextProps) Node`
+  - renders plain text with semantic size, weight, and tone options.
 - `DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
 - `DataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - same loader with `Comma: '\t'` as default.
 
 ### Layout / surfaces
+- `Actions(props ActionsProps, children ...Node) Node`
+  - renders a horizontal action group.
+  - `Align`: `start`/blank, `center`, `end`, `between`.
+  - `Gap` uses the same values as `Stack`; `Wrap` adds `flex-wrap`.
+- `Divider(props DividerProps) Node`
+  - renders a visual divider.
+  - `Spacing`: `none`, `xs`, `sm`, `md`/blank, `lg`.
+- `Box(props BoxProps, children ...Node) Node`
+  - renders a generic surface with optional border, tone, padding, and custom classes.
+- `AppShell(props AppShellProps) Node`
+  - renders the demo/admin shell with sidebar, flashes, header, and content regions.
 - `Stack(props StackProps, children ...Node) Node`
   - flex layout for vertical/horizontal stacks.
   - `Direction`: `vertical`/blank or `horizontal`/`row`.
@@ -328,8 +360,13 @@ Template-backed component constructors (`templates/components/*`).
   - `MaxWidth`: `sm`, `md`, `lg`/blank, `full`.
   - `Padding`: `none`, `sm`, `md`/blank, `lg`.
   - `Centered` adds `mx-auto`.
+- `Region(props RegionProps, children ...Node) Node`
+  - renders an ID-addressable content region for partial updates.
+  - `ID` is required; blank `ID` returns a render error node.
+  - `Props.Class` appends custom classes.
 - `Card(props CardProps, children ...Node) Node`
   - card surface with optional title, description, and action node.
+  - `Gap` controls spacing between card body children.
 - `Section(props SectionProps, children ...Node) Node`
   - unframed section wrapper with optional title, description, and action node.
 

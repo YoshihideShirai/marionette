@@ -1,6 +1,6 @@
 {{define "components/card" -}}
 <section class="{{.Class}}">
-  <div class="card-body gap-4">
+  <div class="{{.BodyClass}}">
     {{- if or .Title .Description .Actions}}
     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div class="space-y-1">

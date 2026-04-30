@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	mb "github.com/YoshihideShirai/marionette/backend"
@@ -47,13 +46,11 @@ func page(ctx *mb.Context) mf.Node {
 				Title:       "Simple Tasks",
 				Description: "Marionette end-to-end sample",
 			}),
-			mf.FormComponent(mf.FormProps{
-				Class: "space-y-3",
-				Attrs: mf.Attrs{
-					"hx-post":   "/tasks/create",
-					"hx-target": "#task-list",
-					"hx-swap":   "innerHTML",
-				},
+			mf.ActionForm(mf.ActionFormProps{
+				Action: "/tasks/create",
+				Target: "#task-list",
+				Swap:   "innerHTML",
+				Props:  mf.ComponentProps{Class: "space-y-3"},
 			},
 				mf.FormRow(mf.FormRowProps{
 					ID:       "task-name",
@@ -68,33 +65,22 @@ func page(ctx *mb.Context) mf.Node {
 				}),
 				mf.SubmitButton("Add Task", mf.ComponentProps{}),
 			),
-			mf.DivID("task-list", taskList(tasks)),
+			mf.Region(mf.RegionProps{ID: "task-list"}, taskList(tasks)),
 		),
 	)
 }
 
 func taskList(tasks []task) mf.Node {
 	if len(tasks) == 0 {
-		return mf.Element("p", mf.ElementProps{Class: "opacity-70"}, mf.Text("No tasks yet"))
+		return mf.EmptyState(mf.EmptyStateProps{Title: "No tasks yet"})
 	}
 
-	rows := make([]mf.TableRowData, 0, len(tasks))
+	rows := make([]mf.TableComponentRow, 0, len(tasks))
 	for _, t := range tasks {
-		rows = append(rows, mf.TableRow(
-			mf.Text(fmt.Sprintf("%d", t.ID)),
-			mf.Text(t.Name),
-		))
+		rows = append(rows, mf.TableRowValues(t.ID, t.Name))
 	}
 	return mf.TableComponent(mf.TableProps{
 		Columns: []mf.TableColumn{{Label: "ID"}, {Label: "Name"}},
-		Rows:    toComponentRows(rows),
+		Rows:    rows,
 	})
-}
-
-func toComponentRows(rows []mf.TableRowData) []mf.TableComponentRow {
-	converted := make([]mf.TableComponentRow, 0, len(rows))
-	for _, row := range rows {
-		converted = append(converted, mf.TableComponentRow{Cells: row.Cells})
-	}
-	return converted
 }

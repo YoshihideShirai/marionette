@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	mh "github.com/YoshihideShirai/marionette/frontend/html"
 	rdf "github.com/rocketlaunchr/dataframe-go"
 )
 
@@ -285,6 +286,32 @@ func TestComponentFormFieldRendersLabelHintAndError(t *testing.T) {
 	}
 	got := string(html)
 	for _, want := range []string{`label-text`, `Name`, `*`, `Enter a display name.`, `Name is required.`, `name="name"`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestActionFormRendersHTMXActionAttributes(t *testing.T) {
+	html, err := ActionForm(ActionFormProps{
+		Action: "tasks/create",
+		Target: "#task-list",
+		Swap:   "innerHTML",
+		Props:  ComponentProps{Class: "space-y-3"},
+	}, TextField(TextFieldProps{ID: "task-name", Name: "name"})).Render()
+	if err != nil {
+		t.Fatalf("action form render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`action="/tasks/create"`,
+		`method="post"`,
+		`hx-post="/tasks/create"`,
+		`hx-target="#task-list"`,
+		`hx-swap="innerHTML"`,
+		`class="space-y-3"`,
+		`name="name"`,
+	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("expected %q in %q", want, got)
 		}
@@ -571,15 +598,101 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
+	regionHTML, err := Region(RegionProps{ID: "task-list", Props: ComponentProps{Class: "space-y-3"}}, Text("Tasks")).Render()
+	if err != nil {
+		t.Fatalf("region render failed: %v", err)
+	}
+	for _, want := range []string{`id="task-list"`, `class="space-y-3"`, "Tasks"} {
+		if !strings.Contains(string(regionHTML), want) {
+			t.Fatalf("expected %q in %q", want, regionHTML)
+		}
+	}
+
+	badgeHTML, err := Badge(BadgeProps{Label: "Admin", Props: ComponentProps{Variant: "primary", Size: "sm"}}).Render()
+	if err != nil {
+		t.Fatalf("badge render failed: %v", err)
+	}
+	for _, want := range []string{"badge", "badge-primary", "badge-sm", "Admin"} {
+		if !strings.Contains(string(badgeHTML), want) {
+			t.Fatalf("expected %q in %q", want, badgeHTML)
+		}
+	}
+
+	actionsHTML, err := Actions(ActionsProps{Align: "end", Gap: "sm", Wrap: true, Props: ComponentProps{Class: "w-full"}}, ButtonComponent("Save", ComponentProps{})).Render()
+	if err != nil {
+		t.Fatalf("actions render failed: %v", err)
+	}
+	for _, want := range []string{"flex", "items-center", "gap-2", "justify-end", "flex-wrap", "w-full", "Save"} {
+		if !strings.Contains(string(actionsHTML), want) {
+			t.Fatalf("expected %q in %q", want, actionsHTML)
+		}
+	}
+
+	dividerHTML, err := Divider(DividerProps{Spacing: "xs"}).Render()
+	if err != nil {
+		t.Fatalf("divider render failed: %v", err)
+	}
+	for _, want := range []string{"divider", "my-1"} {
+		if !strings.Contains(string(dividerHTML), want) {
+			t.Fatalf("expected %q in %q", want, dividerHTML)
+		}
+	}
+
+	textHTML, err := TextComponent(TextProps{Text: "Muted", Size: "sm", Weight: "medium", Tone: "muted"}).Render()
+	if err != nil {
+		t.Fatalf("text render failed: %v", err)
+	}
+	for _, want := range []string{"text-sm", "font-medium", "text-base-content/60", "Muted"} {
+		if !strings.Contains(string(textHTML), want) {
+			t.Fatalf("expected %q in %q", want, textHTML)
+		}
+	}
+
+	boxHTML, err := Box(BoxProps{Border: true, Tone: "base", Padding: "sm", Props: ComponentProps{Class: "rounded-box"}}, Text("Panel")).Render()
+	if err != nil {
+		t.Fatalf("box render failed: %v", err)
+	}
+	for _, want := range []string{"bg-base-100", "p-3", "border border-base-300", "rounded-box", "Panel"} {
+		if !strings.Contains(string(boxHTML), want) {
+			t.Fatalf("expected %q in %q", want, boxHTML)
+		}
+	}
+
+	shellHTML, err := AppShell(AppShellProps{
+		Sidebar: Text("Nav"),
+		Flashes: Text("Flash"),
+		Header:  Text("Header"),
+		Content: Text("Main"),
+	}).Render()
+	if err != nil {
+		t.Fatalf("app shell render failed: %v", err)
+	}
+	for _, want := range []string{`id="app"`, `id="main-content"`, "Nav", "Flash", "Header", "Main"} {
+		if !strings.Contains(string(shellHTML), want) {
+			t.Fatalf("expected %q in %q", want, shellHTML)
+		}
+	}
+
+	hiddenHTML, err := HiddenField("id", "42").Render()
+	if err != nil {
+		t.Fatalf("hidden field render failed: %v", err)
+	}
+	for _, want := range []string{`type="hidden"`, `name="id"`, `value="42"`} {
+		if !strings.Contains(string(hiddenHTML), want) {
+			t.Fatalf("expected %q in %q", want, hiddenHTML)
+		}
+	}
+
 	cardHTML, err := Card(CardProps{
 		Title:       "Card",
 		Description: "Summary",
 		Actions:     ButtonComponent("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+		Gap:         "sm",
 	}, Text("Body")).Render()
 	if err != nil {
 		t.Fatalf("card render failed: %v", err)
 	}
-	for _, want := range []string{"card bg-base-100 shadow-sm", "Card", "Summary", "btn-ghost", "Body"} {
+	for _, want := range []string{"card bg-base-100 shadow-sm", "gap-2", "Card", "Summary", "btn-ghost", "Body"} {
 		if !strings.Contains(string(cardHTML), want) {
 			t.Fatalf("expected %q in %q", want, cardHTML)
 		}
@@ -601,12 +714,40 @@ func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
 	if err != nil {
 		t.Fatalf("root grid render failed: %v", err)
 	}
-	frontendHTML, err := mf.Grid(mf.GridProps{Columns: "2", Gap: "sm"}, mf.Text("A"), mf.Text("B")).Render()
+	frontendHTML, err := mf.Grid(mf.GridProps{Columns: "2", Gap: "sm"}, mh.Text("A"), mh.Text("B")).Render()
 	if err != nil {
 		t.Fatalf("frontend grid render failed: %v", err)
 	}
 	if rootHTML != frontendHTML {
 		t.Fatalf("expected frontend output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+	}
+
+	rootRegionHTML, err := Region(RegionProps{ID: "tasks"}, Text("Root")).Render()
+	if err != nil {
+		t.Fatalf("root region render failed: %v", err)
+	}
+	frontendRegionHTML, err := mf.Region(mf.RegionProps{ID: "tasks"}, mh.Text("Root")).Render()
+	if err != nil {
+		t.Fatalf("frontend region render failed: %v", err)
+	}
+	if rootRegionHTML != frontendRegionHTML {
+		t.Fatalf("expected frontend region output to match root\nroot:\n%s\nfrontend:\n%s", rootRegionHTML, frontendRegionHTML)
+	}
+}
+
+func TestTableRowValuesConvertsValuesToCells(t *testing.T) {
+	row := TableRowValues(7, "Aiko", nil, Text("Admin"))
+	tableHTML, err := TableComponent(TableProps{
+		Columns: []TableColumn{{Label: "ID"}, {Label: "Name"}, {Label: "Blank"}, {Label: "Role"}},
+		Rows:    []TableComponentRow{row},
+	}).Render()
+	if err != nil {
+		t.Fatalf("table render failed: %v", err)
+	}
+	for _, want := range []string{"7", "Aiko", "Admin"} {
+		if !strings.Contains(string(tableHTML), want) {
+			t.Fatalf("expected %q in %q", want, tableHTML)
+		}
 	}
 }
 

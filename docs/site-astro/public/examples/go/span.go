@@ -7,9 +7,9 @@ import (
 
 func RegisterSpanExample(app *mb.App) {
 	app.Page("/span", func(ctx *mb.Context) mf.Node {
-		return mf.Div(
-			mf.Span(mf.Text("Inline")),
-			mf.Span(mf.Text(" text helper")),
+		return mf.Stack(mf.StackProps{Direction: "horizontal", Gap: "none"},
+			mf.TextComponent(mf.TextProps{Text: "Inline"}),
+			mf.TextComponent(mf.TextProps{Text: " text helper"}),
 		)
 	})
 }

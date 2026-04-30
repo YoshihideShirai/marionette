@@ -47,6 +47,15 @@ type FormProps struct {
 	Attrs  Attrs
 }
 
+type ActionFormProps struct {
+	ID     string
+	Action string
+	Target string
+	Swap   string
+	Method string
+	Props  ComponentProps
+}
+
 type InputOptions struct {
 	Type        string
 	Placeholder string
@@ -101,6 +110,21 @@ type TableColumn struct {
 
 type TableComponentRow struct {
 	Cells []Node
+}
+
+func TableRowValues(values ...any) TableComponentRow {
+	cells := make([]Node, 0, len(values))
+	for _, value := range values {
+		switch v := value.(type) {
+		case nil:
+			cells = append(cells, textNode(""))
+		case Node:
+			cells = append(cells, v)
+		default:
+			cells = append(cells, textNode(fmt.Sprint(v)))
+		}
+	}
+	return TableComponentRow{Cells: cells}
 }
 
 type TableProps struct {
@@ -223,6 +247,31 @@ type SwitchComponentProps struct {
 	Props   ComponentProps
 }
 
+type BadgeProps struct {
+	Label string
+	Props ComponentProps
+}
+
+type ActionsProps struct {
+	Align string
+	Gap   string
+	Wrap  bool
+	Props ComponentProps
+}
+
+type DividerProps struct {
+	Spacing string
+	Props   ComponentProps
+}
+
+type TextProps struct {
+	Text   string
+	Size   string
+	Weight string
+	Tone   string
+	Props  ComponentProps
+}
+
 type StackProps struct {
 	Direction string
 	Gap       string
@@ -262,10 +311,16 @@ type ContainerProps struct {
 	Props    ComponentProps
 }
 
+type RegionProps struct {
+	ID    string
+	Props ComponentProps
+}
+
 type CardProps struct {
 	Title       string
 	Description string
 	Actions     Node
+	Gap         string
 	Props       ComponentProps
 }
 
@@ -274,6 +329,23 @@ type SectionProps struct {
 	Description string
 	Actions     Node
 	Props       ComponentProps
+}
+
+type BoxProps struct {
+	Padding string
+	Border  bool
+	Tone    string
+	Props   ComponentProps
+}
+
+type AppShellProps struct {
+	ID      string
+	MainID  string
+	Sidebar Node
+	Flashes Node
+	Header  Node
+	Content Node
+	Props   ComponentProps
 }
 
 type templateNode struct {
@@ -414,9 +486,42 @@ func UIForm(props FormProps, children ...Node) Node {
 	if action := strings.TrimSpace(props.Action); action != "" {
 		attrs["action"] = action
 	}
-	return Element("form", ElementProps{
+	return htmlElement("form", ElementProps{
 		ID:    strings.TrimSpace(props.ID),
 		Class: strings.TrimSpace(props.Class),
+		Attrs: attrs,
+	}, children...)
+}
+
+func UIActionForm(props ActionFormProps, children ...Node) Node {
+	action := actionPath(strings.TrimSpace(props.Action))
+	if action == "/" {
+		return renderErrorNode{err: fmt.Errorf("action form action is required")}
+	}
+
+	method := strings.ToLower(strings.TrimSpace(props.Method))
+	if method == "" {
+		method = "post"
+	}
+	if method != "post" && method != "get" {
+		return renderErrorNode{err: fmt.Errorf("unsupported action form method: %s", method)}
+	}
+
+	attrs := Attrs{
+		"action": action,
+		"method": method,
+	}
+	attrs["hx-"+method] = action
+	if target := strings.TrimSpace(props.Target); target != "" {
+		attrs["hx-target"] = target
+	}
+	if swap := strings.TrimSpace(props.Swap); swap != "" {
+		attrs["hx-swap"] = swap
+	}
+
+	return htmlElement("form", ElementProps{
+		ID:    strings.TrimSpace(props.ID),
+		Class: strings.TrimSpace(props.Props.Class),
 		Attrs: attrs,
 	}, children...)
 }
@@ -908,6 +1013,30 @@ func UISwitch(props SwitchComponentProps) Node {
 	}
 }
 
+func UIBadge(props BadgeProps) Node {
+	return element{Tag: "span", Attrs: map[string]string{"class": badgeClass(props.Props)}, Text: strings.TrimSpace(props.Label)}
+}
+
+func UIActions(props ActionsProps, children ...Node) Node {
+	return htmlElement("div", ElementProps{
+		Class: actionsClass(props),
+	}, children...)
+}
+
+func UIDivider(props DividerProps) Node {
+	return htmlElement("div", ElementProps{
+		Class: dividerClass(props),
+	})
+}
+
+func UITextComponent(props TextProps) Node {
+	return element{Tag: "span", Attrs: map[string]string{"class": textClass(props)}, Text: strings.TrimSpace(props.Text)}
+}
+
+func UIHiddenField(name, value string) Node {
+	return HiddenInput(name, value)
+}
+
 func UIStack(props StackProps, children ...Node) Node {
 	return layoutChildrenNode("components/stack", stackClass(props), children)
 }
@@ -970,6 +1099,42 @@ func UIContainer(props ContainerProps, children ...Node) Node {
 	return layoutChildrenNode("components/container", containerClass(props), children)
 }
 
+func UIRegion(props RegionProps, children ...Node) Node {
+	id := strings.TrimSpace(props.ID)
+	if id == "" {
+		return renderErrorNode{err: fmt.Errorf("region id is required")}
+	}
+	return htmlElement("div", ElementProps{
+		ID:    id,
+		Class: strings.TrimSpace(props.Props.Class),
+	}, children...)
+}
+
+func UIBox(props BoxProps, children ...Node) Node {
+	return htmlElement("div", ElementProps{
+		Class: boxClass(props),
+	}, children...)
+}
+
+func UIAppShell(props AppShellProps) Node {
+	id := strings.TrimSpace(props.ID)
+	if id == "" {
+		id = "app"
+	}
+	mainID := strings.TrimSpace(props.MainID)
+	if mainID == "" {
+		mainID = "main-content"
+	}
+	return Region(RegionProps{ID: id, Props: ComponentProps{Class: appShellClass(props.Props)}},
+		props.Sidebar,
+		htmlElement("div", ElementProps{Class: "min-w-0 space-y-6"},
+			props.Flashes,
+			props.Header,
+			Region(RegionProps{ID: mainID, Props: ComponentProps{Class: "space-y-6"}}, props.Content),
+		),
+	)
+}
+
 func UICard(props CardProps, children ...Node) Node {
 	childHTML, err := renderNodes(children)
 	if err != nil {
@@ -983,12 +1148,14 @@ func UICard(props CardProps, children ...Node) Node {
 		name: "components/card",
 		data: struct {
 			Class       string
+			BodyClass   string
 			Title       string
 			Description string
 			Actions     template.HTML
 			Children    []template.HTML
 		}{
 			Class:       cardClass(props.Props),
+			BodyClass:   cardBodyClass(props),
 			Title:       strings.TrimSpace(props.Title),
 			Description: strings.TrimSpace(props.Description),
 			Actions:     actionsHTML,
@@ -1254,6 +1421,181 @@ func toggleSizeClass(size string) string {
 	}
 }
 
+func badgeClass(props ComponentProps) string {
+	base := []string{"badge", badgeVariantClass(props.Variant), badgeSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func badgeVariantClass(variant string) string {
+	switch strings.TrimSpace(variant) {
+	case "primary":
+		return "badge-primary"
+	case "secondary":
+		return "badge-secondary"
+	case "accent":
+		return "badge-accent"
+	case "danger", "error":
+		return "badge-error"
+	case "outline":
+		return "badge-outline"
+	case "ghost":
+		return "badge-ghost"
+	default:
+		return ""
+	}
+}
+
+func badgeSizeClass(size string) string {
+	switch strings.TrimSpace(size) {
+	case "sm":
+		return "badge-sm"
+	case "lg":
+		return "badge-lg"
+	default:
+		return ""
+	}
+}
+
+func actionsClass(props ActionsProps) string {
+	base := []string{"flex", "items-center", gapClass(props.Gap), actionsAlignClass(props.Align)}
+	if props.Wrap {
+		base = append(base, "flex-wrap")
+	}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func actionsAlignClass(align string) string {
+	switch strings.TrimSpace(align) {
+	case "center":
+		return "justify-center"
+	case "end", "right":
+		return "justify-end"
+	case "between":
+		return "justify-between"
+	default:
+		return "justify-start"
+	}
+}
+
+func dividerClass(props DividerProps) string {
+	base := []string{"divider", dividerSpacingClass(props.Spacing)}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func dividerSpacingClass(spacing string) string {
+	switch strings.TrimSpace(spacing) {
+	case "none":
+		return "my-0"
+	case "xs":
+		return "my-1"
+	case "sm":
+		return "my-2"
+	case "lg":
+		return "my-6"
+	default:
+		return ""
+	}
+}
+
+func textClass(props TextProps) string {
+	base := []string{textSizeClass(props.Size), textWeightClass(props.Weight), textToneClass(props.Tone)}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func textSizeClass(size string) string {
+	switch strings.TrimSpace(size) {
+	case "xs":
+		return "text-xs"
+	case "sm":
+		return "text-sm"
+	case "lg":
+		return "text-lg"
+	case "xl":
+		return "text-xl"
+	case "2xl":
+		return "text-2xl"
+	case "3xl":
+		return "text-3xl"
+	default:
+		return ""
+	}
+}
+
+func textWeightClass(weight string) string {
+	switch strings.TrimSpace(weight) {
+	case "medium":
+		return "font-medium"
+	case "semibold":
+		return "font-semibold"
+	case "bold":
+		return "font-bold"
+	default:
+		return ""
+	}
+}
+
+func textToneClass(tone string) string {
+	switch strings.TrimSpace(tone) {
+	case "muted":
+		return "text-base-content/60"
+	case "subtle":
+		return "text-base-content/70"
+	default:
+		return ""
+	}
+}
+
+func boxClass(props BoxProps) string {
+	base := []string{boxToneClass(props.Tone), boxPaddingClass(props.Padding)}
+	if props.Border {
+		base = append(base, "border border-base-300")
+	}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func boxToneClass(tone string) string {
+	switch strings.TrimSpace(tone) {
+	case "base":
+		return "bg-base-100"
+	case "muted":
+		return "bg-base-200"
+	default:
+		return ""
+	}
+}
+
+func boxPaddingClass(padding string) string {
+	switch strings.TrimSpace(padding) {
+	case "none":
+		return "p-0"
+	case "sm":
+		return "p-3"
+	case "lg":
+		return "p-6"
+	default:
+		return "p-4"
+	}
+}
+
+func appShellClass(props ComponentProps) string {
+	return joinClass("grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]", props.Class)
+}
+
 func feedbackClass(component string, props ComponentProps) string {
 	base := []string{"ui-feedback", "ui-feedback-" + component, feedbackVariantClass(props.Variant), feedbackSizeClass(props.Size)}
 	if props.Class != "" {
@@ -1346,6 +1688,10 @@ func containerClass(props ContainerProps) string {
 
 func cardClass(props ComponentProps) string {
 	return joinClass("card bg-base-100 shadow-sm", props.Class)
+}
+
+func cardBodyClass(props CardProps) string {
+	return joinClass("card-body", gapClass(props.Gap))
 }
 
 func sectionClass(props ComponentProps) string {

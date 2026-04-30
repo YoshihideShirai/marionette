@@ -8,9 +8,6 @@ import (
 // RegisterToastExample wires a Marionette page used in docs snippets.
 func RegisterToastExample(app *mb.App) {
 	app.Page("/toast", func(ctx *mb.Context) mf.Node {
-		return mf.Div(
-			mf.H1(mf.Text("Toast example")),
-			mf.P(mf.Text("Implement this UI with Marionette components.")),
-		)
+		return mf.PageHeader(mf.PageHeaderProps{Title: "Toast example", Description: "Implement this UI with Marionette components."})
 	})
 }

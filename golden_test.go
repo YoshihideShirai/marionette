@@ -66,6 +66,16 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			node: Skeleton(SkeletonProps{Rows: 2, Props: ComponentProps{Variant: "warning", Size: "lg"}}),
 		},
 		{
+			name: "progress",
+			node: Progress(ProgressProps{
+				Value:     72,
+				Max:       100,
+				Label:     "Upload progress",
+				ShowValue: true,
+				Props:     ComponentProps{Variant: "success", Size: "lg", Class: "max-w-md"},
+			}),
+		},
+		{
 			name: "empty_state",
 			node: EmptyState(EmptyStateProps{Title: "No users", Description: "Create one first."}),
 		},
@@ -100,6 +110,19 @@ func TestTemplateRenderingGolden(t *testing.T) {
 					YAxisLabel:  "Users",
 				},
 				Height: 260,
+			}),
+		},
+		{
+			name: "image",
+			node: Image(ImageProps{
+				Src:         "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+				Alt:         "Desk with laptop and notebook",
+				Caption:     "Workspace preview",
+				Width:       1200,
+				Height:      800,
+				AspectRatio: "video",
+				ObjectFit:   "cover",
+				Props:       ComponentProps{Class: "max-w-xl"},
 			}),
 		},
 		{

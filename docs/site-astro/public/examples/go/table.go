@@ -5,14 +5,13 @@ import (
 	mf "github.com/YoshihideShirai/marionette/frontend"
 )
 
-// RegisterDataFrameExample wires a Marionette page used in docs snippets.
-func RegisterDataFrameExample(app *mb.App) {
-	app.Page("/dataframe", func(ctx *mb.Context) mf.Node {
+func RegisterTableExample(app *mb.App) {
+	app.Page("/table", func(ctx *mb.Context) mf.Node {
 		return mf.Table(mf.TableProps{
 			Columns: []mf.TableColumn{{Label: "Name"}, {Label: "Role"}},
 			Rows: []mf.TableComponentRow{
-				mf.TableRowValues("Aiko", "Admin"),
-				mf.TableRowValues("Ren", "Editor"),
+				mf.TableRowValues("Aiko Tanaka", mf.Badge(mf.BadgeProps{Label: "Admin"})),
+				mf.TableRowValues("Ren Sato", mf.Badge(mf.BadgeProps{Label: "Editor"})),
 			},
 		})
 	})

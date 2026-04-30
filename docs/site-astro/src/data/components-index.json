@@ -18,6 +18,14 @@
       "description": "Marionette built-in theme toggle action button."
     },
     {
+      "id": "sidebar",
+      "name": "Sidebar",
+      "group": "Components",
+      "example": "/marionette/examples/sidebar.html",
+      "template": "frontend/ui_impl.go",
+      "description": "Application sidebar navigation with active links and optional note."
+    },
+    {
       "id": "input",
       "name": "InputComponent",
       "group": "Components",
@@ -70,6 +78,15 @@
       "example": "/marionette/examples/chart.html",
       "template": "templates/components/chart.html",
       "description": "Chart.js-backed data visualization wrapper."
+    },
+    {
+      "id": "image",
+      "name": "Image",
+      "group": "Components",
+      "golden": "testdata/golden/image.golden.html",
+      "example": "/marionette/examples/image.html",
+      "template": "templates/components/image.html",
+      "description": "Responsive image display with alt text and optional caption."
     },
     {
       "id": "chart-line",
@@ -280,6 +297,15 @@
       "golden": "testdata/golden/skeleton.golden.html",
       "template": "templates/components/skeleton.html",
       "example": "/marionette/examples/skeleton.html"
+    },
+    {
+      "id": "progress",
+      "name": "Progress",
+      "group": "Components",
+      "description": "Determinate and indeterminate progress indicator.",
+      "golden": "testdata/golden/progress.golden.html",
+      "template": "templates/components/progress.html",
+      "example": "/marionette/examples/progress.html"
     },
     {
       "id": "feedback",

@@ -101,6 +101,16 @@ type SkeletonProps struct {
 	Props ComponentProps
 }
 
+type ProgressProps struct {
+	Value         float64
+	Max           float64
+	Label         string
+	AriaLabel     string
+	ShowValue     bool
+	Indeterminate bool
+	Props         ComponentProps
+}
+
 type TableColumn struct {
 	Label      string
 	SortKey    string
@@ -177,6 +187,19 @@ type ChartProps struct {
 	Options     ChartOptions
 	AriaLabel   string
 	Height      int
+	Props       ComponentProps
+}
+
+type ImageProps struct {
+	Src         string
+	Alt         string
+	Caption     string
+	Width       int
+	Height      int
+	Loading     string
+	Decoding    string
+	AspectRatio string
+	ObjectFit   string
 	Props       ComponentProps
 }
 
@@ -648,6 +671,53 @@ func UISkeleton(props SkeletonProps) Node {
 	}
 }
 
+func UIProgress(props ProgressProps) Node {
+	maxValue := props.Max
+	if maxValue <= 0 {
+		maxValue = 100
+	}
+	value := props.Value
+	if value < 0 {
+		value = 0
+	}
+	if value > maxValue {
+		value = maxValue
+	}
+	percent := 0.0
+	if maxValue > 0 {
+		percent = value / maxValue * 100
+	}
+	ariaLabel := strings.TrimSpace(props.AriaLabel)
+	if ariaLabel == "" {
+		ariaLabel = strings.TrimSpace(props.Label)
+	}
+	if ariaLabel == "" {
+		ariaLabel = "progress"
+	}
+	return templateNode{
+		name: "components/progress",
+		data: struct {
+			Class         string
+			Label         string
+			AriaLabel     string
+			Value         float64
+			Max           float64
+			Percent       string
+			ShowValue     bool
+			Indeterminate bool
+		}{
+			Class:         progressClass(props.Props),
+			Label:         strings.TrimSpace(props.Label),
+			AriaLabel:     ariaLabel,
+			Value:         value,
+			Max:           maxValue,
+			Percent:       fmt.Sprintf("%.0f%%", percent),
+			ShowValue:     props.ShowValue,
+			Indeterminate: props.Indeterminate,
+		},
+	}
+}
+
 func UIEmptyState(props EmptyStateProps) Node {
 	rows := props.Rows
 	if rows <= 0 {
@@ -747,6 +817,47 @@ func UIChart(props ChartProps) Node {
 			Datasets:     props.Datasets,
 			Rows:         chartFallbackRows(props),
 			FallbackText: chartFallbackText(props),
+		},
+	}
+}
+
+func UIImage(props ImageProps) Node {
+	src := strings.TrimSpace(props.Src)
+	if src == "" {
+		return renderErrorNode{err: fmt.Errorf("image src is required")}
+	}
+	loading := strings.TrimSpace(props.Loading)
+	if loading == "" {
+		loading = "lazy"
+	}
+	decoding := strings.TrimSpace(props.Decoding)
+	if decoding == "" {
+		decoding = "async"
+	}
+	return templateNode{
+		name: "components/image",
+		data: struct {
+			Class      string
+			FrameClass string
+			ImageClass string
+			Src        string
+			Alt        string
+			Caption    string
+			Width      int
+			Height     int
+			Loading    string
+			Decoding   string
+		}{
+			Class:      imageClass(props.Props),
+			FrameClass: imageFrameClass(props),
+			ImageClass: imageElementClass(props),
+			Src:        src,
+			Alt:        props.Alt,
+			Caption:    strings.TrimSpace(props.Caption),
+			Width:      props.Width,
+			Height:     props.Height,
+			Loading:    loading,
+			Decoding:   decoding,
 		},
 	}
 }
@@ -1700,6 +1811,94 @@ func sectionClass(props ComponentProps) string {
 
 func chartClass(props ComponentProps) string {
 	return joinClass("card bg-base-100 shadow-sm", props.Class)
+}
+
+func imageClass(props ComponentProps) string {
+	return joinClass("space-y-2", props.Class)
+}
+
+func imageFrameClass(props ImageProps) string {
+	return joinClass("overflow-hidden rounded-box bg-base-200", imageAspectClass(props.AspectRatio))
+}
+
+func imageElementClass(props ImageProps) string {
+	base := []string{"block", "w-full", imageObjectFitClass(props.ObjectFit)}
+	if strings.TrimSpace(props.AspectRatio) != "" {
+		base = append(base, "h-full")
+	} else {
+		base = append(base, "h-auto")
+	}
+	return joinClass(base...)
+}
+
+func imageAspectClass(aspectRatio string) string {
+	switch strings.TrimSpace(aspectRatio) {
+	case "square":
+		return "aspect-square"
+	case "video":
+		return "aspect-video"
+	case "wide":
+		return "aspect-[16/9]"
+	case "portrait":
+		return "aspect-[3/4]"
+	default:
+		return ""
+	}
+}
+
+func imageObjectFitClass(objectFit string) string {
+	switch strings.TrimSpace(objectFit) {
+	case "contain":
+		return "object-contain"
+	case "fill":
+		return "object-fill"
+	case "none":
+		return "object-none"
+	case "scale-down":
+		return "object-scale-down"
+	default:
+		return "object-cover"
+	}
+}
+
+func progressClass(props ComponentProps) string {
+	base := []string{"progress", "w-full", progressVariantClass(props.Variant), progressSizeClass(props.Size)}
+	if props.Class != "" {
+		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func progressVariantClass(variant string) string {
+	switch strings.TrimSpace(variant) {
+	case "primary":
+		return "progress-primary"
+	case "secondary":
+		return "progress-secondary"
+	case "accent":
+		return "progress-accent"
+	case "success":
+		return "progress-success"
+	case "info":
+		return "progress-info"
+	case "warning":
+		return "progress-warning"
+	case "danger", "error":
+		return "progress-error"
+	default:
+		return ""
+	}
+}
+
+func progressSizeClass(size string) string {
+	switch strings.TrimSpace(size) {
+	case "sm":
+		return "h-1"
+	case "lg":
+		return "h-4"
+	default:
+		return "h-2"
+	}
 }
 
 func gapClass(gap string) string {

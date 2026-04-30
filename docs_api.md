@@ -282,6 +282,10 @@ Template-backed component constructors (`templates/components/*`).
 - `Alert(props AlertProps) Node`
 - `Skeleton(props SkeletonProps) Node`
   - `Rows <= 0` defaults to `3`.
+- `Progress(props ProgressProps) Node`
+  - renders a native `<progress>` element with optional label and percentage text.
+  - `Max <= 0` defaults to `100`; `Value` is clamped into `0..Max`.
+  - `Indeterminate` omits the `value` attribute so browsers render an indeterminate indicator.
 - `EmptyState(props EmptyStateProps) Node`
   - `Rows <= 0` defaults to `3`.
 
@@ -296,6 +300,11 @@ Template-backed component constructors (`templates/components/*`).
   - `ChartDataset.Data` renders scalar values; `ChartDataset.Points` renders `{x,y}` values for scatter-style charts.
   - chart config is JSON-encoded and embedded next to a `<canvas data-mrn-chart>`.
   - includes `role="img"`, an accessible label, canvas fallback text, and a screen-reader fallback table.
+- `Image(props ImageProps) Node`
+  - renders a responsive `<figure>` with an `<img>` and optional caption.
+  - `Src` is required; blank `Src` returns a render error node.
+  - blank `Loading` defaults to `"lazy"` and blank `Decoding` defaults to `"async"`.
+  - `AspectRatio` supports `square`, `video`, `wide`, and `portrait`; `ObjectFit` supports `cover`/blank, `contain`, `fill`, `none`, and `scale-down`.
 - `DataFrame(df *dataframe.DataFrame, props TableProps) Node`
   - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `Table`.
   - `df.Names()` is mapped to `TableColumn.Label` and overrides `props.Columns`.

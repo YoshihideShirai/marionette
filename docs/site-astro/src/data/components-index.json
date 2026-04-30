@@ -18,6 +18,14 @@
       "description": "Marionette built-in theme toggle action button."
     },
     {
+      "id": "sidebar",
+      "name": "Sidebar",
+      "group": "Components",
+      "example": "/marionette/examples/sidebar.html",
+      "template": "frontend/ui_impl.go",
+      "description": "Application sidebar navigation with active links and optional note."
+    },
+    {
       "id": "input",
       "name": "InputComponent",
       "group": "Components",

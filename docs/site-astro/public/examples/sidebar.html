@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sidebar example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-base-200 p-6 text-base-content">
+    <main class="max-w-xs">
+      <aside class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm lg:min-h-[calc(100vh-3rem)]">
+        <div class="mb-6">
+          <div class="text-sm font-semibold uppercase tracking-wide text-base-content/50">Marionette</div>
+          <div class="text-lg font-bold">Admin Console</div>
+        </div>
+        <nav class="flex flex-col gap-1">
+          <a class="btn btn-primary justify-start" href="/">Dashboard</a>
+          <a class="btn btn-ghost justify-start text-base-content/70" href="/users">Users</a>
+          <a class="btn btn-ghost justify-start text-base-content/70" href="/analytics">Analytics</a>
+          <a class="btn btn-ghost justify-start text-base-content/70" href="/settings">Settings</a>
+        </nav>
+        <div class="mt-6 rounded-box bg-base-200 p-3 text-sm text-base-content/70">
+          <div class="font-medium text-base-content">Demo workspace</div>
+          <div>In-memory data for admin UI prototyping.</div>
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>

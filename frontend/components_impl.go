@@ -264,6 +264,14 @@ type DividerProps struct {
 	Props   ComponentProps
 }
 
+type TextProps struct {
+	Text   string
+	Size   string
+	Weight string
+	Tone   string
+	Props  ComponentProps
+}
+
 type StackProps struct {
 	Direction string
 	Gap       string
@@ -312,6 +320,7 @@ type CardProps struct {
 	Title       string
 	Description string
 	Actions     Node
+	Gap         string
 	Props       ComponentProps
 }
 
@@ -320,6 +329,23 @@ type SectionProps struct {
 	Description string
 	Actions     Node
 	Props       ComponentProps
+}
+
+type BoxProps struct {
+	Padding string
+	Border  bool
+	Tone    string
+	Props   ComponentProps
+}
+
+type AppShellProps struct {
+	ID      string
+	MainID  string
+	Sidebar Node
+	Flashes Node
+	Header  Node
+	Content Node
+	Props   ComponentProps
 }
 
 type templateNode struct {
@@ -988,9 +1014,7 @@ func UISwitch(props SwitchComponentProps) Node {
 }
 
 func UIBadge(props BadgeProps) Node {
-	return Element("span", ElementProps{
-		Class: badgeClass(props.Props),
-	}, Text(strings.TrimSpace(props.Label)))
+	return element{Tag: "span", Attrs: map[string]string{"class": badgeClass(props.Props)}, Text: strings.TrimSpace(props.Label)}
 }
 
 func UIActions(props ActionsProps, children ...Node) Node {
@@ -1003,6 +1027,14 @@ func UIDivider(props DividerProps) Node {
 	return Element("div", ElementProps{
 		Class: dividerClass(props),
 	})
+}
+
+func UITextComponent(props TextProps) Node {
+	return element{Tag: "span", Attrs: map[string]string{"class": textClass(props)}, Text: strings.TrimSpace(props.Text)}
+}
+
+func UIHiddenField(name, value string) Node {
+	return HiddenInput(name, value)
 }
 
 func UIStack(props StackProps, children ...Node) Node {
@@ -1078,6 +1110,31 @@ func UIRegion(props RegionProps, children ...Node) Node {
 	}, children...)
 }
 
+func UIBox(props BoxProps, children ...Node) Node {
+	return Element("div", ElementProps{
+		Class: boxClass(props),
+	}, children...)
+}
+
+func UIAppShell(props AppShellProps) Node {
+	id := strings.TrimSpace(props.ID)
+	if id == "" {
+		id = "app"
+	}
+	mainID := strings.TrimSpace(props.MainID)
+	if mainID == "" {
+		mainID = "main-content"
+	}
+	return Region(RegionProps{ID: id, Props: ComponentProps{Class: appShellClass(props.Props)}},
+		props.Sidebar,
+		Element("div", ElementProps{Class: "min-w-0 space-y-6"},
+			props.Flashes,
+			props.Header,
+			Region(RegionProps{ID: mainID, Props: ComponentProps{Class: "space-y-6"}}, props.Content),
+		),
+	)
+}
+
 func UICard(props CardProps, children ...Node) Node {
 	childHTML, err := renderNodes(children)
 	if err != nil {
@@ -1091,12 +1148,14 @@ func UICard(props CardProps, children ...Node) Node {
 		name: "components/card",
 		data: struct {
 			Class       string
+			BodyClass   string
 			Title       string
 			Description string
 			Actions     template.HTML
 			Children    []template.HTML
 		}{
 			Class:       cardClass(props.Props),
+			BodyClass:   cardBodyClass(props),
 			Title:       strings.TrimSpace(props.Title),
 			Description: strings.TrimSpace(props.Description),
 			Actions:     actionsHTML,
@@ -1447,6 +1506,96 @@ func dividerSpacingClass(spacing string) string {
 	}
 }
 
+func textClass(props TextProps) string {
+	base := []string{textSizeClass(props.Size), textWeightClass(props.Weight), textToneClass(props.Tone)}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func textSizeClass(size string) string {
+	switch strings.TrimSpace(size) {
+	case "xs":
+		return "text-xs"
+	case "sm":
+		return "text-sm"
+	case "lg":
+		return "text-lg"
+	case "xl":
+		return "text-xl"
+	case "2xl":
+		return "text-2xl"
+	case "3xl":
+		return "text-3xl"
+	default:
+		return ""
+	}
+}
+
+func textWeightClass(weight string) string {
+	switch strings.TrimSpace(weight) {
+	case "medium":
+		return "font-medium"
+	case "semibold":
+		return "font-semibold"
+	case "bold":
+		return "font-bold"
+	default:
+		return ""
+	}
+}
+
+func textToneClass(tone string) string {
+	switch strings.TrimSpace(tone) {
+	case "muted":
+		return "text-base-content/60"
+	case "subtle":
+		return "text-base-content/70"
+	default:
+		return ""
+	}
+}
+
+func boxClass(props BoxProps) string {
+	base := []string{boxToneClass(props.Tone), boxPaddingClass(props.Padding)}
+	if props.Border {
+		base = append(base, "border border-base-300")
+	}
+	if props.Props.Class != "" {
+		base = append(base, props.Props.Class)
+	}
+	return joinClass(base...)
+}
+
+func boxToneClass(tone string) string {
+	switch strings.TrimSpace(tone) {
+	case "base":
+		return "bg-base-100"
+	case "muted":
+		return "bg-base-200"
+	default:
+		return ""
+	}
+}
+
+func boxPaddingClass(padding string) string {
+	switch strings.TrimSpace(padding) {
+	case "none":
+		return "p-0"
+	case "sm":
+		return "p-3"
+	case "lg":
+		return "p-6"
+	default:
+		return "p-4"
+	}
+}
+
+func appShellClass(props ComponentProps) string {
+	return joinClass("grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]", props.Class)
+}
+
 func feedbackClass(component string, props ComponentProps) string {
 	base := []string{"ui-feedback", "ui-feedback-" + component, feedbackVariantClass(props.Variant), feedbackSizeClass(props.Size)}
 	if props.Class != "" {
@@ -1539,6 +1688,10 @@ func containerClass(props ContainerProps) string {
 
 func cardClass(props ComponentProps) string {
 	return joinClass("card bg-base-100 shadow-sm", props.Class)
+}
+
+func cardBodyClass(props CardProps) string {
+	return joinClass("card-body", gapClass(props.Gap))
 }
 
 func sectionClass(props ComponentProps) string {

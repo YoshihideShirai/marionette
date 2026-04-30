@@ -637,15 +637,61 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
+	textHTML, err := TextComponent(TextProps{Text: "Muted", Size: "sm", Weight: "medium", Tone: "muted"}).Render()
+	if err != nil {
+		t.Fatalf("text render failed: %v", err)
+	}
+	for _, want := range []string{"text-sm", "font-medium", "text-base-content/60", "Muted"} {
+		if !strings.Contains(string(textHTML), want) {
+			t.Fatalf("expected %q in %q", want, textHTML)
+		}
+	}
+
+	boxHTML, err := Box(BoxProps{Border: true, Tone: "base", Padding: "sm", Props: ComponentProps{Class: "rounded-box"}}, Text("Panel")).Render()
+	if err != nil {
+		t.Fatalf("box render failed: %v", err)
+	}
+	for _, want := range []string{"bg-base-100", "p-3", "border border-base-300", "rounded-box", "Panel"} {
+		if !strings.Contains(string(boxHTML), want) {
+			t.Fatalf("expected %q in %q", want, boxHTML)
+		}
+	}
+
+	shellHTML, err := AppShell(AppShellProps{
+		Sidebar: Text("Nav"),
+		Flashes: Text("Flash"),
+		Header:  Text("Header"),
+		Content: Text("Main"),
+	}).Render()
+	if err != nil {
+		t.Fatalf("app shell render failed: %v", err)
+	}
+	for _, want := range []string{`id="app"`, `id="main-content"`, "Nav", "Flash", "Header", "Main"} {
+		if !strings.Contains(string(shellHTML), want) {
+			t.Fatalf("expected %q in %q", want, shellHTML)
+		}
+	}
+
+	hiddenHTML, err := HiddenField("id", "42").Render()
+	if err != nil {
+		t.Fatalf("hidden field render failed: %v", err)
+	}
+	for _, want := range []string{`type="hidden"`, `name="id"`, `value="42"`} {
+		if !strings.Contains(string(hiddenHTML), want) {
+			t.Fatalf("expected %q in %q", want, hiddenHTML)
+		}
+	}
+
 	cardHTML, err := Card(CardProps{
 		Title:       "Card",
 		Description: "Summary",
 		Actions:     ButtonComponent("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+		Gap:         "sm",
 	}, Text("Body")).Render()
 	if err != nil {
 		t.Fatalf("card render failed: %v", err)
 	}
-	for _, want := range []string{"card bg-base-100 shadow-sm", "Card", "Summary", "btn-ghost", "Body"} {
+	for _, want := range []string{"card bg-base-100 shadow-sm", "gap-2", "Card", "Summary", "btn-ghost", "Body"} {
 		if !strings.Contains(string(cardHTML), want) {
 			t.Fatalf("expected %q in %q", want, cardHTML)
 		}

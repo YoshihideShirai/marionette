@@ -53,6 +53,8 @@ func SwitchComponent(props SwitchComponentProps) Node         { return UISwitch(
 func Badge(props BadgeProps) Node                             { return UIBadge(props) }
 func Actions(props ActionsProps, children ...Node) Node       { return UIActions(props, children...) }
 func Divider(props DividerProps) Node                         { return UIDivider(props) }
+func TextComponent(props TextProps) Node                      { return UITextComponent(props) }
+func HiddenField(name, value string) Node                     { return UIHiddenField(name, value) }
 func Stack(props StackProps, children ...Node) Node           { return UIStack(props, children...) }
 func Grid(props GridProps, children ...Node) Node             { return UIGrid(props, children...) }
 func Split(props SplitProps) Node                             { return UISplit(props) }
@@ -61,5 +63,7 @@ func ContainerComponent(props ContainerProps, children ...Node) Node {
 	return UIContainer(props, children...)
 }
 func Region(props RegionProps, children ...Node) Node   { return UIRegion(props, children...) }
+func Box(props BoxProps, children ...Node) Node         { return UIBox(props, children...) }
+func AppShell(props AppShellProps) Node                 { return UIAppShell(props) }
 func Card(props CardProps, children ...Node) Node       { return UICard(props, children...) }
 func Section(props SectionProps, children ...Node) Node { return UISection(props, children...) }

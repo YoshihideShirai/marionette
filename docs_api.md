@@ -268,6 +268,8 @@ Template-backed component constructors (`templates/components/*`).
   - blank `Method` defaults to `post`; supported methods are `post` and `get`.
   - renders standard `action`/`method` attributes plus `hx-post` or `hx-get`.
   - optional `Target` and `Swap` render `hx-target` and `hx-swap`.
+- `HiddenField(name, value string) Node`
+  - renders a hidden form field.
 - `FormFieldComponent(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
 - `SelectComponent(name string, options []SelectOption, props ComponentProps) Node`
@@ -319,6 +321,8 @@ Template-backed component constructors (`templates/components/*`).
 - `SwitchComponent(props SwitchComponentProps) Node`
 - `Badge(props BadgeProps) Node`
   - renders a compact label with `Variant`, `Size`, and custom classes from `ComponentProps`.
+- `TextComponent(props TextProps) Node`
+  - renders plain text with semantic size, weight, and tone options.
 - `DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
 - `DataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
@@ -332,6 +336,10 @@ Template-backed component constructors (`templates/components/*`).
 - `Divider(props DividerProps) Node`
   - renders a visual divider.
   - `Spacing`: `none`, `xs`, `sm`, `md`/blank, `lg`.
+- `Box(props BoxProps, children ...Node) Node`
+  - renders a generic surface with optional border, tone, padding, and custom classes.
+- `AppShell(props AppShellProps) Node`
+  - renders the demo/admin shell with sidebar, flashes, header, and content regions.
 - `Stack(props StackProps, children ...Node) Node`
   - flex layout for vertical/horizontal stacks.
   - `Direction`: `vertical`/blank or `horizontal`/`row`.
@@ -359,6 +367,7 @@ Template-backed component constructors (`templates/components/*`).
   - `Props.Class` appends custom classes.
 - `Card(props CardProps, children ...Node) Node`
   - card surface with optional title, description, and action node.
+  - `Gap` controls spacing between card body children.
 - `Section(props SectionProps, children ...Node) Node`
   - unframed section wrapper with optional title, description, and action node.
 

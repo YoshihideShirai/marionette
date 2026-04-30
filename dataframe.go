@@ -30,10 +30,10 @@ type DataFrameChartProps struct {
 //   - nil => empty text cell
 //   - Node => rendered directly
 //   - all others => fmt.Sprint(value) wrapped in Text(...)
-func UIDataFrame(df *rdf.DataFrame, props TableProps) Node {
+func DataFrame(df *rdf.DataFrame, props TableProps) Node {
 	tableProps := props
 	if df == nil {
-		return UITable(tableProps)
+		return Table(tableProps)
 	}
 
 	columnNames := df.Names()
@@ -64,7 +64,7 @@ func UIDataFrame(df *rdf.DataFrame, props TableProps) Node {
 	}
 
 	tableProps.Rows = rows
-	return UITable(tableProps)
+	return Table(tableProps)
 }
 
 // UIDataFrameChart renders dataframe columns through UIChart.

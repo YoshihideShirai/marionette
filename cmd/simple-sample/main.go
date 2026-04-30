@@ -40,7 +40,7 @@ func main() {
 
 func page(ctx *mb.Context) mf.Node {
 	tasks := ctx.Get("tasks").([]task)
-	return mf.ContainerComponent(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
+	return mf.UIContainer(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "6"},
 			mf.PageHeader(mf.PageHeaderProps{
 				Title:       "Simple Tasks",
@@ -79,7 +79,7 @@ func taskList(tasks []task) mf.Node {
 	for _, t := range tasks {
 		rows = append(rows, mf.TableRowValues(t.ID, t.Name))
 	}
-	return mf.TableComponent(mf.TableProps{
+	return mf.Table(mf.TableProps{
 		Columns: []mf.TableColumn{{Label: "ID"}, {Label: "Name"}},
 		Rows:    rows,
 	})

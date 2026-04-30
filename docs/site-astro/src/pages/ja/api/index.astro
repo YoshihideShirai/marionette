@@ -19,7 +19,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       <ul>
         <li>推奨エイリアス: <code>mb</code> (marionette backend), <code>mf</code> (marionette frontend)。</li>
         <li><code>mb</code> を app/runtime API に使用: <code>New</code>, <code>App</code>, <code>Context</code>, <code>Handler</code>。</li>
-        <li><code>mf</code> をコンポーネント API に使用: <code>ButtonComponent</code>, <code>Card</code>, <code>TableComponent</code>, <code>FormRow</code>。</li>
+        <li><code>mf</code> をコンポーネント API に使用: <code>Button</code>, <code>Card</code>, <code>Table</code>, <code>FormRow</code>。</li>
         <li><code>mh</code> を低レベルノード API に使用: <code>Node</code>, <code>Div</code>, <code>Element</code>, <code>Raw</code>。</li>
         <li>低レベルコンストラクタは <code>frontend</code> から意図的に公開されていません。カスタムマークアップが必要な場合は <code>frontend/html</code> をインポートしてください。</li>
       </ul>
@@ -170,7 +170,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
       <h3>ボタン / 入力</h3>
       <ul>
-        <li><code>ButtonComponent(label string, props ComponentProps) Node</code></li>
+        <li><code>Button(label string, props ComponentProps) Node</code></li>
         <li><code>SubmitButton(label string, props ComponentProps) Node</code></li>
         <li><code>InputComponent(name, value string, props ComponentProps) Node</code></li>
         <li><code>TextareaComponent(name, value string, options TextareaOptions) Node</code></li>
@@ -188,9 +188,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
       <h3>データ表示</h3>
       <ul>
-        <li><code>TableComponent(props TableProps) Node</code></li>
+        <li><code>Table(props TableProps) Node</code></li>
         <li><code>Chart(props ChartProps) Node</code></li>
-        <li><code>DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node</code></li>
+        <li><code>DataFrame(df *dataframe.DataFrame, props TableProps) Node</code></li>
         <li><code>DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node</code></li>
         <li><code>Pagination(props PaginationProps) Node</code></li>
       </ul>

@@ -482,7 +482,7 @@ func iframeFor(entry componentEntry) string {
 
 func usageSnippet(id string) string {
 	snippets := map[string]string{
-		"button": `saveButton := mf.ButtonComponent("Save", mf.ComponentProps{
+		"button": `saveButton := mf.Button("Save", mf.ComponentProps{
     Variant: "secondary",
     Size:    "sm",
 })`,
@@ -502,7 +502,7 @@ func usageSnippet(id string) string {
         Disabled: true,
     },
 })`,
-		"select": `roleSelect := mf.SelectComponent("role", []mf.SelectOption{
+		"select": `roleSelect := mf.UISelect("role", []mf.SelectOption{
     {Label: "Admin", Value: "admin", Selected: true},
     {Label: "Viewer", Value: "viewer"},
 }, mf.ComponentProps{
@@ -511,8 +511,8 @@ func usageSnippet(id string) string {
 })`,
 		"modal": `confirmModal := mf.Modal(mf.ModalProps{
     Title: "Delete user",
-    Body:  mf.TextComponent(mf.TextProps{Text: "Confirm deletion"}),
-    Actions: mf.ButtonComponent("Delete", mf.ComponentProps{
+    Body:  mf.UIUITextComponent(mf.TextProps{Text: "Confirm deletion"}),
+    Actions: mf.Button("Delete", mf.ComponentProps{
         Variant: "error",
         Size:    "sm",
     }),
@@ -522,7 +522,7 @@ func usageSnippet(id string) string {
     Title:       "No users",
     Description: "Create one first.",
 })`,
-		"table": `usersTable := mf.TableComponent(mf.TableProps{
+		"table": `usersTable := mf.Table(mf.TableProps{
     Columns: []mf.TableColumn{
         {Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true},
         {Label: "Role"},
@@ -560,12 +560,12 @@ func usageSnippet(id string) string {
     PrevHref:   "/?page=1&per_page=10",
     NextHref:   "/?page=3&per_page=10",
 })`,
-		"form": `profileForm := mf.FormComponent("/users", "post", mf.ButtonComponent("Save", mf.ComponentProps{
+		"form": `profileForm := mf.UIForm("/users", "post", mf.Button("Save", mf.ComponentProps{
     Variant: "primary",
     Size:    "sm",
 }))`,
-		"form-field": `nameField := mf.FormFieldComponent(
-    mf.InputComponent("name", "", mf.ComponentProps{Size: "sm"}),
+		"form-field": `nameField := mf.UIFormField(
+    mf.UIInput("name", "", mf.ComponentProps{Size: "sm"}),
     mf.FormFieldProps{
         Label:    "Name",
         Required: true,
@@ -588,7 +588,7 @@ func usageSnippet(id string) string {
         {Label: "Aiko", Active: true},
     },
 })`,
-		"textarea": `notes := mf.TextareaComponent("notes", "hello", mf.TextareaOptions{
+		"textarea": `notes := mf.UITextarea("notes", "hello", mf.TextareaOptions{
     Placeholder: "Memo",
     Rows:        4,
     Required:    true,
@@ -597,14 +597,14 @@ func usageSnippet(id string) string {
         Size:    "sm",
     },
 })`,
-		"checkbox": `activeUser := mf.CheckboxComponent(mf.CheckboxComponentProps{
+		"checkbox": `activeUser := mf.UICheckbox(mf.CheckboxComponentProps{
     Name:    "active",
     Value:   "1",
     Label:   "Active user",
     Checked: true,
     Props:   mf.ComponentProps{Size: "sm"},
 })`,
-		"radio-group": `roleGroup := mf.RadioGroupComponent(mf.RadioGroupComponentProps{
+		"radio-group": `roleGroup := mf.UIRadioGroup(mf.RadioGroupComponentProps{
     Name:      "role",
     AriaLabel: "role",
     Items: []mf.RadioItem{
@@ -614,7 +614,7 @@ func usageSnippet(id string) string {
     },
     Props: mf.ComponentProps{Size: "sm"},
 })`,
-		"switch": `notifications := mf.SwitchComponent(mf.SwitchComponentProps{
+		"switch": `notifications := mf.UISwitch(mf.SwitchComponentProps{
     Name:    "notify",
     Value:   "1",
     Label:   "Enable notifications",
@@ -645,24 +645,24 @@ func usageSnippet(id string) string {
         Justify:   "between",
         Wrap:      true,
     },
-    mf.TextComponent(mf.TextProps{Text: "Aiko Tanaka"}),
+    mf.UIUITextComponent(mf.TextProps{Text: "Aiko Tanaka"}),
     mf.Badge(mf.BadgeProps{Label: "Admin", Props: mf.ComponentProps{Variant: "primary"}}),
-    mf.ButtonComponent("Open", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
+    mf.Button("Open", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
 )`,
 		"grid": `summaryGrid := mf.Grid(
     mf.GridProps{Columns: "3", Gap: "lg"},
-    mf.Card(mf.CardProps{}, mf.TextComponent(mf.TextProps{Text: "Users: 24"})),
-    mf.Card(mf.CardProps{}, mf.TextComponent(mf.TextProps{Text: "Admins: 4"})),
-    mf.Card(mf.CardProps{}, mf.TextComponent(mf.TextProps{Text: "Pending: 7"})),
+    mf.Card(mf.CardProps{}, mf.UIUITextComponent(mf.TextProps{Text: "Users: 24"})),
+    mf.Card(mf.CardProps{}, mf.UIUITextComponent(mf.TextProps{Text: "Admins: 4"})),
+    mf.Card(mf.CardProps{}, mf.UIUITextComponent(mf.TextProps{Text: "Pending: 7"})),
 )`,
 		"split": `workspace := mf.Split(mf.SplitProps{
     Main: mf.Card(
         mf.CardProps{Title: "Main workspace"},
-        mf.TextComponent(mf.TextProps{Text: "Aiko / Admin / Active"}),
+        mf.UIUITextComponent(mf.TextProps{Text: "Aiko / Admin / Active"}),
     ),
     Aside: mf.Section(
         mf.SectionProps{Title: "Aside panel"},
-        mf.ButtonComponent("Apply", mf.ComponentProps{Variant: "primary", Size: "sm"}),
+        mf.Button("Apply", mf.ComponentProps{Variant: "primary", Size: "sm"}),
     ),
     AsideWidth: "md",
     Gap:        "lg",
@@ -672,33 +672,33 @@ func usageSnippet(id string) string {
     Description: "Manage account records, roles, and invitations.",
     Actions: mf.Stack(
         mf.StackProps{Direction: "horizontal", Gap: "sm"},
-        mf.ButtonComponent("Export", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
-        mf.ButtonComponent("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
+        mf.Button("Export", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
+        mf.Button("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
     ),
 })`,
-		"container": `page := mf.ContainerComponent(
+		"container": `page := mf.UIContainer(
     mf.ContainerProps{
         MaxWidth: "md",
         Padding:  "md",
         Centered: true,
     },
-    mf.TextComponent(mf.TextProps{Text: "Centered page container"}),
+    mf.UIUITextComponent(mf.TextProps{Text: "Centered page container"}),
 )`,
 		"card": `card := mf.Card(
     mf.CardProps{
         Title:       "Workspace summary",
         Description: "Header, description, actions, then body content.",
-        Actions:     mf.ButtonComponent("Edit", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
+        Actions:     mf.Button("Edit", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
     },
-    mf.TextComponent(mf.TextProps{Text: "Active: 24"}),
+    mf.UIUITextComponent(mf.TextProps{Text: "Active: 24"}),
 )`,
 		"section": `section := mf.Section(
     mf.SectionProps{
         Title:       "Recent activity",
         Description: "An unframed content section with consistent header spacing.",
-        Actions:     mf.ButtonComponent("View all", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
+        Actions:     mf.Button("View all", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
     },
-    mf.TextComponent(mf.TextProps{Text: "Aiko updated a role"}),
+    mf.UIUITextComponent(mf.TextProps{Text: "Aiko updated a role"}),
 )`,
 		"feedback": `toast := mf.Toast(mf.ToastProps{
     Title:       "Toast / Default",
@@ -754,7 +754,7 @@ alert := mf.Alert(mf.AlertProps{
 })`,
 		"overlay-system": `modal := mf.Modal(mf.ModalProps{
     Title: "Overlay demo",
-    Body:  mf.TextComponent(mf.TextProps{Text: "Use modal, drawer, and popover together for rich flows."}),
+    Body:  mf.UIUITextComponent(mf.TextProps{Text: "Use modal, drawer, and popover together for rich flows."}),
     Open:  true,
 })`,
 		"dataframe": `df := dataframe.LoadRecords(
@@ -764,7 +764,7 @@ alert := mf.Alert(mf.AlertProps{
     },
 )
 
-table := mf.DataFrameComponent(df, mf.DataFrameProps{})`,
+table := mf.DataFrame(df, mf.DataFrameProps{})`,
 		"dataframe-chart": `chart := mf.DataFrameChart(df, mf.DataFrameChartProps{
     Type:      mf.ChartTypeBar,
     LabelCol:  "month",

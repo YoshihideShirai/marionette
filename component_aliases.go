@@ -7,7 +7,7 @@ import (
 	dataframeimports "github.com/rocketlaunchr/dataframe-go/imports"
 )
 
-func ButtonComponent(label string, props ComponentProps) Node { return UIButton(label, props) }
+func ButtonComponent(label string, props ComponentProps) Node { return Button(label, props) }
 func SubmitButton(label string, props ComponentProps) Node    { return UISubmitButton(label, props) }
 func InputComponent(name, value string, props ComponentProps) Node {
 	return UIInput(name, value, props)
@@ -31,9 +31,9 @@ func Toast(props ToastProps) Node                                 { return UIToa
 func Alert(props AlertProps) Node                                 { return UIAlert(props) }
 func Skeleton(props SkeletonProps) Node                           { return UISkeleton(props) }
 func EmptyState(props EmptyStateProps) Node                       { return UIEmptyState(props) }
-func TableComponent(props TableProps) Node                        { return UITable(props) }
+func TableComponent(props TableProps) Node                        { return Table(props) }
 func Chart(props ChartProps) Node                                 { return UIChart(props) }
-func DataFrameComponent(df *rdf.DataFrame, props TableProps) Node { return UIDataFrame(df, props) }
+func DataFrameComponent(df *rdf.DataFrame, props TableProps) Node { return DataFrame(df, props) }
 func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	return UIDataFrameChart(df, props)
 }
@@ -52,7 +52,7 @@ func SwitchComponent(props SwitchComponentProps) Node         { return UISwitch(
 func Badge(props BadgeProps) Node                             { return UIBadge(props) }
 func Actions(props ActionsProps, children ...Node) Node       { return UIActions(props, children...) }
 func Divider(props DividerProps) Node                         { return UIDivider(props) }
-func TextComponent(props TextProps) Node                      { return UITextComponent(props) }
+func TextComponent(props TextProps) Node                      { return UIText(props) }
 func HiddenField(name, value string) Node                     { return UIHiddenField(name, value) }
 func Stack(props StackProps, children ...Node) Node           { return UIStack(props, children...) }
 func Grid(props GridProps, children ...Node) Node             { return UIGrid(props, children...) }

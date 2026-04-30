@@ -378,7 +378,7 @@ func (n templateNode) Render() (template.HTML, error) {
 	return template.HTML(out.String()), nil
 }
 
-func UIButton(label string, props ComponentProps) Node {
+func Button(label string, props ComponentProps) Node {
 	return componentButton(label, "button", props)
 }
 
@@ -667,7 +667,7 @@ func UIEmptyState(props EmptyStateProps) Node {
 	}
 }
 
-func UITable(props TableProps) Node {
+func Table(props TableProps) Node {
 	rows := make([]struct {
 		Cells []template.HTML
 	}, 0, len(props.Rows))
@@ -1023,7 +1023,7 @@ func UIDivider(props DividerProps) Node {
 	})
 }
 
-func UITextComponent(props TextProps) Node {
+func UIText(props TextProps) Node {
 	return element{Tag: "span", Attrs: map[string]string{"class": textClass(props)}, Text: strings.TrimSpace(props.Text)}
 }
 

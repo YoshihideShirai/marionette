@@ -17,7 +17,7 @@ import (
 
 - Recommended aliases: `mb` (marionette backend), `mf` (marionette frontend).
 - Use `mb` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
-- Use `mf` for component APIs such as `ButtonComponent`, `Card`, `TableComponent`, `FormRow`.
+- Use `mf` for component APIs such as `Button`, `Card`, `Table`, `FormRow`.
 - Use `mh` for advanced low-level node APIs such as `Node`, `Div`, `Element`, `Raw`.
 - Low-level constructors are intentionally not exposed from `frontend`; import
   `frontend/html` when custom markup is needed.
@@ -250,7 +250,7 @@ package exposes component APIs; use the `mh` import shown above for custom marku
 Template-backed component constructors (`templates/components/*`).
 
 ### Buttons / inputs / field wrappers
-- `ButtonComponent(label string, props ComponentProps) Node`
+- `Button(label string, props ComponentProps) Node`
 - `SubmitButton(label string, props ComponentProps) Node`
 - `InputComponent(name, value string, props ComponentProps) Node`
   - uses `InputWithOptions` with defaults:
@@ -286,9 +286,9 @@ Template-backed component constructors (`templates/components/*`).
   - `Rows <= 0` defaults to `3`.
 
 ### Data display
-- `TableRowValues(values ...any) TableComponentRow`
+- `TableRowValues(values ...any) TableRow`
   - converts `nil` to empty text, `Node` values directly, and other values with `fmt.Sprint`.
-- `TableComponent(props TableProps) Node`
+- `Table(props TableProps) Node`
   - renders each cell node; any cell render error => render error node.
 - `Chart(props ChartProps) Node`
   - renders a Chart.js-backed chart from Go props.
@@ -296,8 +296,8 @@ Template-backed component constructors (`templates/components/*`).
   - `ChartDataset.Data` renders scalar values; `ChartDataset.Points` renders `{x,y}` values for scatter-style charts.
   - chart config is JSON-encoded and embedded next to a `<canvas data-mrn-chart>`.
   - includes `role="img"`, an accessible label, canvas fallback text, and a screen-reader fallback table.
-- `DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node`
-  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `TableComponent`.
+- `DataFrame(df *dataframe.DataFrame, props TableProps) Node`
+  - renders `github.com/rocketlaunchr/dataframe-go` dataframes through `Table`.
   - `df.Names()` is mapped to `TableColumn.Label` and overrides `props.Columns`.
   - each row is read by `df.Row(row, true, dataframe.SeriesName)`.
   - cell conversion: `nil` => empty text, `Node` => rendered directly, all others => `fmt.Sprint(value)`.
@@ -320,7 +320,7 @@ Template-backed component constructors (`templates/components/*`).
 - `SwitchComponent(props SwitchComponentProps) Node`
 - `Badge(props BadgeProps) Node`
   - renders a compact label with `Variant`, `Size`, and custom classes from `ComponentProps`.
-- `TextComponent(props TextProps) Node`
+- `UIText(props TextProps) Node`
   - renders plain text with semantic size, weight, and tone options.
 - `DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.
@@ -370,7 +370,7 @@ Template-backed component constructors (`templates/components/*`).
 - `Section(props SectionProps, children ...Node) Node`
   - unframed section wrapper with optional title, description, and action node.
 
-#### Example: Convert CSV/TSV data to `DataFrameComponent`
+#### Example: Convert CSV/TSV data to `DataFrame`
 
 ```go
 import (

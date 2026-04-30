@@ -182,6 +182,19 @@ type ChartProps struct {
 	Props       ComponentProps
 }
 
+type ImageProps struct {
+	Src         string
+	Alt         string
+	Caption     string
+	Width       int
+	Height      int
+	Loading     string
+	Decoding    string
+	AspectRatio string
+	ObjectFit   string
+	Props       ComponentProps
+}
+
 type chartFallbackRow struct {
 	Label  string
 	Values []string
@@ -741,6 +754,47 @@ func UIChart(props ChartProps) Node {
 			Datasets:     props.Datasets,
 			Rows:         chartFallbackRows(props),
 			FallbackText: chartFallbackText(props),
+		},
+	}
+}
+
+func UIImage(props ImageProps) Node {
+	src := strings.TrimSpace(props.Src)
+	if src == "" {
+		return renderErrorNode{err: fmt.Errorf("image src is required")}
+	}
+	loading := strings.TrimSpace(props.Loading)
+	if loading == "" {
+		loading = "lazy"
+	}
+	decoding := strings.TrimSpace(props.Decoding)
+	if decoding == "" {
+		decoding = "async"
+	}
+	return templateNode{
+		name: "components/image",
+		data: struct {
+			Class      string
+			FrameClass string
+			ImageClass string
+			Src        string
+			Alt        string
+			Caption    string
+			Width      int
+			Height     int
+			Loading    string
+			Decoding   string
+		}{
+			Class:      imageClass(props.Props),
+			FrameClass: imageFrameClass(props),
+			ImageClass: imageElementClass(props),
+			Src:        src,
+			Alt:        props.Alt,
+			Caption:    strings.TrimSpace(props.Caption),
+			Width:      props.Width,
+			Height:     props.Height,
+			Loading:    loading,
+			Decoding:   decoding,
 		},
 	}
 }
@@ -1711,6 +1765,54 @@ func sectionClass(props ComponentProps) string {
 
 func chartClass(props ComponentProps) string {
 	return joinClass("card bg-base-100 shadow-sm", props.Class)
+}
+
+func imageClass(props ComponentProps) string {
+	return joinClass("space-y-2", props.Class)
+}
+
+func imageFrameClass(props ImageProps) string {
+	return joinClass("overflow-hidden rounded-box bg-base-200", imageAspectClass(props.AspectRatio))
+}
+
+func imageElementClass(props ImageProps) string {
+	base := []string{"block", "w-full", imageObjectFitClass(props.ObjectFit)}
+	if strings.TrimSpace(props.AspectRatio) != "" {
+		base = append(base, "h-full")
+	} else {
+		base = append(base, "h-auto")
+	}
+	return joinClass(base...)
+}
+
+func imageAspectClass(aspectRatio string) string {
+	switch strings.TrimSpace(aspectRatio) {
+	case "square":
+		return "aspect-square"
+	case "video":
+		return "aspect-video"
+	case "wide":
+		return "aspect-[16/9]"
+	case "portrait":
+		return "aspect-[3/4]"
+	default:
+		return ""
+	}
+}
+
+func imageObjectFitClass(objectFit string) string {
+	switch strings.TrimSpace(objectFit) {
+	case "contain":
+		return "object-contain"
+	case "fill":
+		return "object-fill"
+	case "none":
+		return "object-none"
+	case "scale-down":
+		return "object-scale-down"
+	default:
+		return "object-cover"
+	}
 }
 
 func gapClass(gap string) string {

@@ -205,6 +205,12 @@ func TestTemplatePartialsRenderSharedProps(t *testing.T) {
 	}
 }
 
+func TestImageRequiresSrc(t *testing.T) {
+	if _, err := Image(ImageProps{}).Render(); err == nil {
+		t.Fatal("expected image without src to fail")
+	}
+}
+
 func TestLoadComponentTemplatesCachesParsedTemplates(t *testing.T) {
 	cachedTemplates = nil
 	cachedTemplatesErr = nil

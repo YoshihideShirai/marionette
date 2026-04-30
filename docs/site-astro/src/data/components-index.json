@@ -72,6 +72,15 @@
       "description": "Chart.js-backed data visualization wrapper."
     },
     {
+      "id": "image",
+      "name": "Image",
+      "group": "Components",
+      "golden": "testdata/golden/image.golden.html",
+      "example": "/marionette/examples/image.html",
+      "template": "templates/components/image.html",
+      "description": "Responsive image display with alt text and optional caption."
+    },
+    {
       "id": "chart-line",
       "name": "Chart (Line)",
       "group": "Chart",

@@ -103,6 +103,19 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			}),
 		},
 		{
+			name: "image",
+			node: Image(ImageProps{
+				Src:         "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+				Alt:         "Desk with laptop and notebook",
+				Caption:     "Workspace preview",
+				Width:       1200,
+				Height:      800,
+				AspectRatio: "video",
+				ObjectFit:   "cover",
+				Props:       ComponentProps{Class: "max-w-xl"},
+			}),
+		},
+		{
 			name: "pagination",
 			node: Pagination(PaginationProps{Page: 2, TotalPages: 4, PrevHref: "/?page=1&per_page=10", NextHref: "/?page=3&per_page=10"}),
 		},

@@ -33,6 +33,8 @@ func Skeleton(props SkeletonProps) Node                           { return UISke
 func EmptyState(props EmptyStateProps) Node                       { return UIEmptyState(props) }
 func TableComponent(props TableProps) Node                        { return Table(props) }
 func Chart(props ChartProps) Node                                 { return UIChart(props) }
+func Image(props ImageProps) Node                                 { return UIImage(props) }
+func ImageComponent(props ImageProps) Node                        { return UIImage(props) }
 func DataFrameComponent(df *rdf.DataFrame, props TableProps) Node { return DataFrame(df, props) }
 func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	return UIDataFrameChart(df, props)

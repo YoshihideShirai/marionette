@@ -1,0 +1,320 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="API Documentation | Marionette" lang="en" languageSwitcherPath="/marionette/ja/api/">
+  <article class="api-docs">
+    <header>
+      <h1>API Documentation</h1>
+      <p class="lead">Direct API reference for the current runtime surface, reorganized by runtime layer.</p>
+    </header>
+
+    <section id="import-path">
+      <h2>Import Path</h2>
+      <p>Split imports by runtime role:</p>
+      <pre><code>{`import (
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+    mh "github.com/YoshihideShirai/marionette/frontend/html"
+)`}</code></pre>
+      <ul>
+        <li>Recommended aliases: <code>mb</code> (marionette backend), <code>mf</code> (marionette frontend).</li>
+        <li>Use <code>mb</code> for app/runtime APIs such as <code>New</code>, <code>App</code>, <code>Context</code>, <code>Handler</code>.</li>
+        <li>Use <code>mf</code> for component APIs such as <code>ButtonComponent</code>, <code>Card</code>, <code>TableComponent</code>, <code>FormRow</code>.</li>
+        <li>Use <code>mh</code> for advanced low-level node APIs such as <code>Node</code>, <code>Div</code>, <code>Element</code>, <code>Raw</code>.</li>
+        <li>Low-level constructors are intentionally not exposed from <code>frontend</code>; import <code>frontend/html</code> when custom markup is needed.</li>
+      </ul>
+    </section>
+
+    <section id="app">
+      <h2>App</h2>
+
+      <h3><code>New() *App</code></h3>
+      <ul>
+        <li>Returns a new <code>*App</code>.</li>
+        <li>Initializes internal state: <code>state: map[string]any{}</code>, <code>pages: map[string]Handler{}</code>, <code>actions: map[string]Handler{}</code>, <code>cookieSecure: false</code> (default).</li>
+      </ul>
+
+      <h3><code>Run(addr string) error</code></h3>
+      <ul>
+        <li>Starts an HTTP server with <code>http.ListenAndServe(addr, a.Handler())</code>.</li>
+        <li>Logs <code>marionette listening at http://&lt;addr&gt;</code> to stdout before serving.</li>
+        <li>Returns any <code>ListenAndServe</code> error as-is.</li>
+      </ul>
+
+      <h3><code>SetCookieSecure(secure bool)</code></h3>
+      <ul>
+        <li>Enables/disables <code>Secure</code> on the flash cookie (<code>marionette_flash</code>).</li>
+        <li>Default is <code>false</code>.</li>
+        <li>Affects both: flash write (<code>Context.AddFlash</code>) and flash clear.</li>
+      </ul>
+
+      <h3><code>Handler() http.Handler</code></h3>
+      <ul>
+        <li>Builds and returns <code>*http.ServeMux</code> with all registered routes.</li>
+        <li><code>Page</code> routes: path match is strict, method is <code>GET</code> only, renders full HTML shell.</li>
+        <li><code>Action</code> routes: method is <code>POST</code> only, executes <code>r.ParseForm()</code>, renders HTML fragment only.</li>
+        <li>If <code>/</code> is not registered: <code>GET /</code> returns <code>500 Internal Server Error</code>.</li>
+      </ul>
+
+      <h3><code>Page(path string, fn Handler)</code></h3>
+      <ul>
+        <li>Registers full-page handler for <code>GET</code>.</li>
+        <li>Path normalization: <code>""</code> → <code>"/"</code>, no leading slash → leading slash is added.</li>
+        <li>Render mode: handler <code>Node</code> is wrapped in Marionette shell HTML.</li>
+      </ul>
+
+      <h3><code>Action(name string, fn Handler)</code></h3>
+      <ul>
+        <li>Registers fragment handler for <code>POST</code>.</li>
+        <li>Name normalization: always stored as <code>"/" + strings.TrimPrefix(name, "/")</code>.</li>
+        <li>Parse failure in request form body → <code>400</code>.</li>
+        <li>Render mode: handler <code>Node</code> is returned as fragment HTML.</li>
+      </ul>
+
+      <h3><code>Render(fn Handler)</code></h3>
+      <p>Compatibility alias for root page registration. Equivalent to <code>Page("/", fn)</code>.</p>
+
+      <h3><code>Handle(name string, fn Handler)</code></h3>
+      <p>Compatibility alias for action registration. Equivalent to <code>Action(name, fn)</code>.</p>
+
+      <h3>App state helpers</h3>
+      <p><code>Set(key string, value any)</code>: Writes into app shared state map with lock.</p>
+      <p><code>GetInt(key string) int</code>: Reads app shared state and type-asserts to <code>int</code>. Returns <code>0</code> when value is missing or not <code>int</code>.</p>
+    </section>
+
+    <section id="context">
+      <h2>Context</h2>
+      <p><code>Context</code> is passed to each handler as <code>func(*Context) Node</code> and provides request/state access.</p>
+
+      <h3><code>Param(name string) string</code></h3>
+      <p>Returns path parameter from <code>Request.PathValue(name)</code>. Returns <code>""</code> when <code>Request</code> is <code>nil</code>.</p>
+
+      <h3><code>Query(name string) string</code></h3>
+      <p>Returns query parameter from <code>Request.URL.Query().Get(name)</code>. Returns <code>""</code> when <code>Request</code> is <code>nil</code>.</p>
+
+      <h3><code>FormValue(name string) string</code></h3>
+      <p>Returns form value from <code>Request.FormValue(name)</code>. Returns <code>""</code> when <code>Request</code> is <code>nil</code>.</p>
+
+      <h3><code>Set(key string, value any)</code></h3>
+      <p>Writes shared state. If context has parent app, write is synchronized via app mutex. If no app is attached, writes directly to <code>Context.State</code>.</p>
+
+      <h3><code>Get(key string) any</code></h3>
+      <p>Reads shared state. If context has parent app, read is synchronized via app mutex. If no app is attached, reads directly from <code>Context.State</code>.</p>
+
+      <h3><code>GetInt(key string) int</code></h3>
+      <p><code>Get</code> + <code>int</code> assertion. Returns <code>0</code> when value is missing/not <code>int</code>.</p>
+
+      <h3>Flash APIs</h3>
+      <ul>
+        <li><code>Flashes() []FlashMessage</code>: Returns a copied snapshot of currently loaded flashes. Returns <code>nil</code> when no flash exists.</li>
+        <li><code>FlashSuccess(message string)</code> / <code>FlashError(message string)</code> / <code>FlashInfo(message string)</code> / <code>FlashWarn(message string)</code>: Convenience wrappers around <code>AddFlash(level, message)</code>.</li>
+        <li><code>AddFlash(level FlashLevel, message string)</code>: Trims message; empty after trim means no-op. Appends flash into context flash list, serializes to cookie (<code>marionette_flash</code>).</li>
+      </ul>
+    </section>
+
+    <section id="low-level-html">
+      <h2>Low-level HTML (frontend/html)</h2>
+      <p>Low-level HTML constructors live in <code>github.com/YoshihideShirai/marionette/frontend/html</code>. They are intended for advanced users and component internals.</p>
+
+      <h3><code>type Node interface { Render() (template.HTML, error) }</code></h3>
+      <p>Every UI node renders itself to safe HTML. Rendering failure eventually becomes <code>500 Internal Server Error</code> in HTTP responses.</p>
+
+      <h3>Basic node constructors</h3>
+      <ul>
+        <li><code>Text(v string) Node</code></li>
+        <li><code>Raw(html string)</code> (trusted HTML passthrough)</li>
+        <li><code>type Attrs map[string]string</code></li>
+        <li><code>type ElementProps struct { ID string; Class string; Attrs Attrs }</code></li>
+        <li><code>Element(tag string, props ElementProps, children ...Node) Node</code></li>
+        <li><code>Div(children ...Node) Node</code> and related convenience functions</li>
+      </ul>
+
+      <h3>Table / layout helpers</h3>
+      <ul>
+        <li><code>Table(headers []string, rows ...TableRowData) Node</code></li>
+        <li><code>TableRow(cells ...Node) TableRowData</code></li>
+        <li><code>Sidebar(brand, title string, items ...SidebarItem) *sidebar</code></li>
+      </ul>
+    </section>
+
+    <section id="form-apis">
+      <h2>Form APIs</h2>
+
+      <h3><code>FormRow(props FormRowProps) Node</code></h3>
+      <ul>
+        <li><code>props.ID</code> must be non-empty; otherwise render error node.</li>
+        <li><code>props.Control</code> must be non-nil; otherwise render error node.</li>
+        <li>Renders optional label, required marker, description, error row.</li>
+      </ul>
+
+      <h3><code>TextField(props TextFieldProps) Node</code></h3>
+      <ul>
+        <li><code>Type</code> defaults to <code>"text"</code> when blank.</li>
+        <li>Applies <code>aria-describedby</code> from description/error presence.</li>
+        <li>Sets <code>aria-invalid=true</code> when error exists.</li>
+      </ul>
+
+      <h3>Other form controls</h3>
+      <ul>
+        <li><code>Textarea(props TextareaProps) Node</code></li>
+        <li><code>Select(props SelectFieldProps) Node</code></li>
+        <li><code>Checkbox(props CheckboxProps) Node</code></li>
+        <li><code>RadioGroup(props RadioGroupProps) Node</code></li>
+        <li><code>Switch(props SwitchProps) Node</code></li>
+      </ul>
+    </section>
+
+    <section id="component-apis">
+      <h2>Component APIs</h2>
+      <p>Template-backed component constructors from <code>templates/components/*</code>.</p>
+
+      <h3>Buttons / inputs</h3>
+      <ul>
+        <li><code>ButtonComponent(label string, props ComponentProps) Node</code></li>
+        <li><code>SubmitButton(label string, props ComponentProps) Node</code></li>
+        <li><code>InputComponent(name, value string, props ComponentProps) Node</code></li>
+        <li><code>TextareaComponent(name, value string, options TextareaOptions) Node</code></li>
+        <li><code>SelectComponent(name string, options []SelectOption, props ComponentProps) Node</code></li>
+      </ul>
+
+      <h3>Overlay / feedback</h3>
+      <ul>
+        <li><code>Modal(props ModalProps) Node</code></li>
+        <li><code>Toast(props ToastProps) Node</code></li>
+        <li><code>Alert(props AlertProps) Node</code></li>
+        <li><code>Skeleton(props SkeletonProps) Node</code></li>
+        <li><code>EmptyState(props EmptyStateProps) Node</code></li>
+      </ul>
+
+      <h3>Data display</h3>
+      <ul>
+        <li><code>TableComponent(props TableProps) Node</code></li>
+        <li><code>Chart(props ChartProps) Node</code></li>
+        <li><code>DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node</code></li>
+        <li><code>DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node</code></li>
+        <li><code>Pagination(props PaginationProps) Node</code></li>
+      </ul>
+
+      <h3>Navigation</h3>
+      <ul>
+        <li><code>Tabs(props TabsProps) Node</code></li>
+        <li><code>Breadcrumb(props BreadcrumbProps) Node</code></li>
+        <li><code>CheckboxComponent(props CheckboxComponentProps) Node</code></li>
+        <li><code>RadioGroupComponent(props RadioGroupComponentProps) Node</code></li>
+        <li><code>SwitchComponent(props SwitchComponentProps) Node</code></li>
+      </ul>
+
+      <h3>Layout / surfaces</h3>
+      <ul>
+        <li><code>Stack(props StackProps, children ...Node) Node</code></li>
+        <li><code>Grid(props GridProps, children ...Node) Node</code></li>
+        <li><code>Split(props SplitProps) Node</code></li>
+        <li><code>Card(props CardProps, children ...Node) Node</code></li>
+        <li><code>Section(props SectionProps, children ...Node) Node</code></li>
+        <li><code>ContainerComponent(props ContainerProps, children ...Node) Node</code></li>
+        <li><code>PageHeader(props PageHeaderProps) Node</code></li>
+      </ul>
+    </section>
+
+    <section id="runtime">
+      <h2>Runtime</h2>
+
+      <h3>Handler type</h3>
+      <pre><code>{`type Handler func(*Context) Node`}</code></pre>
+      <p>Shared by <code>Page</code>, <code>Action</code>, <code>Render</code>, <code>Handle</code>.</p>
+
+      <h3>HTTP / rendering failure behavior</h3>
+      <ul>
+        <li><code>Page</code> endpoint + non-<code>GET</code> method: <code>405 Method Not Allowed</code></li>
+        <li><code>Action</code> endpoint + non-<code>POST</code> method: <code>405 Method Not Allowed</code></li>
+        <li><code>Action</code> request <code>ParseForm</code> failure: <code>400 Bad Request</code></li>
+        <li>Node render failure: <code>500 Internal Server Error</code></li>
+        <li>Missing root page: <code>GET /</code> returns <code>500 Internal Server Error</code></li>
+      </ul>
+
+      <h3>Response content type</h3>
+      <p>Both full page and fragment writes set: <code>Content-Type: text/html; charset=utf-8</code></p>
+    </section>
+
+    <nav class="api-nav">
+      <a href="/marionette/en/components/">← Components Gallery</a>
+    </nav>
+  </article>
+
+  <style>
+    .api-docs {
+      display: grid;
+      gap: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .api-docs header {
+      margin-bottom: 1rem;
+    }
+
+    .api-docs h2 {
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      border-bottom: 1px solid var(--sl-color-gray-5);
+      padding-bottom: 0.5rem;
+    }
+
+    .api-docs h3 {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .api-docs code {
+      background: var(--sl-color-gray-7);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .api-docs pre {
+      overflow-x: auto;
+      background: var(--sl-color-black);
+      color: var(--sl-color-white);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .api-docs pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .api-docs ul, .api-docs ol {
+      margin: 0.5rem 0 1rem;
+      padding-left: 1.5rem;
+    }
+
+    .api-docs li {
+      margin-bottom: 0.375rem;
+    }
+
+    .api-nav {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--sl-color-gray-5);
+    }
+
+    .api-nav a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--sl-color-gray-7);
+      border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .api-nav a:hover {
+      background: var(--sl-color-gray-6);
+    }
+  </style>
+</BaseLayout>

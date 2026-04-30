@@ -291,6 +291,22 @@
       "description": "Toast/alert/empty/skeleton feedback demo"
     },
     {
+      "id": "layout",
+      "name": "Layout stories",
+      "group": "Layout",
+      "example": "/marionette/examples/layout.html",
+      "template": "docs/site-astro/public/examples/layout.html",
+      "description": "Layout usage demo with cards, grid, and split panels."
+    },
+    {
+      "id": "navigation",
+      "name": "Navigation stories",
+      "group": "Components",
+      "example": "/marionette/examples/navigation.html",
+      "template": "docs/site-astro/public/examples/navigation.html",
+      "description": "Navigation component stories for tabs, breadcrumbs, and pagination."
+    },
+    {
       "id": "overlay-system",
       "name": "Overlay System Demo",
       "group": "Components",

@@ -15,10 +15,12 @@ const langRoot = isJa ? '/marionette/ja' : '/marionette/en';
 const topItems = isJa
   ? [
       { label: 'ホーム', href: `${langRoot}/` },
+      { label: 'チュートリアル', href: `${langRoot}/tutorial/` },
       { label: 'API Docs', href: `${langRoot}/api/` },
     ]
   : [
       { label: 'Home', href: `${langRoot}/` },
+      { label: 'Tutorial', href: `${langRoot}/tutorial/` },
       { label: 'API Docs', href: `${langRoot}/api/` },
     ];
 
@@ -71,7 +73,10 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
         <nav>
           <ul class="sidebar-top-list">
             {topItems.map((item) => {
-              const active = currentPath === item.href || currentPath.startsWith(`${item.href}`);
+              const active =
+                item.href === `${langRoot}/`
+                  ? currentPath === item.href
+                  : currentPath === item.href || currentPath.startsWith(item.href);
               return (
                 <li>
                   <a href={item.href} class:list={{ active }} aria-current={active ? 'page' : undefined}>{item.label}</a>

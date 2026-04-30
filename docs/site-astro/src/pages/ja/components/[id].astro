@@ -15,26 +15,9 @@ const { component } = Astro.props;
 const pageTitle = `${component.name} | コンポーネント`;
 const repoRoot = resolve(process.cwd(), '..', '..');
 
-const visualSourcePathCandidates = [component.template, component.golden].filter(
-  (value) => typeof value === 'string' && value.length > 0,
-);
-
-let visualSourcePath = null;
-let visualSourceCode = null;
-
 const goSourcePath = `docs/site-astro/public/examples/go/${component.id}.go`;
 const goSourceAbsolutePath = resolve(repoRoot, goSourcePath);
 const goSourceCode = existsSync(goSourceAbsolutePath) ? readFileSync(goSourceAbsolutePath, 'utf8') : null;
-
-for (const candidate of visualSourcePathCandidates) {
-  const absolutePath = resolve(repoRoot, candidate);
-  if (!existsSync(absolutePath)) {
-    continue;
-  }
-  visualSourcePath = candidate;
-  visualSourceCode = readFileSync(absolutePath, 'utf8');
-  break;
-}
 ---
 <BaseLayout title={pageTitle} lang="ja" languageSwitcherPath={`/marionette/en/components/${component.id}/`}>
   <article class="detail">
@@ -66,16 +49,6 @@ for (const candidate of visualSourcePathCandidates) {
         </div>
       </dl>
     </section>
-
-    {visualSourceCode ? (
-      <section>
-        <h2>ビジュアル実装ソース</h2>
-        <p>
-          このビジュアル実装は <code>{visualSourcePath}</code> を参照しています。
-        </p>
-        <pre><code>{visualSourceCode}</code></pre>
-      </section>
-    ) : null}
 
     {goSourceCode ? (
       <section>

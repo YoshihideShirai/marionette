@@ -18,7 +18,10 @@ func InputWithOptions(name, value string, options InputOptions) Node {
 func TextareaComponent(name, value string, options TextareaOptions) Node {
 	return UITextarea(name, value, options)
 }
-func FormComponent(props FormProps, children ...Node) Node       { return UIForm(props, children...) }
+func FormComponent(props FormProps, children ...Node) Node { return UIForm(props, children...) }
+func ActionForm(props ActionFormProps, children ...Node) Node {
+	return UIActionForm(props, children...)
+}
 func FormFieldComponent(control Node, props FormFieldProps) Node { return UIFormField(control, props) }
 func SelectComponent(name string, options []SelectOption, props ComponentProps) Node {
 	return UISelect(name, options, props)

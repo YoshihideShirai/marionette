@@ -263,6 +263,11 @@ Template-backed component constructors (`templates/components/*`).
   - `Rows <= 0` defaults to `3`.
 - `FormComponent(props FormProps, children ...Node) Node`
   - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
+- `ActionForm(props ActionFormProps, children ...Node) Node`
+  - renders a form wired to Marionette/HTMX action updates.
+  - blank `Method` defaults to `post`; supported methods are `post` and `get`.
+  - renders standard `action`/`method` attributes plus `hx-post` or `hx-get`.
+  - optional `Target` and `Swap` render `hx-target` and `hx-swap`.
 - `FormFieldComponent(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
 - `SelectComponent(name string, options []SelectOption, props ComponentProps) Node`

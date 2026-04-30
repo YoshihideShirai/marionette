@@ -46,13 +46,11 @@ func page(ctx *mb.Context) mf.Node {
 				Title:       "Simple Tasks",
 				Description: "Marionette end-to-end sample",
 			}),
-			mf.FormComponent(mf.FormProps{
-				Class: "space-y-3",
-				Attrs: mf.Attrs{
-					"hx-post":   "/tasks/create",
-					"hx-target": "#task-list",
-					"hx-swap":   "innerHTML",
-				},
+			mf.ActionForm(mf.ActionFormProps{
+				Action: "/tasks/create",
+				Target: "#task-list",
+				Swap:   "innerHTML",
+				Props:  mf.ComponentProps{Class: "space-y-3"},
 			},
 				mf.FormRow(mf.FormRowProps{
 					ID:       "task-name",

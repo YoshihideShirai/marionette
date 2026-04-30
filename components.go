@@ -49,6 +49,15 @@ type FormProps struct {
 	Attrs  Attrs
 }
 
+type ActionFormProps struct {
+	ID     string
+	Action string
+	Target string
+	Swap   string
+	Method string
+	Props  ComponentProps
+}
+
 type InputOptions struct {
 	Type        string
 	Placeholder string
@@ -431,6 +440,39 @@ func UIForm(props FormProps, children ...Node) Node {
 	return Element("form", ElementProps{
 		ID:    strings.TrimSpace(props.ID),
 		Class: strings.TrimSpace(props.Class),
+		Attrs: attrs,
+	}, children...)
+}
+
+func UIActionForm(props ActionFormProps, children ...Node) Node {
+	action := actionPath(strings.TrimSpace(props.Action))
+	if action == "/" {
+		return renderErrorNode{err: fmt.Errorf("action form action is required")}
+	}
+
+	method := strings.ToLower(strings.TrimSpace(props.Method))
+	if method == "" {
+		method = "post"
+	}
+	if method != "post" && method != "get" {
+		return renderErrorNode{err: fmt.Errorf("unsupported action form method: %s", method)}
+	}
+
+	attrs := Attrs{
+		"action": action,
+		"method": method,
+	}
+	attrs["hx-"+method] = action
+	if target := strings.TrimSpace(props.Target); target != "" {
+		attrs["hx-target"] = target
+	}
+	if swap := strings.TrimSpace(props.Swap); swap != "" {
+		attrs["hx-swap"] = swap
+	}
+
+	return Element("form", ElementProps{
+		ID:    strings.TrimSpace(props.ID),
+		Class: strings.TrimSpace(props.Props.Class),
 		Attrs: attrs,
 	}, children...)
 }

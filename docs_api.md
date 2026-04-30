@@ -11,12 +11,16 @@ Split imports by runtime role:
 import (
     mb "github.com/YoshihideShirai/marionette/backend"
     mf "github.com/YoshihideShirai/marionette/frontend"
+    mh "github.com/YoshihideShirai/marionette/frontend/html"
 )
 ```
 
 - Recommended aliases: `mb` (marionette backend), `mf` (marionette frontend).
 - Use `mb` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
-- Use `mf` for UI node APIs such as `Node`, `Div`, `Element`, `Table`.
+- Use `mf` for component APIs such as `ButtonComponent`, `Card`, `TableComponent`, `FormRow`.
+- Use `mh` for advanced low-level node APIs such as `Node`, `Div`, `Element`, `Raw`.
+- `frontend` keeps low-level aliases for compatibility, but new code should import
+  `frontend/html` directly when it needs custom markup.
 
 ## 2. App
 
@@ -145,7 +149,12 @@ Flash lifecycle on next request:
 
 ---
 
-## 4. Core Node
+## 4. Low-level HTML (`frontend/html`)
+
+Low-level HTML constructors live in `github.com/YoshihideShirai/marionette/frontend/html`.
+They are intended for advanced users and component internals. The `frontend`
+package still exposes compatibility aliases for these APIs, but new code should
+prefer the `mh` import shown above.
 
 ### `type Node interface { Render() (template.HTML, error) }`
 - Every UI node renders itself to safe HTML.

@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"regexp"
-	"sort"
 	"strings"
 
+	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
 	dataframeimports "github.com/rocketlaunchr/dataframe-go/imports"
 )
 
@@ -28,138 +27,84 @@ type FlashMessage struct {
 }
 
 // Node is a declarative UI element that can render itself as safe HTML.
-type Node interface {
-	Render() (template.HTML, error)
-}
-
-type element struct {
-	Tag      string
-	Attrs    map[string]string
-	Children []Node
-	Text     string
-}
+type Node = lowhtml.Node
+type element = lowhtml.ElementNode
 
 // Attrs defines HTML attributes for low-level element constructors.
-type Attrs map[string]string
+type Attrs = lowhtml.Attrs
 
 // ElementProps defines common HTML element attributes while keeping class and
 // id easy to scan at call sites.
-type ElementProps struct {
-	ID    string
-	Class string
-	Attrs Attrs
-}
-
-var tagPattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9-]*$`)
-
-func (e element) Render() (template.HTML, error) {
-	if !tagPattern.MatchString(e.Tag) {
-		return "", fmt.Errorf("invalid tag: %q", e.Tag)
-	}
-
-	children := make([]template.HTML, 0, len(e.Children))
-	for _, child := range e.Children {
-		r, err := child.Render()
-		if err != nil {
-			return "", err
-		}
-		children = append(children, r)
-	}
-
-	var b bytes.Buffer
-	b.WriteString("<")
-	b.WriteString(e.Tag)
-
-	keys := make([]string, 0, len(e.Attrs))
-	for k := range e.Attrs {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		b.WriteString(" ")
-		b.WriteString(template.HTMLEscapeString(k))
-		b.WriteString(`="`)
-		b.WriteString(template.HTMLEscapeString(e.Attrs[k]))
-		b.WriteString(`"`)
-	}
-	b.WriteString(">")
-	b.WriteString(template.HTMLEscapeString(e.Text))
-	b.WriteString(string(joinHTML(children)))
-	b.WriteString("</")
-	b.WriteString(e.Tag)
-	b.WriteString(">")
-
-	return template.HTML(b.String()), nil
-}
+type ElementProps = lowhtml.ElementProps
 
 // Raw allows trusted HTML snippets (e.g. full page shell).
-type Raw string
+type Raw = lowhtml.Raw
 
-func (r Raw) Render() (template.HTML, error) { return template.HTML(r), nil }
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func Text(v string) Node { return lowhtml.Text(v) }
 
-func Text(v string) Node {
-	return element{Tag: "span", Text: v}
-}
-
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
 func Element(tag string, props ElementProps, children ...Node) Node {
-	return element{Tag: tag, Attrs: elementAttrs(props), Children: children}
+	return lowhtml.Element(tag, props, children...)
 }
 
-func Div(children ...Node) Node {
-	return DivProps(ElementProps{}, children...)
-}
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func Div(children ...Node) Node { return lowhtml.Div(children...) }
 
-func DivID(id string, children ...Node) Node {
-	return DivProps(ElementProps{ID: id}, children...)
-}
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func DivID(id string, children ...Node) Node { return lowhtml.DivID(id, children...) }
 
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
 func DivClass(className string, children ...Node) Node {
-	return DivProps(ElementProps{Class: className}, children...)
+	return lowhtml.DivClass(className, children...)
 }
 
-func DivAttrs(attrs Attrs, children ...Node) Node {
-	return DivProps(ElementProps{Attrs: attrs}, children...)
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func DivAttrs(attrs Attrs, children ...Node) Node { return lowhtml.DivAttrs(attrs, children...) }
+
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func DivProps(props ElementProps, children ...Node) Node { return lowhtml.DivProps(props, children...) }
+
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func Span(children ...Node) Node { return lowhtml.Span(children...) }
+
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func SpanProps(props ElementProps, children ...Node) Node {
+	return lowhtml.SpanProps(props, children...)
 }
 
-func DivProps(props ElementProps, children ...Node) Node {
-	return Element("div", props, children...)
-}
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func P(children ...Node) Node { return lowhtml.P(children...) }
 
-func Span(children ...Node) Node { return Element("span", ElementProps{}, children...) }
-func SpanProps(props ElementProps, children ...Node) Node { return Element("span", props, children...) }
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func PProps(props ElementProps, children ...Node) Node { return lowhtml.PProps(props, children...) }
 
-func P(children ...Node) Node { return Element("p", ElementProps{}, children...) }
-func PProps(props ElementProps, children ...Node) Node { return Element("p", props, children...) }
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H1(children ...Node) Node { return lowhtml.H1(children...) }
 
-func H1(children ...Node) Node { return Element("h1", ElementProps{}, children...) }
-func H1Props(props ElementProps, children ...Node) Node { return Element("h1", props, children...) }
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H1Props(props ElementProps, children ...Node) Node { return lowhtml.H1Props(props, children...) }
 
-func H2(children ...Node) Node { return Element("h2", ElementProps{}, children...) }
-func H2Props(props ElementProps, children ...Node) Node { return Element("h2", props, children...) }
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H2(children ...Node) Node { return lowhtml.H2(children...) }
 
-func H3(children ...Node) Node { return Element("h3", ElementProps{}, children...) }
-func H3Props(props ElementProps, children ...Node) Node { return Element("h3", props, children...) }
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H2Props(props ElementProps, children ...Node) Node { return lowhtml.H2Props(props, children...) }
 
-func H4(children ...Node) Node { return Element("h4", ElementProps{}, children...) }
-func H4Props(props ElementProps, children ...Node) Node { return Element("h4", props, children...) }
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H3(children ...Node) Node { return lowhtml.H3(children...) }
 
-func elementAttrs(props ElementProps) map[string]string {
-	attrs := make(map[string]string, len(props.Attrs)+2)
-	for key, value := range props.Attrs {
-		attrs[key] = value
-	}
-	if props.ID != "" {
-		attrs["id"] = props.ID
-	}
-	if props.Class != "" {
-		attrs["class"] = joinClass(attrs["class"], props.Class)
-	}
-	return attrs
-}
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H3Props(props ElementProps, children ...Node) Node { return lowhtml.H3Props(props, children...) }
 
-func Column(children ...Node) Node {
-	return element{Tag: "div", Attrs: map[string]string{"class": "flex flex-col gap-3"}, Children: children}
-}
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H4(children ...Node) Node { return lowhtml.H4(children...) }
+
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func H4Props(props ElementProps, children ...Node) Node { return lowhtml.H4Props(props, children...) }
+
+// Deprecated: use package github.com/YoshihideShirai/marionette/frontend/html.
+func Column(children ...Node) Node { return lowhtml.Column(children...) }
 
 type table struct {
 	Headers []string
@@ -432,14 +377,6 @@ func actionPath(action string) string {
 		return action
 	}
 	return "/" + action
-}
-
-func joinHTML(parts []template.HTML) template.HTML {
-	var b bytes.Buffer
-	for _, p := range parts {
-		b.WriteString(string(p))
-	}
-	return template.HTML(b.String())
 }
 
 func FlashAlerts(flashes []FlashMessage) Node {

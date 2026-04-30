@@ -1,9 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import concept from '../../../../assets/concept.png';
 ---
 <BaseLayout title="Marionette Documentation" lang="en" languageSwitcherPath="/marionette/ja/">
   <h1>Marionette Documentation</h1>
   <p class="lead">Build admin UIs in Go, with htmx-driven partial updates on the frontend.</p>
+  <figure class="concept-figure">
+    <img src={concept.src} width={concept.width} height={concept.height} alt="Marionette concept diagram" />
+  </figure>
 
   <section class="top-section" aria-labelledby="quick-start-en">
     <h2 id="quick-start-en">Quick Start</h2>

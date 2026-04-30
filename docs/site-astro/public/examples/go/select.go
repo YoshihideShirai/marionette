@@ -7,7 +7,7 @@ import (
 
 func RegisterSelectExample(app *mb.App) {
 	app.Page("/select", func(ctx *mb.Context) mf.Node {
-		return mf.SelectComponent("role", []mf.SelectOption{
+		return mf.Select("role", []mf.SelectOption{
 			{Label: "Admin", Value: "admin"},
 			{Label: "Viewer", Value: "viewer", Selected: true},
 		}, mf.ComponentProps{})

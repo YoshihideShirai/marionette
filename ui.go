@@ -323,7 +323,10 @@ func (f *form) Render() (template.HTML, error) {
 	}.Render()
 }
 
-func Input(name, value string) Node {
+func Input(name, value string, props ...ComponentProps) Node {
+	if len(props) > 0 {
+		return UIInput(name, value, props[0])
+	}
 	return element{
 		Tag: "input",
 		Attrs: map[string]string{

@@ -162,7 +162,29 @@ func TextField(props TextFieldProps) Node {
 	})}
 }
 
-func Textarea(props TextareaProps) Node {
+func Textarea(first any, rest ...any) Node {
+	if name, ok := first.(string); ok {
+		if len(rest) != 2 {
+			return renderErrorNode{err: fmt.Errorf("textarea requires value and options")}
+		}
+		value, ok := rest[0].(string)
+		if !ok {
+			return renderErrorNode{err: fmt.Errorf("textarea value must be a string")}
+		}
+		options, ok := rest[1].(TextareaOptions)
+		if !ok {
+			return renderErrorNode{err: fmt.Errorf("textarea options must be TextareaOptions")}
+		}
+		return UITextarea(name, value, options)
+	}
+	props, ok := first.(TextareaProps)
+	if !ok || len(rest) != 0 {
+		return renderErrorNode{err: fmt.Errorf("textarea requires TextareaProps or name, value, TextareaOptions")}
+	}
+	return textareaField(props)
+}
+
+func textareaField(props TextareaProps) Node {
 	attrs := inputControlAttrs(controlAttrConfig{
 		ID:          props.ID,
 		Name:        props.Name,
@@ -182,7 +204,29 @@ func Textarea(props TextareaProps) Node {
 	return element{Tag: "textarea", Attrs: attrs, Text: props.Value}
 }
 
-func Select(props SelectFieldProps) Node {
+func Select(first any, rest ...any) Node {
+	if name, ok := first.(string); ok {
+		if len(rest) != 2 {
+			return renderErrorNode{err: fmt.Errorf("select requires options and props")}
+		}
+		options, ok := rest[0].([]SelectOption)
+		if !ok {
+			return renderErrorNode{err: fmt.Errorf("select options must be []SelectOption")}
+		}
+		props, ok := rest[1].(ComponentProps)
+		if !ok {
+			return renderErrorNode{err: fmt.Errorf("select props must be ComponentProps")}
+		}
+		return UISelect(name, options, props)
+	}
+	props, ok := first.(SelectFieldProps)
+	if !ok || len(rest) != 0 {
+		return renderErrorNode{err: fmt.Errorf("select requires SelectFieldProps or name, []SelectOption, ComponentProps")}
+	}
+	return selectField(props)
+}
+
+func selectField(props SelectFieldProps) Node {
 	attrs := inputControlAttrs(controlAttrConfig{
 		ID:          props.ID,
 		Name:        props.Name,
@@ -205,7 +249,18 @@ func Select(props SelectFieldProps) Node {
 	return element{Tag: "select", Attrs: attrs, Children: children}
 }
 
-func Checkbox(props CheckboxProps) Node {
+func Checkbox(props any) Node {
+	switch p := props.(type) {
+	case CheckboxComponentProps:
+		return UICheckbox(p)
+	case CheckboxProps:
+		return checkboxField(p)
+	default:
+		return renderErrorNode{err: fmt.Errorf("checkbox requires CheckboxProps or CheckboxComponentProps")}
+	}
+}
+
+func checkboxField(props CheckboxProps) Node {
 	attrs := checkableAttrs(props.ID, props.Name, props.Value, props.Description, props.Error, props.Ref, props.Disabled, props.ReadOnly, "checkbox")
 	if props.Checked {
 		attrs["checked"] = "checked"
@@ -215,7 +270,18 @@ func Checkbox(props CheckboxProps) Node {
 	return element{Tag: "label", Attrs: map[string]string{"for": strings.TrimSpace(props.ID), "class": "inline-flex items-center gap-2"}, Children: content}
 }
 
-func RadioGroup(props RadioGroupProps) Node {
+func RadioGroup(props any) Node {
+	switch p := props.(type) {
+	case RadioGroupComponentProps:
+		return UIRadioGroup(p)
+	case RadioGroupProps:
+		return radioGroupField(p)
+	default:
+		return renderErrorNode{err: fmt.Errorf("radio group requires RadioGroupProps or RadioGroupComponentProps")}
+	}
+}
+
+func radioGroupField(props RadioGroupProps) Node {
 	groupID := strings.TrimSpace(props.ID)
 	if groupID == "" {
 		return renderErrorNode{err: fmt.Errorf("radio group id is required")}
@@ -235,7 +301,18 @@ func RadioGroup(props RadioGroupProps) Node {
 	return element{Tag: "div", Attrs: map[string]string{"id": groupID, "class": "flex flex-wrap gap-4"}, Children: items}
 }
 
-func Switch(props SwitchProps) Node {
+func Switch(props any) Node {
+	switch p := props.(type) {
+	case SwitchComponentProps:
+		return UISwitch(p)
+	case SwitchProps:
+		return switchField(p)
+	default:
+		return renderErrorNode{err: fmt.Errorf("switch requires SwitchProps or SwitchComponentProps")}
+	}
+}
+
+func switchField(props SwitchProps) Node {
 	attrs := checkableAttrs(props.ID, props.Name, props.Value, props.Description, props.Error, props.Ref, props.Disabled, props.ReadOnly, "checkbox")
 	attrs["class"] = formSwitchClass(props.Error)
 	if props.Checked {

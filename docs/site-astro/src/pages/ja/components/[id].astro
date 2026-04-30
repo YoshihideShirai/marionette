@@ -13,6 +13,7 @@ export function getStaticPaths() {
 
 const { component } = Astro.props;
 const pageTitle = `${component.name} | コンポーネント`;
+const repoRoot = resolve(process.cwd(), '..', '..');
 
 const visualSourcePathCandidates = [component.template, component.golden].filter(
   (value) => typeof value === 'string' && value.length > 0,
@@ -22,11 +23,11 @@ let visualSourcePath = null;
 let visualSourceCode = null;
 
 const goSourcePath = `docs/site-astro/public/examples/go/${component.id}.go`;
-const goSourceAbsolutePath = resolve(process.cwd(), '..', '..', '..', goSourcePath);
+const goSourceAbsolutePath = resolve(repoRoot, goSourcePath);
 const goSourceCode = existsSync(goSourceAbsolutePath) ? readFileSync(goSourceAbsolutePath, 'utf8') : null;
 
 for (const candidate of visualSourcePathCandidates) {
-  const absolutePath = resolve(process.cwd(), '..', '..', '..', candidate);
+  const absolutePath = resolve(repoRoot, candidate);
   if (!existsSync(absolutePath)) {
     continue;
   }

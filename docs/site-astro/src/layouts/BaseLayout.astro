@@ -183,14 +183,14 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
           groupItems.forEach((itemNode) => {
             const name = itemNode.getAttribute('data-component-name') || '';
             const matched = !query || name.includes(query);
-            (itemNode as HTMLElement).hidden = !matched;
+            itemNode.hidden = !matched;
             if (matched) {
               groupVisible += 1;
               visibleCount += 1;
             }
           });
 
-          (groupNode as HTMLElement).hidden = groupVisible === 0;
+          groupNode.hidden = groupVisible === 0;
         });
 
         emptyState.hidden = visibleCount > 0;

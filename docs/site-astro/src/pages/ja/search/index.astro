@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="検索 | Marionette Docs" lang="ja" languageSwitcherPath="/marionette/en/search/">
+  <h1>検索</h1>
+  <p class="lead">ドキュメント全体（チュートリアル・API・コンポーネント）を横断検索できます。</p>
+  <div id="search"></div>
+
+  <link rel="stylesheet" href="/marionette/pagefind/pagefind-ui.css" />
+  <script is:inline src="/marionette/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.PagefindUI) return;
+      new window.PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        resetStyles: false,
+      });
+    });
+  </script>
+</BaseLayout>

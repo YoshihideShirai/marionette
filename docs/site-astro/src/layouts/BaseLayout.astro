@@ -17,11 +17,13 @@ const topItems = isJa
       { label: 'ホーム', href: `${langRoot}/` },
       { label: 'チュートリアル', href: `${langRoot}/tutorial/` },
       { label: 'API Docs', href: `${langRoot}/api/` },
+      { label: '検索', href: `${langRoot}/search/` },
     ]
   : [
       { label: 'Home', href: `${langRoot}/` },
       { label: 'Tutorial', href: `${langRoot}/tutorial/` },
       { label: 'API Docs', href: `${langRoot}/api/` },
+      { label: 'Search', href: `${langRoot}/search/` },
     ];
 
 const groupedComponents = catalog.components.reduce<Record<string, typeof catalog.components>>((acc, component) => {

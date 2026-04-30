@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Search | Marionette Docs" lang="en" languageSwitcherPath="/marionette/ja/search/">
+  <h1>Search</h1>
+  <p class="lead">Search across all documentation pages and component references.</p>
+  <div id="search"></div>
+
+  <link rel="stylesheet" href="/marionette/pagefind/pagefind-ui.css" />
+  <script is:inline src="/marionette/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.PagefindUI) return;
+      new window.PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        resetStyles: false,
+      });
+    });
+  </script>
+</BaseLayout>

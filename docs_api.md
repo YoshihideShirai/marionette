@@ -356,7 +356,7 @@ Template-backed component constructors (`templates/components/*`).
   - `ReverseOnMobile` renders the aside before the main pane visually on mobile.
 - `PageHeader(props PageHeaderProps) Node`
   - renders title, description, and optional action node.
-- `ContainerComponent(props ContainerProps, children ...Node) Node`
+- `Container(props ContainerProps, children ...Node) Node`
   - `MaxWidth`: `sm`, `md`, `lg`/blank, `full`.
   - `Padding`: `none`, `sm`, `md`/blank, `lg`.
   - `Centered` adds `mx-auto`.

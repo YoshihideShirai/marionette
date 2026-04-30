@@ -676,7 +676,7 @@ func usageSnippet(id string) string {
         mf.Button("Create", mf.ComponentProps{Variant: "primary", Size: "sm"}),
     ),
 })`,
-		"container": `page := mf.UIContainer(
+		"container": `page := mf.Container(
     mf.ContainerProps{
         MaxWidth: "md",
         Padding:  "md",

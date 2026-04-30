@@ -205,7 +205,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "container",
-			node: UIContainer(
+			node: Container(
 				ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true},
 				Text("Contained"),
 			),

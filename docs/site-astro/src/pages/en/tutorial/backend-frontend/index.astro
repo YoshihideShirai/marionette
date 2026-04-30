@@ -36,7 +36,7 @@ func main() {
 func page(ctx *mb.Context) mf.Node {
     messages := ctx.Get("messages").([]string)
 
-    return mf.UIContainer(mf.ContainerProps{
+    return mf.Container(mf.ContainerProps{
         MaxWidth: "2xl",
         Centered: true,
     },

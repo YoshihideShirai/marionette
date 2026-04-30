@@ -588,7 +588,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	containerHTML, err := UIContainer(ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true}, Text("Contained")).Render()
+	containerHTML, err := Container(ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true}, Text("Contained")).Render()
 	if err != nil {
 		t.Fatalf("container render failed: %v", err)
 	}

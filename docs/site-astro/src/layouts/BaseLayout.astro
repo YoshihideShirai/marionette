@@ -87,6 +87,16 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
 
           <details class="sidebar-group" open={currentPath.includes('/components')}>
             <summary>{isJa ? 'コンポーネント' : 'Components'}</summary>
+            <label class="sidebar-search">
+              <span class="sr-only">{isJa ? 'コンポーネントを検索' : 'Search components'}</span>
+              <input
+                id="sidebar-component-search"
+                type="search"
+                placeholder={isJa ? 'コンポーネントを検索' : 'Search components'}
+                autocomplete="off"
+              />
+            </label>
+            <p id="sidebar-search-empty" class="sidebar-search-empty" hidden>{isJa ? '一致する項目がありません。' : 'No matching components.'}</p>
             <ul class="sidebar-component-list">
               <li>
                 <a
@@ -101,7 +111,7 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
                 const items = groupedComponents[group].sort((a, b) => a.name.localeCompare(b.name));
                 const hasActive = items.some((component) => currentPath.startsWith(`${langRoot}/components/${component.id}/`));
                 return (
-                  <li>
+                  <li data-component-group={group.toLowerCase()}>
                     <details open={hasActive}>
                       <summary>{group}</summary>
                       <ul>
@@ -109,7 +119,7 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
                           const href = `${langRoot}/components/${component.id}/`;
                           const active = currentPath === href;
                           return (
-                            <li>
+                            <li data-component-item data-component-name={component.name.toLowerCase()}>
                               <a href={href} class:list={{ active }} aria-current={active ? 'page' : undefined}>
                                 {component.name}
                               </a>
@@ -152,6 +162,40 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
       });
 
       syncLabel();
+    })();
+
+    (() => {
+      const input = document.getElementById('sidebar-component-search');
+      const emptyState = document.getElementById('sidebar-search-empty');
+      if (!(input instanceof HTMLInputElement) || !(emptyState instanceof HTMLElement)) return;
+
+      const groups = Array.from(document.querySelectorAll('[data-component-group]'));
+      const filter = () => {
+        const query = input.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        groups.forEach((groupNode) => {
+          const groupItems = Array.from(groupNode.querySelectorAll('[data-component-item]'));
+          let groupVisible = 0;
+
+          groupItems.forEach((itemNode) => {
+            const name = itemNode.getAttribute('data-component-name') || '';
+            const matched = !query || name.includes(query);
+            (itemNode as HTMLElement).hidden = !matched;
+            if (matched) {
+              groupVisible += 1;
+              visibleCount += 1;
+            }
+          });
+
+          (groupNode as HTMLElement).hidden = groupVisible === 0;
+        });
+
+        emptyState.hidden = visibleCount > 0;
+      };
+
+      input.addEventListener('input', filter);
+      filter();
     })();
   </script>
 </html>

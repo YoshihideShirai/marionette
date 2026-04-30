@@ -1,0 +1,191 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const messageAppCode = `package main
+
+import (
+    "strings"
+
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func main() {
+    app := mb.New()
+    app.Set("messages", []string{})
+
+    app.Page("/", func(ctx *mb.Context) mf.Node {
+        return page(ctx)
+    })
+
+    app.Action("messages/create", func(ctx *mb.Context) mf.Node {
+        text := strings.TrimSpace(ctx.FormValue("message"))
+        if text != "" {
+            messages := ctx.Get("messages").([]string)
+            messages = append([]string{text}, messages...)
+            ctx.Set("messages", messages)
+        }
+        return messageList(ctx.Get("messages").([]string))
+    })
+
+    if err := app.Run("127.0.0.1:8080"); err != nil {
+        panic(err)
+    }
+}
+
+func page(ctx *mb.Context) mf.Node {
+    messages := ctx.Get("messages").([]string)
+
+    return mf.UIContainer(mf.ContainerProps{
+        MaxWidth: "2xl",
+        Centered: true,
+    },
+        mf.Stack(mf.StackProps{Direction: "column", Gap: "5"},
+            mf.PageHeader(mf.PageHeaderProps{
+                Title:       "Message Board",
+                Description: "A small app that updates one region through htmx.",
+            }),
+            mf.ActionForm(mf.ActionFormProps{
+                Action: "/messages/create",
+                Target: "#messages",
+                Swap:   "innerHTML",
+                Props:  mf.ComponentProps{Class: "space-y-3"},
+            },
+                mf.FormRow(mf.FormRowProps{
+                    ID:       "message",
+                    Label:    "Message",
+                    Required: true,
+                    Control: mf.TextField(mf.TextFieldProps{
+                        ID:          "message",
+                        Name:        "message",
+                        Placeholder: "Write a message",
+                        Required:    true,
+                    }),
+                }),
+                mf.SubmitButton("Post", mf.ComponentProps{}),
+            ),
+            mf.Region(mf.RegionProps{ID: "messages"}, messageList(messages)),
+        ),
+    )
+}
+
+func messageList(messages []string) mf.Node {
+    if len(messages) == 0 {
+        return mf.EmptyState(mf.EmptyStateProps{
+            Title:       "No messages yet",
+            Description: "Submit the form to render this region again.",
+        })
+    }
+
+    rows := make([]mf.TableComponentRow, 0, len(messages))
+    for i, message := range messages {
+        rows = append(rows, mf.TableRowValues(i+1, message))
+    }
+
+    return mf.Table(mf.TableProps{
+        Columns: []mf.TableColumn{{Label: "No."}, {Label: "Message"}},
+        Rows:    rows,
+    })
+}`;
+
+const initialStateCode = `app := mb.New()
+app.Set("messages", []string{})`;
+
+const pageRouteCode = `app.Page("/", func(ctx *mb.Context) mf.Node {
+    return page(ctx)
+})`;
+
+const actionFormCode = `mf.ActionForm(mf.ActionFormProps{
+    Action: "/messages/create",
+    Target: "#messages",
+    Swap:   "innerHTML",
+})`;
+
+const actionHandlerCode = `app.Action("messages/create", func(ctx *mb.Context) mf.Node {
+    text := strings.TrimSpace(ctx.FormValue("message"))
+    if text != "" {
+        messages := ctx.Get("messages").([]string)
+        messages = append([]string{text}, messages...)
+        ctx.Set("messages", messages)
+    }
+    return messageList(ctx.Get("messages").([]string))
+})`;
+---
+<BaseLayout title="Backend and Frontend Communication - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/backend-frontend/">
+  <article class="training-doc">
+    <header>
+      <p class="eyebrow">Tutorial</p>
+      <h1>Connect the Backend and Frontend</h1>
+      <p class="lead">
+        In Marionette, Go handlers update state, then htmx swaps the returned HTML fragment into the page.
+        This lesson builds a small message form so you can see that request flow.
+      </p>
+    </header>
+
+    <section class="lesson-step" aria-labelledby="mental-model-en">
+      <p class="step-label">Step 1</p>
+      <h2 id="mental-model-en">Understand the Request Flow</h2>
+      <p>The basic flow has four parts.</p>
+      <ol>
+        <li><code>app.Page</code> returns the initial full page</li>
+        <li><code>ActionForm</code> turns form submission into an htmx request</li>
+        <li><code>app.Action</code> receives input and updates backend state</li>
+        <li><code>Region</code> receives the returned HTML fragment</li>
+      </ol>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="state-en">
+      <p class="step-label">Step 2</p>
+      <h2 id="state-en">Store State on the Backend</h2>
+      <p>Use <code>app.Set</code> to initialize application state. Inside handlers, use <code>ctx.Get</code> and <code>ctx.Set</code>.</p>
+      <pre><code>{initialStateCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="page-en">
+      <p class="step-label">Step 3</p>
+      <h2 id="page-en">Render the Initial Page</h2>
+      <p><code>app.Page</code> handles a normal GET page. This page contains both the form and the <code>Region</code> that will be swapped later.</p>
+      <pre><code>{pageRouteCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="form-en">
+      <p class="step-label">Step 4</p>
+      <h2 id="form-en">Send the Form to an Action</h2>
+      <p><code>ActionForm</code> renders a form with htmx attributes. <code>Target</code> points to the element that should receive the response.</p>
+      <pre><code>{actionFormCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="action-en">
+      <p class="step-label">Step 5</p>
+      <h2 id="action-en">Receive Input in an Action</h2>
+      <p><code>app.Action</code> reads the submitted value, updates state, and returns the HTML fragment for the target region.</p>
+      <pre><code>{actionHandlerCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="full-code-en">
+      <p class="step-label">Step 6</p>
+      <h2 id="full-code-en">Full Code</h2>
+      <p>Replace <code>main.go</code> with this version.</p>
+      <pre><code>{messageAppCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="run-en">
+      <p class="step-label">Step 7</p>
+      <h2 id="run-en">Run and Watch the Swap</h2>
+      <pre><code>go run .</code></pre>
+      <p>Open <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> and submit a message. Only the content inside <code>#messages</code> is updated.</p>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="learned-en">
+      <p class="step-label">Step 8</p>
+      <h2 id="learned-en">What You Learned</h2>
+      <ul>
+        <li><code>Page</code> handles initial rendering, while <code>Action</code> handles events</li>
+        <li><code>ActionForm</code> creates frontend-to-backend communication</li>
+        <li><code>Target</code> and <code>Region</code> limit what gets updated</li>
+        <li>An action can return a fragment instead of a full page</li>
+      </ul>
+      <p>When you want to add more UI pieces, browse the <a href="/marionette/en/components/">Components Gallery</a>.</p>
+    </section>
+  </article>
+</BaseLayout>

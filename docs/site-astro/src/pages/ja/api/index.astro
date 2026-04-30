@@ -31,7 +31,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       <h3><code>New() *App</code></h3>
       <ul>
         <li>新しい <code>*App</code> を返します。</li>
-        <li>内部状態を初期化: <code>state: map[string]any{}</code>, <code>pages: map[string]Handler{}</code>, <code>actions: map[string]Handler{}</code>, <code>cookieSecure: false</code>（デフォルト）。</li>
+        <li>内部状態を初期化: <code>state: map[string]any&#123;&#125;</code>, <code>pages: map[string]Handler&#123;&#125;</code>, <code>actions: map[string]Handler&#123;&#125;</code>, <code>cookieSecure: false</code>（デフォルト）。</li>
       </ul>
 
       <h3><code>Run(addr string) error</code></h3>
@@ -116,7 +116,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       <h2>低レベル HTML（frontend/html）</h2>
       <p>低レベル HTML コンストラクタは <code>github.com/YoshihideShirai/marionette/frontend/html</code> に存在します。高度なユーザーとコンポーネント内部の使用を想定しています。</p>
 
-      <h3><code>type Node interface { Render() (template.HTML, error) }</code></h3>
+      <h3><code>type Node interface &#123; Render() (template.HTML, error) &#125;</code></h3>
       <p>すべての UI ノードは自身を安全な HTML にレンダリングします。レンダリング失敗は最終的に HTTP レスポンスの <code>500 Internal Server Error</code> になります。</p>
 
       <h3>基本ノード コンストラクタ</h3>
@@ -124,7 +124,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li><code>Text(v string) Node</code></li>
         <li><code>Raw(html string)</code> (信頼できる HTML パススルー)</li>
         <li><code>type Attrs map[string]string</code></li>
-        <li><code>type ElementProps struct { ID string; Class string; Attrs Attrs }</code></li>
+        <li><code>type ElementProps struct &#123; ID string; Class string; Attrs Attrs &#125;</code></li>
         <li><code>Element(tag string, props ElementProps, children ...Node) Node</code></li>
         <li><code>Div(children ...Node) Node</code> と関連する便利関数</li>
       </ul>

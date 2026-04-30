@@ -71,7 +71,7 @@ type TableRowData struct {
 	Cells []Node
 }
 
-func Table(headers []string, rows ...TableRowData) Node {
+func HTMXTable(headers []string, rows ...TableRowData) Node {
 	return table{Headers: headers, Rows: rows}
 }
 
@@ -87,7 +87,7 @@ func UIDataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...dataframeimpo
 	if err != nil {
 		return nil, err
 	}
-	return UIDataFrame(df, props), nil
+	return DataFrame(df, props), nil
 }
 
 func UIDataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
@@ -298,7 +298,7 @@ type button struct {
 
 var buttonTmpl = template.Must(template.New("button").Parse(`<button class="btn btn-primary w-fit" hx-post="/{{.Action}}" hx-target="{{.TargetQ}}" hx-swap="outerHTML">{{.Label}}</button>`))
 
-func Button(label string) *button {
+func HTMXButton(label string) *button {
 	return &button{Label: label, TargetQ: "#app"}
 }
 

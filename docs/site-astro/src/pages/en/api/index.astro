@@ -19,7 +19,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       <ul>
         <li>Recommended aliases: <code>mb</code> (marionette backend), <code>mf</code> (marionette frontend).</li>
         <li>Use <code>mb</code> for app/runtime APIs such as <code>New</code>, <code>App</code>, <code>Context</code>, <code>Handler</code>.</li>
-        <li>Use <code>mf</code> for component APIs such as <code>ButtonComponent</code>, <code>Card</code>, <code>TableComponent</code>, <code>FormRow</code>.</li>
+        <li>Use <code>mf</code> for component APIs such as <code>Button</code>, <code>Card</code>, <code>Table</code>, <code>FormRow</code>.</li>
         <li>Use <code>mh</code> for advanced low-level node APIs such as <code>Node</code>, <code>Div</code>, <code>Element</code>, <code>Raw</code>.</li>
         <li>Low-level constructors are intentionally not exposed from <code>frontend</code>; import <code>frontend/html</code> when custom markup is needed.</li>
       </ul>
@@ -170,7 +170,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
       <h3>Buttons / inputs</h3>
       <ul>
-        <li><code>ButtonComponent(label string, props ComponentProps) Node</code></li>
+        <li><code>Button(label string, props ComponentProps) Node</code></li>
         <li><code>SubmitButton(label string, props ComponentProps) Node</code></li>
         <li><code>InputComponent(name, value string, props ComponentProps) Node</code></li>
         <li><code>TextareaComponent(name, value string, options TextareaOptions) Node</code></li>
@@ -188,9 +188,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
       <h3>Data display</h3>
       <ul>
-        <li><code>TableComponent(props TableProps) Node</code></li>
+        <li><code>Table(props TableProps) Node</code></li>
         <li><code>Chart(props ChartProps) Node</code></li>
-        <li><code>DataFrameComponent(df *dataframe.DataFrame, props TableProps) Node</code></li>
+        <li><code>DataFrame(df *dataframe.DataFrame, props TableProps) Node</code></li>
         <li><code>DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node</code></li>
         <li><code>Pagination(props PaginationProps) Node</code></li>
       </ul>

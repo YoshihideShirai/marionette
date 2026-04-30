@@ -11,7 +11,7 @@ import (
 )
 
 func TestButtonRenderUsesHTMXMarkup(t *testing.T) {
-	html, err := Button("Increment").OnClick("counter/increment").Target("#app").Render()
+	html, err := HTMXButton("Increment").OnClick("counter/increment").Target("#app").Render()
 	if err != nil {
 		t.Fatalf("render failed: %v", err)
 	}
@@ -25,7 +25,7 @@ func TestButtonRenderUsesHTMXMarkup(t *testing.T) {
 }
 
 func TestButtonPostAcceptsLeadingSlash(t *testing.T) {
-	html, err := Button("Save").Post("/users/create").Target("#users").Render()
+	html, err := HTMXButton("Save").Post("/users/create").Target("#users").Render()
 	if err != nil {
 		t.Fatalf("render failed: %v", err)
 	}
@@ -84,7 +84,7 @@ func TestSidebarRendersNavigationAndEscapesText(t *testing.T) {
 }
 
 func TestTableRendersHeadersRowsAndEscapesCells(t *testing.T) {
-	html, err := Table([]string{"Name", "Role"},
+	html, err := HTMXTable([]string{"Name", "Role"},
 		TableRow(Text(`<Aiko>`), DivClass("badge", Text("Admin"))),
 	).Render()
 	if err != nil {
@@ -175,15 +175,15 @@ func TestDivConstructorsSupportPlainAndAttributedMarkup(t *testing.T) {
 }
 
 func TestTemplatePartialsRenderSharedProps(t *testing.T) {
-	buttonHTML, err := ButtonComponent("Send", ComponentProps{Class: "tracking-wide", Variant: "secondary", Size: "sm", Disabled: true}).Render()
+	buttonHTML, err := Button("Send", ComponentProps{Class: "tracking-wide", Variant: "secondary", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("button render failed: %v", err)
 	}
-	inputHTML, err := InputComponent("email", "demo@example.com", ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	inputHTML, err := UIInput("email", "demo@example.com", ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("input render failed: %v", err)
 	}
-	selectHTML, err := SelectComponent("role", []SelectOption{{Label: "Viewer", Value: "viewer", Selected: true}}, ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	selectHTML, err := UISelect("role", []SelectOption{{Label: "Viewer", Value: "viewer", Selected: true}}, ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("select render failed: %v", err)
 	}
@@ -272,7 +272,7 @@ func TestComponentInputWithOptionsRendersDateConstraints(t *testing.T) {
 }
 
 func TestComponentFormFieldRendersLabelHintAndError(t *testing.T) {
-	html, err := FormFieldComponent(
+	html, err := UIFormField(
 		InputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Variant: "default", Size: "sm"}}),
 		FormFieldProps{
 			Label:    "Name",
@@ -407,7 +407,7 @@ func TestComponentModalRendersSSRState(t *testing.T) {
 	closedHTML, err := Modal(ModalProps{
 		Title:   "Delete user",
 		Body:    Text("Confirm deletion"),
-		Actions: ButtonComponent("Cancel", ComponentProps{Variant: "ghost", Size: "sm"}),
+		Actions: Button("Cancel", ComponentProps{Variant: "ghost", Size: "sm"}),
 		Open:    false,
 	}).Render()
 	if err != nil {
@@ -416,7 +416,7 @@ func TestComponentModalRendersSSRState(t *testing.T) {
 	openHTML, err := Modal(ModalProps{
 		Title:   "Delete user",
 		Body:    Text("Confirm deletion"),
-		Actions: ButtonComponent("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
+		Actions: Button("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
 		Open:    true,
 	}).Render()
 	if err != nil {
@@ -454,7 +454,7 @@ func TestComponentEmptyStateRendersSkeletonAndCopy(t *testing.T) {
 }
 
 func TestComponentTableRendersSortHeadersAndEmptyState(t *testing.T) {
-	emptyHTML, err := TableComponent(TableProps{
+	emptyHTML, err := Table(TableProps{
 		Columns: []TableColumn{
 			{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true},
 			{Label: "Role"},
@@ -577,7 +577,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 	headerHTML, err := PageHeader(PageHeaderProps{
 		Title:       "Users",
 		Description: "Manage users",
-		Actions:     ButtonComponent("Create", ComponentProps{Size: "sm"}),
+		Actions:     Button("Create", ComponentProps{Size: "sm"}),
 	}).Render()
 	if err != nil {
 		t.Fatalf("page header render failed: %v", err)
@@ -588,7 +588,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	containerHTML, err := ContainerComponent(ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true}, Text("Contained")).Render()
+	containerHTML, err := UIContainer(ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true}, Text("Contained")).Render()
 	if err != nil {
 		t.Fatalf("container render failed: %v", err)
 	}
@@ -618,7 +618,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	actionsHTML, err := Actions(ActionsProps{Align: "end", Gap: "sm", Wrap: true, Props: ComponentProps{Class: "w-full"}}, ButtonComponent("Save", ComponentProps{})).Render()
+	actionsHTML, err := Actions(ActionsProps{Align: "end", Gap: "sm", Wrap: true, Props: ComponentProps{Class: "w-full"}}, Button("Save", ComponentProps{})).Render()
 	if err != nil {
 		t.Fatalf("actions render failed: %v", err)
 	}
@@ -638,7 +638,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	textHTML, err := TextComponent(TextProps{Text: "Muted", Size: "sm", Weight: "medium", Tone: "muted"}).Render()
+	textHTML, err := UIText(TextProps{Text: "Muted", Size: "sm", Weight: "medium", Tone: "muted"}).Render()
 	if err != nil {
 		t.Fatalf("text render failed: %v", err)
 	}
@@ -686,7 +686,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 	cardHTML, err := Card(CardProps{
 		Title:       "Card",
 		Description: "Summary",
-		Actions:     ButtonComponent("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+		Actions:     Button("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
 		Gap:         "sm",
 	}, Text("Body")).Render()
 	if err != nil {
@@ -737,7 +737,7 @@ func TestFrontendLayoutComponentsMatchRootOutput(t *testing.T) {
 
 func TestTableRowValuesConvertsValuesToCells(t *testing.T) {
 	row := TableRowValues(7, "Aiko", nil, Text("Admin"))
-	tableHTML, err := TableComponent(TableProps{
+	tableHTML, err := Table(TableProps{
 		Columns: []TableColumn{{Label: "ID"}, {Label: "Name"}, {Label: "Blank"}, {Label: "Role"}},
 		Rows:    []TableComponentRow{row},
 	}).Render()
@@ -839,7 +839,7 @@ func TestComponentDataFrameRendersPrimitiveAndNodeValues(t *testing.T) {
 		rdf.NewSeriesInt64("Age", nil, int64(42), nil),
 		rdf.NewSeriesMixed("Role", nil, DivClass("badge", Text("Admin")), "Viewer"),
 	)
-	html, err := DataFrameComponent(df, TableProps{
+	html, err := DataFrame(df, TableProps{
 		EmptyTitle:       "No rows",
 		EmptyDescription: "Add rows to continue.",
 	}).Render()
@@ -859,7 +859,7 @@ func TestComponentDataFrameOverridesExplicitColumnsWithDataFrameNames(t *testing
 		rdf.NewSeriesString("Name", nil, "Aiko"),
 		rdf.NewSeriesString("Role", nil, "Admin"),
 	)
-	html, err := DataFrameComponent(df, TableProps{
+	html, err := DataFrame(df, TableProps{
 		Columns: []TableColumn{{Label: "Display Name"}, {Label: "Team Role"}},
 	}).Render()
 	if err != nil {

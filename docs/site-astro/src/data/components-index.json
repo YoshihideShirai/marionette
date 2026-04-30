@@ -2,7 +2,7 @@
   "components": [
     {
       "id": "button",
-      "name": "ButtonComponent",
+      "name": "Button",
       "group": "Components",
       "golden": "testdata/golden/button.golden.html",
       "example": "/marionette/examples/button.html",
@@ -55,7 +55,7 @@
     },
     {
       "id": "table",
-      "name": "TableComponent",
+      "name": "Table",
       "group": "Components",
       "golden": "testdata/golden/table.golden.html",
       "example": "/marionette/examples/table.html",
@@ -317,7 +317,7 @@
     },
     {
       "id": "dataframe",
-      "name": "DataFrameComponent",
+      "name": "DataFrame",
       "group": "Data",
       "description": "Render a gota DataFrame as a table component.",
       "template": "dataframe.go",

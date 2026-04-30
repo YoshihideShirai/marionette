@@ -21,7 +21,7 @@ Only consider adding a new component when all of the following are true:
 
 - Align names with existing public API patterns.
 - The current accepted naming examples are:
-  - Component entry points: `ButtonComponent`, `InputComponent`, `Modal`
+  - Component entry points: `Button`, `InputComponent`, `Modal`
   - Props types: `ComponentProps`, `TextFieldProps`, `FormRowProps`
   - Form primitives: `FormRow`, `TextField`
 - `Ui` prefix names are **not required** by the current standard.
@@ -120,7 +120,7 @@ The following checks are mandatory for every component-related PR.
 - Good (current rule: `Component*`, `*Props`, existing API names remain intact):
 
 ```go
-button := ButtonComponent("Save", ComponentProps{Variant: "primary", Size: "sm"})
+button := Button("Save", ComponentProps{Variant: "primary", Size: "sm"})
 row := FormRow(FormRowProps{
     Label: "Email",
     Control: TextField(TextFieldProps{Name: "email", Type: "email"}),

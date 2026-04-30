@@ -19,7 +19,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 	}{
 		{
 			name: "button",
-			node: ButtonComponent("Save", ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"}),
+			node: Button("Save", ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"}),
 		},
 		{
 			name: "input",
@@ -34,11 +34,11 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "select",
-			node: SelectComponent("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
+			node: UISelect("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
 		},
 		{
 			name: "form_field",
-			node: FormFieldComponent(
+			node: UIFormField(
 				InputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Size: "sm"}}),
 				FormFieldProps{Label: "Name", Required: true, Hint: "Enter a display name.", Error: "Name is required."},
 			),
@@ -48,7 +48,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			node: Modal(ModalProps{
 				Title:   "Delete user",
 				Body:    Text("Confirm deletion"),
-				Actions: ButtonComponent("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
+				Actions: Button("Delete", ComponentProps{Variant: "danger", Size: "sm"}),
 				Open:    true,
 			}),
 		},
@@ -71,7 +71,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "table",
-			node: TableComponent(TableProps{
+			node: Table(TableProps{
 				Columns:          []TableColumn{{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true}, {Label: "Role"}},
 				Rows:             []TableComponentRow{{Cells: []Node{Text("Aiko"), DivClass("badge", Text("Admin"))}}},
 				EmptyTitle:       "No users",
@@ -129,7 +129,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "textarea",
-			node: TextareaComponent("notes", "hello", TextareaOptions{
+			node: UITextarea("notes", "hello", TextareaOptions{
 				Placeholder: "Memo",
 				Rows:        4,
 				Required:    true,
@@ -138,7 +138,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "checkbox",
-			node: CheckboxComponent(CheckboxComponentProps{
+			node: UICheckbox(CheckboxComponentProps{
 				Name:    "active",
 				Value:   "1",
 				Label:   "Active user",
@@ -148,7 +148,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "radio_group",
-			node: RadioGroupComponent(RadioGroupComponentProps{
+			node: UIRadioGroup(RadioGroupComponentProps{
 				Name:      "role",
 				AriaLabel: "role",
 				Items: []RadioItem{
@@ -160,7 +160,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "switch",
-			node: SwitchComponent(SwitchComponentProps{
+			node: UISwitch(SwitchComponentProps{
 				Name:    "notify",
 				Value:   "1",
 				Label:   "Enable notifications",
@@ -173,7 +173,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			node: Stack(
 				StackProps{Direction: "horizontal", Gap: "sm", Align: "center", Justify: "between", Wrap: true, Props: ComponentProps{Class: "w-full"}},
 				Text("Left"),
-				ButtonComponent("Right", ComponentProps{Variant: "secondary", Size: "sm"}),
+				Button("Right", ComponentProps{Variant: "secondary", Size: "sm"}),
 			),
 		},
 		{
@@ -200,12 +200,12 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			node: PageHeader(PageHeaderProps{
 				Title:       "Users",
 				Description: "Manage account records.",
-				Actions:     ButtonComponent("Create", ComponentProps{Size: "sm"}),
+				Actions:     Button("Create", ComponentProps{Size: "sm"}),
 			}),
 		},
 		{
 			name: "container",
-			node: ContainerComponent(
+			node: UIContainer(
 				ContainerProps{MaxWidth: "md", Padding: "sm", Centered: true},
 				Text("Contained"),
 			),
@@ -216,7 +216,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 				CardProps{
 					Title:       "Summary",
 					Description: "Current workspace status.",
-					Actions:     ButtonComponent("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
+					Actions:     Button("Edit", ComponentProps{Variant: "ghost", Size: "sm"}),
 				},
 				Text("Ready"),
 			),

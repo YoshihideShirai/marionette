@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const helloWorldCode = `package main
+
+import (
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func main() {
+    app := mb.New()
+
+    app.Page("/", func(ctx *mb.Context) mf.Node {
+        return mf.UIContainer(mf.ContainerProps{
+            MaxWidth: "2xl",
+            Centered: true,
+        },
+            mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+                mf.PageHeader(mf.PageHeaderProps{
+                    Title:       "Hello, Marionette",
+                    Description: "Your first Go-powered UI is running.",
+                }),
+                mf.TextComponent(mf.TextProps{
+                    Text: "Hello World",
+                    Size: "lg",
+                }),
+            ),
+        )
+    })
+
+    if err := app.Run("127.0.0.1:8080"); err != nil {
+        panic(err)
+    }
+}`;
+---
+<BaseLayout title="チュートリアル - Marionette" lang="ja" languageSwitcherPath="/marionette/en/tutorial/">
+  <article class="training-doc">
+    <header>
+      <p class="eyebrow">Tutorial</p>
+      <h1>最初のMarionetteアプリを作る</h1>
+      <p class="lead">
+        空のGoプロジェクトを作り、Marionetteを追加して、ブラウザにHello Worldを表示するまでを順に進めます。
+      </p>
+    </header>
+
+    <section class="lesson-step" aria-labelledby="before-you-start-ja">
+      <p class="step-label">Step 1</p>
+      <h2 id="before-you-start-ja">準備するもの</h2>
+      <p>Goがインストールされ、ターミナルで <code>go version</code> を実行できることを確認します。</p>
+      <pre><code>go version</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="create-project-ja">
+      <p class="step-label">Step 2</p>
+      <h2 id="create-project-ja">プロジェクトを作成する</h2>
+      <p>作業用ディレクトリを作り、Go moduleを初期化します。</p>
+      <pre><code>mkdir marionette-hello
+cd marionette-hello
+go mod init example.com/marionette-hello</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="add-marionette-ja">
+      <p class="step-label">Step 3</p>
+      <h2 id="add-marionette-ja">Marionetteを追加する</h2>
+      <p>Marionetteを依存関係として追加します。</p>
+      <pre><code>go get github.com/YoshihideShirai/marionette@latest</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="write-app-ja">
+      <p class="step-label">Step 4</p>
+      <h2 id="write-app-ja">Hello Worldを書く</h2>
+      <p><code>main.go</code> を作成し、次のコードを入れます。</p>
+      <pre><code>{helloWorldCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="run-app-ja">
+      <p class="step-label">Step 5</p>
+      <h2 id="run-app-ja">起動して確認する</h2>
+      <p>アプリを起動します。</p>
+      <pre><code>go run .</code></pre>
+      <p>ブラウザで <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> を開きます。</p>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="learned-ja">
+      <p class="step-label">Step 6</p>
+      <h2 id="learned-ja">ここで習得したこと</h2>
+      <ul>
+        <li><code>mb.New()</code> でMarionetteアプリを作成する</li>
+        <li><code>app.Page</code> でURLに表示内容を登録する</li>
+        <li><code>frontend</code> のコンポーネントで画面を組み立てる</li>
+        <li><code>app.Run</code> でローカルサーバーを起動する</li>
+      </ul>
+      <p>次は <a href="/marionette/ja/components/">Components Gallery</a> で使えるUI部品を確認できます。</p>
+    </section>
+  </article>
+</BaseLayout>

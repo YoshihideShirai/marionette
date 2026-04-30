@@ -353,6 +353,77 @@ iframe {
   font-weight: 600;
 }
 
+.training-doc {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 780px;
+}
+
+.training-doc header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.eyebrow,
+.step-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.lesson-step {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+.lesson-step h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.lesson-step p,
+.lesson-step ul {
+  margin: 0;
+}
+
+.lesson-step ul {
+  padding-left: 1.25rem;
+}
+
+.training-doc code {
+  padding: 0.12rem 0.32rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--line) 28%, transparent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.training-doc pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 82%, var(--line));
+}
+
+.training-doc pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  line-height: 1.6;
+  white-space: pre;
+}
+
 @media (max-width: 900px) {
   .docs-shell {
     grid-template-columns: 1fr;

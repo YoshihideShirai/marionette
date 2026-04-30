@@ -139,7 +139,7 @@
     },
     {
       "id": "form",
-      "name": "FormComponent",
+      "name": "Form",
       "group": "Components",
       "description": "Form element wrapper for method/action and child controls.",
       "template": "components.go",
@@ -147,7 +147,7 @@
     },
     {
       "id": "form-field",
-      "name": "FormFieldComponent",
+      "name": "FormField",
       "group": "Components",
       "golden": "testdata/golden/form_field.golden.html",
       "example": "/marionette/examples/form_field.html",

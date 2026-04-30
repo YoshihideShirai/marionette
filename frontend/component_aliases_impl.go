@@ -13,11 +13,10 @@ func ThemeToggleButton(props ComponentProps) Node             { return UIThemeTo
 func InputWithOptions(name, value string, options InputOptions) Node {
 	return UIInputWithOptions(name, value, options)
 }
-func FormComponent(props FormProps, children ...Node) Node { return UIForm(props, children...) }
 func ActionForm(props ActionFormProps, children ...Node) Node {
 	return UIActionForm(props, children...)
 }
-func FormFieldComponent(control Node, props FormFieldProps) Node  { return UIFormField(control, props) }
+func FormField(control Node, props FormFieldProps) Node  { return UIFormField(control, props) }
 func Modal(props ModalProps) Node                                 { return UIModal(props) }
 func Toast(props ToastProps) Node                                 { return UIToast(props) }
 func Alert(props AlertProps) Node                                 { return UIAlert(props) }

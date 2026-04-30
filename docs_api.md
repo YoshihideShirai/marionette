@@ -260,7 +260,7 @@ Template-backed component constructors (`templates/components/*`).
   - blank `options.Type` defaults to `"text"`.
 - `Textarea(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` defaults to `3`.
-- `FormComponent(props FormProps, children ...Node) Node`
+- `Form(action string, children ...Node) *form`
   - renders `<form>` with `ID`, `Class`, `Method`, `Action`, and passthrough `Attrs`.
 - `ActionForm(props ActionFormProps, children ...Node) Node`
   - renders a form wired to Marionette/HTMX action updates.
@@ -269,7 +269,7 @@ Template-backed component constructors (`templates/components/*`).
   - optional `Target` and `Swap` render `hx-target` and `hx-swap`.
 - `HiddenField(name, value string) Node`
   - renders a hidden form field.
-- `FormFieldComponent(control Node, props FormFieldProps) Node`
+- `FormField(control Node, props FormFieldProps) Node`
   - if `control` rendering fails, returns render error node.
 - `Select(name string, options []SelectOption, props ComponentProps) Node`
 

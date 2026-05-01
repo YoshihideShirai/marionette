@@ -76,3 +76,20 @@ npm run dev
 ```
 
 The GitHub Pages workflow publishes `docs/site-astro/` via GitHub Actions.
+
+## Heavy Job Template (data apps)
+
+`cmd/marionette` includes a sample "Run aggregation" flow on the Analytics page:
+
+- Server-side `Job` model: execution ID, state, progress, and result reference.
+- UI templates combined for lifecycle UX:
+  - `progress` while running,
+  - `toast` for status/alerts,
+  - `empty_state` before first run.
+- In-memory cache keyed by input-parameter hash, with TTL (3 minutes), to speed up same-condition reruns.
+
+### Retry and timeout policy
+
+- Retry: one automatic retry is applied for transient failures (max 2 attempts total).
+- Timeout: job budget is 5 seconds; if processing exceeds this budget, mark as failed.
+- Failure handling: surface error in toast and allow operator to rerun with same or adjusted parameters.

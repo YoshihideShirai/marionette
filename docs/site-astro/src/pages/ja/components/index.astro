@@ -6,6 +6,63 @@ const cards = catalog.components;
 const groups = ['Components', 'Layout', 'Data', 'Chart'] as const;
 const selectedGroup = Astro.url.searchParams.get('group');
 const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ? selectedGroup : 'All';
+const componentById = new Map(cards.map((component) => [component.id, component]));
+const sectionDefinitions = [
+  {
+    title: 'アクション / リンク',
+    description: 'ボタン、リンク、直接操作のためのコンポーネント。',
+    ids: ['button', 'link', 'theme-toggle-button'],
+  },
+  {
+    title: 'フォーム / 入力',
+    description: 'ユーザー入力の収集と検証に使うコントロール。',
+    ids: ['form', 'form-field', 'input', 'select', 'textarea', 'checkbox', 'radio-group', 'switch'],
+  },
+  {
+    title: 'ナビゲーション',
+    description: '画面遷移、階層、ページング、ナビゲーションのデモ。',
+    ids: ['sidebar', 'tabs', 'breadcrumb', 'pagination', 'navigation'],
+  },
+  {
+    title: 'フィードバック / オーバーレイ',
+    description: '状態表示、読み込み、空状態、重なりのあるUI。',
+    ids: ['modal', 'toast', 'alert', 'empty-state', 'skeleton', 'progress', 'feedback', 'overlay-system'],
+  },
+  {
+    title: 'データ / メディア',
+    description: 'テーブル、データフレーム、画像表示。',
+    ids: ['table', 'dataframe', 'dataframe-chart', 'image'],
+  },
+  {
+    title: 'チャート',
+    description: 'Chartラッパーとチャート種別ごとのサンプル。',
+    ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'],
+  },
+  {
+    title: 'レイアウト',
+    description: 'ページ構造、コンテナ、セクション、配置のプリミティブ。',
+    ids: ['stack', 'grid', 'split', 'page-header', 'container', 'card', 'section', 'layout'],
+  },
+  {
+    title: 'タイポグラフィ',
+    description: 'テキストプリミティブと見出しヘルパー。',
+    ids: ['heading', 'paragraph', 'span'],
+  },
+];
+const categorizedIds = new Set(sectionDefinitions.flatMap((section) => section.ids));
+const sections = sectionDefinitions.map((section) => ({
+  ...section,
+  components: section.ids.map((id) => componentById.get(id)).filter(Boolean),
+})).filter((section) => section.components.length > 0);
+const uncategorized = cards.filter((component) => !categorizedIds.has(component.id));
+if (uncategorized.length > 0) {
+  sections.push({
+    title: 'その他',
+    description: 'まだ主要カテゴリに割り当てていない追加サンプル。',
+    ids: uncategorized.map((component) => component.id),
+    components: uncategorized,
+  });
+}
 ---
 <BaseLayout title="コンポーネントギャラリー" lang="ja" languageSwitcherPath="/marionette/en/components/">
   <div class="component-gallery">
@@ -39,27 +96,38 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       })}
     </nav>
 
-    <div class="component-grid" data-component-grid>
-      {cards.map((component) => {
-        return (
-          <article
-            class="card component-card"
-            data-component-card
-            data-group={component.group}
-            data-name={component.name.toLowerCase()}
-            data-description={component.description.toLowerCase()}
-          >
-            <header class="card-header">
-              <h2><a href={`./${component.id}/`}>{component.name}</a></h2>
-              {!component.example && <span class="badge">サンプル準備中</span>}
-            </header>
-            <p>{component.description}</p>
-            {component.example && (
-              <iframe src={component.example} title={`${component.name} のサンプル`} loading="lazy" />
-            )}
-          </article>
-        );
-      })}
+    <div class="component-sections" data-component-sections>
+      {sections.map((section) => (
+        <section class="component-section" data-component-section>
+          <header class="section-header">
+            <div>
+              <h2>{section.title}</h2>
+              <p>{section.description}</p>
+            </div>
+            <span>{section.components.length}</span>
+          </header>
+          <div class="component-grid">
+            {section.components.map((component) => (
+              <article
+                class="card component-card"
+                data-component-card
+                data-group={component.group}
+                data-name={component.name.toLowerCase()}
+                data-description={component.description.toLowerCase()}
+              >
+                <header class="card-header">
+                  <h3><a href={`./${component.id}/`}>{component.name}</a></h3>
+                  {!component.example && <span class="badge">サンプル準備中</span>}
+                </header>
+                <p>{component.description}</p>
+                {component.example && (
+                  <iframe src={component.example} title={`${component.name} のサンプル`} loading="lazy" />
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
 
     <p class="empty" data-empty-state hidden>検索条件に一致するコンポーネントはありません。</p>
@@ -68,6 +136,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
   <script>
     const input = document.querySelector('#component-search');
     const cards = Array.from(document.querySelectorAll('[data-component-card]'));
+    const sections = Array.from(document.querySelectorAll('[data-component-section]'));
     const emptyState = document.querySelector('[data-empty-state]');
     const groupFilters = Array.from(document.querySelectorAll('[data-group-filter]'));
     const validGroups = new Set(groupFilters.map((filter) => filter.dataset.groupFilter));
@@ -105,6 +174,11 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
         if (isMatch) visibleCount += 1;
       });
 
+      sections.forEach((section) => {
+        const sectionCards = Array.from(section.querySelectorAll('[data-component-card]'));
+        section.hidden = !sectionCards.some((card) => !card.hidden);
+      });
+
       setActiveGroup(selectedGroup);
 
       if (emptyState) {
@@ -135,7 +209,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
   <style>
     .component-gallery {
       display: grid;
-      gap: 1rem;
+      gap: 1.25rem;
     }
 
     .component-gallery-header {
@@ -197,6 +271,41 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       outline-offset: 1px;
     }
 
+    .component-sections {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .component-section {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.6rem;
+    }
+
+    .section-header h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.2rem;
+    }
+
+    .section-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .section-header span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
     .component-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
@@ -218,7 +327,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       align-items: center;
     }
 
-    .card-header h2 {
+    .card-header h3 {
       margin: 0;
       font-size: 1.1rem;
       line-height: 1.3;

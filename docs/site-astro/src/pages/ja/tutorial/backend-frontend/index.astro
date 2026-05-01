@@ -185,6 +185,10 @@ const actionHandlerCode = `app.Action("messages/create", func(ctx *mb.Context) m
         <li><code>Target</code> と <code>Region</code> で更新範囲を限定する</li>
         <li>Actionは画面全体ではなく、差し替えたいHTML断片を返せる</li>
       </ul>
+      <p>
+        この仕組みは分析ダッシュボードにも使えます。<code>DataQueryState</code> をURLクエリまたはサーバー状態で共有し、
+        例えば地域チャートをクリックしたら同じ状態でチャートとテーブルを再描画すると、全ウィジェットを一括で絞り込めます。
+      </p>
       <p>UI部品を増やしたい場合は <a href="/marionette/ja/components/">Components Gallery</a> を確認してください。</p>
     </section>
   </article>

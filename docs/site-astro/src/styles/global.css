@@ -222,6 +222,7 @@ button:focus-visible {
   list-style: none;
   margin: 0;
   padding: 0;
+  max-height: fit-content;
 }
 
 .sidebar-section-list {
@@ -378,6 +379,7 @@ button:focus-visible {
   margin-left: var(--space-2);
   padding-left: var(--space-3);
   border-left: 1px solid var(--line);
+  max-height: fit-content;
 }
 
 .sidebar-component-list > li > a,
@@ -392,6 +394,7 @@ button:focus-visible {
   margin-top: var(--space-1);
   padding-left: var(--space-3);
   border-left: 1px solid var(--line);
+  max-height: fit-content;
 }
 
 .sidebar-component-list details li a {
@@ -717,7 +720,7 @@ iframe {
 
   .sidebar {
     position: static;
-    max-height: none;
+    max-height: 60vh;
     padding: var(--space-3);
     border: 1px solid var(--line);
     border-radius: var(--radius-md);

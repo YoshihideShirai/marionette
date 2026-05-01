@@ -1,11 +1,15 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"hash/fnv"
 	"log"
 	"net/url"
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	mb "github.com/YoshihideShirai/marionette/backend"
@@ -23,6 +27,7 @@ type user struct {
 const (
 	startDateMin = "2024-01-01"
 	startDateMax = "2026-12-31"
+	cacheTTL     = 3 * time.Minute
 )
 
 type createUserFormState struct {
@@ -33,6 +38,40 @@ type createUserFormState struct {
 	Errors    map[string]string
 }
 
+type jobState string
+
+const (
+	jobQueued  jobState = "queued"
+	jobRunning jobState = "running"
+	jobDone    jobState = "completed"
+	jobFailed  jobState = "failed"
+)
+
+type job struct {
+	ID        string
+	State     jobState
+	Progress  float64
+	ResultRef string
+	Error     string
+	Retries   int
+}
+
+type cacheEntry struct {
+	ExpiresAt time.Time
+	ResultRef string
+}
+
+type aggregateParams struct {
+	FromMonth string `json:"from_month"`
+	Role      string `json:"role"`
+}
+
+type jobStore struct {
+	mu    sync.Mutex
+	jobs  map[string]*job
+	cache map[string]cacheEntry
+}
+
 type pagination struct {
 	Page       int
 	PerPage    int
@@ -41,6 +80,10 @@ type pagination struct {
 
 func defaultCreateUserFormState() createUserFormState {
 	return createUserFormState{Role: "Viewer", Errors: map[string]string{}}
+}
+
+func newJobStore() *jobStore {
+	return &jobStore{jobs: map[string]*job{}, cache: map[string]cacheEntry{}}
 }
 
 func demoUsers() []user {
@@ -66,6 +109,7 @@ func buildApp() *mb.App {
 	app.Set("deleteModalOpen", false)
 	app.Set("deleteTargetID", 0)
 	app.Set("loading", false)
+	app.Set("jobStore", newJobStore())
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return renderDashboardPage(ctx)
@@ -166,6 +210,16 @@ func buildApp() *mb.App {
 		ctx.Set("loading", false)
 		ctx.FlashInfo("Demo data was reset.")
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
+	})
+
+	app.Action("analytics/aggregate/start", func(ctx *mb.Context) mf.Node {
+		params := aggregateParams{FromMonth: strings.TrimSpace(ctx.FormValue("from_month")), Role: strings.TrimSpace(ctx.FormValue("role"))}
+		store := ctx.Get("jobStore").(*jobStore)
+		jobID := store.startAggregateJob(getUsers(ctx), params)
+		return renderAggregateWorkspace(ctx, jobID)
+	})
+	app.Action("analytics/aggregate/poll", func(ctx *mb.Context) mf.Node {
+		return renderAggregateWorkspace(ctx, strings.TrimSpace(ctx.FormValue("job_id")))
 	})
 
 	return app
@@ -355,6 +409,7 @@ func renderAnalyticsPage(ctx *mb.Context) mf.Node {
 	content := mf.Split(mf.SplitProps{
 		Gap: "lg",
 		Main: mf.Stack(mf.StackProps{Gap: "lg"},
+			renderAggregateWorkspace(ctx, ""),
 			renderDashboardCharts(ctx),
 			mf.Alert(mf.AlertProps{Title: "Insight", Description: "Editors are growing steadily month-over-month.", Props: mf.ComponentProps{Variant: "info"}}),
 		),
@@ -365,6 +420,48 @@ func renderAnalyticsPage(ctx *mb.Context) mf.Node {
 		),
 	})
 	return renderShell(ctx, "/analytics", header, content)
+}
+
+func renderAggregateWorkspace(ctx *mb.Context, jobID string) mf.Node {
+	children := []mf.Node{
+		mf.Card(mf.CardProps{Title: "Heavy aggregation template", Description: "Start async job, poll status, and reuse cached results (TTL: 3 min)."},
+			mf.ActionForm(mf.ActionFormProps{Action: "analytics/aggregate/start", Target: "#aggregate-workspace", Swap: "outerHTML"},
+				mf.FormRow(mf.FormRowProps{ID: "from_month", Label: "From month", Control: mf.TextField(mf.TextFieldProps{ID: "from_month", Name: "from_month", Placeholder: "2025-01"})}),
+				mf.FormRow(mf.FormRowProps{ID: "role", Label: "Role", Control: mf.Select(mf.SelectFieldProps{ID: "role", Name: "role", Options: []mf.SelectOption{{Label: "All", Value: "All", Selected: true}, {Label: "Admin", Value: "Admin"}, {Label: "Editor", Value: "Editor"}, {Label: "Viewer", Value: "Viewer"}, {Label: "Fail demo", Value: "Fail demo"}}})}),
+				mf.SubmitButton("Run aggregation", mf.ComponentProps{Variant: "primary"}),
+			),
+		),
+	}
+	if strings.TrimSpace(jobID) == "" {
+		children = append(children, mf.EmptyState(mf.EmptyStateProps{Title: "No job started", Description: "Run aggregation to generate table/chart updates."}))
+		return mf.Region(mf.RegionProps{ID: "aggregate-workspace", Props: mf.ComponentProps{Class: "space-y-3"}}, children...)
+	}
+	store := ctx.Get("jobStore").(*jobStore)
+	j, ok := store.getJob(jobID)
+	if !ok {
+		children = append(children, mf.Toast(mf.ToastProps{Title: "Job not found", Description: "The execution ID is unknown.", Props: mf.ComponentProps{Variant: "warning"}}))
+		return mf.Region(mf.RegionProps{ID: "aggregate-workspace", Props: mf.ComponentProps{Class: "space-y-3"}}, children...)
+	}
+	children = append(children, mf.Toast(mf.ToastProps{Title: "Job status", Description: "ID: " + j.ID + " / state: " + string(j.State), Props: mf.ComponentProps{Variant: "info"}}))
+	if j.State == jobRunning || j.State == jobQueued {
+		children = append(children,
+			mf.Progress(mf.ProgressProps{Label: "Aggregation progress", Value: j.Progress, Max: 100, ShowValue: true, Props: mf.ComponentProps{Variant: "primary"}}),
+			mf.ActionForm(mf.ActionFormProps{Action: "analytics/aggregate/poll", Target: "#aggregate-workspace", Swap: "outerHTML"},
+				mf.HiddenField("job_id", j.ID),
+				mf.SubmitButton("Refresh status", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
+			),
+		)
+	}
+	if j.State == jobDone {
+		children = append(children,
+			mf.Table(mf.TableProps{Columns: []mf.TableColumn{{Label: "Result reference"}}, Rows: []mf.TableComponentRow{mf.TableRowValues(j.ResultRef)}}),
+			mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Title: "Aggregate snapshot", Labels: []string{"Progress"}, Datasets: []mf.ChartDataset{{Label: "Done", Data: []float64{j.Progress}, BackgroundColor: "rgba(16,185,129,0.24)", BorderColor: "#10b981"}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}, Height: 180}),
+		)
+	}
+	if j.State == jobFailed {
+		children = append(children, mf.Toast(mf.ToastProps{Title: "Aggregation failed", Description: j.Error, Props: mf.ComponentProps{Variant: "error"}}))
+	}
+	return mf.Region(mf.RegionProps{ID: "aggregate-workspace", Props: mf.ComponentProps{Class: "space-y-3"}}, children...)
 }
 
 func renderSettingsPage(ctx *mb.Context) mf.Node {
@@ -935,4 +1032,85 @@ func renderDeleteModal(ctx *mb.Context) mf.Node {
 		),
 		Open: ctx.Get("deleteModalOpen") == true,
 	})
+}
+
+func paramsHash(params aggregateParams) string {
+	b, _ := json.Marshal(params)
+	h := fnv.New64a()
+	_, _ = h.Write(b)
+	return fmt.Sprintf("%x", h.Sum64())
+}
+
+func (s *jobStore) startAggregateJob(users []user, params aggregateParams) string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	key := paramsHash(params)
+	now := time.Now()
+	if hit, ok := s.cache[key]; ok && hit.ExpiresAt.After(now) {
+		id := fmt.Sprintf("job-cache-%d", now.UnixNano())
+		s.jobs[id] = &job{ID: id, State: jobDone, Progress: 100, ResultRef: hit.ResultRef}
+		return id
+	}
+	id := fmt.Sprintf("job-%d", now.UnixNano())
+	s.jobs[id] = &job{ID: id, State: jobQueued, Progress: 0}
+	go s.runAggregateJob(id, key, users, params)
+	return id
+}
+
+func (s *jobStore) runAggregateJob(id, key string, users []user, params aggregateParams) {
+	start := time.Now()
+	for attempt := 0; attempt < 2; attempt++ {
+		s.updateJob(id, jobRunning, 10, "", "", attempt)
+		time.Sleep(350 * time.Millisecond)
+		s.updateJob(id, jobRunning, 50, "", "", attempt)
+		time.Sleep(350 * time.Millisecond)
+		if params.Role == "Fail demo" && attempt == 0 {
+			continue
+		}
+		resultRef := s.computeAggregate(users, params)
+		s.updateJob(id, jobDone, 100, resultRef, "", attempt)
+		s.mu.Lock()
+		s.cache[key] = cacheEntry{ExpiresAt: time.Now().Add(cacheTTL), ResultRef: resultRef}
+		s.mu.Unlock()
+		return
+	}
+	if time.Since(start) > 5*time.Second {
+		s.updateJob(id, jobFailed, 100, "", "Job timed out after 5 seconds.", 1)
+		return
+	}
+	s.updateJob(id, jobFailed, 100, "", "Job failed after retry.", 1)
+}
+
+func (s *jobStore) computeAggregate(users []user, params aggregateParams) string {
+	filtered := 0
+	for _, u := range users {
+		if params.Role != "" && params.Role != "All" && u.Role != params.Role {
+			continue
+		}
+		if params.FromMonth != "" && !strings.HasPrefix(u.StartDate, params.FromMonth) {
+			continue
+		}
+		filtered++
+	}
+	return fmt.Sprintf("aggregate:%s:%s:%d", params.FromMonth, params.Role, filtered)
+}
+
+func (s *jobStore) updateJob(id string, state jobState, progress float64, resultRef, errMsg string, retries int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	j, ok := s.jobs[id]
+	if !ok {
+		return
+	}
+	j.State, j.Progress, j.ResultRef, j.Error, j.Retries = state, progress, resultRef, errMsg, retries
+}
+
+func (s *jobStore) getJob(id string) (job, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	j, ok := s.jobs[id]
+	if !ok {
+		return job{}, false
+	}
+	return *j, true
 }

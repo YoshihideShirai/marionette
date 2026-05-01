@@ -12,14 +12,20 @@ const isJa = lang === 'ja';
 const currentPath = Astro.url.pathname;
 const langRoot = isJa ? '/marionette/ja' : '/marionette/en';
 
-const topItems = isJa
+const introItems = isJa
   ? [
       { label: 'ホーム', href: `${langRoot}/` },
+    ]
+  : [
+      { label: 'Home', href: `${langRoot}/` },
+    ];
+
+const referenceItems = isJa
+  ? [
       { label: 'API Docs', href: `${langRoot}/api/` },
       { label: '検索', href: `${langRoot}/search/` },
     ]
   : [
-      { label: 'Home', href: `${langRoot}/` },
       { label: 'API Docs', href: `${langRoot}/api/` },
       { label: 'Search', href: `${langRoot}/search/` },
     ];
@@ -89,7 +95,7 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
         <p class="sidebar-title">{isJa ? 'コンテンツ' : 'Contents'}</p>
         <nav>
           <ul class="sidebar-section-list">
-            {topItems.map((item) => {
+            {introItems.map((item) => {
               const active =
                 item.href === `${langRoot}/`
                   ? currentPath === item.href
@@ -167,6 +173,15 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
                 </ul>
               </details>
             </li>
+
+            {referenceItems.map((item) => {
+              const active = currentPath === item.href || currentPath.startsWith(item.href);
+              return (
+                <li>
+                  <a href={item.href} class:list={['sidebar-section-link', { active }]} aria-current={active ? 'page' : undefined}>{item.label}</a>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </aside>

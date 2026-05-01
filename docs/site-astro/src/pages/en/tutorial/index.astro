@@ -33,6 +33,20 @@ func main() {
         panic(err)
     }
 }`;
+
+const airConfig = `root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/marionette-hello ."
+  bin = "./tmp/marionette-hello"
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_dir = ["tmp"]
+  delay = 200
+  stop_on_error = true
+
+[log]
+  time = true`;
 ---
 <BaseLayout title="Tutorial - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/">
   <article class="training-doc">
@@ -82,14 +96,28 @@ go mod init example.com/marionette-hello</code></pre>
       <p>Open <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> in your browser.</p>
     </section>
 
-    <section class="lesson-step" aria-labelledby="learned-en">
+    <section class="lesson-step" aria-labelledby="hot-reload-en">
       <p class="step-label">Step 6</p>
+      <h2 id="hot-reload-en">Set Up Hot Reload</h2>
+      <p>During development, <a href="https://github.com/air-verse/air" target="_blank" rel="noreferrer">Air</a> can rebuild and restart the app whenever Go files change.</p>
+      <p>Install Air first.</p>
+      <pre><code>go install github.com/air-verse/air@latest</code></pre>
+      <p>Create <code>.air.toml</code> at the project root.</p>
+      <pre><code>{airConfig}</code></pre>
+      <p>After that, run <code>air</code> instead of <code>go run .</code>.</p>
+      <pre><code>air</code></pre>
+      <p>When you edit and save <code>main.go</code>, Air restarts the app automatically. Keep the browser open at <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> to check the result.</p>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="learned-en">
+      <p class="step-label">Step 7</p>
       <h2 id="learned-en">What You Learned</h2>
       <ul>
         <li>Create a Marionette app with <code>mb.New()</code></li>
         <li>Register a page with <code>app.Page</code></li>
         <li>Compose the screen with <code>frontend</code> components</li>
         <li>Start a local server with <code>app.Run</code></li>
+        <li>Automate rebuilds and restarts with <code>air</code></li>
       </ul>
       <p>Next, learn <a href="/marionette/en/tutorial/backend-frontend/">how the backend communicates with the frontend</a>.</p>
     </section>

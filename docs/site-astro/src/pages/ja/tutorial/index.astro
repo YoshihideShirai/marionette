@@ -33,6 +33,20 @@ func main() {
         panic(err)
     }
 }`;
+
+const airConfig = `root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/marionette-hello ."
+  bin = "./tmp/marionette-hello"
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_dir = ["tmp"]
+  delay = 200
+  stop_on_error = true
+
+[log]
+  time = true`;
 ---
 <BaseLayout title="チュートリアル - Marionette" lang="ja" languageSwitcherPath="/marionette/en/tutorial/">
   <article class="training-doc">
@@ -82,14 +96,28 @@ go mod init example.com/marionette-hello</code></pre>
       <p>ブラウザで <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> を開きます。</p>
     </section>
 
-    <section class="lesson-step" aria-labelledby="learned-ja">
+    <section class="lesson-step" aria-labelledby="hot-reload-ja">
       <p class="step-label">Step 6</p>
+      <h2 id="hot-reload-ja">Hot reloadを設定する</h2>
+      <p>開発中は <a href="https://github.com/air-verse/air" target="_blank" rel="noreferrer">Air</a> を使うと、Goファイルの変更時にアプリを自動で再ビルドして再起動できます。</p>
+      <p>まずAirをインストールします。</p>
+      <pre><code>go install github.com/air-verse/air@latest</code></pre>
+      <p>プロジェクト直下に <code>.air.toml</code> を作成します。</p>
+      <pre><code>{airConfig}</code></pre>
+      <p>以降は <code>go run .</code> の代わりに <code>air</code> を実行します。</p>
+      <pre><code>air</code></pre>
+      <p><code>main.go</code> を編集して保存すると、Airが自動でアプリを再起動します。ブラウザは同じ <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> を開いたままで確認できます。</p>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="learned-ja">
+      <p class="step-label">Step 7</p>
       <h2 id="learned-ja">ここで習得したこと</h2>
       <ul>
         <li><code>mb.New()</code> でMarionetteアプリを作成する</li>
         <li><code>app.Page</code> でURLに表示内容を登録する</li>
         <li><code>frontend</code> のコンポーネントで画面を組み立てる</li>
         <li><code>app.Run</code> でローカルサーバーを起動する</li>
+        <li><code>air</code> で開発中の再ビルドと再起動を自動化する</li>
       </ul>
       <p>次は <a href="/marionette/ja/tutorial/backend-frontend/">バックエンドとフロントエンドの通信</a> を学びます。</p>
     </section>

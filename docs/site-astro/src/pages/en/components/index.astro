@@ -8,56 +8,62 @@ const selectedGroup = Astro.url.searchParams.get('group');
 const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ? selectedGroup : 'All';
 ---
 <BaseLayout title="Components Gallery">
-  <h1>Components Gallery</h1>
-  <p class="lead">Displays each component visual sample in an iframe.</p>
+  <div class="component-gallery">
+    <header class="component-gallery-header">
+      <div>
+        <h1>Components Gallery</h1>
+        <p class="lead">Displays each component visual sample in an iframe.</p>
+      </div>
 
-  <nav class="group-filter" aria-label="Component group filter">
-    {['All', ...groups].map((group) => {
-      const href = group === 'All' ? './' : `./?group=${encodeURIComponent(group)}`;
-      const active = group === initialGroup;
+      <label class="search-field">
+        <span>Search components</span>
+        <input
+          id="component-search"
+          type="search"
+          placeholder="Filter by name or description"
+          autocomplete="off"
+        />
+      </label>
+    </header>
 
-      return (
-        <a href={href} class:list={{ chip: true, active }} aria-current={active ? 'page' : undefined} data-group-filter={group}>
-          {group}
-        </a>
-      );
-    })}
-  </nav>
+    <nav class="group-filter" aria-label="Component group filter">
+      {['All', ...groups].map((group) => {
+        const href = group === 'All' ? './' : `./?group=${encodeURIComponent(group)}`;
+        const active = group === initialGroup;
 
-  <label class="search-field">
-    <span>Search components</span>
-    <input
-      id="component-search"
-      type="search"
-      placeholder="Filter by name or description"
-      autocomplete="off"
-    />
-  </label>
+        return (
+          <a href={href} class:list={{ chip: true, active }} aria-current={active ? 'page' : undefined} data-group-filter={group}>
+            {group}
+          </a>
+        );
+      })}
+    </nav>
 
-  <div class="grid" data-component-grid>
-    {cards.map((component) => {
-      return (
-        <article
-          class="card"
-          data-component-card
-          data-group={component.group}
-          data-name={component.name.toLowerCase()}
-          data-description={component.description.toLowerCase()}
-        >
-          <header class="card-header">
-            <h2><a href={`./${component.id}/`}>{component.name}</a></h2>
-            {!component.example && <span class="badge">Example pending</span>}
-          </header>
-          <p>{component.description}</p>
-          {component.example && (
-            <iframe src={component.example} title={`${component.name} example`} loading="lazy" />
-          )}
-        </article>
-      );
-    })}
+    <div class="component-grid" data-component-grid>
+      {cards.map((component) => {
+        return (
+          <article
+            class="card component-card"
+            data-component-card
+            data-group={component.group}
+            data-name={component.name.toLowerCase()}
+            data-description={component.description.toLowerCase()}
+          >
+            <header class="card-header">
+              <h2><a href={`./${component.id}/`}>{component.name}</a></h2>
+              {!component.example && <span class="badge">Example pending</span>}
+            </header>
+            <p>{component.description}</p>
+            {component.example && (
+              <iframe src={component.example} title={`${component.name} example`} loading="lazy" />
+            )}
+          </article>
+        );
+      })}
+    </div>
+
+    <p class="empty" data-empty-state hidden>No components matched your search.</p>
   </div>
-
-  <p class="empty" data-empty-state hidden>No components matched your search.</p>
 
   <script>
     const input = document.querySelector('#component-search');
@@ -127,11 +133,27 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
   </script>
 
   <style>
+    .component-gallery {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .component-gallery-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .component-gallery-header h1 {
+      margin-bottom: 0.35rem;
+    }
+
     .group-filter {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin: 1rem 0;
+      margin: 0;
     }
 
     .chip {
@@ -152,8 +174,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
     .search-field {
       display: grid;
       gap: 0.4rem;
-      margin-bottom: 1rem;
-      max-width: 28rem;
+      min-width: 0;
     }
 
     .search-field input {
@@ -176,11 +197,42 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       outline-offset: 1px;
     }
 
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .component-card {
+      display: grid;
+      grid-template-rows: auto auto minmax(16rem, 1fr);
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
     .card-header {
       display: flex;
       justify-content: space-between;
       gap: 0.5rem;
       align-items: center;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+
+    .component-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .component-card iframe {
+      width: 100%;
+      min-height: 16rem;
+      height: 100%;
     }
 
     .badge {
@@ -196,6 +248,13 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
     .empty {
       margin-top: 1rem;
       color: var(--muted);
+    }
+
+    @media (max-width: 760px) {
+      .component-gallery-header {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+      }
     }
   </style>
 </BaseLayout>

@@ -19,7 +19,7 @@ func main() {
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return page(ctx)
-	})
+	}, mb.WithTitle("Simple Tasks"))
 
 	app.Action("tasks/create", func(ctx *mb.Context) mf.Node {
 		name := strings.TrimSpace(ctx.FormValue("name"))

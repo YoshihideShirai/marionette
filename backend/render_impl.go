@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"html/template"
 	"net/http"
+	"strings"
 )
 
 var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
@@ -11,7 +12,7 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Marionette</title>
+    <title>{{.Title}}</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
@@ -146,6 +147,7 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
 </html>`))
 
 type shellOptions struct {
+	Title       string
 	Stylesheets []string
 	Styles      []template.CSS
 	Scripts     []string
@@ -157,13 +159,19 @@ func shell(content template.HTML) (string, error) {
 }
 
 func shellWithOptions(content template.HTML, options shellOptions) (string, error) {
+	title := strings.TrimSpace(options.Title)
+	if title == "" {
+		title = "Marionette"
+	}
 	view := struct {
+		Title       string
 		Content     template.HTML
 		Stylesheets []string
 		Styles      []template.CSS
 		Scripts     []string
 		JavaScripts []template.JS
 	}{
+		Title:       title,
 		Content:     content,
 		Stylesheets: options.Stylesheets,
 		Styles:      options.Styles,

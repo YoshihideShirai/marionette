@@ -126,11 +126,31 @@ func (c *Context) Flashes() []FlashMessage {
 // Handler transforms state into a UI node in response to a user event.
 type Handler func(*Context) frontend.Node
 
+// PageOptions configures the full-page HTML shell for a page route.
+type PageOptions struct {
+	Title string
+}
+
+// PageOption updates page route options.
+type PageOption func(*PageOptions)
+
+// WithTitle sets the HTML document title for a page route.
+func WithTitle(title string) PageOption {
+	return func(options *PageOptions) {
+		options.Title = strings.TrimSpace(title)
+	}
+}
+
+type pageRoute struct {
+	handler Handler
+	options PageOptions
+}
+
 // App is a minimal Go-only UI runtime for htmx driven desktop/web views.
 type App struct {
 	mu           sync.RWMutex
 	state        map[string]any
-	pages        map[string]Handler
+	pages        map[string]pageRoute
 	actions      map[string]Handler
 	cookieSecure bool
 	stylesheets  []string
@@ -142,7 +162,7 @@ type App struct {
 func New() *App {
 	return &App{
 		state:        map[string]any{},
-		pages:        map[string]Handler{},
+		pages:        map[string]pageRoute{},
 		actions:      map[string]Handler{},
 		cookieSecure: false,
 		stylesheets:  []string{},
@@ -219,8 +239,8 @@ func (a *App) GetInt(key string) int {
 }
 
 // Page registers a full-page GET view.
-func (a *App) Page(path string, fn Handler) {
-	a.pages[normalizePagePath(path)] = fn
+func (a *App) Page(path string, fn Handler, options ...PageOption) {
+	a.pages[normalizePagePath(path)] = pageRoute{handler: fn, options: applyPageOptions(options)}
 }
 
 // Action registers a POST-only htmx endpoint. name should not include leading slash.
@@ -229,8 +249,8 @@ func (a *App) Action(name string, fn Handler) {
 }
 
 // Render defines the main root view for initial load.
-func (a *App) Render(fn Handler) {
-	a.Page("/", fn)
+func (a *App) Render(fn Handler, options ...PageOption) {
+	a.Page("/", fn, options...)
 }
 
 // Handle registers an htmx endpoint. name should not include leading slash.
@@ -240,9 +260,9 @@ func (a *App) Handle(name string, fn Handler) {
 
 func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
-	for path, fn := range a.pages {
+	for path, route := range a.pages {
 		localPath := path
-		localFn := fn
+		localRoute := route
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path != localPath {
 				http.NotFound(w, r)
@@ -253,7 +273,7 @@ func (a *App) Handler() http.Handler {
 				return
 			}
 			ctx := a.newContext(w, r)
-			a.renderAndWritePage(w, localFn(ctx))
+			a.renderAndWritePage(w, localRoute.handler(ctx), localRoute.options)
 		})
 	}
 	for path, fn := range a.actions {
@@ -342,13 +362,13 @@ func (a *App) handleMissingIndex(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "missing app.Page or app.Render registration for /", http.StatusInternalServerError)
 }
 
-func (a *App) renderAndWritePage(w http.ResponseWriter, node frontend.Node) {
+func (a *App) renderAndWritePage(w http.ResponseWriter, node frontend.Node, pageOptions PageOptions) {
 	rootHTML, err := node.Render()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	page, err := shellWithOptions(rootHTML, a.shellOptions())
+	page, err := shellWithOptions(rootHTML, a.shellOptions(pageOptions))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -356,15 +376,26 @@ func (a *App) renderAndWritePage(w http.ResponseWriter, node frontend.Node) {
 	writeHTML(w, page)
 }
 
-func (a *App) shellOptions() shellOptions {
+func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	return shellOptions{
+		Title:       pageOptions.Title,
 		Stylesheets: append([]string(nil), a.stylesheets...),
 		Styles:      append([]template.CSS(nil), a.styles...),
 		Scripts:     append([]string(nil), a.scripts...),
 		JavaScripts: append([]template.JS(nil), a.javascripts...),
 	}
+}
+
+func applyPageOptions(options []PageOption) PageOptions {
+	var pageOptions PageOptions
+	for _, option := range options {
+		if option != nil {
+			option(&pageOptions)
+		}
+	}
+	return pageOptions
 }
 
 func (a *App) Run(addr string) error {

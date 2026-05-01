@@ -1,5 +1,5 @@
 {{define "components/chart" -}}
-<figure class="{{.Class}}" data-mrn-chart-root>
+<figure class="{{.Class}}" data-mrn-chart-root{{if .QueryStateName}} data-mrn-query-state="{{.QueryStateName}}"{{end}}{{if .QueryStateLabel}} data-mrn-filter-column="{{.QueryStateLabel}}"{{end}}>
   <div class="card-body gap-4">
     {{if or .Title .Description -}}
       <figcaption class="space-y-1">

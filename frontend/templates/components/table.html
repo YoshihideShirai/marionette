@@ -1,5 +1,10 @@
 {{define "components/table"}}
-<div class="overflow-x-auto">
+<div class="overflow-x-auto"{{if .QueryStateName}} data-mrn-query-state="{{.QueryStateName}}"{{end}}>
+  {{if .SelectedFilters -}}
+  <div class="mb-3 flex flex-wrap gap-2">
+    {{range .SelectedFilters}}<span class="badge badge-primary badge-outline">{{.Column}} = {{.Value}}</span>{{end}}
+  </div>
+  {{end -}}
   <table class="table">
     <thead>
       <tr>

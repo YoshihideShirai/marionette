@@ -17,6 +17,7 @@ type Context struct {
 	State   map[string]any
 	app     *App
 	flashes []FlashMessage
+	session map[string]string
 }
 
 type FlashLevel string
@@ -34,6 +35,7 @@ type FlashMessage struct {
 }
 
 const flashCookieName = "marionette_flash"
+const sessionCookieName = "marionette_session"
 
 func (c *Context) Param(name string) string {
 	if c.Request == nil {
@@ -122,6 +124,54 @@ func (c *Context) Flashes() []FlashMessage {
 	out := make([]FlashMessage, len(c.flashes))
 	copy(out, c.flashes)
 	return out
+}
+
+func (c *Context) SetSession(key, value string) {
+	key = strings.TrimSpace(key)
+	if key == "" {
+		return
+	}
+	if c.session == nil {
+		c.session = map[string]string{}
+	}
+	c.session[key] = value
+	c.writeSessionCookie()
+}
+
+func (c *Context) Session(key string) string {
+	if c.session == nil {
+		return ""
+	}
+	return c.session[key]
+}
+
+func (c *Context) ClearSession() {
+	c.session = map[string]string{}
+	c.writeSessionCookie()
+}
+
+func (c *Context) writeSessionCookie() {
+	if c.Writer == nil {
+		return
+	}
+	secure := false
+	if c.app != nil {
+		c.app.mu.RLock()
+		secure = c.app.cookieSecure
+		c.app.mu.RUnlock()
+	}
+	encoded, err := encodeSession(c.session)
+	if err != nil {
+		return
+	}
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     sessionCookieName,
+		Value:    encoded,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   secure,
+	})
 }
 
 // Handler transforms state into a UI node in response to a user event.
@@ -303,13 +353,14 @@ func (a *App) Handler() http.Handler {
 
 func (a *App) newContext(w http.ResponseWriter, r *http.Request) *Context {
 	flashes := decodeFlashes(r)
+	session := decodeSession(r)
 	if len(flashes) > 0 {
 		a.mu.RLock()
 		secure := a.cookieSecure
 		a.mu.RUnlock()
 		clearFlashCookie(w, secure)
 	}
-	return &Context{Writer: w, Request: r, State: a.state, app: a, flashes: flashes}
+	return &Context{Writer: w, Request: r, State: a.state, app: a, flashes: flashes, session: session}
 }
 
 func clearFlashCookie(w http.ResponseWriter, secure bool) {
@@ -428,4 +479,31 @@ func normalizePagePath(path string) string {
 
 func normalizeActionPath(name string) string {
 	return "/" + strings.TrimPrefix(name, "/")
+}
+
+func decodeSession(r *http.Request) map[string]string {
+	cookie, err := r.Cookie(sessionCookieName)
+	if err != nil || cookie.Value == "" {
+		return map[string]string{}
+	}
+	raw, err := base64.RawURLEncoding.DecodeString(cookie.Value)
+	if err != nil {
+		return map[string]string{}
+	}
+	var session map[string]string
+	if err := json.Unmarshal(raw, &session); err != nil {
+		return map[string]string{}
+	}
+	if session == nil {
+		return map[string]string{}
+	}
+	return session
+}
+
+func encodeSession(session map[string]string) (string, error) {
+	encodedJSON, err := json.Marshal(session)
+	if err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(encodedJSON), nil
 }

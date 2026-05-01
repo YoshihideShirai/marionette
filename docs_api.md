@@ -218,6 +218,50 @@ Flash lifecycle on next request:
 - Valid entries only: known levels and non-empty messages.
 - If flashes were present, cookie is automatically cleared in response.
 
+### Session APIs
+
+#### `SetSession(key, value string)`
+- Trims `key`; empty key means no-op.
+- Stores/updates a session entry in context memory and writes cookie (`marionette_session`).
+- Cookie behavior:
+  - `Path=/`
+  - `HttpOnly=true`
+  - `SameSite=Lax`
+  - `Secure` follows `App.SetCookieSecure` (default `false`).
+
+#### `Session(key string) string`
+- Reads the session value by key.
+- Returns empty string when key is missing.
+
+#### `ClearSession()`
+- Replaces the session map with an empty map and writes it to cookie (`marionette_session`).
+
+Session lifecycle on request:
+- Session is decoded from cookie into `Context.session` in `newContext`.
+- Decode failure falls back to empty session map (no panic / no status change).
+
+Session sample:
+
+```go
+app.Page("/session", func(ctx *mb.Context) mf.Node {
+    user := ctx.Session("user")
+    if user == "" {
+        return mf.Form("/session/login", mf.Button("Sign in"))
+    }
+    return mf.Form("/session/logout", mf.Button("Sign out"))
+})
+app.Action("session/login", func(ctx *mb.Context) mf.Node {
+    ctx.SetSession("user", "Aiko")
+    return mf.Paragraph("Signed in")
+})
+app.Action("session/logout", func(ctx *mb.Context) mf.Node {
+    ctx.ClearSession()
+    return mf.Paragraph("Signed out")
+})
+```
+
+Full example: `docs/site-astro/public/examples/go/session.go`.
+
 ---
 
 ## 4. Low-level HTML (`frontend/html`)

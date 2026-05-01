@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/rocketlaunchr/dataframe-go v0.0.0-20211025052708-a1030444159b
+	github.com/webview/webview_go v0.0.0-20240831120633-6173450d4dd6
 	github.com/yuin/goldmark v1.7.8
 )
 

@@ -34,6 +34,16 @@ go run ./cmd/simple-sample
 
 Then open http://127.0.0.1:8081.
 
+Run the desktop WebView sample:
+
+```bash
+go run -tags marionette_desktop ./cmd/marionette-desktop
+```
+
+The desktop runtime uses the same Marionette app model behind a localhost
+server and native WebView shell. On Linux, install GTK 3 and WebKitGTK
+development packages before building the desktop tag.
+
 ## Documentation
 
 The README is intentionally small. Use the documentation site for tutorials,

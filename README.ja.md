@@ -33,6 +33,16 @@ go run ./cmd/simple-sample
 
 その後、http://127.0.0.1:8081 を開きます。
 
+デスクトップ WebView サンプルを起動します:
+
+```bash
+go run -tags marionette_desktop ./cmd/marionette-desktop
+```
+
+デスクトップランタイムは、同じ Marionette アプリを localhost サーバーと
+ネイティブ WebView シェルで表示します。Linux で desktop tag をビルドするには、
+GTK 3 と WebKitGTK の開発パッケージが必要です。
+
 ## ドキュメント
 
 README は意図的に小さく保っています。チュートリアル、API の詳細、コンポーネント例はドキュメントサイトを参照してください:

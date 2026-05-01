@@ -24,9 +24,54 @@ app.Action("filters/apply", func(ctx *mb.Context) mf.Node {
 ---
 <BaseLayout title="データアプリ構築手順 - Marionette" lang="ja" languageSwitcherPath="/marionette/en/tutorial/data-app/">
   <article class="training-doc">
-    <header><p class="eyebrow">Tutorial</p><h1>データアプリ構築手順</h1></header>
-    <p>この章では「CSV読込→前処理→テーブル→チャート連動→アクション実行」を1本で実装します。</p>
-    <p>日英で同一コードを追えるよう、サンプルの基準パスは <code>{samplePath}</code> に統一します。</p>
-    <pre><code>{scenarioCode}</code></pre>
+    <header>
+      <p class="eyebrow">Tutorial</p>
+      <h1>データアプリ構築手順</h1>
+      <p class="lead">前章「バックエンドとフロントエンドの通信」で作った Action ベースの更新を、データ分析向けUIに発展させます。</p>
+    </header>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 1</p>
+      <h2>前章とのつながりを確認する</h2>
+      <p>
+        ここで使う考え方は前章と同じです。<code>Page</code> で初期表示を作り、<code>Action</code> でユーザー操作を受け取り、
+        必要な領域だけを再描画します。違いは、対象が「メッセージ一覧」から「テーブルとチャート」に変わる点です。
+      </p>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 2</p>
+      <h2>今回のゴール</h2>
+      <p>この章では「CSV読込 → 前処理 → テーブル/チャート連動 → Actionで再描画」を1本の流れで実装します。</p>
+      <p>日英で同じコードを追えるよう、サンプルの基準パスは <code>{samplePath}</code> に統一しています。</p>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 3</p>
+      <h2>最小構成の実装例</h2>
+      <p>まずは次の最小コードで流れを掴みます。各ブロックに 1)〜4) の番号を付けています。</p>
+      <pre><code>{scenarioCode}</code></pre>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 4</p>
+      <h2>実装を読む順番</h2>
+      <ol>
+        <li><strong>1)</strong> CSV を読み込み、DataFrame の元データを作る</li>
+        <li><strong>2)</strong> フィルタ/ソート条件を <code>DataFrameViewProps</code> にまとめる</li>
+        <li><strong>3)</strong> 同じ view をテーブルとチャートの両方に渡して表示を同期する</li>
+        <li><strong>4)</strong> Action でフォーム値やクエリ値を受け、view を再計算して再描画する</li>
+      </ol>
+      <p>この順番を守ると、要件が増えても「入力→状態→再描画」の責務を崩さずに拡張できます。</p>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 5</p>
+      <h2>次に進む</h2>
+      <p>
+        次は <a href="/marionette/ja/tutorial/assets/">静的アセットを配信する</a> で、CSVファイルや画像などの実ファイルをアプリから配信する方法を確認します。
+        ここまでのデータ表示にアセット配信を組み合わせると、実運用に近い構成になります。
+      </p>
+    </section>
   </article>
 </BaseLayout>

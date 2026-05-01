@@ -44,3 +44,31 @@ func TestPageIncludesCustomStyles(t *testing.T) {
 		t.Fatalf("expected custom CSS after default CSS, got %q", body)
 	}
 }
+
+func TestPageIncludesCustomScripts(t *testing.T) {
+	app := New()
+	app.AddScript("https://cdn.example.com/widget.js")
+	app.AddJavaScript(`
+		window.marionetteWidgetReady = true;
+	`)
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	scriptIndex := strings.Index(body, `<script src="https://cdn.example.com/widget.js"></script>`)
+	inlineIndex := strings.Index(body, `<script>window.marionetteWidgetReady = true;</script>`)
+	if scriptIndex == -1 {
+		t.Fatalf("expected custom external script, got %q", body)
+	}
+	if inlineIndex == -1 {
+		t.Fatalf("expected custom inline JavaScript, got %q", body)
+	}
+	if inlineIndex < scriptIndex {
+		t.Fatalf("expected inline JavaScript after external scripts, got %q", body)
+	}
+}

@@ -135,6 +135,8 @@ type App struct {
 	cookieSecure bool
 	stylesheets  []string
 	styles       []template.CSS
+	scripts      []string
+	javascripts  []template.JS
 }
 
 func New() *App {
@@ -145,6 +147,8 @@ func New() *App {
 		cookieSecure: false,
 		stylesheets:  []string{},
 		styles:       []template.CSS{},
+		scripts:      []string{},
+		javascripts:  []template.JS{},
 	}
 }
 
@@ -174,6 +178,28 @@ func (a *App) AddStyle(css string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.styles = append(a.styles, template.CSS(css))
+}
+
+// AddScript adds an external JavaScript file to the full-page HTML shell.
+func (a *App) AddScript(src string) {
+	src = strings.TrimSpace(src)
+	if src == "" {
+		return
+	}
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.scripts = append(a.scripts, src)
+}
+
+// AddJavaScript adds trusted inline JavaScript to the full-page HTML shell.
+func (a *App) AddJavaScript(js string) {
+	js = strings.TrimSpace(js)
+	if js == "" {
+		return
+	}
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.javascripts = append(a.javascripts, template.JS(js))
 }
 
 func (a *App) Set(key string, value any) {
@@ -336,6 +362,8 @@ func (a *App) shellOptions() shellOptions {
 	return shellOptions{
 		Stylesheets: append([]string(nil), a.stylesheets...),
 		Styles:      append([]template.CSS(nil), a.styles...),
+		Scripts:     append([]string(nil), a.scripts...),
+		JavaScripts: append([]template.JS(nil), a.javascripts...),
 	}
 }
 

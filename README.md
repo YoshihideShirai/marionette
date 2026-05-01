@@ -101,6 +101,21 @@ app.AddStyle(`
 handlers are POST-only htmx endpoints and return HTML fragments for partial
 swaps. The older `Render` and `Handle` APIs still work for small examples.
 
+### Custom JavaScript
+
+Apps can add external JavaScript libraries and trusted inline JavaScript to the
+full-page shell:
+
+```go
+app.AddScript("https://cdn.example.com/widget.js")
+app.AddJavaScript(`
+    window.marionetteWidgetReady = true;
+`)
+```
+
+Custom inline JavaScript is emitted after custom external scripts, so app code
+can use the libraries it registers.
+
 ## API Documentation
 
 Detailed API reference is available here:

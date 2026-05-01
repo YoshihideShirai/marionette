@@ -1,1 +1,21 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Alert example</title><style>body{font-family:system-ui;padding:16px}.alert{max-width:520px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;padding:12px 14px;border-radius:10px}.alert h3{margin:0 0 6px;font-size:1rem}.alert p{margin:0}</style></head><body><section class="alert" role="alert" aria-live="assertive"><h3>Payment failed</h3><p>Please verify your card and try again.</p></section></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alert example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="p-6 bg-base-100 text-base-content">
+    <main class="max-w-3xl">
+<div class="ui-feedback ui-feedback-alert ui-feedback-error ui-feedback-md" role="alert" aria-live="assertive" aria-atomic="true">
+  <span class="ui-feedback__icon ui-icon material-icons" aria-hidden="true">!</span>
+  <div class="ui-feedback__body">
+    <p class="ui-feedback__title">Payment failed</p>
+    <p class="ui-feedback__description">Please verify your card and try again.</p>
+  </div>
+</div>
+    </main>
+  </body>
+</html>

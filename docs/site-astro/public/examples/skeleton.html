@@ -1,1 +1,20 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Skeleton example</title><style>body{font-family:system-ui;padding:16px}.wrap{max-width:460px}.line{height:12px;background:linear-gradient(90deg,#e2e8f0 25%,#f8fafc 37%,#e2e8f0 63%);background-size:400% 100%;border-radius:999px;margin:10px 0;animation:pulse 1.6s ease infinite}@keyframes pulse{0%{background-position:100% 0}100%{background-position:0 0}}</style></head><body><div class="wrap" aria-busy="true" aria-live="polite"><div class="line" style="width:70%"></div><div class="line" style="width:100%"></div><div class="line" style="width:55%"></div></div></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skeleton example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="p-6 bg-base-100 text-base-content">
+    <main class="max-w-3xl">
+<div class="ui-feedback ui-feedback-skeleton ui-feedback-warning ui-feedback-lg" role="status" aria-live="polite" aria-busy="true">
+  <div class="ui-feedback__skeleton-line"></div>
+  <div class="ui-feedback__skeleton-line"></div>
+  <div class="ui-feedback__skeleton-line"></div>
+  <div class="ui-feedback__skeleton-line"></div>
+</div>
+    </main>
+  </body>
+</html>

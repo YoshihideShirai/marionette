@@ -1,0 +1,132 @@
+:root {
+  --ui-nav-border: #d0d7de;
+  --ui-nav-text: #0f172a;
+  --ui-nav-muted: #64748b;
+  --ui-nav-bg: #ffffff;
+  --ui-nav-active-bg: #e2e8f0;
+  --ui-nav-focus: #2563eb;
+}
+
+.ui-nav-shell {
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--ui-nav-text);
+}
+
+.ui-nav-card {
+  border: 1px solid var(--ui-nav-border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--ui-nav-bg);
+}
+
+.ui-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ui-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ui-nav-muted);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ui-tab[aria-selected="true"] {
+  color: var(--ui-nav-text);
+  background: var(--ui-nav-active-bg);
+  border-color: var(--ui-nav-border);
+}
+
+.ui-tab:focus-visible,
+.ui-breadcrumb__link:focus-visible,
+.ui-pagination__item:focus-visible {
+  outline: 2px solid var(--ui-nav-focus);
+  outline-offset: 2px;
+}
+
+.ui-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.ui-breadcrumb__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ui-breadcrumb__sep {
+  color: var(--ui-nav-muted);
+}
+
+.ui-breadcrumb__link {
+  color: var(--ui-nav-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 2px 4px;
+}
+
+.ui-breadcrumb__link[aria-current="page"] {
+  color: var(--ui-nav-text);
+  font-weight: 600;
+}
+
+.ui-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.ui-pagination__item {
+  border: 1px solid var(--ui-nav-border);
+  background: var(--ui-nav-bg);
+  color: var(--ui-nav-text);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.ui-pagination__item[aria-current="page"] {
+  background: var(--ui-nav-active-bg);
+  font-weight: 600;
+}
+
+.ui-pagination__item[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ui-grid {
+  display: grid;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .ui-breadcrumb [data-overflow="desktop"] {
+    display: none;
+  }
+
+  .ui-breadcrumb [data-overflow="mobile"] {
+    display: inline-flex;
+  }
+
+  .ui-pagination [data-mobile="hide"] {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) {
+  .ui-breadcrumb [data-overflow="mobile"] {
+    display: none;
+  }
+}

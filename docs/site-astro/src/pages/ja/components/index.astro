@@ -239,6 +239,7 @@ if (uncategorized.length > 0) {
       grid-template-rows: auto auto minmax(16rem, 1fr);
       gap: 0.75rem;
       min-width: 0;
+      overflow: hidden;
     }
 
     .card-header {
@@ -263,6 +264,9 @@ if (uncategorized.length > 0) {
       width: 100%;
       min-height: 16rem;
       height: 100%;
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      background: var(--surface-muted);
     }
 
     .badge {
@@ -284,6 +288,14 @@ if (uncategorized.length > 0) {
       .component-gallery-header {
         grid-template-columns: 1fr;
         align-items: stretch;
+      }
+
+      .component-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .component-card iframe {
+        min-height: 13rem;
       }
     }
   </style>

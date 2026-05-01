@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const samplePath = `docs/site-astro/public/examples/go/tutorial/data-app/main.go`;
+const scenarioCode = `// 1) CSVを読み込む
+file, _ := os.Open("./data/sales.csv")
+ui, _ := mf.UIDataFrameFromCSV(file, mf.TableProps{Columns: []mf.TableColumn{{Label: "Region"}, {Label: "Sales"}}})
+
+// 2) 前処理して表示用viewを作る
+view := mf.DataFrameViewProps{
+    Filters: []mf.DataFrameFilter{{Column: "Sales", Op: mf.DataFrameFilterGTE, Value: 1000.0}},
+    Sort:    []mf.DataFrameSort{{Column: "Sales", Desc: true}},
+}
+
+// 3) テーブルとチャートを同じviewで連動
+mf.DataFrame(df, mf.TableProps{View: view})
+mf.DataFrameChart(df, mf.DataFrameChartProps{View: view, LabelColumn: "Region", Series: []mf.DataFrameChartSeries{{Column: "Sales"}}})
+
+// 4) Actionでフィルタ値を受け取り再描画
+app.Action("filters/apply", func(ctx *mb.Context) mf.Node {
+    // query/formから値を取得してviewを再計算
+    return renderDashboard(ctx)
+})`;
+---
+<BaseLayout title="データアプリ構築手順 - Marionette" lang="ja" languageSwitcherPath="/marionette/en/tutorial/data-app/">
+  <article class="training-doc">
+    <header><p class="eyebrow">Tutorial</p><h1>データアプリ構築手順</h1></header>
+    <p>この章では「CSV読込→前処理→テーブル→チャート連動→アクション実行」を1本で実装します。</p>
+    <p>日英で同一コードを追えるよう、サンプルの基準パスは <code>{samplePath}</code> に統一します。</p>
+    <pre><code>{scenarioCode}</code></pre>
+  </article>
+</BaseLayout>

@@ -1,5 +1,7 @@
 # Marionette
 
+[日本語](README.ja.md) | English
+
 ![Marionette concept art](docs/assets/concept.png)
 
 Marionette is a Go-first framework for building admin UIs and internal tools.

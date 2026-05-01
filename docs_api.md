@@ -54,6 +54,17 @@ import (
 - Empty/whitespace-only values are ignored.
 - Use for small app-level overrides or CSS variables.
 
+### `AddScript(src string)`
+- Adds an external JavaScript file to the full-page HTML shell.
+- Empty/whitespace-only values are ignored.
+- Scripts are emitted after Marionette's built-in JavaScript.
+
+### `AddJavaScript(js string)`
+- Adds trusted inline JavaScript to the full-page HTML shell.
+- Empty/whitespace-only values are ignored.
+- Inline JavaScript is emitted after custom external scripts, so it can use
+  libraries registered with `AddScript`.
+
 ### `Handler() http.Handler`
 - Builds and returns `*http.ServeMux` with all registered routes.
 - `Page` routes:

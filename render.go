@@ -136,6 +136,9 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
         window.mrnInitCharts = initCharts;
       })();
     </script>
+    {{range .Scripts}}<script src="{{.}}"></script>
+    {{end}}{{range .JavaScripts}}<script>{{.}}</script>
+    {{end}}
   </head>
   <body class="bg-base-200 min-h-screen">
     <main id="marionette-root" class="container mx-auto p-6">{{.Content}}</main>
@@ -145,6 +148,8 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
 type shellOptions struct {
 	Stylesheets []string
 	Styles      []template.CSS
+	Scripts     []string
+	JavaScripts []template.JS
 }
 
 func shell(content template.HTML) (string, error) {
@@ -156,10 +161,14 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 		Content     template.HTML
 		Stylesheets []string
 		Styles      []template.CSS
+		Scripts     []string
+		JavaScripts []template.JS
 	}{
 		Content:     content,
 		Stylesheets: options.Stylesheets,
 		Styles:      options.Styles,
+		Scripts:     options.Scripts,
+		JavaScripts: options.JavaScripts,
 	}
 
 	var out bytes.Buffer

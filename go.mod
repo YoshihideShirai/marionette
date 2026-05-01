@@ -9,11 +9,17 @@ require (
 )
 
 require (
+	github.com/jchv/go-winloader v0.0.0-20250406163304-c1995be93bd1 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+)
+
+require (
 	github.com/apache/thrift v0.13.0 // indirect
 	github.com/goccy/go-json v0.7.6 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/guptarohit/asciigraph v0.5.1 // indirect
+	github.com/jchv/go-webview2 v0.0.0-20260205173254-56598839c808
 	github.com/juju/clock v0.0.0-20190205081909-9c5c9712527c // indirect
 	github.com/juju/errors v0.0.0-20200330140219-3fe23663418f // indirect
 	github.com/juju/loggo v0.0.0-20200526014432-9ce3a2e09b5e // indirect

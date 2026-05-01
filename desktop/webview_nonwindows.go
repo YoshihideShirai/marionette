@@ -1,4 +1,4 @@
-//go:build marionette_desktop
+//go:build !windows && marionette_desktop
 
 package desktop
 

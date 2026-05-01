@@ -45,24 +45,24 @@ const tutorialItems = isJa
 const componentById = new Map(catalog.components.map((component) => [component.id, component]));
 const componentSectionDefinitions = isJa
   ? [
-      { title: 'アクション / リンク', ids: ['button', 'link', 'theme-toggle-button'] },
-      { title: 'フォーム / 入力', ids: ['form', 'form-field', 'input', 'select', 'textarea', 'checkbox', 'radio-group', 'switch'] },
-      { title: 'ナビゲーション', ids: ['sidebar', 'tabs', 'breadcrumb', 'pagination', 'navigation'] },
-      { title: 'フィードバック / オーバーレイ', ids: ['modal', 'toast', 'alert', 'empty-state', 'skeleton', 'progress', 'feedback', 'overlay-system'] },
-      { title: 'データ / メディア', ids: ['table', 'dataframe', 'dataframe-chart', 'image'] },
-      { title: 'チャート', ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'] },
-      { title: 'レイアウト', ids: ['stack', 'grid', 'split', 'page-header', 'container', 'card', 'section', 'layout'] },
+      { title: 'レイアウト', ids: ['container', 'page-header', 'section', 'card', 'stack', 'grid', 'split', 'layout'] },
       { title: 'タイポグラフィ', ids: ['heading', 'paragraph', 'span'] },
+      { title: 'アクション / リンク', ids: ['button', 'link', 'theme-toggle-button'] },
+      { title: 'フォーム / 入力', ids: ['form', 'form-field', 'input', 'textarea', 'select', 'checkbox', 'radio-group', 'switch'] },
+      { title: 'ナビゲーション', ids: ['sidebar', 'breadcrumb', 'tabs', 'pagination', 'navigation'] },
+      { title: 'フィードバック / オーバーレイ', ids: ['alert', 'toast', 'progress', 'skeleton', 'empty-state', 'modal', 'overlay-system', 'feedback'] },
+      { title: 'データ / メディア', ids: ['table', 'image', 'dataframe', 'dataframe-chart'] },
+      { title: 'チャート', ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'] },
     ]
   : [
-      { title: 'Actions and links', ids: ['button', 'link', 'theme-toggle-button'] },
-      { title: 'Forms and inputs', ids: ['form', 'form-field', 'input', 'select', 'textarea', 'checkbox', 'radio-group', 'switch'] },
-      { title: 'Navigation', ids: ['sidebar', 'tabs', 'breadcrumb', 'pagination', 'navigation'] },
-      { title: 'Feedback and overlays', ids: ['modal', 'toast', 'alert', 'empty-state', 'skeleton', 'progress', 'feedback', 'overlay-system'] },
-      { title: 'Data and media', ids: ['table', 'dataframe', 'dataframe-chart', 'image'] },
-      { title: 'Charts', ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'] },
-      { title: 'Layout surfaces', ids: ['stack', 'grid', 'split', 'page-header', 'container', 'card', 'section', 'layout'] },
+      { title: 'Layout surfaces', ids: ['container', 'page-header', 'section', 'card', 'stack', 'grid', 'split', 'layout'] },
       { title: 'Typography', ids: ['heading', 'paragraph', 'span'] },
+      { title: 'Actions and links', ids: ['button', 'link', 'theme-toggle-button'] },
+      { title: 'Forms and inputs', ids: ['form', 'form-field', 'input', 'textarea', 'select', 'checkbox', 'radio-group', 'switch'] },
+      { title: 'Navigation', ids: ['sidebar', 'breadcrumb', 'tabs', 'pagination', 'navigation'] },
+      { title: 'Feedback and overlays', ids: ['alert', 'toast', 'progress', 'skeleton', 'empty-state', 'modal', 'overlay-system', 'feedback'] },
+      { title: 'Data and media', ids: ['table', 'image', 'dataframe', 'dataframe-chart'] },
+      { title: 'Charts', ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'] },
     ];
 const categorizedComponentIds = new Set(componentSectionDefinitions.flatMap((section) => section.ids));
 const componentSections = componentSectionDefinitions.map((section) => ({

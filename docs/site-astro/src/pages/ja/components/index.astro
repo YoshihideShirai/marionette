@@ -9,6 +9,16 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
 const componentById = new Map(cards.map((component) => [component.id, component]));
 const sectionDefinitions = [
   {
+    title: 'レイアウト',
+    description: 'ページ構造、コンテナ、セクション、配置のプリミティブ。',
+    ids: ['container', 'page-header', 'section', 'card', 'stack', 'grid', 'split', 'layout'],
+  },
+  {
+    title: 'タイポグラフィ',
+    description: 'テキストプリミティブと見出しヘルパー。',
+    ids: ['heading', 'paragraph', 'span'],
+  },
+  {
     title: 'アクション / リンク',
     description: 'ボタン、リンク、直接操作のためのコンポーネント。',
     ids: ['button', 'link', 'theme-toggle-button'],
@@ -16,37 +26,27 @@ const sectionDefinitions = [
   {
     title: 'フォーム / 入力',
     description: 'ユーザー入力の収集と検証に使うコントロール。',
-    ids: ['form', 'form-field', 'input', 'select', 'textarea', 'checkbox', 'radio-group', 'switch'],
+    ids: ['form', 'form-field', 'input', 'textarea', 'select', 'checkbox', 'radio-group', 'switch'],
   },
   {
     title: 'ナビゲーション',
     description: '画面遷移、階層、ページング、ナビゲーションのデモ。',
-    ids: ['sidebar', 'tabs', 'breadcrumb', 'pagination', 'navigation'],
+    ids: ['sidebar', 'breadcrumb', 'tabs', 'pagination', 'navigation'],
   },
   {
     title: 'フィードバック / オーバーレイ',
     description: '状態表示、読み込み、空状態、重なりのあるUI。',
-    ids: ['modal', 'toast', 'alert', 'empty-state', 'skeleton', 'progress', 'feedback', 'overlay-system'],
+    ids: ['alert', 'toast', 'progress', 'skeleton', 'empty-state', 'modal', 'overlay-system', 'feedback'],
   },
   {
     title: 'データ / メディア',
     description: 'テーブル、データフレーム、画像表示。',
-    ids: ['table', 'dataframe', 'dataframe-chart', 'image'],
+    ids: ['table', 'image', 'dataframe', 'dataframe-chart'],
   },
   {
     title: 'チャート',
     description: 'Chartラッパーとチャート種別ごとのサンプル。',
     ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'],
-  },
-  {
-    title: 'レイアウト',
-    description: 'ページ構造、コンテナ、セクション、配置のプリミティブ。',
-    ids: ['stack', 'grid', 'split', 'page-header', 'container', 'card', 'section', 'layout'],
-  },
-  {
-    title: 'タイポグラフィ',
-    description: 'テキストプリミティブと見出しヘルパー。',
-    ids: ['heading', 'paragraph', 'span'],
   },
 ];
 const categorizedIds = new Set(sectionDefinitions.flatMap((section) => section.ids));

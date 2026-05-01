@@ -44,6 +44,16 @@ import (
   - flash write (`Context.AddFlash`)
   - flash clear (when flashes are consumed on next request).
 
+### `AddStylesheet(href string)`
+- Adds a custom stylesheet link to the full-page HTML shell.
+- Empty/whitespace-only values are ignored.
+- Stylesheets are emitted after the built-in Tailwind/daisyUI assets.
+
+### `AddStyle(css string)`
+- Adds trusted inline CSS to the full-page HTML shell.
+- Empty/whitespace-only values are ignored.
+- Use for small app-level overrides or CSS variables.
+
 ### `Handler() http.Handler`
 - Builds and returns `*http.ServeMux` with all registered routes.
 - `Page` routes:

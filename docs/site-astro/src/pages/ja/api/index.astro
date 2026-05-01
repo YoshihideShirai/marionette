@@ -48,6 +48,20 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>フラッシュ書き込み（<code>Context.AddFlash</code>）とフラッシュクリアの両方に影響します。</li>
       </ul>
 
+      <h3><code>AddStylesheet(href string)</code></h3>
+      <ul>
+        <li>全ページ HTML シェルにカスタム stylesheet リンクを追加します。</li>
+        <li>空文字または空白のみの値は無視します。</li>
+        <li>ビルトインの Tailwind/daisyUI アセットの後に出力されます。</li>
+      </ul>
+
+      <h3><code>AddStyle(css string)</code></h3>
+      <ul>
+        <li>信頼済みのインライン CSS を全ページ HTML シェルに追加します。</li>
+        <li>空文字または空白のみの値は無視します。</li>
+        <li>小さなアプリ単位の上書きや CSS 変数に使えます。</li>
+      </ul>
+
       <h3><code>Handler() http.Handler</code></h3>
       <ul>
         <li>登録されたすべてのルートで <code>*http.ServeMux</code> をビルドして返します。</li>

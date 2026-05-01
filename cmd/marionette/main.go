@@ -60,6 +60,7 @@ func main() {
 
 func buildApp() *mb.App {
 	app := mb.New()
+	app.AddStyle(customCSSDemoStyles())
 	app.Set("nextUserID", 4)
 	app.Set("users", demoUsers())
 	app.Set("deleteModalOpen", false)
@@ -241,6 +242,7 @@ func renderDashboardPage(ctx *mb.Context) mf.Node {
 	})
 	content := mf.Stack(mf.StackProps{Gap: "lg"},
 		renderDashboardOverview(ctx),
+		renderCustomCSSDemo(),
 		renderDashboardCharts(ctx),
 		mf.Grid(mf.GridProps{MinColumnWidth: "lg", Gap: "lg"},
 			mf.Card(mf.CardProps{}, mf.EmptyState(mf.EmptyStateProps{
@@ -258,6 +260,94 @@ func renderDashboardPage(ctx *mb.Context) mf.Node {
 		),
 	)
 	return renderShell(ctx, "/", header, content)
+}
+
+func customCSSDemoStyles() string {
+	return `
+		html[data-mrn-css-profile="focus"] #marionette-root {
+			max-width: 72rem;
+		}
+
+		html[data-mrn-css-profile="focus"] .mrn-css-demo-card {
+			border-color: color-mix(in oklab, var(--color-primary) 45%, transparent);
+			box-shadow: 0 18px 40px color-mix(in oklab, var(--color-primary) 18%, transparent);
+		}
+
+		html[data-mrn-css-profile="focus"] .mrn-css-demo-preview {
+			background: linear-gradient(135deg, color-mix(in oklab, var(--color-primary) 16%, var(--color-base-100)), var(--color-base-100));
+		}
+
+		html[data-mrn-css-profile="compact"] #marionette-root {
+			max-width: 82rem;
+		}
+
+		html[data-mrn-css-profile="compact"] .mrn-css-demo-card .card-body {
+			gap: 0.75rem;
+			padding: 1rem;
+		}
+
+		html[data-mrn-css-profile="compact"] .mrn-css-demo-preview {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.5rem;
+		}
+
+		html[data-mrn-css-profile="editorial"] .mrn-css-demo-card {
+			border-radius: 0.25rem;
+			border-color: color-mix(in oklab, var(--color-secondary) 50%, transparent);
+		}
+
+		html[data-mrn-css-profile="editorial"] .mrn-css-demo-preview {
+			background: var(--color-base-100);
+			border-left: 0.35rem solid var(--color-secondary);
+		}
+
+		html[data-mrn-css-profile="editorial"] .mrn-css-demo-preview strong {
+			font-family: Georgia, serif;
+		}
+	`
+}
+
+func renderCustomCSSDemo() mf.Node {
+	return mf.Card(mf.CardProps{
+		Title:       "Custom CSS profiles",
+		Description: "App-level CSS can reshape Marionette without changing component code.",
+		Props:       mf.ComponentProps{Class: "mrn-css-demo-card"},
+	},
+		mf.Raw(`<script>
+			(function() {
+				var key = "marionette-css-profile";
+				var root = document.documentElement;
+				var saved = "";
+				try { saved = localStorage.getItem(key) || ""; } catch (e) {}
+				if (saved) root.setAttribute("data-mrn-css-profile", saved);
+				window.mrnSetCSSProfile = function(profile) {
+					if (profile) {
+						root.setAttribute("data-mrn-css-profile", profile);
+						try { localStorage.setItem(key, profile); } catch (e) {}
+						return;
+					}
+					root.removeAttribute("data-mrn-css-profile");
+					try { localStorage.removeItem(key); } catch (e) {}
+				};
+			})();
+		</script>`),
+		mf.Box(mf.BoxProps{Border: true, Tone: "base", Padding: "md", Props: mf.ComponentProps{Class: "mrn-css-demo-preview rounded-box"}},
+			mf.UIText(mf.TextProps{Text: "Same components, different product feel", Weight: "semibold"}),
+			mf.UIText(mf.TextProps{Text: "The CSS is registered once with app.AddStyle and toggled by a data attribute.", Size: "sm", Tone: "muted"}),
+			mf.Actions(mf.ActionsProps{Gap: "sm", Wrap: true},
+				mf.Badge(mf.BadgeProps{Label: "Tailwind classes stay unchanged", Props: mf.ComponentProps{Variant: "primary"}}),
+				mf.Badge(mf.BadgeProps{Label: "Scoped app branding", Props: mf.ComponentProps{Variant: "secondary"}}),
+				mf.Badge(mf.BadgeProps{Label: "Runtime switchable", Props: mf.ComponentProps{Variant: "accent"}}),
+			),
+		),
+		mf.Raw(`<div class="flex flex-wrap gap-2">
+			<button class="btn btn-sm btn-primary" type="button" onclick="window.mrnSetCSSProfile && window.mrnSetCSSProfile('focus')">Focus</button>
+			<button class="btn btn-sm btn-secondary" type="button" onclick="window.mrnSetCSSProfile && window.mrnSetCSSProfile('compact')">Compact</button>
+			<button class="btn btn-sm btn-accent" type="button" onclick="window.mrnSetCSSProfile && window.mrnSetCSSProfile('editorial')">Editorial</button>
+			<button class="btn btn-sm btn-outline" type="button" onclick="window.mrnSetCSSProfile && window.mrnSetCSSProfile('')">Reset</button>
+		</div>`),
+	)
 }
 
 func renderAnalyticsPage(ctx *mb.Context) mf.Node {

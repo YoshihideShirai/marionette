@@ -84,6 +84,19 @@ app.Action("users/create", func(ctx *mb.Context) mf.Node {
 })
 ```
 
+### Custom CSS
+
+Apps can add global CSS to Marionette's page shell:
+
+```go
+app.AddStylesheet("/assets/app.css")
+app.AddStyle(`
+    #marionette-root {
+        max-width: 56rem;
+    }
+`)
+```
+
 `Page` handlers return full pages wrapped in the Marionette shell. `Action`
 handlers are POST-only htmx endpoints and return HTML fragments for partial
 swaps. The older `Render` and `Handle` APIs still work for small examples.
@@ -108,4 +121,3 @@ Start with the published docs hub:
 - Top page: `/`
 - Components gallery: `/components/`
 - Contribution guide: `CONTRIBUTING.md`
-

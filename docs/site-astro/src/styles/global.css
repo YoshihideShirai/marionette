@@ -214,7 +214,7 @@ button:focus-visible {
   font-weight: 600;
 }
 
-.sidebar-top-list,
+.sidebar-section-list,
 .sidebar-nested-list,
 .sidebar-component-list,
 .sidebar-component-list ul {
@@ -223,10 +223,48 @@ button:focus-visible {
   padding: 0;
 }
 
-.sidebar-top-list {
+.sidebar-section-list {
   display: grid;
   gap: 0.1rem;
   margin-bottom: var(--space-4);
+}
+
+.sidebar-section-link,
+.sidebar-group > summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.1rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: var(--radius-sm);
+  color: color-mix(in srgb, var(--muted) 88%, var(--fg));
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.sidebar-section-link {
+  text-decoration: none;
+}
+
+.sidebar-group > summary {
+  justify-content: space-between;
+  gap: var(--space-2);
+  cursor: pointer;
+  list-style: none;
+}
+
+.sidebar-section-link:hover,
+.sidebar-group > summary:hover {
+  background: var(--surface-muted);
+  color: var(--fg);
+}
+
+.sidebar-section-link.active,
+.sidebar-group > summary.active {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .sidebar-nested-list {
@@ -242,14 +280,12 @@ button:focus-visible {
   padding-left: var(--space-3);
 }
 
-.sidebar-group,
 .sidebar-component-list details {
   border-top: 1px solid var(--line);
   margin-top: var(--space-3);
   padding-top: var(--space-3);
 }
 
-.sidebar-group > summary,
 .sidebar-component-list details > summary {
   display: flex;
   align-items: center;

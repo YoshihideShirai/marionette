@@ -520,6 +520,7 @@ h1 {
 
 .concept-figure {
   margin: var(--space-6) 0 0;
+  max-width: 56rem;
 }
 
 .concept-figure img {

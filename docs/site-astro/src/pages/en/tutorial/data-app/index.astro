@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const samplePath = `docs/site-astro/public/examples/go/tutorial/data-app/main.go`;
+const scenarioCode = `// 1) Load CSV
+file, _ := os.Open("./data/sales.csv")
+ui, _ := mf.UIDataFrameFromCSV(file, mf.TableProps{Columns: []mf.TableColumn{{Label: "Region"}, {Label: "Sales"}}})
+
+// 2) Preprocess and build a view
+view := mf.DataFrameViewProps{
+    Filters: []mf.DataFrameFilter{{Column: "Sales", Op: mf.DataFrameFilterGTE, Value: 1000.0}},
+    Sort:    []mf.DataFrameSort{{Column: "Sales", Desc: true}},
+}
+
+// 3) Keep table/chart in sync with same view
+mf.DataFrame(df, mf.TableProps{View: view})
+mf.DataFrameChart(df, mf.DataFrameChartProps{View: view, LabelColumn: "Region", Series: []mf.DataFrameChartSeries{{Column: "Sales"}}})
+
+// 4) Apply actions and rerender
+app.Action("filters/apply", func(ctx *mb.Context) mf.Node {
+    // recalculate view from query/form values
+    return renderDashboard(ctx)
+})`;
+---
+<BaseLayout title="Data App Build Flow - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/data-app/">
+  <article class="training-doc">
+    <header><p class="eyebrow">Tutorial</p><h1>Data App Build Flow</h1></header>
+    <p>This chapter implements one end-to-end path: CSV load → preprocessing → table → chart sync → action execution.</p>
+    <p>To track the same code in Japanese and English, both pages use the same sample path: <code>{samplePath}</code>.</p>
+    <pre><code>{scenarioCode}</code></pre>
+  </article>
+</BaseLayout>

@@ -247,5 +247,61 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
       input.addEventListener('input', filter);
       filter();
     })();
+
+    (() => {
+      const frames = Array.from(document.querySelectorAll('iframe'));
+      const observers = [];
+
+      const resizeFrame = (frame) => {
+        try {
+          const doc = frame.contentDocument;
+          if (!doc) return;
+
+          const body = doc.body;
+          const root = doc.documentElement;
+          const height = Math.max(
+            body?.scrollHeight || 0,
+            body?.offsetHeight || 0,
+            root?.scrollHeight || 0,
+            root?.offsetHeight || 0,
+          );
+
+          if (height > 0) {
+            frame.style.height = `${height + 2}px`;
+          }
+        } catch {
+          // Cross-origin frames cannot be measured. Current component examples are same-origin.
+        }
+      };
+
+      frames.forEach((frame) => {
+        frame.setAttribute('scrolling', 'no');
+
+        const attachObserver = () => {
+          resizeFrame(frame);
+
+          try {
+            const doc = frame.contentDocument;
+            if (!doc || !window.ResizeObserver) return;
+
+            const observer = new ResizeObserver(() => resizeFrame(frame));
+            if (doc.body) observer.observe(doc.body);
+            if (doc.documentElement) observer.observe(doc.documentElement);
+            observers.push(observer);
+          } catch {
+            // Cross-origin frames cannot be observed.
+          }
+        };
+
+        frame.addEventListener('load', attachObserver);
+        if (frame.contentDocument?.readyState === 'complete') {
+          attachObserver();
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        frames.forEach(resizeFrame);
+      });
+    })();
   </script>
 </html>

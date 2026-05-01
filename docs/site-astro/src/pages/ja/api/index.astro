@@ -56,6 +56,13 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>asset ルートは <code>Handler()</code> と <code>Run()</code> に含まれます。</li>
       </ul>
 
+      <h3><code>Downloads(prefix string, fsys fs.FS, options ...AssetOption)</code></h3>
+      <ul>
+        <li><code>fsys</code> の静的ファイルを <code>prefix</code> 配下で <code>Content-Disposition: attachment</code> 付きで配信します。</li>
+        <li><code>Assets(prefix, fsys, WithAssetDownload(), options...)</code> と同等です。</li>
+        <li>リクエストされたファイルの basename を添付ファイル名として使います。</li>
+      </ul>
+
       <h3><code>Asset(name string) string</code></h3>
       <ul>
         <li>最初に登録した asset prefix から asset URL を組み立てます。</li>
@@ -68,6 +75,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li><code>WithAssetCache(maxAge time.Duration)</code>: <code>Cache-Control: public, max-age=&lt;seconds&gt;</code> を出力します。</li>
         <li><code>WithAssetImmutable()</code>: asset cache が有効な場合に <code>immutable</code> を追加します。</li>
         <li><code>WithAssetIndex(enabled bool)</code>: underlying file server のディレクトリ index レスポンスを許可します。</li>
+        <li><code>WithAssetDownload()</code>: 対象ファイルを添付ダウンロードとして配信します。</li>
         <li><code>WithAssetContentTypes(types map[string]string)</code>: 拡張子ごとに <code>Content-Type</code> を設定します。</li>
       </ul>
 
@@ -228,6 +236,10 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       <ul>
         <li><code>Button(label string, props ComponentProps) Node</code></li>
         <li><code>SubmitButton(label string, props ComponentProps) Node</code></li>
+        <li><code>Link(props LinkProps) Node</code></li>
+        <li><code>ExternalLink(label, href string, props ComponentProps) Node</code></li>
+        <li><code>ExternalIconLink(icon, ariaLabel, href string, props ComponentProps) Node</code></li>
+        <li><code>DownloadLink(label, href, filename string, props ComponentProps) Node</code></li>
         <li><code>Input(name, value string, props ComponentProps) Node</code></li>
         <li><code>Textarea(name, value string, options TextareaOptions) Node</code></li>
         <li><code>Select(name string, options []SelectOption, props ComponentProps) Node</code></li>

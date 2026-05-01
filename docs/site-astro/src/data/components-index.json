@@ -10,6 +10,15 @@
       "description": "Primary/secondary action button variants"
     },
     {
+      "id": "link",
+      "name": "Link",
+      "group": "Components",
+      "golden": "testdata/golden/link.golden.html",
+      "example": "/marionette/examples/link.html",
+      "template": "templates/components/link.tmpl",
+      "description": "Internal, external, and download links with shared styling."
+    },
+    {
       "id": "theme-toggle-button",
       "name": "ThemeToggleButton",
       "group": "Components",

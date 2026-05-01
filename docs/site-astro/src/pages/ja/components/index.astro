@@ -3,9 +3,63 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import catalog from '../../../data/components-index.json';
 
 const cards = catalog.components;
-const groups = ['Components', 'Layout', 'Data', 'Chart'] as const;
-const selectedGroup = Astro.url.searchParams.get('group');
-const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ? selectedGroup : 'All';
+const componentById = new Map(cards.map((component) => [component.id, component]));
+const sectionDefinitions = [
+  {
+    title: 'レイアウト',
+    description: 'ページ構造、コンテナ、セクション、配置のプリミティブ。',
+    ids: ['container', 'page-header', 'section', 'card', 'stack', 'grid', 'split', 'layout'],
+  },
+  {
+    title: 'タイポグラフィ',
+    description: 'テキストプリミティブと見出しヘルパー。',
+    ids: ['heading', 'paragraph', 'span'],
+  },
+  {
+    title: 'アクション / リンク',
+    description: 'ボタン、リンク、直接操作のためのコンポーネント。',
+    ids: ['button', 'link', 'theme-toggle-button'],
+  },
+  {
+    title: 'フォーム / 入力',
+    description: 'ユーザー入力の収集と検証に使うコントロール。',
+    ids: ['form', 'form-field', 'input', 'textarea', 'select', 'checkbox', 'radio-group', 'switch'],
+  },
+  {
+    title: 'ナビゲーション',
+    description: '画面遷移、階層、ページング、ナビゲーションのデモ。',
+    ids: ['sidebar', 'breadcrumb', 'tabs', 'pagination', 'navigation'],
+  },
+  {
+    title: 'フィードバック / オーバーレイ',
+    description: '状態表示、読み込み、空状態、重なりのあるUI。',
+    ids: ['alert', 'toast', 'progress', 'skeleton', 'empty-state', 'modal', 'overlay-system', 'feedback'],
+  },
+  {
+    title: 'データ / メディア',
+    description: 'テーブル、データフレーム、画像表示。',
+    ids: ['table', 'image', 'dataframe', 'dataframe-chart'],
+  },
+  {
+    title: 'チャート',
+    description: 'Chartラッパーとチャート種別ごとのサンプル。',
+    ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'],
+  },
+];
+const categorizedIds = new Set(sectionDefinitions.flatMap((section) => section.ids));
+const sections = sectionDefinitions.map((section) => ({
+  ...section,
+  components: section.ids.map((id) => componentById.get(id)).filter(Boolean),
+})).filter((section) => section.components.length > 0);
+const uncategorized = cards.filter((component) => !categorizedIds.has(component.id));
+if (uncategorized.length > 0) {
+  sections.push({
+    title: 'その他',
+    description: 'まだ主要カテゴリに割り当てていない追加サンプル。',
+    ids: uncategorized.map((component) => component.id),
+    components: uncategorized,
+  });
+}
 ---
 <BaseLayout title="コンポーネントギャラリー" lang="ja" languageSwitcherPath="/marionette/en/components/">
   <div class="component-gallery">
@@ -26,40 +80,37 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       </label>
     </header>
 
-    <nav class="group-filter" aria-label="コンポーネントグループフィルター">
-      {['All', ...groups].map((group) => {
-        const href = group === 'All' ? './' : `./?group=${encodeURIComponent(group)}`;
-        const active = group === initialGroup;
-
-        return (
-          <a href={href} class:list={{ chip: true, active }} aria-current={active ? 'page' : undefined} data-group-filter={group}>
-            {group}
-          </a>
-        );
-      })}
-    </nav>
-
-    <div class="component-grid" data-component-grid>
-      {cards.map((component) => {
-        return (
-          <article
-            class="card component-card"
-            data-component-card
-            data-group={component.group}
-            data-name={component.name.toLowerCase()}
-            data-description={component.description.toLowerCase()}
-          >
-            <header class="card-header">
-              <h2><a href={`./${component.id}/`}>{component.name}</a></h2>
-              {!component.example && <span class="badge">サンプル準備中</span>}
-            </header>
-            <p>{component.description}</p>
-            {component.example && (
-              <iframe src={component.example} title={`${component.name} のサンプル`} loading="lazy" />
-            )}
-          </article>
-        );
-      })}
+    <div class="component-sections" data-component-sections>
+      {sections.map((section) => (
+        <section class="component-section" data-component-section>
+          <header class="section-header">
+            <div>
+              <h2>{section.title}</h2>
+              <p>{section.description}</p>
+            </div>
+            <span>{section.components.length}</span>
+          </header>
+          <div class="component-grid">
+            {section.components.map((component) => (
+              <article
+                class="card component-card"
+                data-component-card
+                data-name={component.name.toLowerCase()}
+                data-description={component.description.toLowerCase()}
+              >
+                <header class="card-header">
+                  <h3><a href={`./${component.id}/`}>{component.name}</a></h3>
+                  {!component.example && <span class="badge">サンプル準備中</span>}
+                </header>
+                <p>{component.description}</p>
+                {component.example && (
+                  <iframe src={component.example} title={`${component.name} のサンプル`} loading="lazy" />
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
 
     <p class="empty" data-empty-state hidden>検索条件に一致するコンポーネントはありません。</p>
@@ -68,66 +119,32 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
   <script>
     const input = document.querySelector('#component-search');
     const cards = Array.from(document.querySelectorAll('[data-component-card]'));
+    const sections = Array.from(document.querySelectorAll('[data-component-section]'));
     const emptyState = document.querySelector('[data-empty-state]');
-    const groupFilters = Array.from(document.querySelectorAll('[data-group-filter]'));
-    const validGroups = new Set(groupFilters.map((filter) => filter.dataset.groupFilter));
-
-    const getSelectedGroup = () => {
-      const group = new URLSearchParams(window.location.search).get('group') || 'All';
-      return validGroups.has(group) ? group : 'All';
-    };
-
-    const setActiveGroup = (selectedGroup) => {
-      groupFilters.forEach((filter) => {
-        const active = filter.dataset.groupFilter === selectedGroup;
-        filter.classList.toggle('active', active);
-        if (active) {
-          filter.setAttribute('aria-current', 'page');
-        } else {
-          filter.removeAttribute('aria-current');
-        }
-      });
-    };
 
     const applySearch = () => {
       const keyword = (input?.value ?? '').trim().toLowerCase();
-      const selectedGroup = getSelectedGroup();
       let visibleCount = 0;
 
       cards.forEach((card) => {
         const name = card.dataset.name ?? '';
         const description = card.dataset.description ?? '';
-        const group = card.dataset.group ?? '';
-        const groupMatches = selectedGroup === 'All' || group === selectedGroup;
         const keywordMatches = !keyword || name.includes(keyword) || description.includes(keyword);
-        const isMatch = groupMatches && keywordMatches;
+        const isMatch = keywordMatches;
         card.hidden = !isMatch;
         if (isMatch) visibleCount += 1;
       });
 
-      setActiveGroup(selectedGroup);
+      sections.forEach((section) => {
+        const sectionCards = Array.from(section.querySelectorAll('[data-component-card]'));
+        section.hidden = !sectionCards.some((card) => !card.hidden);
+      });
 
       if (emptyState) {
         emptyState.hidden = visibleCount > 0;
       }
     };
 
-    groupFilters.forEach((filter) => {
-      filter.addEventListener('click', (event) => {
-        event.preventDefault();
-        const group = filter.dataset.groupFilter || 'All';
-        const url = new URL(window.location.href);
-        if (group === 'All') {
-          url.searchParams.delete('group');
-        } else {
-          url.searchParams.set('group', group);
-        }
-        window.history.pushState({}, '', url);
-        applySearch();
-      });
-    });
-
-    window.addEventListener('popstate', applySearch);
     input?.addEventListener('input', applySearch);
     applySearch();
   </script>
@@ -135,7 +152,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
   <style>
     .component-gallery {
       display: grid;
-      gap: 1rem;
+      gap: 1.25rem;
     }
 
     .component-gallery-header {
@@ -147,28 +164,6 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
 
     .component-gallery-header h1 {
       margin-bottom: 0.35rem;
-    }
-
-    .group-filter {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 0;
-    }
-
-    .chip {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 0.35rem 0.8rem;
-      text-decoration: none;
-      font-size: 0.9rem;
-      color: inherit;
-    }
-
-    .chip.active {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 12%, transparent);
-      color: var(--accent);
     }
 
     .search-field {
@@ -197,6 +192,41 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       outline-offset: 1px;
     }
 
+    .component-sections {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .component-section {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.6rem;
+    }
+
+    .section-header h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.2rem;
+    }
+
+    .section-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .section-header span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
     .component-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
@@ -218,7 +248,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       align-items: center;
     }
 
-    .card-header h2 {
+    .card-header h3 {
       margin: 0;
       font-size: 1.1rem;
       line-height: 1.3;

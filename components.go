@@ -21,6 +21,19 @@ type ComponentProps struct {
 	Disabled bool
 }
 
+type LinkProps struct {
+	Label     string
+	Icon      string
+	Href      string
+	Target    string
+	Rel       string
+	External  bool
+	Download  bool
+	Filename  string
+	AriaLabel string
+	Props     ComponentProps
+}
+
 type SelectOption struct {
 	Label    string
 	Value    string
@@ -407,6 +420,88 @@ func Button(label string, props ComponentProps) Node {
 
 func UISubmitButton(label string, props ComponentProps) Node {
 	return componentButton(label, "submit", props)
+}
+
+func Link(props LinkProps) Node {
+	href := strings.TrimSpace(props.Href)
+	if href == "" || props.Props.Disabled {
+		href = "#"
+	}
+
+	target := strings.TrimSpace(props.Target)
+	if target == "" && props.External {
+		target = "_blank"
+	}
+
+	rel := strings.TrimSpace(props.Rel)
+	if rel == "" && (props.External || target == "_blank") {
+		rel = "noopener noreferrer"
+	}
+
+	filename := strings.TrimSpace(props.Filename)
+	download := props.Download || filename != ""
+	label := strings.TrimSpace(props.Label)
+	icon := strings.TrimSpace(props.Icon)
+	ariaLabel := strings.TrimSpace(props.AriaLabel)
+	if ariaLabel == "" && icon != "" && label != "" {
+		ariaLabel = label
+	}
+
+	return templateNode{
+		name: "components/link",
+		data: struct {
+			Class     string
+			Label     string
+			Icon      string
+			Href      string
+			Target    string
+			Rel       string
+			Download  bool
+			Filename  string
+			AriaLabel string
+			Disabled  bool
+		}{
+			Class:     linkClass(props.Props, icon != "", label == ""),
+			Label:     label,
+			Icon:      icon,
+			Href:      href,
+			Target:    target,
+			Rel:       rel,
+			Download:  download,
+			Filename:  filename,
+			AriaLabel: ariaLabel,
+			Disabled:  props.Props.Disabled,
+		},
+	}
+}
+
+func ExternalLink(label, href string, props ComponentProps) Node {
+	return Link(LinkProps{
+		Label:    label,
+		Href:     href,
+		External: true,
+		Props:    props,
+	})
+}
+
+func ExternalIconLink(icon, ariaLabel, href string, props ComponentProps) Node {
+	return Link(LinkProps{
+		Icon:      icon,
+		AriaLabel: ariaLabel,
+		Href:      href,
+		External:  true,
+		Props:     props,
+	})
+}
+
+func DownloadLink(label, href, filename string, props ComponentProps) Node {
+	return Link(LinkProps{
+		Label:    label,
+		Href:     href,
+		Download: true,
+		Filename: filename,
+		Props:    props,
+	})
 }
 
 func componentButton(label, buttonType string, props ComponentProps) Node {
@@ -1389,6 +1484,28 @@ func buttonClass(props ComponentProps) string {
 	base := []string{"btn", "w-fit", buttonVariantClass(props.Variant), buttonSizeClass(props.Size)}
 	if props.Class != "" {
 		base = append(base, props.Class)
+	}
+	return joinClass(base...)
+}
+
+func linkClass(props ComponentProps, hasIcon, iconOnly bool) string {
+	var base []string
+	if props.Variant != "" || props.Size != "" {
+		base = []string{buttonClass(props)}
+		if iconOnly {
+			base = append(base, "btn-square")
+		}
+	} else {
+		base = []string{"link", "link-hover", "w-fit"}
+		if hasIcon {
+			base = append(base, "inline-flex", "items-center", "gap-1")
+		}
+		if props.Class != "" {
+			base = append(base, props.Class)
+		}
+	}
+	if props.Disabled {
+		base = append(base, "pointer-events-none", "cursor-not-allowed", "opacity-50")
 	}
 	return joinClass(base...)
 }

@@ -42,22 +42,41 @@ const tutorialItems = isJa
       { label: 'Backend and frontend communication', href: `${langRoot}/tutorial/backend-frontend/` },
     ];
 
-const groupedComponents = catalog.components.reduce<Record<string, typeof catalog.components>>((acc, component) => {
-  const key = component.group || 'Other';
-  if (!acc[key]) acc[key] = [];
-  acc[key].push(component);
-  return acc;
-}, {});
-
-const groupOrder = ['Components', 'Layout', 'Data', 'Chart'];
-const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
-  const ai = groupOrder.indexOf(a);
-  const bi = groupOrder.indexOf(b);
-  if (ai === -1 && bi === -1) return a.localeCompare(b);
-  if (ai === -1) return 1;
-  if (bi === -1) return -1;
-  return ai - bi;
-});
+const componentById = new Map(catalog.components.map((component) => [component.id, component]));
+const componentSectionDefinitions = isJa
+  ? [
+      { title: 'レイアウト', ids: ['container', 'page-header', 'section', 'card', 'stack', 'grid', 'split', 'layout'] },
+      { title: 'タイポグラフィ', ids: ['heading', 'paragraph', 'span'] },
+      { title: 'アクション / リンク', ids: ['button', 'link', 'theme-toggle-button'] },
+      { title: 'フォーム / 入力', ids: ['form', 'form-field', 'input', 'textarea', 'select', 'checkbox', 'radio-group', 'switch'] },
+      { title: 'ナビゲーション', ids: ['sidebar', 'breadcrumb', 'tabs', 'pagination', 'navigation'] },
+      { title: 'フィードバック / オーバーレイ', ids: ['alert', 'toast', 'progress', 'skeleton', 'empty-state', 'modal', 'overlay-system', 'feedback'] },
+      { title: 'データ / メディア', ids: ['table', 'image', 'dataframe', 'dataframe-chart'] },
+      { title: 'チャート', ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'] },
+    ]
+  : [
+      { title: 'Layout surfaces', ids: ['container', 'page-header', 'section', 'card', 'stack', 'grid', 'split', 'layout'] },
+      { title: 'Typography', ids: ['heading', 'paragraph', 'span'] },
+      { title: 'Actions and links', ids: ['button', 'link', 'theme-toggle-button'] },
+      { title: 'Forms and inputs', ids: ['form', 'form-field', 'input', 'textarea', 'select', 'checkbox', 'radio-group', 'switch'] },
+      { title: 'Navigation', ids: ['sidebar', 'breadcrumb', 'tabs', 'pagination', 'navigation'] },
+      { title: 'Feedback and overlays', ids: ['alert', 'toast', 'progress', 'skeleton', 'empty-state', 'modal', 'overlay-system', 'feedback'] },
+      { title: 'Data and media', ids: ['table', 'image', 'dataframe', 'dataframe-chart'] },
+      { title: 'Charts', ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'] },
+    ];
+const categorizedComponentIds = new Set(componentSectionDefinitions.flatMap((section) => section.ids));
+const componentSections = componentSectionDefinitions.map((section) => ({
+  ...section,
+  items: section.ids.map((id) => componentById.get(id)).filter(Boolean),
+})).filter((section) => section.items.length > 0);
+const uncategorizedComponents = catalog.components.filter((component) => !categorizedComponentIds.has(component.id));
+if (uncategorizedComponents.length > 0) {
+  componentSections.push({
+    title: isJa ? 'その他' : 'Other components',
+    ids: uncategorizedComponents.map((component) => component.id),
+    items: uncategorizedComponents,
+  });
+}
 ---
 <html lang={lang}>
   <head>
@@ -148,13 +167,13 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
                       {isJa ? '一覧ページ' : 'Overview'}
                     </a>
                   </li>
-                  {sortedGroups.map((group) => {
-                    const items = groupedComponents[group].sort((a, b) => a.name.localeCompare(b.name));
+                  {componentSections.map((section) => {
+                    const items = section.items;
                     const hasActive = items.some((component) => currentPath.startsWith(`${langRoot}/components/${component.id}/`));
                     return (
-                      <li data-component-group={group.toLowerCase()}>
+                      <li data-component-group={section.title.toLowerCase()}>
                         <details open={hasActive}>
-                          <summary>{group}</summary>
+                          <summary>{section.title}</summary>
                           <ul>
                             {items.map((component) => {
                               const href = `${langRoot}/components/${component.id}/`;

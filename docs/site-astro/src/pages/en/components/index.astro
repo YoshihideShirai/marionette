@@ -3,9 +3,63 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import catalog from '../../../data/components-index.json';
 
 const cards = catalog.components;
-const groups = ['Components', 'Layout', 'Data', 'Chart'] as const;
-const selectedGroup = Astro.url.searchParams.get('group');
-const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ? selectedGroup : 'All';
+const componentById = new Map(cards.map((component) => [component.id, component]));
+const sectionDefinitions = [
+  {
+    title: 'Layout surfaces',
+    description: 'Page structure, containers, sections, and composition primitives.',
+    ids: ['container', 'page-header', 'section', 'card', 'stack', 'grid', 'split', 'layout'],
+  },
+  {
+    title: 'Typography',
+    description: 'Text primitives and heading helpers.',
+    ids: ['heading', 'paragraph', 'span'],
+  },
+  {
+    title: 'Actions and links',
+    description: 'Buttons, links, and direct user actions.',
+    ids: ['button', 'link', 'theme-toggle-button'],
+  },
+  {
+    title: 'Forms and inputs',
+    description: 'Controls for collecting and validating user input.',
+    ids: ['form', 'form-field', 'input', 'textarea', 'select', 'checkbox', 'radio-group', 'switch'],
+  },
+  {
+    title: 'Navigation',
+    description: 'Wayfinding, hierarchy, paging, and navigation demos.',
+    ids: ['sidebar', 'breadcrumb', 'tabs', 'pagination', 'navigation'],
+  },
+  {
+    title: 'Feedback and overlays',
+    description: 'Status, loading, empty states, and layered UI.',
+    ids: ['alert', 'toast', 'progress', 'skeleton', 'empty-state', 'modal', 'overlay-system', 'feedback'],
+  },
+  {
+    title: 'Data and media',
+    description: 'Tables, data frames, and visual media.',
+    ids: ['table', 'image', 'dataframe', 'dataframe-chart'],
+  },
+  {
+    title: 'Charts',
+    description: 'Chart wrappers and chart-specific examples.',
+    ids: ['chart', 'chart-line', 'chart-bar', 'chart-pie', 'chart-doughnut', 'chart-scatter'],
+  },
+];
+const categorizedIds = new Set(sectionDefinitions.flatMap((section) => section.ids));
+const sections = sectionDefinitions.map((section) => ({
+  ...section,
+  components: section.ids.map((id) => componentById.get(id)).filter(Boolean),
+})).filter((section) => section.components.length > 0);
+const uncategorized = cards.filter((component) => !categorizedIds.has(component.id));
+if (uncategorized.length > 0) {
+  sections.push({
+    title: 'Other components',
+    description: 'Additional examples that do not yet fit one primary category.',
+    ids: uncategorized.map((component) => component.id),
+    components: uncategorized,
+  });
+}
 ---
 <BaseLayout title="Components Gallery">
   <div class="component-gallery">
@@ -26,40 +80,37 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       </label>
     </header>
 
-    <nav class="group-filter" aria-label="Component group filter">
-      {['All', ...groups].map((group) => {
-        const href = group === 'All' ? './' : `./?group=${encodeURIComponent(group)}`;
-        const active = group === initialGroup;
-
-        return (
-          <a href={href} class:list={{ chip: true, active }} aria-current={active ? 'page' : undefined} data-group-filter={group}>
-            {group}
-          </a>
-        );
-      })}
-    </nav>
-
-    <div class="component-grid" data-component-grid>
-      {cards.map((component) => {
-        return (
-          <article
-            class="card component-card"
-            data-component-card
-            data-group={component.group}
-            data-name={component.name.toLowerCase()}
-            data-description={component.description.toLowerCase()}
-          >
-            <header class="card-header">
-              <h2><a href={`./${component.id}/`}>{component.name}</a></h2>
-              {!component.example && <span class="badge">Example pending</span>}
-            </header>
-            <p>{component.description}</p>
-            {component.example && (
-              <iframe src={component.example} title={`${component.name} example`} loading="lazy" />
-            )}
-          </article>
-        );
-      })}
+    <div class="component-sections" data-component-sections>
+      {sections.map((section) => (
+        <section class="component-section" data-component-section>
+          <header class="section-header">
+            <div>
+              <h2>{section.title}</h2>
+              <p>{section.description}</p>
+            </div>
+            <span>{section.components.length}</span>
+          </header>
+          <div class="component-grid">
+            {section.components.map((component) => (
+              <article
+                class="card component-card"
+                data-component-card
+                data-name={component.name.toLowerCase()}
+                data-description={component.description.toLowerCase()}
+              >
+                <header class="card-header">
+                  <h3><a href={`./${component.id}/`}>{component.name}</a></h3>
+                  {!component.example && <span class="badge">Example pending</span>}
+                </header>
+                <p>{component.description}</p>
+                {component.example && (
+                  <iframe src={component.example} title={`${component.name} example`} loading="lazy" />
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
 
     <p class="empty" data-empty-state hidden>No components matched your search.</p>
@@ -68,66 +119,32 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
   <script>
     const input = document.querySelector('#component-search');
     const cards = Array.from(document.querySelectorAll('[data-component-card]'));
+    const sections = Array.from(document.querySelectorAll('[data-component-section]'));
     const emptyState = document.querySelector('[data-empty-state]');
-    const groupFilters = Array.from(document.querySelectorAll('[data-group-filter]'));
-    const validGroups = new Set(groupFilters.map((filter) => filter.dataset.groupFilter));
-
-    const getSelectedGroup = () => {
-      const group = new URLSearchParams(window.location.search).get('group') || 'All';
-      return validGroups.has(group) ? group : 'All';
-    };
-
-    const setActiveGroup = (selectedGroup) => {
-      groupFilters.forEach((filter) => {
-        const active = filter.dataset.groupFilter === selectedGroup;
-        filter.classList.toggle('active', active);
-        if (active) {
-          filter.setAttribute('aria-current', 'page');
-        } else {
-          filter.removeAttribute('aria-current');
-        }
-      });
-    };
 
     const applySearch = () => {
       const keyword = (input?.value ?? '').trim().toLowerCase();
-      const selectedGroup = getSelectedGroup();
       let visibleCount = 0;
 
       cards.forEach((card) => {
         const name = card.dataset.name ?? '';
         const description = card.dataset.description ?? '';
-        const group = card.dataset.group ?? '';
-        const groupMatches = selectedGroup === 'All' || group === selectedGroup;
         const keywordMatches = !keyword || name.includes(keyword) || description.includes(keyword);
-        const isMatch = groupMatches && keywordMatches;
+        const isMatch = keywordMatches;
         card.hidden = !isMatch;
         if (isMatch) visibleCount += 1;
       });
 
-      setActiveGroup(selectedGroup);
+      sections.forEach((section) => {
+        const sectionCards = Array.from(section.querySelectorAll('[data-component-card]'));
+        section.hidden = !sectionCards.some((card) => !card.hidden);
+      });
 
       if (emptyState) {
         emptyState.hidden = visibleCount > 0;
       }
     };
 
-    groupFilters.forEach((filter) => {
-      filter.addEventListener('click', (event) => {
-        event.preventDefault();
-        const group = filter.dataset.groupFilter || 'All';
-        const url = new URL(window.location.href);
-        if (group === 'All') {
-          url.searchParams.delete('group');
-        } else {
-          url.searchParams.set('group', group);
-        }
-        window.history.pushState({}, '', url);
-        applySearch();
-      });
-    });
-
-    window.addEventListener('popstate', applySearch);
     input?.addEventListener('input', applySearch);
     applySearch();
   </script>
@@ -135,7 +152,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
   <style>
     .component-gallery {
       display: grid;
-      gap: 1rem;
+      gap: 1.25rem;
     }
 
     .component-gallery-header {
@@ -147,28 +164,6 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
 
     .component-gallery-header h1 {
       margin-bottom: 0.35rem;
-    }
-
-    .group-filter {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 0;
-    }
-
-    .chip {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 0.35rem 0.8rem;
-      text-decoration: none;
-      font-size: 0.9rem;
-      color: inherit;
-    }
-
-    .chip.active {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 12%, transparent);
-      color: var(--accent);
     }
 
     .search-field {
@@ -197,6 +192,41 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       outline-offset: 1px;
     }
 
+    .component-sections {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .component-section {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.6rem;
+    }
+
+    .section-header h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.2rem;
+    }
+
+    .section-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .section-header span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
     .component-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
@@ -218,7 +248,7 @@ const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ?
       align-items: center;
     }
 
-    .card-header h2 {
+    .card-header h3 {
       margin: 0;
       font-size: 1.1rem;
       line-height: 1.3;

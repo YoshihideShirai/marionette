@@ -116,6 +116,54 @@ func TestAssetsServeFilesAndApplyHeaders(t *testing.T) {
 	}
 }
 
+func TestAssetsCanServeDownloads(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"reports/users report.csv": {Data: []byte("name\nAiko\n")},
+	}, WithAssetDownload(), WithAssetCache(time.Hour), WithAssetContentTypes(map[string]string{".csv": "text/csv; charset=utf-8"}))
+
+	req := httptest.NewRequest(http.MethodGet, app.Asset("reports/users report.csv"), nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	if got := rr.Body.String(); got != "name\nAiko\n" {
+		t.Fatalf("expected download body, got %q", got)
+	}
+	if got := rr.Header().Get("Content-Disposition"); got != `attachment; filename="users report.csv"` {
+		t.Fatalf("expected content disposition, got %q", got)
+	}
+	if got := rr.Header().Get("Content-Type"); got != "text/csv; charset=utf-8" {
+		t.Fatalf("expected csv content type, got %q", got)
+	}
+	if got := rr.Header().Get("Cache-Control"); got != "public, max-age=3600" {
+		t.Fatalf("expected cache header, got %q", got)
+	}
+}
+
+func TestDownloadsConvenienceRouteServesHeadRequests(t *testing.T) {
+	app := New()
+	app.Downloads("/downloads", fstest.MapFS{
+		"report.csv": {Data: []byte("name\nAiko\n")},
+	})
+
+	req := httptest.NewRequest(http.MethodHead, "/downloads/report.csv", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	if got := rr.Body.String(); got != "" {
+		t.Fatalf("expected empty body for HEAD, got %q", got)
+	}
+	if got := rr.Header().Get("Content-Disposition"); got != `attachment; filename=report.csv` {
+		t.Fatalf("expected content disposition, got %q", got)
+	}
+}
+
 func TestAssetsBlockDirectoryIndexByDefault(t *testing.T) {
 	app := New()
 	app.Assets("/assets", fstest.MapFS{

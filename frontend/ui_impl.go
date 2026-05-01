@@ -307,6 +307,19 @@ func Input(name, value string, props ...ComponentProps) Node {
 	}
 }
 
+
+func FileUpload(name string, required bool, props ...ComponentProps) Node {
+	componentProps := ComponentProps{}
+	if len(props) > 0 {
+		componentProps = props[0]
+	}
+	return UIInputWithOptions(name, "", InputOptions{
+		Type:     "file",
+		Required: required,
+		Props:    componentProps,
+	})
+}
+
 func HiddenInput(name, value string) Node {
 	return element{
 		Tag: "input",

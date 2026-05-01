@@ -30,6 +30,20 @@ func TestHeadingHelpersRenderExpectedTags(t *testing.T) {
 	}
 }
 
+
+func TestFileUploadRendersFileInput(t *testing.T) {
+	html, err := FileUpload("attachment", true).Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{`name="attachment"`, `type="file"`, `required`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
 func TestLinkRendersExpectedAttributes(t *testing.T) {
 	tests := []struct {
 		name    string

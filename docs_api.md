@@ -10,6 +10,7 @@ Split imports by runtime role:
 ```go
 import (
     mb "github.com/YoshihideShirai/marionette/backend"
+    md "github.com/YoshihideShirai/marionette/desktop"
     mf "github.com/YoshihideShirai/marionette/frontend"
     mh "github.com/YoshihideShirai/marionette/frontend/html"
 )
@@ -17,6 +18,7 @@ import (
 
 - Recommended aliases: `mb` (marionette backend), `mf` (marionette frontend).
 - Use `mb` for app/runtime APIs such as `New`, `App`, `Context`, `Handler`.
+- Use `md` for desktop runtime APIs such as `desktop.Run`.
 - Use `mf` for component APIs such as `Button`, `Card`, `Table`, `FormRow`.
 - Use `mh` for advanced low-level node APIs such as `Node`, `Div`, `Element`, `Raw`.
 - Low-level constructors are intentionally not exposed from `frontend`; import
@@ -36,6 +38,19 @@ import (
 - Starts an HTTP server with `http.ListenAndServe(addr, a.Handler())`.
 - Logs `marionette listening at http://<addr>` to stdout before serving.
 - Returns any `ListenAndServe` error as-is.
+
+### Desktop runtime: `desktop.Run(app *backend.App, options desktop.Options) error`
+- Starts the app on a private `127.0.0.1:0` server using `app.Handler()`.
+- Opens that local URL in a native WebView shell.
+- Shuts the local server down when the WebView exits.
+- Requires building with `-tags marionette_desktop` to enable the native
+  WebView adapter.
+
+### Desktop options
+- `Title string`: native window title; defaults to `"Marionette"`.
+- `Width int`: native window width; defaults to `1200`.
+- `Height int`: native window height; defaults to `800`.
+- `Debug bool`: passes WebView debug mode through to the adapter.
 
 ### `SetCookieSecure(secure bool)`
 - Enables/disables `Secure` on the flash cookie (`marionette_flash`).

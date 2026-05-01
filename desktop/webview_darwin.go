@@ -2,6 +2,7 @@
 
 package desktop
 
+// macOS backend: webview_go uses WKWebView under the hood.
 import webview "github.com/webview/webview_go"
 
 func openWebView(url string, options Options) error {

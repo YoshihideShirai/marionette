@@ -3,6 +3,7 @@ package frontend
 import (
 	"cmp"
 	"fmt"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -41,6 +42,9 @@ type DataFrameViewProps struct {
 	Page            int
 	PageSize        int
 	ComputedColumns []DataFrameComputedColumn
+}
+type DataQueryState struct {
+	Filters []DataFrameFilter
 }
 
 type DataFrameChartSeries struct {
@@ -138,6 +142,9 @@ func ApplyDataFrameView(df *rdf.DataFrame, view DataFrameViewProps) *rdf.DataFra
 // UIDataFrame renders ...
 func DataFrame(df *rdf.DataFrame, props TableProps) Node {
 	tableProps := props
+	if len(tableProps.SelectedFilters) == 0 {
+		tableProps.SelectedFilters = append([]DataFrameFilter(nil), tableProps.View.Filters...)
+	}
 	df = ApplyDataFrameView(df, tableProps.View)
 	if df == nil {
 		return Table(tableProps)
@@ -181,6 +188,9 @@ func DataFrame(df *rdf.DataFrame, props TableProps) Node {
 
 func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	chartProps := props.Chart
+	if chartProps.QueryStateLabel == "" {
+		chartProps.QueryStateLabel = strings.TrimSpace(props.LabelColumn)
+	}
 	df = ApplyDataFrameView(df, props.View)
 	if df == nil {
 		return UIChart(chartProps)
@@ -221,6 +231,29 @@ func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	chartProps.Labels = labels
 	chartProps.Datasets = datasets
 	return UIChart(chartProps)
+}
+
+func DataQueryStateFromView(view DataFrameViewProps) DataQueryState {
+	return DataQueryState{Filters: append([]DataFrameFilter(nil), view.Filters...)}
+}
+
+func (s DataQueryState) ToView(view DataFrameViewProps) DataFrameViewProps {
+	view.Filters = append([]DataFrameFilter(nil), s.Filters...)
+	return view
+}
+
+func (s DataQueryState) Encode(values url.Values) {
+	for _, f := range s.Filters {
+		column := strings.TrimSpace(f.Column)
+		if column == "" {
+			continue
+		}
+		op := strings.TrimSpace(string(f.Op))
+		if op == "" {
+			op = string(DataFrameFilterEq)
+		}
+		values.Add("df.filter", column+"|"+op+"|"+fmt.Sprint(f.Value))
+	}
 }
 
 func rowValue(row map[any]any, key string) any {

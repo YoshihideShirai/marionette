@@ -156,6 +156,8 @@ type TableProps struct {
 	EmptyTitle       string
 	EmptyDescription string
 	View             DataFrameViewProps
+	QueryStateName   string
+	SelectedFilters  []DataFrameFilter
 }
 
 type ChartType string
@@ -202,6 +204,8 @@ type ChartProps struct {
 	AriaLabel   string
 	Height      int
 	Props       ComponentProps
+	QueryStateName  string
+	QueryStateLabel string
 }
 
 type ImageProps struct {
@@ -864,11 +868,15 @@ func Table(props TableProps) Node {
 			Rows             []struct{ Cells []template.HTML }
 			EmptyTitle       string
 			EmptyDescription string
+			QueryStateName   string
+			SelectedFilters  []DataFrameFilter
 		}{
 			Columns:          props.Columns,
 			Rows:             rows,
 			EmptyTitle:       strings.TrimSpace(props.EmptyTitle),
 			EmptyDescription: strings.TrimSpace(props.EmptyDescription),
+			QueryStateName:   strings.TrimSpace(props.QueryStateName),
+			SelectedFilters:  props.SelectedFilters,
 		},
 	}
 }
@@ -902,6 +910,8 @@ func UIChart(props ChartProps) Node {
 			Datasets     []ChartDataset
 			Rows         []chartFallbackRow
 			FallbackText string
+			QueryStateName  string
+			QueryStateLabel string
 		}{
 			Class:        chartClass(props.Props),
 			Title:        strings.TrimSpace(props.Title),
@@ -913,6 +923,8 @@ func UIChart(props ChartProps) Node {
 			Datasets:     props.Datasets,
 			Rows:         chartFallbackRows(props),
 			FallbackText: chartFallbackText(props),
+			QueryStateName:  strings.TrimSpace(props.QueryStateName),
+			QueryStateLabel: strings.TrimSpace(props.QueryStateLabel),
 		},
 	}
 }

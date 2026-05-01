@@ -14,6 +14,7 @@ partial updates in the browser.
 - Keep routing, state updates, and event handlers on the server.
 - Use htmx-powered partial rendering instead of maintaining a full SPA.
 - Compose admin screens from pages, forms, actions, tables, charts, and layout components.
+- Share a single `DataQueryState` between charts and tables so clicking a region filters all widgets together.
 - Run the same app as a web UI or inside a desktop WebView shell.
 
 ## Try it

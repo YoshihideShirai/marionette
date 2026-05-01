@@ -59,7 +59,23 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
 
             var existing = charts.get(canvas);
             if (existing) existing.destroy();
-            charts.set(canvas, new window.Chart(canvas, config));
+            var chart = new window.Chart(canvas, config);
+            chart.options = chart.options || {};
+            chart.options.onClick = function(_, elements) {
+              if (!elements || !elements.length) return;
+              var first = elements[0];
+              var label = (chart.data && chart.data.labels && chart.data.labels[first.index]) || "";
+              var stateName = container.getAttribute("data-mrn-query-state");
+              var column = container.getAttribute("data-mrn-filter-column");
+              if (!stateName || !column) return;
+              var payload = {state: stateName, filters: [{column: column, op: "eq", value: String(label)}]};
+              document.dispatchEvent(new CustomEvent("mrn:data-query-change", {detail: payload}));
+              if (window.htmx) {
+                window.htmx.trigger(document.body, "mrn:data-query-change", payload);
+              }
+            };
+            chart.update();
+            charts.set(canvas, chart);
           });
         }
 
@@ -68,6 +84,14 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
         });
         document.addEventListener("htmx:afterSwap", function(event) {
           initCharts(event.detail && event.detail.elt ? event.detail.elt : document);
+        });
+        document.addEventListener("mrn:data-query-change", function(event) {
+          var detail = event.detail || {};
+          var tables = document.querySelectorAll("[data-mrn-query-state]");
+          tables.forEach(function(node) {
+            if (node.getAttribute("data-mrn-query-state") !== detail.state) return;
+            node.setAttribute("data-mrn-selected-filter", JSON.stringify(detail.filters || []));
+          });
         });
         window.mrnInitCharts = initCharts;
       })();

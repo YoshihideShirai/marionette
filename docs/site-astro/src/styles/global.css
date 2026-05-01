@@ -105,6 +105,9 @@ button:focus-visible {
 }
 
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.3rem 0.7rem;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -749,4 +752,22 @@ iframe {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.material-icons,
+.ui-icon {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.2em;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }

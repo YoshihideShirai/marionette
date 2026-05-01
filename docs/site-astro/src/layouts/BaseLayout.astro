@@ -84,6 +84,7 @@ if (uncategorizedComponents.length > 0) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <title>{title}</title>
     <script is:inline>
       (() => {
@@ -106,7 +107,10 @@ if (uncategorizedComponents.length > 0) {
         <a href="https://github.com/YoshihideShirai/marionette" target="_blank" rel="noreferrer">
           GitHub
         </a>
-        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙 Dark</button>
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+          <span class="ui-icon material-icons" data-theme-icon aria-hidden="true">dark_mode</span>
+          <span data-theme-label>Dark</span>
+        </button>
       </nav>
     </header>
     <main class="docs-shell">
@@ -220,9 +224,13 @@ if (uncategorizedComponents.length > 0) {
       const button = document.getElementById('theme-toggle');
       if (!button) return;
 
+      const icon = button.querySelector('[data-theme-icon]');
+      const label = button.querySelector('[data-theme-label]');
+
       const syncLabel = () => {
         const dark = root.getAttribute('data-theme') === 'dark';
-        button.textContent = dark ? '☀️ Light' : '🌙 Dark';
+        if (icon) icon.textContent = dark ? 'light_mode' : 'dark_mode';
+        if (label) label.textContent = dark ? 'Light' : 'Dark';
         button.setAttribute('aria-pressed', String(dark));
       };
 

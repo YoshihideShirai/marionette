@@ -48,6 +48,20 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>Affects both: flash write (<code>Context.AddFlash</code>) and flash clear.</li>
       </ul>
 
+      <h3><code>AddStylesheet(href string)</code></h3>
+      <ul>
+        <li>Adds a custom stylesheet link to the full-page HTML shell.</li>
+        <li>Empty/whitespace-only values are ignored.</li>
+        <li>Stylesheets are emitted after the built-in Tailwind/daisyUI assets.</li>
+      </ul>
+
+      <h3><code>AddStyle(css string)</code></h3>
+      <ul>
+        <li>Adds trusted inline CSS to the full-page HTML shell.</li>
+        <li>Empty/whitespace-only values are ignored.</li>
+        <li>Use for small app-level overrides or CSS variables.</li>
+      </ul>
+
       <h3><code>Handler() http.Handler</code></h3>
       <ul>
         <li>Builds and returns <code>*http.ServeMux</code> with all registered routes.</li>

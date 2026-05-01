@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 	"sync"
@@ -132,6 +133,8 @@ type App struct {
 	pages        map[string]Handler
 	actions      map[string]Handler
 	cookieSecure bool
+	stylesheets  []string
+	styles       []template.CSS
 }
 
 func New() *App {
@@ -140,6 +143,8 @@ func New() *App {
 		pages:        map[string]Handler{},
 		actions:      map[string]Handler{},
 		cookieSecure: false,
+		stylesheets:  []string{},
+		styles:       []template.CSS{},
 	}
 }
 
@@ -147,6 +152,28 @@ func (a *App) SetCookieSecure(secure bool) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.cookieSecure = secure
+}
+
+// AddStylesheet adds a stylesheet link to the full-page HTML shell.
+func (a *App) AddStylesheet(href string) {
+	href = strings.TrimSpace(href)
+	if href == "" {
+		return
+	}
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.stylesheets = append(a.stylesheets, href)
+}
+
+// AddStyle adds trusted inline CSS to the full-page HTML shell.
+func (a *App) AddStyle(css string) {
+	css = strings.TrimSpace(css)
+	if css == "" {
+		return
+	}
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.styles = append(a.styles, template.CSS(css))
 }
 
 func (a *App) Set(key string, value any) {
@@ -200,7 +227,7 @@ func (a *App) Handler() http.Handler {
 				return
 			}
 			ctx := a.newContext(w, r)
-			renderAndWritePage(w, localFn(ctx))
+			a.renderAndWritePage(w, localFn(ctx))
 		})
 	}
 	for path, fn := range a.actions {
@@ -289,18 +316,27 @@ func (a *App) handleMissingIndex(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "missing app.Page or app.Render registration for /", http.StatusInternalServerError)
 }
 
-func renderAndWritePage(w http.ResponseWriter, node frontend.Node) {
+func (a *App) renderAndWritePage(w http.ResponseWriter, node frontend.Node) {
 	rootHTML, err := node.Render()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	page, err := shell(rootHTML)
+	page, err := shellWithOptions(rootHTML, a.shellOptions())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	writeHTML(w, page)
+}
+
+func (a *App) shellOptions() shellOptions {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return shellOptions{
+		Stylesheets: append([]string(nil), a.stylesheets...),
+		Styles:      append([]template.CSS(nil), a.styles...),
+	}
 }
 
 func (a *App) Run(addr string) error {

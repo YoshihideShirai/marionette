@@ -14,6 +14,9 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
     <title>Marionette</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    {{range .Stylesheets}}<link href="{{.}}" rel="stylesheet" type="text/css" />
+    {{end}}{{range .Styles}}<style>{{.}}</style>
+    {{end}}
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script>
@@ -78,10 +81,25 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
   </body>
 </html>`))
 
+type shellOptions struct {
+	Stylesheets []string
+	Styles      []template.CSS
+}
+
 func shell(content template.HTML) (string, error) {
+	return shellWithOptions(content, shellOptions{})
+}
+
+func shellWithOptions(content template.HTML, options shellOptions) (string, error) {
 	view := struct {
-		Content template.HTML
-	}{Content: content}
+		Content     template.HTML
+		Stylesheets []string
+		Styles      []template.CSS
+	}{
+		Content:     content,
+		Stylesheets: options.Stylesheets,
+		Styles:      options.Styles,
+	}
 
 	var out bytes.Buffer
 	if err := shellTmpl.Execute(&out, view); err != nil {

@@ -44,6 +44,14 @@
       "description": "Single-line text and value input control"
     },
     {
+      "id": "file-upload",
+      "name": "FileUpload",
+      "group": "Components",
+      "example": "/marionette/examples/file-upload.html",
+      "template": "frontend/ui_impl.go",
+      "description": "File selection input helper for upload forms"
+    },
+    {
       "id": "select",
       "name": "Select",
       "group": "Components",

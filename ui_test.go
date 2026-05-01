@@ -123,6 +123,24 @@ func TestHiddenInputRenderEscapesValue(t *testing.T) {
 	}
 }
 
+
+func TestFileUploadRendersFileInput(t *testing.T) {
+	html, err := FileUpload("attachment", true).Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`name="attachment"`,
+		`type="file"`,
+		`required`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
 func TestElementRenderEscapesText(t *testing.T) {
 	html, err := Text(`<script>alert(1)</script>`).Render()
 	if err != nil {

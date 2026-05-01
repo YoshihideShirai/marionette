@@ -301,6 +301,7 @@ package exposes component APIs; use the `mh` import shown above for custom marku
   - rendered attrs include `hx-post`, `hx-target`, `hx-swap="outerHTML"`.
 - `(*form).Target(selector string) *form`
 - `Input(name, value string) Node`
+- `FileUpload(name string, required bool) Node`
 - `HiddenInput(name, value string) Node`
 - `Submit(label string) Node`
 - `Button(label string) *button`
@@ -381,6 +382,8 @@ Template-backed component constructors (`templates/components/*`).
   - uses `InputWithOptions` with defaults:
     - `Type: "text"`
     - `Placeholder: strings.TrimSpace(name)`.
+- `FileUpload(name string, required bool, props ...ComponentProps) Node`
+  - renders a file input via `InputWithOptions` with `Type: "file"`.
 - `InputWithOptions(name, value string, options InputOptions) Node`
   - blank `options.Type` defaults to `"text"`.
 - `Textarea(name, value string, options TextareaOptions) Node`

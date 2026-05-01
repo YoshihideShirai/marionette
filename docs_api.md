@@ -52,6 +52,12 @@ import (
   `WithAssetIndex(true)` only when directory browsing is intentional.
 - Asset routes are included in `Handler()` and `Run()`.
 
+### `Downloads(prefix string, fsys fs.FS, options ...AssetOption)`
+- Serves static files from `fsys` under `prefix` with
+  `Content-Disposition: attachment`.
+- Equivalent to `Assets(prefix, fsys, WithAssetDownload(), options...)`.
+- Uses the requested file basename as the attachment filename.
+
 ### `Asset(name string) string`
 - Builds an asset URL from the first registered asset prefix.
 - Example: after `app.Assets("/assets", ...)`, `app.Asset("hero.jpg")`
@@ -64,6 +70,7 @@ import (
 - `WithAssetImmutable()` adds `immutable` when asset caching is enabled.
 - `WithAssetIndex(enabled bool)` allows directory index responses from the
   underlying file server.
+- `WithAssetDownload()` serves matching files as attachment downloads.
 - `WithAssetContentTypes(types map[string]string)` sets `Content-Type` by
   extension before serving.
 
@@ -301,6 +308,16 @@ Template-backed component constructors (`templates/components/*`).
 ### Buttons / inputs / field wrappers
 - `Button(label string, props ComponentProps) Node`
 - `SubmitButton(label string, props ComponentProps) Node`
+- `Link(props LinkProps) Node`
+  - renders an anchor for internal, external, and download links.
+  - `Icon` renders an `aria-hidden` icon before the label.
+  - `External` defaults `target="_blank"` and `rel="noopener noreferrer"`.
+  - `Target: "_blank"` also defaults `rel="noopener noreferrer"`.
+  - `Download` emits `download`; `Filename` emits `download="<filename>"`.
+  - `Props.Disabled` renders an inert `href="#"` link with `aria-disabled`.
+- `ExternalLink(label, href string, props ComponentProps) Node`
+- `ExternalIconLink(icon, ariaLabel, href string, props ComponentProps) Node`
+- `DownloadLink(label, href, filename string, props ComponentProps) Node`
 - `Input(name, value string, props ComponentProps) Node`
   - uses `InputWithOptions` with defaults:
     - `Type: "text"`

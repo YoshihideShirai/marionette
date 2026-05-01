@@ -22,6 +22,7 @@ type AssetOptions struct {
 	MaxAge       time.Duration
 	Immutable    bool
 	Index        bool
+	Download     bool
 	ContentTypes map[string]string
 }
 
@@ -45,6 +46,13 @@ func WithAssetImmutable() AssetOption {
 func WithAssetIndex(enabled bool) AssetOption {
 	return func(options *AssetOptions) {
 		options.Index = enabled
+	}
+}
+
+// WithAssetDownload serves assets with Content-Disposition: attachment.
+func WithAssetDownload() AssetOption {
+	return func(options *AssetOptions) {
+		options.Download = true
 	}
 }
 
@@ -83,6 +91,14 @@ func (a *App) Assets(prefix string, fsys fs.FS, options ...AssetOption) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.assets = append(a.assets, route)
+}
+
+// Downloads serves files from fsys under prefix as attachment downloads.
+func (a *App) Downloads(prefix string, fsys fs.FS, options ...AssetOption) {
+	downloadOptions := make([]AssetOption, 0, len(options)+1)
+	downloadOptions = append(downloadOptions, WithAssetDownload())
+	downloadOptions = append(downloadOptions, options...)
+	a.Assets(prefix, fsys, downloadOptions...)
 }
 
 // Asset returns an application asset URL using the first registered asset prefix.
@@ -158,6 +174,11 @@ func (r assetRoute) handler() http.Handler {
 func (r assetRoute) setHeaders(w http.ResponseWriter, name string) {
 	if contentType := r.contentType(name); contentType != "" && w.Header().Get("Content-Type") == "" {
 		w.Header().Set("Content-Type", contentType)
+	}
+	if r.options.Download {
+		w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{
+			"filename": path.Base(name),
+		}))
 	}
 	if r.options.MaxAge > 0 {
 		value := fmt.Sprintf("public, max-age=%d", int(r.options.MaxAge.Seconds()))

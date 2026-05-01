@@ -22,6 +22,15 @@ func TestTemplateRenderingGolden(t *testing.T) {
 			node: Button("Save", ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"}),
 		},
 		{
+			name: "link",
+			node: Link(LinkProps{
+				Label:    "Open report",
+				Href:     "https://example.com/report?a=1&b=2",
+				External: true,
+				Props:    ComponentProps{Variant: "secondary", Size: "sm", Class: "tracking-wide"},
+			}),
+		},
+		{
 			name: "input",
 			node: InputWithOptions("start_date", "2030-01-01", InputOptions{
 				Type:        "date",

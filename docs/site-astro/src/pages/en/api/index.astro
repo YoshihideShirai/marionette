@@ -56,6 +56,13 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>Asset routes are included in <code>Handler()</code> and <code>Run()</code>.</li>
       </ul>
 
+      <h3><code>Downloads(prefix string, fsys fs.FS, options ...AssetOption)</code></h3>
+      <ul>
+        <li>Serves static files from <code>fsys</code> under <code>prefix</code> with <code>Content-Disposition: attachment</code>.</li>
+        <li>Equivalent to <code>Assets(prefix, fsys, WithAssetDownload(), options...)</code>.</li>
+        <li>Uses the requested file basename as the attachment filename.</li>
+      </ul>
+
       <h3><code>Asset(name string) string</code></h3>
       <ul>
         <li>Builds an asset URL from the first registered asset prefix.</li>
@@ -68,6 +75,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li><code>WithAssetCache(maxAge time.Duration)</code>: emits <code>Cache-Control: public, max-age=&lt;seconds&gt;</code>.</li>
         <li><code>WithAssetImmutable()</code>: adds <code>immutable</code> when asset caching is enabled.</li>
         <li><code>WithAssetIndex(enabled bool)</code>: allows directory index responses from the underlying file server.</li>
+        <li><code>WithAssetDownload()</code>: serves matching files as attachment downloads.</li>
         <li><code>WithAssetContentTypes(types map[string]string)</code>: sets <code>Content-Type</code> by extension before serving.</li>
       </ul>
 
@@ -228,6 +236,10 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       <ul>
         <li><code>Button(label string, props ComponentProps) Node</code></li>
         <li><code>SubmitButton(label string, props ComponentProps) Node</code></li>
+        <li><code>Link(props LinkProps) Node</code></li>
+        <li><code>ExternalLink(label, href string, props ComponentProps) Node</code></li>
+        <li><code>ExternalIconLink(icon, ariaLabel, href string, props ComponentProps) Node</code></li>
+        <li><code>DownloadLink(label, href, filename string, props ComponentProps) Node</code></li>
         <li><code>Input(name, value string, props ComponentProps) Node</code></li>
         <li><code>Textarea(name, value string, options TextareaOptions) Node</code></li>
         <li><code>Select(name string, options []SelectOption, props ComponentProps) Node</code></li>

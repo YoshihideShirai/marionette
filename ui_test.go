@@ -205,6 +205,73 @@ func TestTemplatePartialsRenderSharedProps(t *testing.T) {
 	}
 }
 
+func TestLinkRendersExpectedAttributes(t *testing.T) {
+	tests := []struct {
+		name    string
+		node    Node
+		want    []string
+		notWant []string
+	}{
+		{
+			name: "escapes label and href",
+			node: Link(LinkProps{Label: `Docs <now>`, Href: `/docs?team=a&role=admin`}),
+			want: []string{`class="link link-hover w-fit"`, `href="/docs?team=a&amp;role=admin"`, `<span>Docs &lt;now&gt;</span>`},
+		},
+		{
+			name: "external defaults target and rel",
+			node: ExternalLink("Docs", "https://example.com/docs", ComponentProps{}),
+			want: []string{`href="https://example.com/docs"`, `target="_blank"`, `rel="noopener noreferrer"`},
+		},
+		{
+			name:    "custom target and rel override defaults",
+			node:    Link(LinkProps{Label: "Docs", Href: "https://example.com", External: true, Target: "_self", Rel: "nofollow"}),
+			want:    []string{`target="_self"`, `rel="nofollow"`},
+			notWant: []string{`target="_blank"`, `noopener noreferrer`},
+		},
+		{
+			name: "blank target defaults safe rel",
+			node: Link(LinkProps{Label: "Docs", Href: "https://example.com", Target: "_blank"}),
+			want: []string{`target="_blank"`, `rel="noopener noreferrer"`},
+		},
+		{
+			name: "external icon link",
+			node: ExternalIconLink("↗", "Open docs", "https://example.com/docs", ComponentProps{Variant: "ghost", Size: "sm"}),
+			want: []string{`class="btn w-fit btn-ghost btn-sm btn-square"`, `href="https://example.com/docs"`, `target="_blank"`, `rel="noopener noreferrer"`, `aria-label="Open docs"`, `<span aria-hidden="true">↗</span>`},
+		},
+		{
+			name: "download filename implies download",
+			node: DownloadLink("CSV", "/assets/users.csv", "users report.csv", ComponentProps{Variant: "primary", Size: "sm"}),
+			want: []string{`class="btn w-fit btn-primary btn-sm"`, `href="/assets/users.csv"`, `download="users report.csv"`, `<span>CSV</span>`},
+		},
+		{
+			name:    "disabled link is inert",
+			node:    Link(LinkProps{Label: "Disabled", Href: "/danger", Props: ComponentProps{Disabled: true}}),
+			want:    []string{`href="#"`, `aria-disabled="true"`, `tabindex="-1"`, `pointer-events-none`, `cursor-not-allowed`, `opacity-50`},
+			notWant: []string{`href="/danger"`},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			html, err := tt.node.Render()
+			if err != nil {
+				t.Fatalf("render failed: %v", err)
+			}
+			got := string(html)
+			for _, want := range tt.want {
+				if !strings.Contains(got, want) {
+					t.Fatalf("expected %q in %q", want, got)
+				}
+			}
+			for _, notWant := range tt.notWant {
+				if strings.Contains(got, notWant) {
+					t.Fatalf("did not expect %q in %q", notWant, got)
+				}
+			}
+		})
+	}
+}
+
 func TestImageRequiresSrc(t *testing.T) {
 	if _, err := Image(ImageProps{}).Render(); err == nil {
 		t.Fatal("expected image without src to fail")

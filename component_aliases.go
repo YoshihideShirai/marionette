@@ -7,9 +7,7 @@ import (
 	dataframeimports "github.com/rocketlaunchr/dataframe-go/imports"
 )
 
-func ButtonComponent(label string, props ComponentProps) Node { return Button(label, props) }
 func SubmitButton(label string, props ComponentProps) Node    { return UISubmitButton(label, props) }
-func LinkComponent(props LinkProps) Node                      { return Link(props) }
 func InputWithOptions(name, value string, options InputOptions) Node {
 	return UIInputWithOptions(name, value, options)
 }
@@ -22,12 +20,9 @@ func Toast(props ToastProps) Node                                 { return UIToa
 func Alert(props AlertProps) Node                                 { return UIAlert(props) }
 func Skeleton(props SkeletonProps) Node                           { return UISkeleton(props) }
 func Progress(props ProgressProps) Node                           { return UIProgress(props) }
-func ProgressComponent(props ProgressProps) Node                  { return UIProgress(props) }
 func EmptyState(props EmptyStateProps) Node                       { return UIEmptyState(props) }
-func TableComponent(props TableProps) Node                        { return Table(props) }
 func Chart(props ChartProps) Node                                 { return UIChart(props) }
 func Image(props ImageProps) Node                                 { return UIImage(props) }
-func ImageComponent(props ImageProps) Node                        { return UIImage(props) }
 func DataFrameComponent(df *rdf.DataFrame, props TableProps) Node { return DataFrame(df, props) }
 func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	return UIDataFrameChart(df, props)
@@ -50,9 +45,6 @@ func Stack(props StackProps, children ...Node) Node     { return UIStack(props, 
 func Grid(props GridProps, children ...Node) Node       { return UIGrid(props, children...) }
 func Split(props SplitProps) Node                       { return UISplit(props) }
 func PageHeader(props PageHeaderProps) Node             { return UIPageHeader(props) }
-func ContainerComponent(props ContainerProps, children ...Node) Node {
-	return Container(props, children...)
-}
 func Region(props RegionProps, children ...Node) Node   { return UIRegion(props, children...) }
 func Box(props BoxProps, children ...Node) Node         { return UIBox(props, children...) }
 func AppShell(props AppShellProps) Node                 { return UIAppShell(props) }

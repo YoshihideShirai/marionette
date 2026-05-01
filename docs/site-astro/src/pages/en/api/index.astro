@@ -48,6 +48,29 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>Affects both: flash write (<code>Context.AddFlash</code>) and flash clear.</li>
       </ul>
 
+      <h3><code>Assets(prefix string, fsys fs.FS, options ...AssetOption)</code></h3>
+      <ul>
+        <li>Serves static files from <code>fsys</code> under <code>prefix</code>.</li>
+        <li>Use <code>os.DirFS("assets")</code> for local files or <code>embed.FS</code> plus <code>fs.Sub</code> for single-binary assets.</li>
+        <li>Directory index responses are disabled by default; pass <code>WithAssetIndex(true)</code> only when directory browsing is intentional.</li>
+        <li>Asset routes are included in <code>Handler()</code> and <code>Run()</code>.</li>
+      </ul>
+
+      <h3><code>Asset(name string) string</code></h3>
+      <ul>
+        <li>Builds an asset URL from the first registered asset prefix.</li>
+        <li><code>app.Asset("hero.jpg")</code> returns <code>"/assets/hero.jpg"</code> after <code>app.Assets("/assets", ...)</code>.</li>
+        <li>Absolute <code>http://</code>, <code>https://</code>, and <code>data:</code> URLs pass through unchanged.</li>
+      </ul>
+
+      <h3>Asset options</h3>
+      <ul>
+        <li><code>WithAssetCache(maxAge time.Duration)</code>: emits <code>Cache-Control: public, max-age=&lt;seconds&gt;</code>.</li>
+        <li><code>WithAssetImmutable()</code>: adds <code>immutable</code> when asset caching is enabled.</li>
+        <li><code>WithAssetIndex(enabled bool)</code>: allows directory index responses from the underlying file server.</li>
+        <li><code>WithAssetContentTypes(types map[string]string)</code>: sets <code>Content-Type</code> by extension before serving.</li>
+      </ul>
+
       <h3><code>AddStylesheet(href string)</code></h3>
       <ul>
         <li>Adds a custom stylesheet link to the full-page HTML shell.</li>
@@ -124,6 +147,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
       <h3><code>FormValue(name string) string</code></h3>
       <p>Returns form value from <code>Request.FormValue(name)</code>. Returns <code>""</code> when <code>Request</code> is <code>nil</code>.</p>
+
+      <h3><code>Asset(name string) string</code></h3>
+      <p>Builds an asset URL from the parent app. Use it inside handlers when images, stylesheets, or links should follow the registered app asset prefix.</p>
 
       <h3><code>Set(key string, value any)</code></h3>
       <p>Writes shared state. If context has parent app, write is synchronized via app mutex. If no app is attached, writes directly to <code>Context.State</code>.</p>

@@ -44,6 +44,29 @@ import (
   - flash write (`Context.AddFlash`)
   - flash clear (when flashes are consumed on next request).
 
+### `Assets(prefix string, fsys fs.FS, options ...AssetOption)`
+- Serves static files from `fsys` under `prefix`.
+- Use `os.DirFS("assets")` for local files or `embed.FS` plus `fs.Sub` for
+  single-binary assets.
+- Directory index responses are disabled by default; pass
+  `WithAssetIndex(true)` only when directory browsing is intentional.
+- Asset routes are included in `Handler()` and `Run()`.
+
+### `Asset(name string) string`
+- Builds an asset URL from the first registered asset prefix.
+- Example: after `app.Assets("/assets", ...)`, `app.Asset("hero.jpg")`
+  returns `"/assets/hero.jpg"`.
+- Absolute `http://`, `https://`, and `data:` URLs pass through unchanged.
+
+### Asset options
+- `WithAssetCache(maxAge time.Duration)` emits
+  `Cache-Control: public, max-age=<seconds>`.
+- `WithAssetImmutable()` adds `immutable` when asset caching is enabled.
+- `WithAssetIndex(enabled bool)` allows directory index responses from the
+  underlying file server.
+- `WithAssetContentTypes(types map[string]string)` sets `Content-Type` by
+  extension before serving.
+
 ### `AddStylesheet(href string)`
 - Adds a custom stylesheet link to the full-page HTML shell.
 - Empty/whitespace-only values are ignored.
@@ -127,6 +150,11 @@ import (
 ### `FormValue(name string) string`
 - Returns form value from `Request.FormValue(name)`.
 - Returns `""` when `Request` is `nil`.
+
+### `Asset(name string) string`
+- Builds an asset URL from the parent app.
+- Use inside handlers when images, stylesheets, or links should follow the
+  registered app asset prefix.
 
 ### `Set(key string, value any)`
 - Writes shared state.

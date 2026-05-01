@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const assetsCode = `package main
+
+import (
+    "os"
+    "time"
+
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func main() {
+    app := mb.New()
+
+    app.Assets("/assets", os.DirFS("assets"),
+        mb.WithAssetCache(24*time.Hour),
+    )
+    app.AddStylesheet(app.Asset("app.css"))
+
+    app.Page("/", func(ctx *mb.Context) mf.Node {
+        return mf.Container(mf.ContainerProps{
+            MaxWidth: "3xl",
+            Centered: true,
+        },
+            mf.Image(mf.ImageProps{
+                Src:         ctx.Asset("hero.jpg"),
+                Alt:         "Dashboard preview",
+                Width:       1200,
+                Height:      800,
+                AspectRatio: "video",
+                ObjectFit:   "cover",
+            }),
+        )
+    })
+
+    if err := app.Run("127.0.0.1:8080"); err != nil {
+        panic(err)
+    }
+}`;
+
+const embedCode = `package main
+
+import (
+    "embed"
+    "io/fs"
+    "time"
+
+    mb "github.com/YoshihideShirai/marionette/backend"
+)
+
+//go:embed assets
+var embeddedAssets embed.FS
+
+func main() {
+    app := mb.New()
+
+    assets, err := fs.Sub(embeddedAssets, "assets")
+    if err != nil {
+        panic(err)
+    }
+    app.Assets("/assets", assets,
+        mb.WithAssetCache(365*24*time.Hour),
+        mb.WithAssetImmutable(),
+    )
+
+    // Register pages and actions here.
+}`;
+---
+<BaseLayout title="静的アセットを配信する - Marionette" lang="ja" languageSwitcherPath="/marionette/en/tutorial/assets/">
+  <article class="training-doc">
+    <header>
+      <p class="eyebrow">Tutorial</p>
+      <h1>画像、CSS、JavaScriptを配信する</h1>
+      <p class="lead">
+        Marionetteにasset filesystemを登録し、ページから画像やカスタムフロントエンドファイルを参照します。
+      </p>
+    </header>
+
+    <section class="lesson-step" aria-labelledby="create-assets-ja">
+      <p class="step-label">Step 1</p>
+      <h2 id="create-assets-ja">assetsディレクトリを作る</h2>
+      <p>画像、stylesheet、ブラウザ側 JavaScript を置く <code>assets/</code> ディレクトリを作ります。</p>
+      <pre><code>mkdir assets
+touch assets/app.css
+touch assets/hero.jpg</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="register-assets-ja">
+      <p class="step-label">Step 2</p>
+      <h2 id="register-assets-ja">ディレクトリを登録する</h2>
+      <p><code>app.Assets</code> には任意の Go <code>fs.FS</code> を渡せます。ローカル開発では <code>os.DirFS("assets")</code> が最小構成です。</p>
+      <pre><code>{assetsCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="asset-urls-ja">
+      <p class="step-label">Step 3</p>
+      <h2 id="asset-urls-ja">asset URLを組み立てる</h2>
+      <p>アプリ全体の stylesheet や script には <code>app.Asset</code>、ハンドラ内では <code>ctx.Asset</code> を使います。</p>
+      <ul>
+        <li><code>app.Asset("app.css")</code> は <code>/assets/app.css</code> になります</li>
+        <li><code>ctx.Asset("hero.jpg")</code> は <code>/assets/hero.jpg</code> になります</li>
+        <li><code>https://</code> の絶対 URL はそのまま返します。</li>
+      </ul>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="embed-assets-ja">
+      <p class="step-label">Step 4</p>
+      <h2 id="embed-assets-ja">配布用にassetを埋め込む</h2>
+      <p>単一バイナリとして配布したい場合は、Go の <code>embed.FS</code> と <code>fs.Sub</code> を使い、得られた filesystem を <code>app.Assets</code> に渡します。</p>
+      <pre><code>{embedCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="learned-assets-ja">
+      <p class="step-label">Step 5</p>
+      <h2 id="learned-assets-ja">ここで習得したこと</h2>
+      <ul>
+        <li><code>app.Assets</code> で静的ファイルを配信する</li>
+        <li><code>app.Asset</code> と <code>ctx.Asset</code> でURLを組み立てる</li>
+        <li><code>embed.FS</code> で配布しやすいバイナリにする</li>
+      </ul>
+      <p>次は <a href="/marionette/ja/tutorial/backend-frontend/">バックエンドとフロントエンドの通信</a> を学びます。</p>
+    </section>
+  </article>
+</BaseLayout>

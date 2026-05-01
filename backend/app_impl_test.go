@@ -1,10 +1,13 @@
 package backend
 
 import (
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"testing/fstest"
+	"time"
 
 	frontend "github.com/YoshihideShirai/marionette/frontend"
 )
@@ -86,5 +89,75 @@ func TestPageIncludesCustomScripts(t *testing.T) {
 	}
 	if inlineIndex < scriptIndex {
 		t.Fatalf("expected inline JavaScript after external scripts, got %q", body)
+	}
+}
+
+func TestAssetsServeFilesAndApplyHeaders(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"app.css": {Data: []byte("body { color: red; }")},
+	}, WithAssetCache(time.Hour), WithAssetImmutable())
+
+	req := httptest.NewRequest(http.MethodGet, "/assets/app.css", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	if got := strings.TrimSpace(rr.Body.String()); got != "body { color: red; }" {
+		t.Fatalf("expected asset body, got %q", got)
+	}
+	if got := rr.Header().Get("Cache-Control"); got != "public, max-age=3600, immutable" {
+		t.Fatalf("expected cache header, got %q", got)
+	}
+	if got := rr.Header().Get("Content-Type"); !strings.HasPrefix(got, "text/css") {
+		t.Fatalf("expected css content type, got %q", got)
+	}
+}
+
+func TestAssetsBlockDirectoryIndexByDefault(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"icons":           {Mode: 0o755 | fs.ModeDir},
+		"icons/check.svg": {Data: []byte("<svg></svg>")},
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/assets/icons/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusNotFound {
+		t.Fatalf("expected 404 for directory index, got %d", rr.Code)
+	}
+}
+
+func TestAssetBuildsURLFromFirstRegisteredAssetPrefix(t *testing.T) {
+	app := New()
+	app.Assets("assets", fstest.MapFS{})
+
+	if got := app.Asset("images/hero image.png"); got != "/assets/images/hero%20image.png" {
+		t.Fatalf("expected escaped asset URL, got %q", got)
+	}
+	if got := app.Asset("https://cdn.example.com/app.css"); got != "https://cdn.example.com/app.css" {
+		t.Fatalf("expected absolute asset URL to pass through, got %q", got)
+	}
+}
+
+func TestAssetsServeEscapedAssetPaths(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"images/hero image.png": {Data: []byte("png")},
+	})
+
+	req := httptest.NewRequest(http.MethodGet, app.Asset("images/hero image.png"), nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	if got := rr.Body.String(); got != "png" {
+		t.Fatalf("expected escaped asset body, got %q", got)
 	}
 }

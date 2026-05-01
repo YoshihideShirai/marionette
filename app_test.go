@@ -480,3 +480,69 @@ func TestFlashCookieSecureCanBeEnabled(t *testing.T) {
 		t.Fatalf("expected clear flash cookie secure to be true when enabled")
 	}
 }
+
+func TestSessionSetAndReadFromCookie(t *testing.T) {
+	app := New()
+	app.Action("set-session", func(ctx *Context) Node {
+		ctx.SetSession("user_id", "u_123")
+		return Div(Text("ok"))
+	})
+	app.Page("/profile", func(ctx *Context) Node {
+		return Div(Text(ctx.Session("user_id")))
+	})
+
+	setReq := httptest.NewRequest(http.MethodPost, "/set-session", strings.NewReader(""))
+	setReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	setRes := httptest.NewRecorder()
+	app.Handler().ServeHTTP(setRes, setReq)
+
+	if setRes.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", setRes.Code)
+	}
+	cookie := setRes.Result().Cookies()[0]
+	if cookie.Name != sessionCookieName {
+		t.Fatalf("expected %q cookie to be set", sessionCookieName)
+	}
+
+	readReq := httptest.NewRequest(http.MethodGet, "/profile", nil)
+	readReq.AddCookie(cookie)
+	readRes := httptest.NewRecorder()
+	app.Handler().ServeHTTP(readRes, readReq)
+
+	if !strings.Contains(readRes.Body.String(), "u_123") {
+		t.Fatalf("expected session value in response, got %q", readRes.Body.String())
+	}
+}
+
+func TestSessionCanBeCleared(t *testing.T) {
+	app := New()
+	app.Action("logout", func(ctx *Context) Node {
+		ctx.ClearSession()
+		return Div(Text("bye"))
+	})
+
+	encoded, err := encodeSession(map[string]string{"user_id": "u_123"})
+	if err != nil {
+		t.Fatalf("unexpected encode error: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/logout", strings.NewReader(""))
+	req.AddCookie(&http.Cookie{Name: sessionCookieName, Value: encoded})
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	res := httptest.NewRecorder()
+	app.Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", res.Code)
+	}
+	cookies := res.Result().Cookies()
+	if len(cookies) == 0 || cookies[0].Name != sessionCookieName {
+		t.Fatalf("expected %q cookie to be set", sessionCookieName)
+	}
+	outReq := httptest.NewRequest(http.MethodGet, "/", nil)
+	outReq.AddCookie(cookies[0])
+	decoded := decodeSession(outReq)
+	if len(decoded) != 0 {
+		t.Fatalf("expected cleared session, got %v", decoded)
+	}
+}

@@ -32,4 +32,15 @@ func TestPageIncludesCustomStyles(t *testing.T) {
 	if !strings.Contains(body, `<style>#marionette-root`) {
 		t.Fatalf("expected custom inline CSS, got %q", body)
 	}
+	defaultIndex := strings.Index(body, "--mrn-page-max-width")
+	customIndex := strings.Index(body, "#marionette-root {\n\t\t\tmax-width: 48rem;")
+	if defaultIndex == -1 {
+		t.Fatalf("expected default Marionette CSS in response, got %q", body)
+	}
+	if customIndex == -1 {
+		t.Fatalf("expected custom CSS in response, got %q", body)
+	}
+	if customIndex < defaultIndex {
+		t.Fatalf("expected custom CSS after default CSS, got %q", body)
+	}
 }

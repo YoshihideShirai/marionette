@@ -7,8 +7,8 @@ import (
 	dataframeimports "github.com/rocketlaunchr/dataframe-go/imports"
 )
 
-func SubmitButton(label string, props ComponentProps) Node    { return UISubmitButton(label, props) }
-func ThemeToggleButton(props ComponentProps) Node             { return UIThemeToggleButton(props) }
+func SubmitButton(label string, props ComponentProps) Node { return UISubmitButton(label, props) }
+func ThemeToggleButton(props ComponentProps) Node          { return UIThemeToggleButton(props) }
 func InputWithOptions(name, value string, options InputOptions) Node {
 	return UIInputWithOptions(name, value, options)
 }
@@ -25,9 +25,6 @@ func EmptyState(props EmptyStateProps) Node                       { return UIEmp
 func Chart(props ChartProps) Node                                 { return UIChart(props) }
 func Image(props ImageProps) Node                                 { return UIImage(props) }
 func DataFrameComponent(df *rdf.DataFrame, props TableProps) Node { return DataFrame(df, props) }
-func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
-	return UIDataFrameChart(df, props)
-}
 func DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
 	return UIDataFrameFromCSV(r, props, opts...)
 }

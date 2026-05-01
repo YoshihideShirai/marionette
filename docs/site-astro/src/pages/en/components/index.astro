@@ -6,8 +6,6 @@ const cards = catalog.components;
 const groups = ['Components', 'Layout', 'Data', 'Chart'] as const;
 const selectedGroup = Astro.url.searchParams.get('group');
 const initialGroup = groups.includes(selectedGroup as (typeof groups)[number]) ? selectedGroup : 'All';
-const visibleCards =
-  initialGroup === 'All' ? cards : cards.filter((component) => component.group === initialGroup);
 ---
 <BaseLayout title="Components Gallery">
   <h1>Components Gallery</h1>
@@ -19,7 +17,7 @@ const visibleCards =
       const active = group === initialGroup;
 
       return (
-        <a href={href} class:list={{ chip: true, active }} aria-current={active ? 'page' : undefined}>
+        <a href={href} class:list={{ chip: true, active }} aria-current={active ? 'page' : undefined} data-group-filter={group}>
           {group}
         </a>
       );
@@ -37,11 +35,12 @@ const visibleCards =
   </label>
 
   <div class="grid" data-component-grid>
-    {visibleCards.map((component) => {
+    {cards.map((component) => {
       return (
         <article
           class="card"
           data-component-card
+          data-group={component.group}
           data-name={component.name.toLowerCase()}
           data-description={component.description.toLowerCase()}
         >
@@ -64,25 +63,67 @@ const visibleCards =
     const input = document.querySelector('#component-search');
     const cards = Array.from(document.querySelectorAll('[data-component-card]'));
     const emptyState = document.querySelector('[data-empty-state]');
+    const groupFilters = Array.from(document.querySelectorAll('[data-group-filter]'));
+    const validGroups = new Set(groupFilters.map((filter) => filter.dataset.groupFilter));
+
+    const getSelectedGroup = () => {
+      const group = new URLSearchParams(window.location.search).get('group') || 'All';
+      return validGroups.has(group) ? group : 'All';
+    };
+
+    const setActiveGroup = (selectedGroup) => {
+      groupFilters.forEach((filter) => {
+        const active = filter.dataset.groupFilter === selectedGroup;
+        filter.classList.toggle('active', active);
+        if (active) {
+          filter.setAttribute('aria-current', 'page');
+        } else {
+          filter.removeAttribute('aria-current');
+        }
+      });
+    };
 
     const applySearch = () => {
       const keyword = (input?.value ?? '').trim().toLowerCase();
+      const selectedGroup = getSelectedGroup();
       let visibleCount = 0;
 
       cards.forEach((card) => {
         const name = card.dataset.name ?? '';
         const description = card.dataset.description ?? '';
-        const isMatch = !keyword || name.includes(keyword) || description.includes(keyword);
+        const group = card.dataset.group ?? '';
+        const groupMatches = selectedGroup === 'All' || group === selectedGroup;
+        const keywordMatches = !keyword || name.includes(keyword) || description.includes(keyword);
+        const isMatch = groupMatches && keywordMatches;
         card.hidden = !isMatch;
         if (isMatch) visibleCount += 1;
       });
+
+      setActiveGroup(selectedGroup);
 
       if (emptyState) {
         emptyState.hidden = visibleCount > 0;
       }
     };
 
+    groupFilters.forEach((filter) => {
+      filter.addEventListener('click', (event) => {
+        event.preventDefault();
+        const group = filter.dataset.groupFilter || 'All';
+        const url = new URL(window.location.href);
+        if (group === 'All') {
+          url.searchParams.delete('group');
+        } else {
+          url.searchParams.set('group', group);
+        }
+        window.history.pushState({}, '', url);
+        applySearch();
+      });
+    });
+
+    window.addEventListener('popstate', applySearch);
     input?.addEventListener('input', applySearch);
+    applySearch();
   </script>
 
   <style>
@@ -94,7 +135,7 @@ const visibleCards =
     }
 
     .chip {
-      border: 1px solid var(--sl-color-gray-4);
+      border: 1px solid var(--line);
       border-radius: 999px;
       padding: 0.35rem 0.8rem;
       text-decoration: none;
@@ -103,8 +144,9 @@ const visibleCards =
     }
 
     .chip.active {
-      border-color: var(--sl-color-accent-high);
-      background: var(--sl-color-accent-low);
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent);
     }
 
     .search-field {
@@ -118,7 +160,20 @@ const visibleCards =
       width: 100%;
       padding: 0.55rem 0.7rem;
       border-radius: 0.5rem;
-      border: 1px solid var(--sl-color-gray-4);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--fg);
+      font: inherit;
+    }
+
+    .search-field input::placeholder {
+      color: var(--muted);
+    }
+
+    .search-field input:focus {
+      border-color: var(--accent);
+      outline: 2px solid color-mix(in srgb, var(--accent) 24%, transparent);
+      outline-offset: 1px;
     }
 
     .card-header {
@@ -129,9 +184,9 @@ const visibleCards =
     }
 
     .badge {
-      border: 1px solid var(--sl-color-orange-high);
-      background: var(--sl-color-orange-low);
-      color: var(--sl-color-orange-high);
+      border: 1px solid color-mix(in srgb, #f97316 70%, var(--line));
+      background: color-mix(in srgb, #f97316 12%, transparent);
+      color: color-mix(in srgb, #f97316 85%, var(--fg));
       border-radius: 999px;
       padding: 0.2rem 0.55rem;
       font-size: 0.75rem;
@@ -140,7 +195,7 @@ const visibleCards =
 
     .empty {
       margin-top: 1rem;
-      color: var(--sl-color-gray-2);
+      color: var(--muted);
     }
   </style>
 </BaseLayout>

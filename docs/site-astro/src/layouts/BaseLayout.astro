@@ -74,6 +74,10 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
     </header>
     <main class="docs-shell">
       <aside class="sidebar" aria-label={isJa ? 'ドキュメントナビゲーション' : 'Documentation navigation'}>
+        <a class="sidebar-search-link" href={`${langRoot}/search/`}>
+          <span>{isJa ? '検索' : 'Search'}</span>
+          <kbd>Ctrl K</kbd>
+        </a>
         <p class="sidebar-title">{isJa ? 'コンテンツ' : 'Contents'}</p>
         <nav>
           <ul class="sidebar-top-list">

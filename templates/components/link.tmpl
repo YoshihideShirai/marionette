@@ -1,3 +1,3 @@
 {{define "components/link" -}}
-<a class="{{.Class}}" href="{{.Href}}"{{if .Target}} target="{{.Target}}"{{end}}{{if .Rel}} rel="{{.Rel}}"{{end}}{{if .Download}}{{if .Filename}} download="{{.Filename}}"{{else}} download{{end}}{{end}}{{if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}{{if .Disabled}} aria-disabled="true" tabindex="-1"{{end}}>{{if .Icon}}<span aria-hidden="true">{{.Icon}}</span>{{end}}{{if .Label}}<span>{{.Label}}</span>{{end}}</a>
+<a class="{{.Class}}" href="{{.Href}}"{{if .Target}} target="{{.Target}}"{{end}}{{if .Rel}} rel="{{.Rel}}"{{end}}{{if .Download}}{{if .Filename}} download="{{.Filename}}"{{else}} download{{end}}{{end}}{{if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}{{if .Disabled}} aria-disabled="true" tabindex="-1"{{end}}>{{if .Icon}}<span class="ui-icon material-icons" aria-hidden="true">{{.Icon}}</span>{{end}}{{if .Label}}<span>{{.Label}}</span>{{end}}</a>
 {{- end}}

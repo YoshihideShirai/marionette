@@ -64,7 +64,7 @@ func TestLinkRendersExpectedAttributes(t *testing.T) {
 		{
 			name: "external icon link",
 			node: ExternalIconLink("↗", "Open docs", "https://example.com/docs", ComponentProps{Variant: "ghost", Size: "sm"}),
-			want: []string{`class="btn w-fit btn-ghost btn-sm btn-square"`, `href="https://example.com/docs"`, `target="_blank"`, `rel="noopener noreferrer"`, `aria-label="Open docs"`, `<span aria-hidden="true">↗</span>`},
+			want: []string{`class="btn w-fit btn-ghost btn-sm btn-square"`, `href="https://example.com/docs"`, `target="_blank"`, `rel="noopener noreferrer"`, `aria-label="Open docs"`, `<span class="ui-icon material-icons" aria-hidden="true">↗</span>`},
 		},
 		{
 			name: "download filename implies download",

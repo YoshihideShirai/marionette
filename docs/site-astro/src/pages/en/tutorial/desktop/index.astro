@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const sharedAppCode = `// internal/app/app.go (shared by web and desktop)
+package app
+
+import (
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func New() *mb.App {
+    app := mb.New()
+    app.Page("/", func(ctx *mb.Context) mf.Node {
+        return mf.TextComponent(mf.TextProps{Text: "Hello World", Size: "lg"})
+    })
+    return app
+}`;
+
+const webMainCode = `// cmd/marionette-hello-web/main.go
+package main
+
+import "marionette-hello/internal/app"
+
+func main() {
+    a := app.New()
+    if err := a.Run("127.0.0.1:8080"); err != nil {
+        panic(err)
+    }
+}`;
+
+const desktopMainCode = `// cmd/marionette-hello-desktop/main.go
+package main
+
+import (
+    "log"
+
+    "marionette-hello/internal/app"
+    "github.com/YoshihideShirai/marionette/desktop"
+)
+
+func main() {
+    a := app.New()
+    if err := desktop.Run(a, desktop.Options{Title: "Marionette Desktop", Width: 1200, Height: 800}); err != nil {
+        log.Fatal(err)
+    }
+}`;
+---
+<BaseLayout title="Run as Desktop App (Optional) - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/desktop/">
+  <article class="training-doc">
+    <header>
+      <p class="eyebrow">Tutorial (Optional)</p>
+      <h1>Run as Desktop App (Optional)</h1>
+      <p class="lead">This step is optional. Continue only if you want to run your app as a native desktop WebView.</p>
+    </header>
+
+    <section class="lesson-step">
+      <p class="step-label">Optional Step 1</p>
+      <h2>Extract shared app logic</h2>
+      <pre><code>{sharedAppCode}</code></pre>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Optional Step 2</p>
+      <h2>Create web and desktop entrypoints under cmd/</h2>
+      <pre><code>{webMainCode}</code></pre>
+      <pre><code>{desktopMainCode}</code></pre>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Optional Step 3</p>
+      <h2>Switch targets by command</h2>
+      <pre><code>go run ./cmd/marionette-hello-web
+go run -tags marionette_desktop ./cmd/marionette-hello-desktop</code></pre>
+      <p>On Linux, install GTK 3 and WebKitGTK development packages before running the desktop command.</p>
+    </section>
+  </article>
+</BaseLayout>

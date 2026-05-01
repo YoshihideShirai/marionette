@@ -218,6 +218,28 @@ Flash lifecycle on next request:
 - Valid entries only: known levels and non-empty messages.
 - If flashes were present, cookie is automatically cleared in response.
 
+### Session APIs
+
+#### `SetSession(key, value string)`
+- Trims `key`; empty key means no-op.
+- Stores/updates a session entry in context memory and writes cookie (`marionette_session`).
+- Cookie behavior:
+  - `Path=/`
+  - `HttpOnly=true`
+  - `SameSite=Lax`
+  - `Secure` follows `App.SetCookieSecure` (default `false`).
+
+#### `Session(key string) string`
+- Reads the session value by key.
+- Returns empty string when key is missing.
+
+#### `ClearSession()`
+- Replaces the session map with an empty map and writes it to cookie (`marionette_session`).
+
+Session lifecycle on request:
+- Session is decoded from cookie into `Context.session` in `newContext`.
+- Decode failure falls back to empty session map (no panic / no status change).
+
 ---
 
 ## 4. Low-level HTML (`frontend/html`)

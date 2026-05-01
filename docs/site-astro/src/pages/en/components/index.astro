@@ -97,6 +97,7 @@ if (uncategorized.length > 0) {
                 data-component-card
                 data-name={component.name.toLowerCase()}
                 data-description={component.description.toLowerCase()}
+                data-component-id={component.id}
               >
                 <header class="card-header">
                   <h3><a href={`./${component.id}/`}>{component.name}</a></h3>
@@ -269,6 +270,10 @@ if (uncategorized.length > 0) {
       background: var(--surface-muted);
     }
 
+
+    .component-card[data-component-id="navigation"] iframe {
+      min-height: 28rem;
+    }
     .badge {
       border: 1px solid color-mix(in srgb, #f97316 70%, var(--line));
       background: color-mix(in srgb, #f97316 12%, transparent);

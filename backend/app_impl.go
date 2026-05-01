@@ -152,6 +152,7 @@ type App struct {
 	state        map[string]any
 	pages        map[string]pageRoute
 	actions      map[string]Handler
+	assets       []assetRoute
 	cookieSecure bool
 	stylesheets  []string
 	styles       []template.CSS
@@ -164,6 +165,7 @@ func New() *App {
 		state:        map[string]any{},
 		pages:        map[string]pageRoute{},
 		actions:      map[string]Handler{},
+		assets:       []assetRoute{},
 		cookieSecure: false,
 		stylesheets:  []string{},
 		styles:       []template.CSS{},
@@ -260,6 +262,7 @@ func (a *App) Handle(name string, fn Handler) {
 
 func (a *App) Handler() http.Handler {
 	mux := http.NewServeMux()
+	a.registerAssetRoutes(mux)
 	for path, route := range a.pages {
 		localPath := path
 		localRoute := route

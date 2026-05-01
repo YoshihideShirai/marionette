@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const assetsCode = `package main
+
+import (
+    "os"
+    "time"
+
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func main() {
+    app := mb.New()
+
+    app.Assets("/assets", os.DirFS("assets"),
+        mb.WithAssetCache(24*time.Hour),
+    )
+    app.AddStylesheet(app.Asset("app.css"))
+
+    app.Page("/", func(ctx *mb.Context) mf.Node {
+        return mf.Container(mf.ContainerProps{
+            MaxWidth: "3xl",
+            Centered: true,
+        },
+            mf.Image(mf.ImageProps{
+                Src:         ctx.Asset("hero.jpg"),
+                Alt:         "Dashboard preview",
+                Width:       1200,
+                Height:      800,
+                AspectRatio: "video",
+                ObjectFit:   "cover",
+            }),
+        )
+    })
+
+    if err := app.Run("127.0.0.1:8080"); err != nil {
+        panic(err)
+    }
+}`;
+
+const embedCode = `package main
+
+import (
+    "embed"
+    "io/fs"
+    "time"
+
+    mb "github.com/YoshihideShirai/marionette/backend"
+)
+
+//go:embed assets
+var embeddedAssets embed.FS
+
+func main() {
+    app := mb.New()
+
+    assets, err := fs.Sub(embeddedAssets, "assets")
+    if err != nil {
+        panic(err)
+    }
+    app.Assets("/assets", assets,
+        mb.WithAssetCache(365*24*time.Hour),
+        mb.WithAssetImmutable(),
+    )
+
+    // Register pages and actions here.
+}`;
+---
+<BaseLayout title="Serve Static Assets - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/assets/">
+  <article class="training-doc">
+    <header>
+      <p class="eyebrow">Tutorial</p>
+      <h1>Serve Images, CSS, and JavaScript</h1>
+      <p class="lead">
+        Register an asset filesystem with Marionette, then reference images and custom frontend files from your pages.
+      </p>
+    </header>
+
+    <section class="lesson-step" aria-labelledby="create-assets-en">
+      <p class="step-label">Step 1</p>
+      <h2 id="create-assets-en">Create an Assets Directory</h2>
+      <p>Create an <code>assets/</code> directory for images, stylesheets, and browser-side JavaScript.</p>
+      <pre><code>mkdir assets
+touch assets/app.css
+touch assets/hero.jpg</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="register-assets-en">
+      <p class="step-label">Step 2</p>
+      <h2 id="register-assets-en">Register the Directory</h2>
+      <p>Use <code>app.Assets</code> with any Go <code>fs.FS</code>. For local development, <code>os.DirFS("assets")</code> is the smallest setup.</p>
+      <pre><code>{assetsCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="asset-urls-en">
+      <p class="step-label">Step 3</p>
+      <h2 id="asset-urls-en">Build Asset URLs</h2>
+      <p>Use <code>app.Asset</code> when configuring app-level stylesheets or scripts, and <code>ctx.Asset</code> inside handlers.</p>
+      <ul>
+        <li><code>app.Asset("app.css")</code> becomes <code>/assets/app.css</code></li>
+        <li><code>ctx.Asset("hero.jpg")</code> becomes <code>/assets/hero.jpg</code></li>
+        <li>Absolute <code>https://</code> URLs pass through unchanged.</li>
+      </ul>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="embed-assets-en">
+      <p class="step-label">Step 4</p>
+      <h2 id="embed-assets-en">Embed Assets for Deployment</h2>
+      <p>For single-binary deployment, use Go <code>embed.FS</code> with <code>fs.Sub</code> and pass the resulting filesystem to <code>app.Assets</code>.</p>
+      <pre><code>{embedCode}</code></pre>
+    </section>
+
+    <section class="lesson-step" aria-labelledby="learned-assets-en">
+      <p class="step-label">Step 5</p>
+      <h2 id="learned-assets-en">What You Learned</h2>
+      <ul>
+        <li>Serve static files with <code>app.Assets</code></li>
+        <li>Build URLs with <code>app.Asset</code> and <code>ctx.Asset</code></li>
+        <li>Use <code>embed.FS</code> for deployable binaries</li>
+      </ul>
+      <p>Next, learn <a href="/marionette/en/tutorial/backend-frontend/">how the backend communicates with the frontend</a>.</p>
+    </section>
+  </article>
+</BaseLayout>

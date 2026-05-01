@@ -48,6 +48,29 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>フラッシュ書き込み（<code>Context.AddFlash</code>）とフラッシュクリアの両方に影響します。</li>
       </ul>
 
+      <h3><code>Assets(prefix string, fsys fs.FS, options ...AssetOption)</code></h3>
+      <ul>
+        <li><code>fsys</code> の静的ファイルを <code>prefix</code> 配下で配信します。</li>
+        <li>ローカルファイルには <code>os.DirFS("assets")</code>、単一バイナリ化には <code>embed.FS</code> と <code>fs.Sub</code> を使えます。</li>
+        <li>ディレクトリ index レスポンスはデフォルトで無効です。意図してディレクトリ閲覧を許可する場合のみ <code>WithAssetIndex(true)</code> を渡します。</li>
+        <li>asset ルートは <code>Handler()</code> と <code>Run()</code> に含まれます。</li>
+      </ul>
+
+      <h3><code>Asset(name string) string</code></h3>
+      <ul>
+        <li>最初に登録した asset prefix から asset URL を組み立てます。</li>
+        <li><code>app.Assets("/assets", ...)</code> の後、<code>app.Asset("hero.jpg")</code> は <code>"/assets/hero.jpg"</code> を返します。</li>
+        <li><code>http://</code>, <code>https://</code>, <code>data:</code> の絶対 URL はそのまま返します。</li>
+      </ul>
+
+      <h3>Asset オプション</h3>
+      <ul>
+        <li><code>WithAssetCache(maxAge time.Duration)</code>: <code>Cache-Control: public, max-age=&lt;seconds&gt;</code> を出力します。</li>
+        <li><code>WithAssetImmutable()</code>: asset cache が有効な場合に <code>immutable</code> を追加します。</li>
+        <li><code>WithAssetIndex(enabled bool)</code>: underlying file server のディレクトリ index レスポンスを許可します。</li>
+        <li><code>WithAssetContentTypes(types map[string]string)</code>: 拡張子ごとに <code>Content-Type</code> を設定します。</li>
+      </ul>
+
       <h3><code>AddStylesheet(href string)</code></h3>
       <ul>
         <li>全ページ HTML シェルにカスタム stylesheet リンクを追加します。</li>
@@ -124,6 +147,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
       <h3><code>FormValue(name string) string</code></h3>
       <p><code>Request.FormValue(name)</code> からフォーム値を返します。<code>Request</code> が <code>nil</code> の場合は <code>""</code> を返します。</p>
+
+      <h3><code>Asset(name string) string</code></h3>
+      <p>親 app から asset URL を組み立てます。ハンドラ内で画像、stylesheet、リンクを登録済み asset prefix に追従させたい場合に使います。</p>
 
       <h3><code>Set(key string, value any)</code></h3>
       <p>共有状態に書き込みます。コンテキストに親 app がある場合、書き込みは app ミューテックス経由で同期されます。アタッチされた app がない場合、<code>Context.State</code> に直接書き込みます。</p>

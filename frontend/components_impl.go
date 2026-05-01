@@ -155,6 +155,7 @@ type TableProps struct {
 	Rows             []TableComponentRow
 	EmptyTitle       string
 	EmptyDescription string
+	View             DataFrameViewProps
 }
 
 type ChartType string

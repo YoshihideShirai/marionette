@@ -51,6 +51,22 @@ func TestPageRendersFullHTML(t *testing.T) {
 	}
 }
 
+func TestPageCanSetHTMLTitle(t *testing.T) {
+	app := New()
+	app.Page("/", func(ctx *Context) Node {
+		return DivID("app", Text("Dashboard"))
+	}, WithTitle(`Users & Teams`))
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `<title>Users &amp; Teams</title>`) {
+		t.Fatalf("expected escaped custom title, got %q", body)
+	}
+}
+
 func TestPageIncludesCustomStyles(t *testing.T) {
 	app := New()
 	app.AddStylesheet("/assets/app.css")

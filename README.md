@@ -101,6 +101,13 @@ app.AddStyle(`
 handlers are POST-only htmx endpoints and return HTML fragments for partial
 swaps. The older `Render` and `Handle` APIs still work for small examples.
 
+Pages can set their HTML document title with `WithTitle`:
+
+```go
+app.Page("/users", renderUsersPage, mb.WithTitle("Users"))
+app.Render(renderHomePage, mb.WithTitle("Dashboard"))
+```
+
 ### Custom JavaScript
 
 Apps can add external JavaScript libraries and trusted inline JavaScript to the

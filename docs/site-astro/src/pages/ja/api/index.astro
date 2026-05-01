@@ -84,11 +84,13 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li><code>/</code> が登録されていない場合: <code>GET /</code> は <code>500 Internal Server Error</code> を返します。</li>
       </ul>
 
-      <h3><code>Page(path string, fn Handler)</code></h3>
+      <h3><code>Page(path string, fn Handler, options ...PageOption)</code></h3>
       <ul>
         <li><code>GET</code> の全ページハンドラを登録します。</li>
         <li>パス正規化: <code>""</code> → <code>"/"</code>、先頭スラッシュなし → 先頭スラッシュを追加。</li>
         <li>レンダリング モード: ハンドラ <code>Node</code> を Marionette シェル HTML でラップします。</li>
+        <li><code>WithTitle(title string)</code> で HTML の <code>&lt;title&gt;</code> を設定できます。</li>
+        <li>タイトル未指定、空文字、空白のみの場合は既定値 <code>Marionette</code> を使用します。</li>
       </ul>
 
       <h3><code>Action(name string, fn Handler)</code></h3>
@@ -99,8 +101,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>レンダリング モード: ハンドラ <code>Node</code> をフラグメント HTML として返します。</li>
       </ul>
 
-      <h3><code>Render(fn Handler)</code></h3>
-      <p>ルート ページ登録の互換性エイリアス。<code>Page("/", fn)</code> と同等。</p>
+      <h3><code>Render(fn Handler, options ...PageOption)</code></h3>
+      <p>ルート ページ登録の互換性エイリアス。<code>Page("/", fn, options...)</code> と同等。</p>
 
       <h3><code>Handle(name string, fn Handler)</code></h3>
       <p>アクション登録の互換性エイリアス。<code>Action(name, fn)</code> と同等。</p>

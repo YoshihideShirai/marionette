@@ -84,11 +84,13 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>If <code>/</code> is not registered: <code>GET /</code> returns <code>500 Internal Server Error</code>.</li>
       </ul>
 
-      <h3><code>Page(path string, fn Handler)</code></h3>
+      <h3><code>Page(path string, fn Handler, options ...PageOption)</code></h3>
       <ul>
         <li>Registers full-page handler for <code>GET</code>.</li>
         <li>Path normalization: <code>""</code> → <code>"/"</code>, no leading slash → leading slash is added.</li>
         <li>Render mode: handler <code>Node</code> is wrapped in Marionette shell HTML.</li>
+        <li><code>WithTitle(title string)</code> sets the HTML <code>&lt;title&gt;</code>.</li>
+        <li>When omitted, empty, or whitespace-only, the default title is <code>Marionette</code>.</li>
       </ul>
 
       <h3><code>Action(name string, fn Handler)</code></h3>
@@ -99,8 +101,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         <li>Render mode: handler <code>Node</code> is returned as fragment HTML.</li>
       </ul>
 
-      <h3><code>Render(fn Handler)</code></h3>
-      <p>Compatibility alias for root page registration. Equivalent to <code>Page("/", fn)</code>.</p>
+      <h3><code>Render(fn Handler, options ...PageOption)</code></h3>
+      <p>Compatibility alias for root page registration. Equivalent to <code>Page("/", fn, options...)</code>.</p>
 
       <h3><code>Handle(name string, fn Handler)</code></h3>
       <p>Compatibility alias for action registration. Equivalent to <code>Action(name, fn)</code>.</p>

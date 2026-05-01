@@ -15,15 +15,23 @@ const langRoot = isJa ? '/marionette/ja' : '/marionette/en';
 const topItems = isJa
   ? [
       { label: 'ホーム', href: `${langRoot}/` },
-      { label: 'チュートリアル', href: `${langRoot}/tutorial/` },
       { label: 'API Docs', href: `${langRoot}/api/` },
       { label: '検索', href: `${langRoot}/search/` },
     ]
   : [
       { label: 'Home', href: `${langRoot}/` },
-      { label: 'Tutorial', href: `${langRoot}/tutorial/` },
       { label: 'API Docs', href: `${langRoot}/api/` },
       { label: 'Search', href: `${langRoot}/search/` },
+    ];
+
+const tutorialItems = isJa
+  ? [
+      { label: '最初のアプリを作る', href: `${langRoot}/tutorial/` },
+      { label: 'バックエンドとフロントエンドの通信', href: `${langRoot}/tutorial/backend-frontend/` },
+    ]
+  : [
+      { label: 'Build your first app', href: `${langRoot}/tutorial/` },
+      { label: 'Backend and frontend communication', href: `${langRoot}/tutorial/backend-frontend/` },
     ];
 
 const groupedComponents = catalog.components.reduce<Record<string, typeof catalog.components>>((acc, component) => {
@@ -93,6 +101,20 @@ const sortedGroups = Object.keys(groupedComponents).sort((a, b) => {
               );
             })}
           </ul>
+
+          <details class="sidebar-group" open={currentPath.includes('/tutorial')}>
+            <summary>{isJa ? 'チュートリアル' : 'Tutorial'}</summary>
+            <ul class="sidebar-nested-list">
+              {tutorialItems.map((item) => {
+                const active = currentPath === item.href;
+                return (
+                  <li>
+                    <a href={item.href} class:list={{ active }} aria-current={active ? 'page' : undefined}>{item.label}</a>
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
 
           <details class="sidebar-group" open={currentPath.includes('/components')}>
             <summary>{isJa ? 'コンポーネント' : 'Components'}</summary>

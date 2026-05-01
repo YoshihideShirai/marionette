@@ -215,6 +215,7 @@ button:focus-visible {
 }
 
 .sidebar-top-list,
+.sidebar-nested-list,
 .sidebar-component-list,
 .sidebar-component-list ul {
   list-style: none;
@@ -226,6 +227,19 @@ button:focus-visible {
   display: grid;
   gap: 0.1rem;
   margin-bottom: var(--space-4);
+}
+
+.sidebar-nested-list {
+  display: grid;
+  gap: 0.1rem;
+  margin-top: var(--space-2);
+  margin-left: var(--space-2);
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--line);
+}
+
+.sidebar-nested-list a {
+  padding-left: var(--space-3);
 }
 
 .sidebar-group,

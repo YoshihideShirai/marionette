@@ -127,7 +127,7 @@ func dashboardBody(ctx *mb.Context) mf.Node {
 
 	nodes := []mf.Node{
 		mf.PageHeader(mf.PageHeaderProps{Title: "Revenue Ops Console", Description: "Prioritize opportunities and monitor risk from a single screen"}),
-		mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "self-end"}}, mf.SubmitButton("Sign out", mf.ComponentProps{Variant: "ghost"})),
+		mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "self-end"}}, formIconButton("sign-out-alt", "Sign out", "Sign out")),
 	}
 	if flash != "" {
 		nodes = append(nodes, mf.Alert(mf.AlertProps{Title: "Live update", Description: flash, Props: mf.ComponentProps{Variant: "success", Class: "ops-live"}}))
@@ -136,7 +136,7 @@ func dashboardBody(ctx *mb.Context) mf.Node {
 		mf.Alert(mf.AlertProps{Title: "Morning briefing", Description: "1 high-risk deal needs legal review before renewal.", Props: mf.ComponentProps{Variant: "warning"}}),
 		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "ops-toolbar flex flex-wrap items-end gap-3"}},
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Deal status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
-			mf.SubmitButton("Apply filter", mf.ComponentProps{}),
+			formIconButton("settings-sliders", "Apply", "Apply filter"),
 		),
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders)),
 	)
@@ -155,7 +155,7 @@ func loginPage(authError string) mf.Node {
 		mf.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
 			mf.FormRow(mf.FormRowProps{ID: "email", Label: "Email", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "email", Name: "email", Type: "email", Placeholder: "ops@example.com", Required: true})}),
 			mf.FormRow(mf.FormRowProps{ID: "password", Label: "Password", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "password", Name: "password", Type: "password", Placeholder: "••••••••", Required: true})}),
-			mf.SubmitButton("Sign in", mf.ComponentProps{}),
+			formIconButton("enter", "Sign in", "Sign in"),
 		),
 	)
 	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-12"}}, mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
@@ -241,7 +241,7 @@ func ordersTable(orders []order) mf.Node {
 		}
 		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#app-body", Swap: "outerHTML"},
 			mf.TextField(mf.TextFieldProps{ID: "id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}),
-			mf.SubmitButton(label, mf.ComponentProps{Size: "sm"}),
+			formIconButton("bolt", label, label),
 		)
 		rows = append(rows, mf.TableRowValues(o.ID, o.Customer, o.Plan, "$"+formatNumber(o.Amount), o.Risk, o.Status, action))
 	}
@@ -290,4 +290,8 @@ func formatNumber(v int) string {
 		}
 	}
 	return string(out)
+}
+
+func formIconButton(iconName, label, ariaLabel string) mf.Node {
+	return mf.Raw(fmt.Sprintf(`<button type="submit" class="btn btn-primary inline-flex items-center gap-2" aria-label="%s"><i class="fi fi-%s" aria-hidden="true"></i><span>%s</span></button>`, ariaLabel, iconName, label))
 }

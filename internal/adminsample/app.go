@@ -1,12 +1,17 @@
 package adminsample
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"strings"
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
 )
+
+//go:embed assets/*
+var embeddedAssets embed.FS
 
 type order struct {
 	ID       string
@@ -34,23 +39,11 @@ func BuildApp() *mb.App {
 	app.Set("authError", "")
 	app.Set("flash", "")
 
-	app.AddStyle(`
-		body { background: #030712; color: #e5e7eb; }
-		.ops-shell { min-height: 100vh; padding: 1.5rem; background: radial-gradient(circle at 20% 20%, #1d4ed8 0%, #0b1020 38%, #020617 100%); }
-		.ops-shell .ui-container { max-width: 84rem; }
-		.ops-shell .ui-page-header h1 { letter-spacing: 0.04em; text-transform: uppercase; color: #bfdbfe; }
-		.ops-shell .ui-page-header p { color: #93c5fd; }
-		.ops-shell .ui-alert { border: 1px solid #334155; background: #0f172a; color: #e2e8f0; border-radius: 0.85rem; }
-		.ops-shell .ui-form-row label span { color: #cbd5e1; }
-		.ops-shell .ui-table table { border-collapse: separate; border-spacing: 0; }
-		.ops-shell .ui-table thead th { background: #0b1224; color: #93c5fd; border-bottom: 1px solid #334155; }
-		.ops-shell .ui-table tbody td { background: #020617; border-bottom: 1px solid #1e293b; }
-		.ops-shell .ui-table tbody tr:hover td { background: #111827; }
-		.ops-shell .btn { border-radius: 9999px; font-weight: 700; }
-		.ops-card { border: 1px solid #334155; border-radius: 1rem; background: linear-gradient(145deg, #0b1224 0%, #111827 100%); box-shadow: 0 18px 45px rgba(2, 6, 23, 0.55); }
-		.ops-live { border-left: 6px solid #22d3ee; box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.35) inset; }
-		.ops-toolbar { background: rgba(15, 23, 42, 0.85); border: 1px solid #334155; border-radius: 1rem; padding: 1rem; box-shadow: 0 12px 28px rgba(2, 6, 23, 0.45); }
-	`)
+	assetsFS, err := fs.Sub(embeddedAssets, "assets")
+	if err == nil {
+		app.Assets("/assets", assetsFS)
+		app.AddStylesheet(app.Asset("admin-sample.css"))
+	}
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {

@@ -28,6 +28,7 @@ func Badge(props BadgeProps) Node                                 { return UIBad
 func Actions(props ActionsProps, children ...Node) Node           { return UIActions(props, children...) }
 func Divider(props DividerProps) Node                             { return UIDivider(props) }
 func TextComponent(props TextProps) Node                          { return UIText(props) }
+func FontIcon(props FontIconProps) Node                           { return UIFontIcon(props) }
 func HiddenField(name, value string) Node                         { return UIHiddenField(name, value) }
 func Stack(props StackProps, children ...Node) Node               { return UIStack(props, children...) }
 func Grid(props GridProps, children ...Node) Node                 { return UIGrid(props, children...) }

@@ -26,6 +26,15 @@ var seedOrders = []order{
 	{ID: "ORD-1047", Customer: "Kite Retail", Plan: "Starter", Amount: 18000, Risk: "Low", Status: "Active"},
 }
 
+func customStyles() mf.Node {
+	return mf.Raw(`<style>
+		.ops-shell { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; }
+		.ops-card { border: 1px solid rgba(99,102,241,0.22); box-shadow: 0 8px 24px rgba(15,23,42,0.08); }
+		.ops-live { border-left: 4px solid #22c55e; }
+		.ops-toolbar { background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); border: 1px solid rgba(148,163,184,0.28); border-radius: 0.75rem; padding: 0.75rem; }
+	</style>`)
+}
+
 func BuildApp() *mb.App {
 	app := mb.New()
 	app.Set("orders", seedOrders)
@@ -103,7 +112,8 @@ func BuildApp() *mb.App {
 }
 
 func dashboardFromState(ctx *mb.Context) mf.Node {
-	return mf.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true},
+	return mf.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-8"}},
+		customStyles(),
 		mf.Region(mf.RegionProps{ID: "app-body"}, dashboardBody(ctx)),
 	)
 }
@@ -118,11 +128,11 @@ func dashboardBody(ctx *mb.Context) mf.Node {
 		mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "self-end"}}, mf.SubmitButton("Sign out", mf.ComponentProps{Variant: "ghost"})),
 	}
 	if flash != "" {
-		nodes = append(nodes, mf.Alert(mf.AlertProps{Title: "Live update", Description: flash, Props: mf.ComponentProps{Variant: "success"}}))
+		nodes = append(nodes, mf.Alert(mf.AlertProps{Title: "Live update", Description: flash, Props: mf.ComponentProps{Variant: "success", Class: "ops-live"}}))
 	}
 	nodes = append(nodes,
 		mf.Alert(mf.AlertProps{Title: "Morning briefing", Description: "1 high-risk deal needs legal review before renewal.", Props: mf.ComponentProps{Variant: "warning"}}),
-		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "flex flex-wrap items-end gap-3"}},
+		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "ops-toolbar flex flex-wrap items-end gap-3"}},
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Deal status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
 			mf.SubmitButton("Apply filter", mf.ComponentProps{}),
 		),
@@ -146,7 +156,7 @@ func loginPage(authError string) mf.Node {
 			mf.SubmitButton("Sign in", mf.ComponentProps{}),
 		),
 	)
-	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true}, mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
+	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-12"}}, customStyles(), mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
 }
 
 func summaryCards(orders []order) mf.Node {
@@ -166,7 +176,7 @@ func summaryCards(orders []order) mf.Node {
 }
 
 func statCard(title, value, desc string) mf.Node {
-	return mf.Card(mf.CardProps{}, mf.Stack(mf.StackProps{Direction: "column", Gap: "1"}, mf.Text(title), mf.H3(mf.Text(value)), mf.Text(desc)))
+	return mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}}, mf.Stack(mf.StackProps{Direction: "column", Gap: "1"}, mf.Text(title), mf.H3(mf.Text(value)), mf.Text(desc)))
 }
 
 func pipelineHealth(orders []order) mf.Node {

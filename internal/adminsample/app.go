@@ -137,7 +137,7 @@ func dashboardBody(ctx *mb.Context) mf.Node {
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Deal status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
 			mf.SubmitButton("Apply filter", mf.ComponentProps{}),
 		),
-		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), ordersTable(orders)),
+		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders)),
 	)
 	return mf.Stack(mf.StackProps{Direction: "column", Gap: "6"}, nodes...)
 }
@@ -192,6 +192,34 @@ func pipelineHealth(orders []order) mf.Node {
 		value = float64(active) / float64(len(orders)) * 100
 	}
 	return mf.Section(mf.SectionProps{Title: "Pipeline health"}, mf.Progress(mf.ProgressProps{Label: "Active ratio", Value: value, Max: 100, ShowValue: true}))
+}
+
+func pipelineChart(orders []order) mf.Node {
+	statusOrder := []string{"Active", "Review", "Blocked"}
+	counts := map[string]float64{"Active": 0, "Review": 0, "Blocked": 0}
+	for _, o := range orders {
+		counts[o.Status]++
+	}
+	values := make([]float64, 0, len(statusOrder))
+	for _, status := range statusOrder {
+		values = append(values, counts[status])
+	}
+	return mf.Section(mf.SectionProps{Title: "Deal distribution"},
+		mf.Chart(mf.ChartProps{
+			Type:      mf.ChartTypeBar,
+			Title:     "Deals by status",
+			Labels:    statusOrder,
+			Height:    260,
+			AriaLabel: "Bar chart showing deal counts by status",
+			Datasets: []mf.ChartDataset{{
+				Label:           "Deals",
+				Data:            values,
+				BackgroundColor: "rgba(56, 189, 248, 0.55)",
+				BorderColor:     "rgba(14, 165, 233, 1)",
+			}},
+			Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true, YAxisLabel: "Count"},
+		}),
+	)
 }
 
 func ordersTable(orders []order) mf.Node {

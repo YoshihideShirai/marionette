@@ -38,6 +38,7 @@ func BuildApp() *mb.App {
 	app.Set("loggedIn", false)
 	app.Set("authError", "")
 	app.Set("flash", "")
+	app.Set("currentPage", "overview")
 
 	assetsFS, err := fs.Sub(embeddedAssets, "assets")
 	if err == nil {
@@ -50,7 +51,24 @@ func BuildApp() *mb.App {
 		if !ctx.Get("loggedIn").(bool) {
 			return loginPage(ctx.Get("authError").(string))
 		}
-		return dashboardFromState(ctx)
+		ctx.Set("currentPage", "overview")
+		return dashboardFromState(ctx, "overview")
+	}, mb.WithTitle("Revenue Ops Console"))
+
+	app.Page("/pipeline", func(ctx *mb.Context) mf.Node {
+		if !ctx.Get("loggedIn").(bool) {
+			return loginPage(ctx.Get("authError").(string))
+		}
+		ctx.Set("currentPage", "pipeline")
+		return dashboardFromState(ctx, "pipeline")
+	}, mb.WithTitle("Pipeline - Revenue Ops Console"))
+
+	app.Page("/playbooks", func(ctx *mb.Context) mf.Node {
+		if !ctx.Get("loggedIn").(bool) {
+			return loginPage(ctx.Get("authError").(string))
+		}
+		ctx.Set("currentPage", "playbooks")
+		return dashboardFromState(ctx, "playbooks")
 	}, mb.WithTitle("Revenue Ops Console"))
 
 	app.Action("auth/login", func(ctx *mb.Context) mf.Node {
@@ -60,7 +78,7 @@ func BuildApp() *mb.App {
 			ctx.Set("loggedIn", true)
 			ctx.Set("authError", "")
 			ctx.Set("flash", "Welcome back. Live controls are ready.")
-			return dashboardFromState(ctx)
+			return dashboardFromState(ctx, "overview")
 		}
 		ctx.Set("loggedIn", false)
 		ctx.Set("authError", "Invalid credentials. Try ops@example.com / marionette")
@@ -84,7 +102,7 @@ func BuildApp() *mb.App {
 		}
 		ctx.Set("selectedStatus", status)
 		ctx.Set("flash", fmt.Sprintf("Filter applied: %s", status))
-		return dashboardBody(ctx)
+		return dashboardBody(ctx, ctx.Get("currentPage").(string))
 	})
 
 	app.Action("orders/toggle-status", func(ctx *mb.Context) mf.Node {
@@ -108,19 +126,26 @@ func BuildApp() *mb.App {
 			break
 		}
 		ctx.Set("orders", orders)
-		return dashboardBody(ctx)
+		return dashboardBody(ctx, ctx.Get("currentPage").(string))
 	})
 
 	return app
 }
 
-func dashboardFromState(ctx *mb.Context) mf.Node {
+func dashboardFromState(ctx *mb.Context, currentPage string) mf.Node {
 	return mf.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-8"}},
-		mf.Region(mf.RegionProps{ID: "app-body"}, dashboardBody(ctx)),
+		mf.Region(mf.RegionProps{ID: "app-body"},
+			mf.Split(mf.SplitProps{
+				Aside:      sidebar(currentPage),
+				Main:       dashboardBody(ctx, currentPage),
+				AsideWidth: "w-full md:w-72",
+				Gap:        "6",
+			}),
+		),
 	)
 }
 
-func dashboardBody(ctx *mb.Context) mf.Node {
+func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 	selectedStatus := ctx.Get("selectedStatus").(string)
 	orders := filteredOrders(ctx.Get("orders").([]order), selectedStatus)
 	flash := ctx.Get("flash").(string)
@@ -138,7 +163,7 @@ func dashboardBody(ctx *mb.Context) mf.Node {
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Deal status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
 			formIconButton("tune", "Apply", "Apply filter"),
 		),
-		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders)),
+		pageContent(currentPage, orders),
 	)
 	return mf.Stack(mf.StackProps{Direction: "column", Gap: "6"}, nodes...)
 }
@@ -175,6 +200,50 @@ func summaryCards(orders []order) mf.Node {
 		statCard("monitoring", "Pipeline value", fmt.Sprintf("$%s", formatNumber(total)), "Total projected revenue"),
 		statCard("warning", "High-risk deals", fmt.Sprintf("%d", highRisk), "Needs escalation"),
 	)
+}
+
+func pageContent(currentPage string, orders []order) mf.Node {
+	switch currentPage {
+	case "pipeline":
+		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+			mf.PageHeader(mf.PageHeaderProps{Title: "Pipeline Drilldown", Description: "Track conversion pressure and risk concentration by status."}),
+			pipelineChart(orders),
+			ordersTable(orders),
+		)
+	case "playbooks":
+		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+			mf.PageHeader(mf.PageHeaderProps{Title: "Ops Playbooks", Description: "Suggested actions for this week's pipeline signals."}),
+			mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}},
+				mf.Stack(mf.StackProps{Direction: "column", Gap: "2"},
+					mf.Text("1. Escalate all blocked enterprise deals within 24h."),
+					mf.Text("2. Ask CSMs to attach renewal risk notes for review deals."),
+					mf.Text("3. Confirm procurement contacts for deals over $75k ARR."),
+				),
+			),
+			ordersTable(orders),
+		)
+	default:
+		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders))
+	}
+}
+
+func sidebar(currentPage string) mf.Node {
+	return mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}},
+		mf.Stack(mf.StackProps{Direction: "column", Gap: "3"},
+			mf.Text("Revenue Ops"),
+			navLink("Overview", "/", currentPage == "overview"),
+			navLink("Pipeline", "/pipeline", currentPage == "pipeline"),
+			navLink("Playbooks", "/playbooks", currentPage == "playbooks"),
+		),
+	)
+}
+
+func navLink(label, href string, active bool) mf.Node {
+	className := "btn btn-ghost justify-start"
+	if active {
+		className = "btn btn-primary justify-start"
+	}
+	return mf.Link(mf.LinkProps{Label: label, Href: href, Props: mf.ComponentProps{Class: className}})
 }
 
 func statCard(iconName, title, value, desc string) mf.Node {

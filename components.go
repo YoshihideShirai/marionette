@@ -197,15 +197,15 @@ type ChartOptions struct {
 }
 
 type ChartProps struct {
-	Type        ChartType
-	Title       string
-	Description string
-	Labels      []string
-	Datasets    []ChartDataset
-	Options     ChartOptions
-	AriaLabel   string
-	Height      int
-	Props       ComponentProps
+	Type            ChartType
+	Title           string
+	Description     string
+	Labels          []string
+	Datasets        []ChartDataset
+	Options         ChartOptions
+	AriaLabel       string
+	Height          int
+	Props           ComponentProps
 	QueryStateName  string
 	QueryStateLabel string
 }
@@ -313,6 +313,13 @@ type TextProps struct {
 	Weight string
 	Tone   string
 	Props  ComponentProps
+}
+
+type FontIconProps struct {
+	Name       string
+	AriaLabel  string
+	Decorative bool
+	Props      ComponentProps
 }
 
 type StackProps struct {
@@ -894,29 +901,29 @@ func UIChart(props ChartProps) Node {
 	return templateNode{
 		name: "components/chart",
 		data: struct {
-			Class        string
-			Title        string
-			Description  string
-			AriaLabel    string
-			Height       int
-			Config       template.JS
-			Labels       []string
-			Datasets     []ChartDataset
-			Rows         []chartFallbackRow
-			FallbackText string
+			Class           string
+			Title           string
+			Description     string
+			AriaLabel       string
+			Height          int
+			Config          template.JS
+			Labels          []string
+			Datasets        []ChartDataset
+			Rows            []chartFallbackRow
+			FallbackText    string
 			QueryStateName  string
 			QueryStateLabel string
 		}{
-			Class:        chartClass(props.Props),
-			Title:        strings.TrimSpace(props.Title),
-			Description:  strings.TrimSpace(props.Description),
-			AriaLabel:    ariaLabel,
-			Height:       height,
-			Config:       template.JS(config),
-			Labels:       props.Labels,
-			Datasets:     props.Datasets,
-			Rows:         chartFallbackRows(props),
-			FallbackText: chartFallbackText(props),
+			Class:           chartClass(props.Props),
+			Title:           strings.TrimSpace(props.Title),
+			Description:     strings.TrimSpace(props.Description),
+			AriaLabel:       ariaLabel,
+			Height:          height,
+			Config:          template.JS(config),
+			Labels:          props.Labels,
+			Datasets:        props.Datasets,
+			Rows:            chartFallbackRows(props),
+			FallbackText:    chartFallbackText(props),
 			QueryStateName:  strings.TrimSpace(props.QueryStateName),
 			QueryStateLabel: strings.TrimSpace(props.QueryStateLabel),
 		},
@@ -1244,6 +1251,22 @@ func UIDivider(props DividerProps) Node {
 
 func UIText(props TextProps) Node {
 	return element{Tag: "span", Attrs: map[string]string{"class": textClass(props)}, Text: strings.TrimSpace(props.Text)}
+}
+
+func UIFontIcon(props FontIconProps) Node {
+	name := strings.TrimSpace(props.Name)
+	if name == "" {
+		return renderErrorNode{err: fmt.Errorf("font icon name is required")}
+	}
+	className := joinClass("fi fi-"+name, props.Props.Class)
+	attrs := map[string]string{"class": className}
+	if strings.TrimSpace(props.AriaLabel) != "" {
+		attrs["aria-label"] = strings.TrimSpace(props.AriaLabel)
+		attrs["role"] = "img"
+	} else if props.Decorative {
+		attrs["aria-hidden"] = "true"
+	}
+	return element{Tag: "i", Attrs: attrs}
 }
 
 func UIHiddenField(name, value string) Node {

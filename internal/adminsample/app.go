@@ -44,6 +44,7 @@ func BuildApp() *mb.App {
 		app.Assets("/assets", assetsFS)
 		app.AddStylesheet(app.Asset("admin-sample.css"))
 	}
+	app.AddStylesheet("https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css")
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
@@ -170,14 +171,23 @@ func summaryCards(orders []order) mf.Node {
 		}
 	}
 	return mf.Grid(mf.GridProps{Columns: "md:grid-cols-3", Gap: "4"},
-		statCard("Visible deals", fmt.Sprintf("%d", len(orders)), "Deals after filters"),
-		statCard("Pipeline value", fmt.Sprintf("$%s", formatNumber(total)), "Total projected revenue"),
-		statCard("High-risk deals", fmt.Sprintf("%d", highRisk), "Needs escalation"),
+		statCard("briefcase", "Visible deals", fmt.Sprintf("%d", len(orders)), "Deals after filters"),
+		statCard("chart-histogram", "Pipeline value", fmt.Sprintf("$%s", formatNumber(total)), "Total projected revenue"),
+		statCard("triangle-warning", "High-risk deals", fmt.Sprintf("%d", highRisk), "Needs escalation"),
 	)
 }
 
-func statCard(title, value, desc string) mf.Node {
-	return mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}}, mf.Stack(mf.StackProps{Direction: "column", Gap: "1"}, mf.Text(title), mf.H3(mf.Text(value)), mf.Text(desc)))
+func statCard(iconName, title, value, desc string) mf.Node {
+	return mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}},
+		mf.Stack(mf.StackProps{Direction: "column", Gap: "1"},
+			mf.Stack(mf.StackProps{Direction: "row", Gap: "2", Align: "center"},
+				mf.FontIcon(mf.FontIconProps{Name: iconName, Decorative: true}),
+				mf.Text(title),
+			),
+			mf.H3(mf.Text(value)),
+			mf.Text(desc),
+		),
+	)
 }
 
 func pipelineHealth(orders []order) mf.Node {

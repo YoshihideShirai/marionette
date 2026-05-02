@@ -141,3 +141,15 @@ func Split(props frontend.SplitProps) frontend.Node {
 func Container(props frontend.ContainerProps, children ...frontend.Node) frontend.Node {
 	return frontend.Container(props, children...)
 }
+
+func ThemeToggleButton(props frontend.ComponentProps) frontend.Node {
+	return frontend.UIThemeToggleButton(props)
+}
+
+func Text(props frontend.TextProps) frontend.Node {
+	return frontend.UIText(props)
+}
+
+func FontIcon(props frontend.FontIconProps) frontend.Node {
+	return frontend.UIFontIcon(props)
+}

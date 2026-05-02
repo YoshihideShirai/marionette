@@ -17,3 +17,31 @@ func Card(title, description string, actions frontend.Node, children []frontend.
 func Input(name, value string, props frontend.ComponentProps) frontend.Node {
 	return frontend.Input(name, value, props)
 }
+
+func Toast(title, description string, props frontend.ComponentProps) frontend.Node {
+	return frontend.UIToast(frontend.ToastProps{Title: title, Description: description, Props: props})
+}
+
+func Modal(props frontend.ModalProps) frontend.Node {
+	return frontend.UIModal(props)
+}
+
+func Select(name string, options []frontend.SelectOption, props frontend.ComponentProps) frontend.Node {
+	return frontend.UISelect(name, options, props)
+}
+
+func Tabs(props frontend.TabsProps) frontend.Node {
+	return frontend.UITabs(props)
+}
+
+func Badge(props frontend.BadgeProps) frontend.Node {
+	return frontend.UIBadge(props)
+}
+
+func Skeleton(rows int, props frontend.ComponentProps) frontend.Node {
+	return frontend.UISkeleton(frontend.SkeletonProps{Rows: rows, Props: props})
+}
+
+func Progress(value, max float64, label string, props frontend.ComponentProps) frontend.Node {
+	return frontend.UIProgress(frontend.ProgressProps{Value: value, Max: max, Label: label, Props: props})
+}

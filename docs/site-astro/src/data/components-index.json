@@ -397,6 +397,23 @@
       "description": "Inline span node helper and props variant for text fragments.",
       "template": "frontend/ui_impl.go",
       "example": "/marionette/examples/span.html"
+    },
+    {
+      "id": "markdown",
+      "name": "Markdown",
+      "group": "Components",
+      "description": "Render Markdown content as sanitized HTML output.",
+      "golden": "testdata/golden/markdown.golden.html",
+      "template": "templates/components/markdown.html",
+      "example": "/marionette/examples/markdown.html"
+    },
+    {
+      "id": "font-icon",
+      "name": "FontIcon",
+      "group": "Components",
+      "description": "Font icon helper for Material Icons or UIcons/Flaticon classes.",
+      "template": "components.go",
+      "example": "/marionette/examples/font-icon.html"
     }
   ]
 }

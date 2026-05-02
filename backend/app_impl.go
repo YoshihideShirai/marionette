@@ -204,10 +204,7 @@ type App struct {
 	actions      map[string]Handler
 	assets       []assetRoute
 	cookieSecure bool
-	stylesheets  []string
-	styles       []template.CSS
-	scripts      []string
-	javascripts  []template.JS
+	shellAssets  frontend.ShellAssets
 }
 
 func New() *App {
@@ -217,11 +214,34 @@ func New() *App {
 		actions:      map[string]Handler{},
 		assets:       []assetRoute{},
 		cookieSecure: false,
-		stylesheets:  []string{},
-		styles:       []template.CSS{},
-		scripts:      []string{},
-		javascripts:  []template.JS{},
+		shellAssets:  frontend.ShellAssets{},
 	}
+}
+
+// UseStyleTemplate replaces framework stylesheet/script imports.
+// Call AddStylesheet/AddScript after this if you want extra imports.
+func (a *App) UseStyleTemplate(tpl frontend.StyleTemplate) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.shellAssets.UseStyleTemplate(tpl)
+}
+
+// UseStyleTemplateByName applies a built-in style template preset.
+func (a *App) UseStyleTemplateByName(name string) error {
+	tpl, ok := frontend.StyleTemplateByName(strings.TrimSpace(name))
+	if !ok {
+		return fmt.Errorf("unknown style template: %s", name)
+	}
+	a.UseStyleTemplate(tpl)
+	return nil
+}
+
+func (a *App) UseTailAdminTemplate() {
+	a.UseStyleTemplate(frontend.TailAdminTemplate)
+}
+
+func (a *App) UseTailwindCSSTemplate() {
+	a.UseStyleTemplate(frontend.TailwindCSSTemplate)
 }
 
 func (a *App) SetCookieSecure(secure bool) {
@@ -238,7 +258,7 @@ func (a *App) AddStylesheet(href string) {
 	}
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.stylesheets = append(a.stylesheets, href)
+	a.shellAssets.AddStylesheet(href)
 }
 
 // AddStyle adds trusted inline CSS to the full-page HTML shell.
@@ -249,7 +269,7 @@ func (a *App) AddStyle(css string) {
 	}
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.styles = append(a.styles, template.CSS(css))
+	a.shellAssets.AddStyle(template.CSS(css))
 }
 
 // AddScript adds an external JavaScript file to the full-page HTML shell.
@@ -260,7 +280,7 @@ func (a *App) AddScript(src string) {
 	}
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.scripts = append(a.scripts, src)
+	a.shellAssets.AddScript(src)
 }
 
 // AddJavaScript adds trusted inline JavaScript to the full-page HTML shell.
@@ -271,7 +291,7 @@ func (a *App) AddJavaScript(js string) {
 	}
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.javascripts = append(a.javascripts, template.JS(js))
+	a.shellAssets.AddJavaScript(template.JS(js))
 }
 
 func (a *App) Set(key string, value any) {
@@ -434,11 +454,13 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	return shellOptions{
-		Title:       pageOptions.Title,
-		Stylesheets: append([]string(nil), a.stylesheets...),
-		Styles:      append([]template.CSS(nil), a.styles...),
-		Scripts:     append([]string(nil), a.scripts...),
-		JavaScripts: append([]template.JS(nil), a.javascripts...),
+		Title:                pageOptions.Title,
+		FrameworkStylesheets: append([]string(nil), a.shellAssets.FrameworkStylesheets...),
+		FrameworkScripts:     append([]string(nil), a.shellAssets.FrameworkScripts...),
+		Stylesheets:          append([]string(nil), a.shellAssets.Stylesheets...),
+		Styles:               append([]template.CSS(nil), a.shellAssets.Styles...),
+		Scripts:              append([]string(nil), a.shellAssets.Scripts...),
+		JavaScripts:          append([]template.JS(nil), a.shellAssets.JavaScripts...),
 	}
 }
 

@@ -1,5 +1,7 @@
 package frontend
 
+import daisyuipresets "github.com/YoshihideShirai/marionette/frontend/daisyui/presets"
+
 type StyleTemplate struct {
 	Name                 string
 	FrameworkStylesheets []string
@@ -7,13 +9,9 @@ type StyleTemplate struct {
 }
 
 var DaisyUITemplate = StyleTemplate{
-	Name: "daisyui",
-	FrameworkStylesheets: []string{
-		"https://cdn.jsdelivr.net/npm/daisyui@5",
-	},
-	FrameworkScripts: []string{
-		"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4",
-	},
+	Name:                 "daisyui",
+	FrameworkStylesheets: daisyuipresets.FrameworkStylesheets(),
+	FrameworkScripts:     daisyuipresets.FrameworkScripts(),
 }
 
 var TailwindCSSTemplate = StyleTemplate{

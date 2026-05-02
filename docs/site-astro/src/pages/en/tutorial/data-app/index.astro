@@ -4,7 +4,7 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 const samplePath = `docs/site-astro/public/examples/go/tutorial/data-app/main.go`;
 const scenarioCode = `// 1) Load CSV
 file, _ := os.Open("./data/sales.csv")
-ui, _ := mf.UIDataFrameFromCSV(file, mf.TableProps{Columns: []mf.TableColumn{{Label: "Region"}, {Label: "Sales"}}})
+ui, _ := mf.DataFrameFromCSV(file, mf.TableProps{Columns: []mf.TableColumn{{Label: "Region"}, {Label: "Sales"}}})
 
 // 2) Preprocess and build a view
 view := mf.DataFrameViewProps{

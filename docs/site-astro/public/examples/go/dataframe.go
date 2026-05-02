@@ -33,7 +33,7 @@ func RegisterDataFrameExample(app *mb.App) {
 			view.Sort = append(view.Sort, mf.DataFrameSort{Column: sort})
 		}
 
-		node, err := mf.UIDataFrameFromCSV(bytes.NewReader([]byte(dataframeCSV)), mf.TableProps{
+		node, err := mf.DataFrameFromCSV(bytes.NewReader([]byte(dataframeCSV)), mf.TableProps{
 			View: view,
 			Columns: []mf.TableColumn{
 				{Label: "Name", SortKey: "Name", SortHref: "/dataframe?sort=Name&q=" + q},

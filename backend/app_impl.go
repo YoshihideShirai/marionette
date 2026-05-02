@@ -236,8 +236,13 @@ func (a *App) UseStyleTemplateByName(name string) error {
 	return nil
 }
 
+func (a *App) UseDaisyUITemplate() {
+	a.UseStyleTemplate(frontend.DaisyUITemplate)
+}
+
+// UseTailAdminTemplate is kept as a compatibility alias.
 func (a *App) UseTailAdminTemplate() {
-	a.UseStyleTemplate(frontend.TailAdminTemplate)
+	a.UseDaisyUITemplate()
 }
 
 func (a *App) UseTailwindCSSTemplate() {

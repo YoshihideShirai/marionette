@@ -6,8 +6,8 @@ type StyleTemplate struct {
 	FrameworkScripts     []string
 }
 
-var TailAdminTemplate = StyleTemplate{
-	Name: "tailadmin",
+var DaisyUITemplate = StyleTemplate{
+	Name: "daisyui",
 	FrameworkStylesheets: []string{
 		"https://cdn.jsdelivr.net/npm/daisyui@5",
 	},
@@ -24,13 +24,13 @@ var TailwindCSSTemplate = StyleTemplate{
 }
 
 func DefaultStyleTemplate() StyleTemplate {
-	return TailAdminTemplate
+	return DaisyUITemplate
 }
 
 func StyleTemplateByName(name string) (StyleTemplate, bool) {
 	switch name {
-	case "tailadmin":
-		return TailAdminTemplate, true
+	case "daisyui", "tailadmin":
+		return DaisyUITemplate, true
 	case "tailwindcss":
 		return TailwindCSSTemplate, true
 	default:

@@ -165,3 +165,15 @@ func HTMXTable(headers []string, rows ...frontend.TableRowData) frontend.Node {
 func TableRow(cells ...frontend.Node) frontend.TableRowData {
 	return frontend.TableRow(cells...)
 }
+
+func SubmitButton(label string, props frontend.ComponentProps) frontend.Node {
+	return frontend.UISubmitButton(label, props)
+}
+
+func InputWithOptions(name, value string, options frontend.InputOptions) frontend.Node {
+	return frontend.UIInputWithOptions(name, value, options)
+}
+
+func FileUpload(name string, required bool, props ...frontend.ComponentProps) frontend.Node {
+	return frontend.FileUpload(name, required, props...)
+}

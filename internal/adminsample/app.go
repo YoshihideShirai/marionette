@@ -94,7 +94,7 @@ func BuildApp() *mb.App {
 
 	app.Action("orders/filter", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
-			return mf.Alert(mf.AlertProps{Title: "Session expired", Description: "Please sign in again.", Props: mf.ComponentProps{Variant: "warning"}})
+			return dashboardMainContent(sessionExpiredAlert())
 		}
 		status := strings.TrimSpace(ctx.FormValue("status"))
 		if status == "" {
@@ -102,12 +102,12 @@ func BuildApp() *mb.App {
 		}
 		ctx.Set("selectedStatus", status)
 		ctx.Set("flash", fmt.Sprintf("Filter applied: %s", status))
-		return dashboardBody(ctx, ctx.Get("currentPage").(string))
+		return dashboardMainContent(dashboardBody(ctx, ctx.Get("currentPage").(string)))
 	})
 
 	app.Action("orders/toggle-status", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
-			return mf.Alert(mf.AlertProps{Title: "Session expired", Description: "Please sign in again.", Props: mf.ComponentProps{Variant: "warning"}})
+			return dashboardMainContent(sessionExpiredAlert())
 		}
 		id := strings.TrimSpace(ctx.FormValue("id"))
 		orders := ctx.Get("orders").([]order)
@@ -126,7 +126,7 @@ func BuildApp() *mb.App {
 			break
 		}
 		ctx.Set("orders", orders)
-		return dashboardBody(ctx, ctx.Get("currentPage").(string))
+		return dashboardMainContent(dashboardBody(ctx, ctx.Get("currentPage").(string)))
 	})
 
 	return app
@@ -137,12 +137,20 @@ func dashboardFromState(ctx *mb.Context, currentPage string) mf.Node {
 		mf.Region(mf.RegionProps{ID: "app-body"},
 			mf.Split(mf.SplitProps{
 				Aside:      sidebar(currentPage),
-				Main:       mf.Region(mf.RegionProps{ID: "main-content"}, dashboardBody(ctx, currentPage)),
+				Main:       dashboardMainContent(dashboardBody(ctx, currentPage)),
 				AsideWidth: "w-full md:w-72",
 				Gap:        "6",
 			}),
 		),
 	)
+}
+
+func dashboardMainContent(content mf.Node) mf.Node {
+	return mf.Region(mf.RegionProps{ID: "main-content"}, content)
+}
+
+func sessionExpiredAlert() mf.Node {
+	return mf.Alert(mf.AlertProps{Title: "Session expired", Description: "Please sign in again.", Props: mf.ComponentProps{Variant: "warning"}})
 }
 
 func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {

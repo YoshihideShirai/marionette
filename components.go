@@ -317,6 +317,7 @@ type TextProps struct {
 
 type FontIconProps struct {
 	Name       string
+	Library    string
 	AriaLabel  string
 	Decorative bool
 	Props      ComponentProps
@@ -1258,7 +1259,23 @@ func UIFontIcon(props FontIconProps) Node {
 	if name == "" {
 		return renderErrorNode{err: fmt.Errorf("font icon name is required")}
 	}
-	className := joinClass("fi fi-"+name, props.Props.Class)
+	library := strings.ToLower(strings.TrimSpace(props.Library))
+	if library == "" {
+		library = "material-icons"
+	}
+	tag := "i"
+	className := props.Props.Class
+	text := ""
+	switch library {
+	case "material", "material-icons":
+		tag = "span"
+		className = joinClass("material-icons", className)
+		text = name
+	case "fi", "uicons", "flaticon":
+		className = joinClass("fi fi-"+name, className)
+	default:
+		return renderErrorNode{err: fmt.Errorf("unsupported font icon library: %q", props.Library)}
+	}
 	attrs := map[string]string{"class": className}
 	if strings.TrimSpace(props.AriaLabel) != "" {
 		attrs["aria-label"] = strings.TrimSpace(props.AriaLabel)
@@ -1266,7 +1283,7 @@ func UIFontIcon(props FontIconProps) Node {
 	} else if props.Decorative {
 		attrs["aria-hidden"] = "true"
 	}
-	return element{Tag: "i", Attrs: attrs}
+	return element{Tag: tag, Attrs: attrs, Text: text}
 }
 
 func UIHiddenField(name, value string) Node {

@@ -44,7 +44,7 @@ func BuildApp() *mb.App {
 		app.Assets("/assets", assetsFS)
 		app.AddStylesheet(app.Asset("admin-sample.css"))
 	}
-	app.AddStylesheet("https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css")
+	app.AddStylesheet("https://fonts.googleapis.com/icon?family=Material+Icons")
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
@@ -127,7 +127,7 @@ func dashboardBody(ctx *mb.Context) mf.Node {
 
 	nodes := []mf.Node{
 		mf.PageHeader(mf.PageHeaderProps{Title: "Revenue Ops Console", Description: "Prioritize opportunities and monitor risk from a single screen"}),
-		mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "self-end"}}, formIconButton("sign-out-alt", "Sign out", "Sign out")),
+		mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "self-end"}}, formIconButton("logout", "Sign out", "Sign out")),
 	}
 	if flash != "" {
 		nodes = append(nodes, mf.Alert(mf.AlertProps{Title: "Live update", Description: flash, Props: mf.ComponentProps{Variant: "success", Class: "ops-live"}}))
@@ -136,7 +136,7 @@ func dashboardBody(ctx *mb.Context) mf.Node {
 		mf.Alert(mf.AlertProps{Title: "Morning briefing", Description: "1 high-risk deal needs legal review before renewal.", Props: mf.ComponentProps{Variant: "warning"}}),
 		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "ops-toolbar flex flex-wrap items-end gap-3"}},
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Deal status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
-			formIconButton("settings-sliders", "Apply", "Apply filter"),
+			formIconButton("tune", "Apply", "Apply filter"),
 		),
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders)),
 	)
@@ -155,7 +155,7 @@ func loginPage(authError string) mf.Node {
 		mf.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
 			mf.FormRow(mf.FormRowProps{ID: "email", Label: "Email", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "email", Name: "email", Type: "email", Placeholder: "ops@example.com", Required: true})}),
 			mf.FormRow(mf.FormRowProps{ID: "password", Label: "Password", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "password", Name: "password", Type: "password", Placeholder: "••••••••", Required: true})}),
-			formIconButton("enter", "Sign in", "Sign in"),
+			formIconButton("login", "Sign in", "Sign in"),
 		),
 	)
 	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-12"}}, mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
@@ -171,9 +171,9 @@ func summaryCards(orders []order) mf.Node {
 		}
 	}
 	return mf.Grid(mf.GridProps{Columns: "md:grid-cols-3", Gap: "4"},
-		statCard("briefcase", "Visible deals", fmt.Sprintf("%d", len(orders)), "Deals after filters"),
-		statCard("chart-histogram", "Pipeline value", fmt.Sprintf("$%s", formatNumber(total)), "Total projected revenue"),
-		statCard("triangle-warning", "High-risk deals", fmt.Sprintf("%d", highRisk), "Needs escalation"),
+		statCard("work", "Visible deals", fmt.Sprintf("%d", len(orders)), "Deals after filters"),
+		statCard("monitoring", "Pipeline value", fmt.Sprintf("$%s", formatNumber(total)), "Total projected revenue"),
+		statCard("warning", "High-risk deals", fmt.Sprintf("%d", highRisk), "Needs escalation"),
 	)
 }
 
@@ -181,7 +181,7 @@ func statCard(iconName, title, value, desc string) mf.Node {
 	return mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}},
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "1"},
 			mf.Stack(mf.StackProps{Direction: "row", Gap: "2", Align: "center"},
-				mf.FontIcon(mf.FontIconProps{Name: iconName, Decorative: true}),
+				mf.FontIcon(mf.FontIconProps{Name: iconName, Library: "material-icons", Decorative: true}),
 				mf.Text(title),
 			),
 			mf.H3(mf.Text(value)),
@@ -293,5 +293,5 @@ func formatNumber(v int) string {
 }
 
 func formIconButton(iconName, label, ariaLabel string) mf.Node {
-	return mf.Raw(fmt.Sprintf(`<button type="submit" class="btn btn-primary inline-flex items-center gap-2" aria-label="%s"><i class="fi fi-%s" aria-hidden="true"></i><span>%s</span></button>`, ariaLabel, iconName, label))
+	return mf.Raw(fmt.Sprintf(`<button type="submit" class="btn btn-primary inline-flex items-center gap-2" aria-label="%s"><span class="material-icons" aria-hidden="true">%s</span><span>%s</span></button>`, ariaLabel, iconName, label))
 }

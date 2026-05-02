@@ -35,10 +35,21 @@ func BuildApp() *mb.App {
 	app.Set("flash", "")
 
 	app.AddStyle(`
-		.ops-shell { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; }
-		.ops-card { border: 1px solid rgba(99,102,241,0.22); box-shadow: 0 8px 24px rgba(15,23,42,0.08); }
-		.ops-live { border-left: 4px solid #22c55e; }
-		.ops-toolbar { background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); border: 1px solid rgba(148,163,184,0.28); border-radius: 0.75rem; padding: 0.75rem; }
+		body { background: #030712; color: #e5e7eb; }
+		.ops-shell { min-height: 100vh; padding: 1.5rem; background: radial-gradient(circle at 20% 20%, #1d4ed8 0%, #0b1020 38%, #020617 100%); }
+		.ops-shell .ui-container { max-width: 84rem; }
+		.ops-shell .ui-page-header h1 { letter-spacing: 0.04em; text-transform: uppercase; color: #bfdbfe; }
+		.ops-shell .ui-page-header p { color: #93c5fd; }
+		.ops-shell .ui-alert { border: 1px solid #334155; background: #0f172a; color: #e2e8f0; border-radius: 0.85rem; }
+		.ops-shell .ui-form-row label span { color: #cbd5e1; }
+		.ops-shell .ui-table table { border-collapse: separate; border-spacing: 0; }
+		.ops-shell .ui-table thead th { background: #0b1224; color: #93c5fd; border-bottom: 1px solid #334155; }
+		.ops-shell .ui-table tbody td { background: #020617; border-bottom: 1px solid #1e293b; }
+		.ops-shell .ui-table tbody tr:hover td { background: #111827; }
+		.ops-shell .btn { border-radius: 9999px; font-weight: 700; }
+		.ops-card { border: 1px solid #334155; border-radius: 1rem; background: linear-gradient(145deg, #0b1224 0%, #111827 100%); box-shadow: 0 18px 45px rgba(2, 6, 23, 0.55); }
+		.ops-live { border-left: 6px solid #22d3ee; box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.35) inset; }
+		.ops-toolbar { background: rgba(15, 23, 42, 0.85); border: 1px solid #334155; border-radius: 1rem; padding: 1rem; box-shadow: 0 12px 28px rgba(2, 6, 23, 0.45); }
 	`)
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {

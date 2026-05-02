@@ -177,3 +177,15 @@ func InputWithOptions(name, value string, options frontend.InputOptions) fronten
 func FileUpload(name string, required bool, props ...frontend.ComponentProps) frontend.Node {
 	return frontend.FileUpload(name, required, props...)
 }
+
+func Sidebar(brand, title string, items ...frontend.SidebarItem) frontend.Node {
+	return frontend.Sidebar(brand, title, items...)
+}
+
+func SidebarLink(label, href string) frontend.SidebarItem {
+	return frontend.SidebarLink(label, href)
+}
+
+func DownloadLink(label, href, filename string, props frontend.ComponentProps) frontend.Node {
+	return frontend.DownloadLink(label, href, filename, props)
+}

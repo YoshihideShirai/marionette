@@ -113,3 +113,31 @@ func Image(props frontend.ImageProps) frontend.Node {
 func Chart(props frontend.ChartProps) frontend.Node {
 	return frontend.UIChart(props)
 }
+
+func Form(props frontend.FormProps, children ...frontend.Node) frontend.Node {
+	return frontend.UIForm(props, children...)
+}
+
+func ActionForm(props frontend.ActionFormProps, children ...frontend.Node) frontend.Node {
+	return frontend.UIActionForm(props, children...)
+}
+
+func FormField(control frontend.Node, props frontend.FormFieldProps) frontend.Node {
+	return frontend.UIFormField(control, props)
+}
+
+func Textarea(name, value string, options frontend.TextareaOptions) frontend.Node {
+	return frontend.UITextarea(name, value, options)
+}
+
+func Region(props frontend.RegionProps, children ...frontend.Node) frontend.Node {
+	return frontend.UIRegion(props, children...)
+}
+
+func Split(props frontend.SplitProps) frontend.Node {
+	return frontend.UISplit(props)
+}
+
+func Container(props frontend.ContainerProps, children ...frontend.Node) frontend.Node {
+	return frontend.Container(props, children...)
+}

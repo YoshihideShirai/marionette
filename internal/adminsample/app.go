@@ -26,15 +26,6 @@ var seedOrders = []order{
 	{ID: "ORD-1047", Customer: "Kite Retail", Plan: "Starter", Amount: 18000, Risk: "Low", Status: "Active"},
 }
 
-func customStyles() mf.Node {
-	return mf.Raw(`<style>
-		.ops-shell { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; }
-		.ops-card { border: 1px solid rgba(99,102,241,0.22); box-shadow: 0 8px 24px rgba(15,23,42,0.08); }
-		.ops-live { border-left: 4px solid #22c55e; }
-		.ops-toolbar { background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); border: 1px solid rgba(148,163,184,0.28); border-radius: 0.75rem; padding: 0.75rem; }
-	</style>`)
-}
-
 func BuildApp() *mb.App {
 	app := mb.New()
 	app.Set("orders", seedOrders)
@@ -42,6 +33,13 @@ func BuildApp() *mb.App {
 	app.Set("loggedIn", false)
 	app.Set("authError", "")
 	app.Set("flash", "")
+
+	app.AddStyle(`
+		.ops-shell { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; }
+		.ops-card { border: 1px solid rgba(99,102,241,0.22); box-shadow: 0 8px 24px rgba(15,23,42,0.08); }
+		.ops-live { border-left: 4px solid #22c55e; }
+		.ops-toolbar { background: rgba(255,255,255,0.82); backdrop-filter: blur(6px); border: 1px solid rgba(148,163,184,0.28); border-radius: 0.75rem; padding: 0.75rem; }
+	`)
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
@@ -113,7 +111,6 @@ func BuildApp() *mb.App {
 
 func dashboardFromState(ctx *mb.Context) mf.Node {
 	return mf.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-8"}},
-		customStyles(),
 		mf.Region(mf.RegionProps{ID: "app-body"}, dashboardBody(ctx)),
 	)
 }
@@ -156,7 +153,7 @@ func loginPage(authError string) mf.Node {
 			mf.SubmitButton("Sign in", mf.ComponentProps{}),
 		),
 	)
-	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-12"}}, customStyles(), mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
+	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-12"}}, mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
 }
 
 func summaryCards(orders []order) mf.Node {

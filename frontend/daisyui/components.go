@@ -81,3 +81,35 @@ func Grid(props frontend.GridProps, children ...frontend.Node) frontend.Node {
 func Stack(props frontend.StackProps, children ...frontend.Node) frontend.Node {
 	return frontend.UIStack(props, children...)
 }
+
+func Breadcrumb(props frontend.BreadcrumbProps) frontend.Node {
+	return frontend.UIBreadcrumb(props)
+}
+
+func Divider(props frontend.DividerProps) frontend.Node {
+	return frontend.UIDivider(props)
+}
+
+func Actions(props frontend.ActionsProps, children ...frontend.Node) frontend.Node {
+	return frontend.UIActions(props, children...)
+}
+
+func HiddenField(name, value string) frontend.Node {
+	return frontend.UIHiddenField(name, value)
+}
+
+func Box(props frontend.BoxProps, children ...frontend.Node) frontend.Node {
+	return frontend.UIBox(props, children...)
+}
+
+func AppShell(props frontend.AppShellProps) frontend.Node {
+	return frontend.UIAppShell(props)
+}
+
+func Image(props frontend.ImageProps) frontend.Node {
+	return frontend.UIImage(props)
+}
+
+func Chart(props frontend.ChartProps) frontend.Node {
+	return frontend.UIChart(props)
+}

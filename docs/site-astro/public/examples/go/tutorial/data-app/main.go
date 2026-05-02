@@ -10,6 +10,6 @@ import (
 func main() {
 	_ = os.ErrNotExist
 	_ = mb.New
-	_ = mf.UIDataFrameFromCSV
-	_ = mf.UIDataFrameFromTSV
+	_ = mf.DataFrameFromCSV
+	_ = mf.DataFrameFromTSV
 }

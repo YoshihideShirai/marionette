@@ -153,3 +153,15 @@ func Text(props frontend.TextProps) frontend.Node {
 func FontIcon(props frontend.FontIconProps) frontend.Node {
 	return frontend.UIFontIcon(props)
 }
+
+func ThemeToggle(props frontend.ComponentProps) frontend.Node {
+	return frontend.UIThemeToggleButton(props)
+}
+
+func HTMXTable(headers []string, rows ...frontend.TableRowData) frontend.Node {
+	return frontend.HTMXTable(headers, rows...)
+}
+
+func TableRow(cells ...frontend.Node) frontend.TableRowData {
+	return frontend.TableRow(cells...)
+}

@@ -137,7 +137,7 @@ func dashboardFromState(ctx *mb.Context, currentPage string) mf.Node {
 		mf.Region(mf.RegionProps{ID: "app-body"},
 			mf.Split(mf.SplitProps{
 				Aside:      sidebar(currentPage),
-				Main:       dashboardBody(ctx, currentPage),
+				Main:       mf.Region(mf.RegionProps{ID: "main-content"}, dashboardBody(ctx, currentPage)),
 				AsideWidth: "w-full md:w-72",
 				Gap:        "6",
 			}),
@@ -159,7 +159,7 @@ func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 	}
 	nodes = append(nodes,
 		mf.Alert(mf.AlertProps{Title: "Morning briefing", Description: "1 high-risk deal needs legal review before renewal.", Props: mf.ComponentProps{Variant: "warning"}}),
-		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "ops-toolbar flex flex-wrap items-end gap-3"}},
+		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "ops-toolbar flex flex-wrap items-end gap-3"}},
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Deal status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
 			formIconButton("tune", "Apply", "Apply filter"),
 		),
@@ -308,7 +308,7 @@ func ordersTable(orders []order) mf.Node {
 		if o.Status == "Blocked" {
 			label = "Re-open"
 		}
-		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#app-body", Swap: "outerHTML"},
+		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML"},
 			mf.TextField(mf.TextFieldProps{ID: "id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}),
 			formIconButton("bolt", label, label),
 		)

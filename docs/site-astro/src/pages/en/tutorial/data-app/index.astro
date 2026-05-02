@@ -24,9 +24,55 @@ app.Action("filters/apply", func(ctx *mb.Context) mf.Node {
 ---
 <BaseLayout title="Data App Build Flow - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/data-app/">
   <article class="training-doc">
-    <header><p class="eyebrow">Tutorial</p><h1>Data App Build Flow</h1></header>
-    <p>This chapter implements one end-to-end path: CSV load → preprocessing → table → chart sync → action execution.</p>
-    <p>To track the same code in Japanese and English, both pages use the same sample path: <code>{samplePath}</code>.</p>
-    <pre><code>{scenarioCode}</code></pre>
+    <header>
+      <p class="eyebrow">Tutorial</p>
+      <h1>Data App Build Flow</h1>
+      <p class="lead">This chapter extends the Action-based pattern from the previous tutorial into a data-focused dashboard flow.</p>
+    </header>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 1</p>
+      <h2>Connect from the previous chapter</h2>
+      <p>
+        The architecture is the same as “Backend and frontend communication”: <code>Page</code> handles first render,
+        <code>Action</code> handles user input, and only the needed region is rerendered.
+        The only difference is that now the target UI is table/chart data instead of a message list.
+      </p>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 2</p>
+      <h2>Goal for this chapter</h2>
+      <p>Implement one full path: CSV load → preprocessing → synchronized table/chart → Action rerender.</p>
+      <p>To track the same code in Japanese and English, both pages use the same sample path: <code>{samplePath}</code>.</p>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 3</p>
+      <h2>Minimal implementation</h2>
+      <p>Start with this compact sample. The numbered comments (1-4) match the execution flow.</p>
+      <pre><code>{scenarioCode}</code></pre>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 4</p>
+      <h2>Read the flow in order</h2>
+      <ol>
+        <li><strong>1)</strong> Load CSV and build the DataFrame source</li>
+        <li><strong>2)</strong> Build filters/sort as <code>DataFrameViewProps</code></li>
+        <li><strong>3)</strong> Apply the same view to both table and chart for sync</li>
+        <li><strong>4)</strong> Recalculate view in <code>Action</code> and rerender the dashboard region</li>
+      </ol>
+      <p>This sequence keeps responsibilities clear as requirements grow: input → state → rerender.</p>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 5</p>
+      <h2>Next step</h2>
+      <p>
+        Continue with <a href="/marionette/en/tutorial/desktop/">Run as Desktop App (Optional)</a> to package the same app for desktop WebView execution.
+        This keeps the same data flow while changing only the runtime target.
+      </p>
+    </section>
   </article>
 </BaseLayout>

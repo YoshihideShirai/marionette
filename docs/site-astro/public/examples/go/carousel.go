@@ -7,6 +7,6 @@ import (
 
 func RegisterCarouselExample(app *mb.App) {
 	app.Page("/carousel", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "carousel example"})
+		return mf.Carousel(mf.CarouselItem("slide1", mf.Image(mf.ImageProps{Src: "https://placehold.co/320x120", Alt: "slide", Fit: "cover"})))
 	})
 }

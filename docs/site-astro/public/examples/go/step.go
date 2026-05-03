@@ -7,6 +7,6 @@ import (
 
 func RegisterStepExample(app *mb.App) {
 	app.Page("/step", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "step example"})
+		return mf.Steps(mf.Step("Done", true))
 	})
 }

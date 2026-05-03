@@ -7,6 +7,6 @@ import (
 
 func RegisterStatExample(app *mb.App) {
 	app.Page("/stat", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "stat example"})
+		return mf.Stat("Sales", "$12K", "+12%")
 	})
 }

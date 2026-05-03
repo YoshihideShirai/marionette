@@ -7,6 +7,6 @@ import (
 
 func RegisterTooltipExample(app *mb.App) {
 	app.Page("/tooltip", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "tooltip example"})
+		return mf.Tooltip("hello", mf.Button("Hover", mf.ComponentProps{}))
 	})
 }

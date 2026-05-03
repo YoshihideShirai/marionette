@@ -7,6 +7,6 @@ import (
 
 func RegisterCodeExample(app *mb.App) {
 	app.Page("/code", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "code example"})
+		return mf.Code("frontend.Hero()")
 	})
 }

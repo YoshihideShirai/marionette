@@ -7,6 +7,6 @@ import (
 
 func RegisterIndicatorExample(app *mb.App) {
 	app.Page("/indicator", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "indicator example"})
+		return mf.Indicator(mf.Badge("new", mf.ComponentProps{Variant: "secondary"}), mf.Button("Inbox", mf.ComponentProps{}))
 	})
 }

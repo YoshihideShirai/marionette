@@ -7,6 +7,6 @@ import (
 
 func RegisterMockupWindowExample(app *mb.App) {
 	app.Page("/mockup-window", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "mockup-window example"})
+		return mf.MockupWindow(mf.Paragraph(mf.ParagraphProps{Text: "Mock content"}))
 	})
 }

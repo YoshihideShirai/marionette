@@ -540,11 +540,19 @@ func DrawerNavbar(drawerID, title string, desktopItems []shared.Node) shared.Nod
 	)
 }
 
-func H1(children ...shared.Node) shared.Node { return node("h1", map[string]string{"class": "text-4xl font-bold"}, children...) }
-func H2(children ...shared.Node) shared.Node { return node("h2", map[string]string{"class": "text-3xl font-bold"}, children...) }
-func H3(children ...shared.Node) shared.Node { return node("h3", map[string]string{"class": "text-2xl font-semibold"}, children...) }
-func H4(children ...shared.Node) shared.Node { return node("h4", map[string]string{"class": "text-xl font-semibold"}, children...) }
-func TextNode(text string) shared.Node         { return textNode("span", nil, text) }
+func H1(children ...shared.Node) shared.Node {
+	return node("h1", map[string]string{"class": "text-4xl font-bold"}, children...)
+}
+func H2(children ...shared.Node) shared.Node {
+	return node("h2", map[string]string{"class": "text-3xl font-bold"}, children...)
+}
+func H3(children ...shared.Node) shared.Node {
+	return node("h3", map[string]string{"class": "text-2xl font-semibold"}, children...)
+}
+func H4(children ...shared.Node) shared.Node {
+	return node("h4", map[string]string{"class": "text-xl font-semibold"}, children...)
+}
+func TextNode(text string) shared.Node { return textNode("span", nil, text) }
 
 func PrimaryButton(label string, props shared.ComponentProps) shared.Node {
 	if props.Variant == "" {

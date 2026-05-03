@@ -511,7 +511,7 @@ func usageSnippet(id string) string {
 })`,
 		"modal": `confirmModal := mf.Modal(mf.ModalProps{
     Title: "Delete user",
-    Body:  mf.UIUITextComponent(mf.TextProps{Text: "Confirm deletion"}),
+    Body:  mf.UITextComponentComponent(mf.TextProps{Text: "Confirm deletion"}),
     Actions: mf.Button("Delete", mf.ComponentProps{
         Variant: "error",
         Size:    "sm",
@@ -564,7 +564,7 @@ func usageSnippet(id string) string {
     Variant: "primary",
     Size:    "sm",
 }))`,
-		"form-field": `nameField := mf.UIFormField(
+		"form-field": `nameField := mf.FormField(
     mf.Input("name", "", mf.ComponentProps{Size: "sm"}),
     mf.FormFieldProps{
         Label:    "Name",
@@ -645,20 +645,20 @@ func usageSnippet(id string) string {
         Justify:   "between",
         Wrap:      true,
     },
-    mf.UIUITextComponent(mf.TextProps{Text: "Aiko Tanaka"}),
+    mf.UITextComponentComponent(mf.TextProps{Text: "Aiko Tanaka"}),
     mf.Badge(mf.BadgeProps{Label: "Admin", Props: mf.ComponentProps{Variant: "primary"}}),
     mf.Button("Open", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
 )`,
 		"grid": `summaryGrid := mf.Grid(
     mf.GridProps{Columns: "3", Gap: "lg"},
-    mf.Card(mf.CardProps{}, mf.UIUITextComponent(mf.TextProps{Text: "Users: 24"})),
-    mf.Card(mf.CardProps{}, mf.UIUITextComponent(mf.TextProps{Text: "Admins: 4"})),
-    mf.Card(mf.CardProps{}, mf.UIUITextComponent(mf.TextProps{Text: "Pending: 7"})),
+    mf.Card(mf.CardProps{}, mf.UITextComponentComponent(mf.TextProps{Text: "Users: 24"})),
+    mf.Card(mf.CardProps{}, mf.UITextComponentComponent(mf.TextProps{Text: "Admins: 4"})),
+    mf.Card(mf.CardProps{}, mf.UITextComponentComponent(mf.TextProps{Text: "Pending: 7"})),
 )`,
 		"split": `workspace := mf.Split(mf.SplitProps{
     Main: mf.Card(
         mf.CardProps{Title: "Main workspace"},
-        mf.UIUITextComponent(mf.TextProps{Text: "Aiko / Admin / Active"}),
+        mf.UITextComponentComponent(mf.TextProps{Text: "Aiko / Admin / Active"}),
     ),
     Aside: mf.Section(
         mf.SectionProps{Title: "Aside panel"},
@@ -682,7 +682,7 @@ func usageSnippet(id string) string {
         Padding:  "md",
         Centered: true,
     },
-    mf.UIUITextComponent(mf.TextProps{Text: "Centered page container"}),
+    mf.UITextComponentComponent(mf.TextProps{Text: "Centered page container"}),
 )`,
 		"card": `card := mf.Card(
     mf.CardProps{
@@ -690,7 +690,7 @@ func usageSnippet(id string) string {
         Description: "Header, description, actions, then body content.",
         Actions:     mf.Button("Edit", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
     },
-    mf.UIUITextComponent(mf.TextProps{Text: "Active: 24"}),
+    mf.UITextComponentComponent(mf.TextProps{Text: "Active: 24"}),
 )`,
 		"section": `section := mf.Section(
     mf.SectionProps{
@@ -698,7 +698,7 @@ func usageSnippet(id string) string {
         Description: "An unframed content section with consistent header spacing.",
         Actions:     mf.Button("View all", mf.ComponentProps{Variant: "secondary", Size: "sm"}),
     },
-    mf.UIUITextComponent(mf.TextProps{Text: "Aiko updated a role"}),
+    mf.UITextComponentComponent(mf.TextProps{Text: "Aiko updated a role"}),
 )`,
 		"feedback": `toast := mf.Toast(mf.ToastProps{
     Title:       "Toast / Default",
@@ -754,7 +754,7 @@ alert := mf.Alert(mf.AlertProps{
 })`,
 		"overlay-system": `modal := mf.Modal(mf.ModalProps{
     Title: "Overlay demo",
-    Body:  mf.UIUITextComponent(mf.TextProps{Text: "Use modal, drawer, and popover together for rich flows."}),
+    Body:  mf.UITextComponentComponent(mf.TextProps{Text: "Use modal, drawer, and popover together for rich flows."}),
     Open:  true,
 })`,
 		"dataframe": `df := dataframe.LoadRecords(

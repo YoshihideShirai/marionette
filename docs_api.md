@@ -457,7 +457,7 @@ Template-backed component constructors (`templates/components/*`).
 - `Switch(props SwitchComponentProps) Node`
 - `Badge(props BadgeProps) Node`
   - renders a compact label with `Variant`, `Size`, and custom classes from `ComponentProps`.
-- `UIText(props TextProps) Node`
+- `TextComponent(props TextProps) Node`
   - renders plain text with semantic size, weight, and tone options.
 - `DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...imports.CSVLoadOptions) (Node, error)`
   - loads CSV via `github.com/rocketlaunchr/dataframe-go/imports.LoadFromCSV`.

@@ -11,6 +11,6 @@ func RegisterCardExample(app *mb.App) {
 			Title:       "Workspace summary",
 			Description: "Header, description, actions, then body content.",
 			Actions:     mf.Button("Edit", mf.ComponentProps{Variant: "ghost", Size: "sm"}),
-		}, mf.UIText(mf.TextProps{Text: "Ready"}))
+		}, mf.TextComponent(mf.TextProps{Text: "Ready"}))
 	})
 }

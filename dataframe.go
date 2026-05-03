@@ -193,11 +193,11 @@ func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	}
 	df = ApplyDataFrameView(df, props.View)
 	if df == nil {
-		return UIChart(chartProps)
+		return Chart(chartProps)
 	}
 	columnNames := df.Names()
 	if len(columnNames) == 0 {
-		return UIChart(chartProps)
+		return Chart(chartProps)
 	}
 	labelColumn := strings.TrimSpace(props.LabelColumn)
 	if labelColumn == "" {
@@ -230,7 +230,7 @@ func DataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
 	}
 	chartProps.Labels = labels
 	chartProps.Datasets = datasets
-	return UIChart(chartProps)
+	return Chart(chartProps)
 }
 
 func DataQueryStateFromView(view DataFrameViewProps) DataQueryState {
@@ -329,8 +329,3 @@ func numericValue(v any) (float64, bool) {
 	}
 }
 func chartFloat(value any) float64 { f, _ := numericValue(value); return f }
-
-// UIDataFrameChart is kept for backward compatibility.
-func UIDataFrameChart(df *rdf.DataFrame, props DataFrameChartProps) Node {
-	return DataFrameChart(df, props)
-}

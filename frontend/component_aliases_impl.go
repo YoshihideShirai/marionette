@@ -8,7 +8,6 @@ import (
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
 )
 
-func SubmitButton(label string, props ComponentProps) Node { return daisy.SubmitButton(label, props) }
 func ThemeToggleButton(props ComponentProps) Node {
 	className := "btn btn-ghost"
 	if props.Class != "" {
@@ -52,17 +51,11 @@ func EmptyState(props EmptyStateProps) Node {
 	}
 	return daisy.EmptyState(props)
 }
-func Chart(props ChartProps) Node                                 { return UIChart(props) }
-func Image(props ImageProps) Node                                 { return daisy.Image(props) }
 func DataFrameComponent(df *rdf.DataFrame, props TableProps) Node { return DataFrame(df, props) }
-func Pagination(props PaginationProps) Node                       { return UIPagination(props) }
-func Tabs(props TabsProps) Node                                   { return daisy.Tabs(props) }
-func Breadcrumb(props BreadcrumbProps) Node                       { return daisy.Breadcrumb(props) }
 func Badge(props BadgeProps) Node                                 { return daisy.Badge(props) }
 func Actions(props ActionsProps, children ...Node) Node           { return daisy.Actions(props, children...) }
 func Divider(props DividerProps) Node                             { return daisy.Divider(props) }
 func TextComponent(props TextProps) Node                          { return daisy.Text(props) }
-func UIText(props TextProps) Node                                 { return TextComponent(props) }
 func FontIcon(props FontIconProps) Node                           { return daisy.FontIcon(props) }
 func HiddenField(name, value string) Node                         { return daisy.HiddenField(name, value) }
 func Stack(props StackProps, children ...Node) Node               { return daisy.Stack(props, children...) }

@@ -387,8 +387,8 @@ func renderCustomCSSDemo() mf.Node {
 			})();
 		</script>`),
 		mf.Box(mf.BoxProps{Border: true, Tone: "base", Padding: "md", Props: mf.ComponentProps{Class: "mrn-css-demo-preview rounded-box"}},
-			mf.UIText(mf.TextProps{Text: "Same components, different product feel", Weight: "semibold"}),
-			mf.UIText(mf.TextProps{Text: "The CSS is registered once with app.AddStyle and toggled by a data attribute.", Size: "sm", Tone: "muted"}),
+			mf.TextComponent(mf.TextProps{Text: "Same components, different product feel", Weight: "semibold"}),
+			mf.TextComponent(mf.TextProps{Text: "The CSS is registered once with app.AddStyle and toggled by a data attribute.", Size: "sm", Tone: "muted"}),
 			mf.Actions(mf.ActionsProps{Gap: "sm", Wrap: true},
 				mf.Badge(mf.BadgeProps{Label: "Tailwind classes stay unchanged", Props: mf.ComponentProps{Variant: "primary"}}),
 				mf.Badge(mf.BadgeProps{Label: "Scoped app branding", Props: mf.ComponentProps{Variant: "secondary"}}),
@@ -562,12 +562,12 @@ func renderDashboardOverview(ctx *mb.Context) mf.Node {
 func statCard(label, value, caption, tone string) mf.Node {
 	return mf.Card(mf.CardProps{},
 		mf.Stack(mf.StackProps{Gap: "sm"},
-			mf.UIText(mf.TextProps{Text: label, Size: "sm", Weight: "medium", Tone: "muted"}),
+			mf.TextComponent(mf.TextProps{Text: label, Size: "sm", Weight: "medium", Tone: "muted"}),
 			mf.Stack(mf.StackProps{Direction: "horizontal", Gap: "md", Align: "end", Justify: "between"},
-				mf.UIText(mf.TextProps{Text: value, Size: "3xl", Weight: "bold"}),
+				mf.TextComponent(mf.TextProps{Text: value, Size: "3xl", Weight: "bold"}),
 				mf.Badge(mf.BadgeProps{Label: "live", Props: mf.ComponentProps{Variant: tone}}),
 			),
-			mf.UIText(mf.TextProps{Text: caption, Size: "sm", Tone: "muted"}),
+			mf.TextComponent(mf.TextProps{Text: caption, Size: "sm", Tone: "muted"}),
 		),
 	)
 }
@@ -680,10 +680,10 @@ func isLoading(ctx *mb.Context) bool {
 
 func renderUserRow(u user) mf.TableComponentRow {
 	return mf.TableRowValues(
-		mf.UIText(mf.TextProps{Text: u.Name, Weight: "medium"}),
-		mf.UIText(mf.TextProps{Text: u.Email, Size: "sm", Tone: "subtle"}),
+		mf.TextComponent(mf.TextProps{Text: u.Name, Weight: "medium"}),
+		mf.TextComponent(mf.TextProps{Text: u.Email, Size: "sm", Tone: "subtle"}),
 		mf.Badge(mf.BadgeProps{Label: u.Role, Props: mf.ComponentProps{Variant: "ghost"}}),
-		mf.UIText(mf.TextProps{Text: u.StartDate, Size: "sm"}),
+		mf.TextComponent(mf.TextProps{Text: u.StartDate, Size: "sm"}),
 		mf.ActionForm(mf.ActionFormProps{Action: "users/delete/prompt", Target: "#users-workspace", Swap: "outerHTML"},
 			mf.HiddenField("id", strconv.Itoa(u.ID)),
 			mf.SubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
@@ -959,7 +959,7 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 				}),
 			),
 			mf.Box(mf.BoxProps{Border: true, Tone: "base", Padding: "sm", Props: mf.ComponentProps{Class: "rounded-box"}},
-				mf.UIText(mf.TextProps{Text: "Theme toggle component", Size: "sm", Tone: "muted", Props: mf.ComponentProps{Class: "mb-2"}}),
+				mf.TextComponent(mf.TextProps{Text: "Theme toggle component", Size: "sm", Tone: "muted", Props: mf.ComponentProps{Class: "mb-2"}}),
 				mf.ThemeToggleButton(mf.ComponentProps{Variant: "outline", Size: "sm"}),
 			),
 			mf.Box(mf.BoxProps{Border: true, Tone: "base", Padding: "sm", Props: mf.ComponentProps{Class: "rounded-box"}},
@@ -1001,7 +1001,7 @@ func renderComponentShowcase(ctx *mb.Context) mf.Node {
 func roleMixRow(role string, count int) mf.Node {
 	return mf.Actions(mf.ActionsProps{Align: "between", Props: mf.ComponentProps{Class: "rounded-box border border-base-300 px-3 py-2"}},
 		roleBadge(role),
-		mf.UIText(mf.TextProps{Text: strconv.Itoa(count) + " users", Size: "sm", Weight: "medium"}),
+		mf.TextComponent(mf.TextProps{Text: strconv.Itoa(count) + " users", Size: "sm", Weight: "medium"}),
 	)
 }
 
@@ -1018,8 +1018,8 @@ func renderDeleteModal(ctx *mb.Context) mf.Node {
 	return mf.Modal(mf.ModalProps{
 		Title: "Delete user",
 		Body: mf.Stack(mf.StackProps{Gap: "sm"},
-			mf.UIText(mf.TextProps{Text: "Are you sure you want to delete this user?"}),
-			mf.UIText(mf.TextProps{Text: targetName, Size: "sm", Tone: "subtle"}),
+			mf.TextComponent(mf.TextProps{Text: "Are you sure you want to delete this user?"}),
+			mf.TextComponent(mf.TextProps{Text: targetName, Size: "sm", Tone: "subtle"}),
 		),
 		Actions: mf.Actions(mf.ActionsProps{Align: "end", Gap: "sm", Props: mf.ComponentProps{Class: "w-full"}},
 			mf.ActionForm(mf.ActionFormProps{Action: "users/delete/cancel", Target: "#users-workspace", Swap: "outerHTML"},

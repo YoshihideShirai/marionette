@@ -14,7 +14,7 @@ func Button(label string, props ComponentProps) Node {
 	return componentButton(label, "button", props)
 }
 
-func UISubmitButton(label string, props ComponentProps) Node {
+func SubmitButton(label string, props ComponentProps) Node {
 	return componentButton(label, "submit", props)
 }
 
@@ -155,7 +155,7 @@ func Table(props TableProps) Node {
 	}
 }
 
-func UIChart(props ChartProps) Node {
+func Chart(props ChartProps) Node {
 	config, err := chartConfigJSON(props)
 	if err != nil {
 		return renderErrorNode{err: err}
@@ -203,7 +203,7 @@ func UIChart(props ChartProps) Node {
 	}
 }
 
-func UIImage(props ImageProps) Node {
+func Image(props ImageProps) Node {
 	src := strings.TrimSpace(props.Src)
 	if src == "" {
 		return renderErrorNode{err: fmt.Errorf("image src is required")}
@@ -244,7 +244,7 @@ func UIImage(props ImageProps) Node {
 	}
 }
 
-func UIPagination(props PaginationProps) Node {
+func Pagination(props PaginationProps) Node {
 	page := props.Page
 	if page < 1 {
 		page = 1
@@ -377,7 +377,7 @@ func chartFallbackRows(props ChartProps) []chartFallbackRow {
 	return rows
 }
 
-func UITabs(props TabsProps) Node {
+func Tabs(props TabsProps) Node {
 	items := make([]TabsItem, 0, len(props.Items))
 	for _, item := range props.Items {
 		items = append(items, TabsItem{
@@ -405,7 +405,7 @@ func UITabs(props TabsProps) Node {
 	}
 }
 
-func UIBreadcrumb(props BreadcrumbProps) Node {
+func Breadcrumb(props BreadcrumbProps) Node {
 	items := make([]BreadcrumbItem, 0, len(props.Items))
 	for _, item := range props.Items {
 		items = append(items, BreadcrumbItem{
@@ -432,7 +432,7 @@ func UIBreadcrumb(props BreadcrumbProps) Node {
 	}
 }
 
-func UICheckbox(props CheckboxComponentProps) Node {
+func checkboxComponent(props CheckboxComponentProps) Node {
 	return templateNode{
 		name: "components/checkbox",
 		data: struct {
@@ -453,7 +453,7 @@ func UICheckbox(props CheckboxComponentProps) Node {
 	}
 }
 
-func UIRadioGroup(props RadioGroupComponentProps) Node {
+func radioGroupComponent(props RadioGroupComponentProps) Node {
 	items := make([]RadioItem, 0, len(props.Items))
 	for _, item := range props.Items {
 		items = append(items, RadioItem{
@@ -485,7 +485,7 @@ func UIRadioGroup(props RadioGroupComponentProps) Node {
 	}
 }
 
-func UISwitch(props SwitchComponentProps) Node {
+func switchComponent(props SwitchComponentProps) Node {
 	return templateNode{
 		name: "components/switch",
 		data: struct {

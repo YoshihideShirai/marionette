@@ -123,7 +123,6 @@ func TestHiddenInputRenderEscapesValue(t *testing.T) {
 	}
 }
 
-
 func TestFileUploadRendersFileInput(t *testing.T) {
 	html, err := FileUpload("attachment", true).Render()
 	if err != nil {
@@ -197,11 +196,11 @@ func TestTemplatePartialsRenderSharedProps(t *testing.T) {
 	if err != nil {
 		t.Fatalf("button render failed: %v", err)
 	}
-	inputHTML, err := UIInput("email", "demo@example.com", ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	inputHTML, err := inputComponent("email", "demo@example.com", ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("input render failed: %v", err)
 	}
-	selectHTML, err := UISelect("role", []SelectOption{{Label: "Viewer", Value: "viewer", Selected: true}}, ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
+	selectHTML, err := selectComponent("role", []SelectOption{{Label: "Viewer", Value: "viewer", Selected: true}}, ComponentProps{Variant: "ghost", Size: "sm", Disabled: true}).Render()
 	if err != nil {
 		t.Fatalf("select render failed: %v", err)
 	}
@@ -388,7 +387,7 @@ func TestComponentInputWithOptionsRendersDateConstraints(t *testing.T) {
 }
 
 func TestComponentFormFieldRendersLabelHintAndError(t *testing.T) {
-	html, err := UIFormField(
+	html, err := FormField(
 		InputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Variant: "default", Size: "sm"}}),
 		FormFieldProps{
 			Label:    "Name",
@@ -782,7 +781,7 @@ func TestSurfaceLayoutComponentsRenderHeadersActionsAndChildren(t *testing.T) {
 		}
 	}
 
-	textHTML, err := UIText(TextProps{Text: "Muted", Size: "sm", Weight: "medium", Tone: "muted"}).Render()
+	textHTML, err := TextComponent(TextProps{Text: "Muted", Size: "sm", Weight: "medium", Tone: "muted"}).Render()
 	if err != nil {
 		t.Fatalf("text render failed: %v", err)
 	}

@@ -7,6 +7,6 @@ import (
 
 func RegisterParagraphExample(app *mb.App) {
 	app.Page("/paragraph", func(ctx *mb.Context) mf.Node {
-		return mf.UIText(mf.TextProps{Text: "Paragraph helper for readable long-form text."})
+		return mf.TextComponent(mf.TextProps{Text: "Paragraph helper for readable long-form text."})
 	})
 }

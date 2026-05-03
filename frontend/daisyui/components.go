@@ -189,3 +189,9 @@ func SidebarLink(label, href string) frontend.SidebarItem {
 func DownloadLink(label, href, filename string, props frontend.ComponentProps) frontend.Node {
 	return frontend.DownloadLink(label, href, filename, props)
 }
+
+func H1(children ...frontend.Node) frontend.Node { return frontend.H1(children...) }
+func H2(children ...frontend.Node) frontend.Node { return frontend.H2(children...) }
+func H3(children ...frontend.Node) frontend.Node { return frontend.H3(children...) }
+func H4(children ...frontend.Node) frontend.Node { return frontend.H4(children...) }
+func TextNode(text string) frontend.Node         { return frontend.Text(text) }

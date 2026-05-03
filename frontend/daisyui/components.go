@@ -273,3 +273,25 @@ func Drawer(id string, side, content frontend.Node) frontend.Node {
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer-side"}, Children: []frontend.Node{side}},
 	}}
 }
+
+func Stat(title, value, desc string) frontend.Node {
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "stats shadow"}, Children: []frontend.Node{
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "stat"}, Children: []frontend.Node{
+			lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "stat-title"}, Text: title},
+			lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "stat-value"}, Text: value},
+			lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "stat-desc"}, Text: desc},
+		}},
+	}}
+}
+
+func Steps(items ...frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "steps steps-vertical lg:steps-horizontal"}, Children: items}
+}
+
+func Step(label string, active bool) frontend.Node {
+	className := "step"
+	if active {
+		className = "step step-primary"
+	}
+	return lowhtml.ElementNode{Tag: "li", Attrs: map[string]string{"class": className}, Text: label}
+}

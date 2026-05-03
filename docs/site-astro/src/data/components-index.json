@@ -35,6 +35,38 @@
       "description": "Application sidebar navigation with active links and optional note."
     },
     {
+      "id": "navbar",
+      "name": "Navbar",
+      "group": "Components",
+      "example": "/marionette/examples/navbar.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Top navigation bar alias exposed from frontend package."
+    },
+    {
+      "id": "hero",
+      "name": "Hero",
+      "group": "Components",
+      "example": "/marionette/examples/hero.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Hero section alias exposed from frontend package."
+    },
+    {
+      "id": "timeline",
+      "name": "Timeline",
+      "group": "Components",
+      "example": "/marionette/examples/timeline.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Timeline and TimelineItem aliases exposed from frontend package."
+    },
+    {
+      "id": "dropdown",
+      "name": "Dropdown",
+      "group": "Components",
+      "example": "/marionette/examples/dropdown.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Dropdown alias exposed from frontend package."
+    },
+    {
       "id": "input",
       "name": "Input",
       "group": "Components",
@@ -414,6 +446,190 @@
       "description": "Font icon helper for Material Icons or UIcons/Flaticon classes.",
       "template": "components.go",
       "example": "/marionette/examples/font-icon.html"
+    },
+    {
+      "id": "avatar",
+      "name": "Avatar",
+      "group": "Components",
+      "example": "/marionette/examples/avatar.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Avatar alias exposed from frontend package."
+    },
+    {
+      "id": "menu",
+      "name": "Menu",
+      "group": "Components",
+      "example": "/marionette/examples/menu.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Menu alias exposed from frontend package."
+    },
+    {
+      "id": "footer",
+      "name": "Footer",
+      "group": "Components",
+      "example": "/marionette/examples/footer.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Footer alias exposed from frontend package."
+    },
+    {
+      "id": "drawer",
+      "name": "Drawer",
+      "group": "Components",
+      "example": "/marionette/examples/drawer.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Drawer alias exposed from frontend package."
+    },
+    {
+      "id": "stat",
+      "name": "Stat",
+      "group": "Components",
+      "example": "/marionette/examples/stat.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Stat alias exposed from frontend package."
+    },
+    {
+      "id": "steps",
+      "name": "Steps",
+      "group": "Components",
+      "example": "/marionette/examples/steps.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Steps alias exposed from frontend package."
+    },
+    {
+      "id": "step",
+      "name": "Step",
+      "group": "Components",
+      "example": "/marionette/examples/step.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Step alias exposed from frontend package."
+    },
+    {
+      "id": "collapse",
+      "name": "Collapse",
+      "group": "Components",
+      "example": "/marionette/examples/collapse.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Collapse alias exposed from frontend package."
+    },
+    {
+      "id": "mockup-window",
+      "name": "MockupWindow",
+      "group": "Components",
+      "example": "/marionette/examples/mockup-window.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "MockupWindow alias exposed from frontend package."
+    },
+    {
+      "id": "kbd",
+      "name": "Kbd",
+      "group": "Components",
+      "example": "/marionette/examples/kbd.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Kbd alias exposed from frontend package."
+    },
+    {
+      "id": "code",
+      "name": "Code",
+      "group": "Components",
+      "example": "/marionette/examples/code.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Code alias exposed from frontend package."
+    },
+    {
+      "id": "indicator",
+      "name": "Indicator",
+      "group": "Components",
+      "example": "/marionette/examples/indicator.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Indicator alias exposed from frontend package."
+    },
+    {
+      "id": "tooltip",
+      "name": "Tooltip",
+      "group": "Components",
+      "example": "/marionette/examples/tooltip.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Tooltip alias exposed from frontend package."
+    },
+    {
+      "id": "loading",
+      "name": "Loading",
+      "group": "Components",
+      "example": "/marionette/examples/loading.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Loading alias exposed from frontend package."
+    },
+    {
+      "id": "radial-progress",
+      "name": "RadialProgress",
+      "group": "Components",
+      "example": "/marionette/examples/radial-progress.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "RadialProgress alias exposed from frontend package."
+    },
+    {
+      "id": "rating",
+      "name": "Rating",
+      "group": "Components",
+      "example": "/marionette/examples/rating.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Rating alias exposed from frontend package."
+    },
+    {
+      "id": "range",
+      "name": "Range",
+      "group": "Components",
+      "example": "/marionette/examples/range.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Range alias exposed from frontend package."
+    },
+    {
+      "id": "toggle",
+      "name": "Toggle",
+      "group": "Components",
+      "example": "/marionette/examples/toggle.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Toggle alias exposed from frontend package."
+    },
+    {
+      "id": "join",
+      "name": "Join",
+      "group": "Components",
+      "example": "/marionette/examples/join.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Join alias exposed from frontend package."
+    },
+    {
+      "id": "mask",
+      "name": "Mask",
+      "group": "Components",
+      "example": "/marionette/examples/mask.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Mask alias exposed from frontend package."
+    },
+    {
+      "id": "carousel",
+      "name": "Carousel",
+      "group": "Components",
+      "example": "/marionette/examples/carousel.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Carousel alias exposed from frontend package."
+    },
+    {
+      "id": "carousel-item",
+      "name": "CarouselItem",
+      "group": "Components",
+      "example": "/marionette/examples/carousel-item.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "CarouselItem alias exposed from frontend package."
+    },
+    {
+      "id": "chat-bubble",
+      "name": "ChatBubble",
+      "group": "Components",
+      "example": "/marionette/examples/chat-bubble.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "ChatBubble alias exposed from frontend package."
     }
   ]
 }

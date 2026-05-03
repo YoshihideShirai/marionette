@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Stat("Sales", "$12K", "+12%") }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterStatExample(app *mb.App) {
+	app.Page("/stat", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "stat example"})
+	})
+}

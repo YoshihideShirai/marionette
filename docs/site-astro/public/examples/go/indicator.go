@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Indicator(m.Text("new"), m.Button("Inbox", m.ComponentProps{})) }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterIndicatorExample(app *mb.App) {
+	app.Page("/indicator", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "indicator example"})
+	})
+}

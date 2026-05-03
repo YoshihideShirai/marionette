@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Steps(m.Step("A", true), m.Step("B", false)) }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterStepsExample(app *mb.App) {
+	app.Page("/steps", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "steps example"})
+	})
+}

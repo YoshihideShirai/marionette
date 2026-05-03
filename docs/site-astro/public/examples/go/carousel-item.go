@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.CarouselItem("slide1", m.Text("Slide")) }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterCarouselItemExample(app *mb.App) {
+	app.Page("/carousel-item", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "carousel-item example"})
+	})
+}

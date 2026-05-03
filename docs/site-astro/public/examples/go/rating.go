@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Rating("score", 5, 4) }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterRatingExample(app *mb.App) {
+	app.Page("/rating", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "rating example"})
+	})
+}

@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Timeline(m.TimelineItem("1", "", m.Text("Import frontend")), m.TimelineItem("2", "", m.Text("Call frontend.Timeline()"))) }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterTimelineExample(app *mb.App) {
+	app.Page("/timeline", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "timeline example"})
+	})
+}

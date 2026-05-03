@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Join(m.Button("1", m.ComponentProps{}), m.Button("2", m.ComponentProps{})) }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterJoinExample(app *mb.App) {
+	app.Page("/join", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "join example"})
+	})
+}

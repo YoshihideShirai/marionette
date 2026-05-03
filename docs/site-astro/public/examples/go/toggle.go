@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Toggle("enabled", true) }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterToggleExample(app *mb.App) {
+	app.Page("/toggle", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "toggle example"})
+	})
+}

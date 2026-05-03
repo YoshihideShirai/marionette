@@ -1,3 +1,12 @@
-package main
-import m "github.com/YoshihideShirai/marionette"
-func example() m.Node { return m.Avatar("https://placehold.co/96x96","avatar","w-24 rounded") }
+package goexamples
+
+import (
+	mb "github.com/YoshihideShirai/marionette/backend"
+	mf "github.com/YoshihideShirai/marionette/frontend"
+)
+
+func RegisterAvatarExample(app *mb.App) {
+	app.Page("/avatar", func(ctx *mb.Context) mf.Node {
+		return mf.TextComponent(mf.TextProps{Text: "avatar example"})
+	})
+}

@@ -49,6 +49,9 @@ func (e ElementNode) Render() (template.HTML, error) {
 
 	children := make([]template.HTML, 0, len(e.Children))
 	for _, child := range e.Children {
+		if child == nil {
+			continue
+		}
 		r, err := child.Render()
 		if err != nil {
 			return "", err

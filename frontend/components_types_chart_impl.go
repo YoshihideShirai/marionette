@@ -1,55 +1,27 @@
 package frontend
 
+import shared "github.com/YoshihideShirai/marionette/frontend/shared"
+
 // このファイルはChartコンポーネントのProps/DTO型を定義する。
 // グラフ描画に関する型をここに集約する。
 
-type ChartType string
+type ChartType = shared.ChartType
 
 const (
-	ChartTypeBar      ChartType = "bar"
-	ChartTypeLine     ChartType = "line"
-	ChartTypePie      ChartType = "pie"
-	ChartTypeDoughnut ChartType = "doughnut"
-	ChartTypeScatter  ChartType = "scatter"
+	ChartTypeBar      = shared.ChartTypeBar
+	ChartTypeLine     = shared.ChartTypeLine
+	ChartTypePie      = shared.ChartTypePie
+	ChartTypeDoughnut = shared.ChartTypeDoughnut
+	ChartTypeScatter  = shared.ChartTypeScatter
 )
 
-type ChartDataset struct {
-	Label           string
-	Data            []float64
-	Points          []ChartPoint
-	BackgroundColor string
-	BorderColor     string
-	Fill            bool
-	Tension         float64
-}
+type ChartDataset = shared.ChartDataset
 
-type ChartPoint struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-}
+type ChartPoint = shared.ChartPoint
 
-type ChartOptions struct {
-	BeginAtZero bool
-	Stacked     bool
-	HideLegend  bool
-	AspectRatio float64
-	XAxisLabel  string
-	YAxisLabel  string
-}
+type ChartOptions = shared.ChartOptions
 
-type ChartProps struct {
-	Type            ChartType
-	Title           string
-	Description     string
-	Labels          []string
-	Datasets        []ChartDataset
-	Options         ChartOptions
-	AriaLabel       string
-	Height          int
-	Props           ComponentProps
-	QueryStateName  string
-	QueryStateLabel string
-}
+type ChartProps = shared.ChartProps
 
 type chartFallbackRow struct {
 	Label  string

@@ -1,15 +1,12 @@
 package frontend
 
+import shared "github.com/YoshihideShirai/marionette/frontend/shared"
+
 // このファイルは基本的なコンポーネントProps/DTO型を定義する。
 // 新しい汎用UIコンポーネントの型はここに追加する。
 
 // ComponentProps defines shared style knobs for template components.
-type ComponentProps struct {
-	Class    string
-	Variant  string
-	Size     string
-	Disabled bool
-}
+type ComponentProps = shared.ComponentProps
 
 type LinkProps struct {
 	Label     string
@@ -24,67 +21,21 @@ type LinkProps struct {
 	Props     ComponentProps
 }
 
-type SelectOption struct {
-	Label    string
-	Value    string
-	Selected bool
-}
+type SelectOption = shared.SelectOption
 
-type ModalProps struct {
-	Title   string
-	Body    Node
-	Actions Node
-	Open    bool
-}
+type ModalProps = shared.ModalProps
 
-type FormFieldProps struct {
-	Label    string
-	Required bool
-	Hint     string
-	Error    string
-}
+type FormFieldProps = shared.FormFieldProps
 
-type FormProps struct {
-	ID     string
-	Class  string
-	Method string
-	Action string
-	Attrs  Attrs
-}
+type FormProps = shared.FormProps
 
-type ActionFormProps struct {
-	ID     string
-	Action string
-	Target string
-	Swap   string
-	Method string
-	Props  ComponentProps
-}
+type ActionFormProps = shared.ActionFormProps
 
-type InputOptions struct {
-	Type        string
-	Placeholder string
-	Min         string
-	Max         string
-	Required    bool
-	Props       ComponentProps
-}
+type InputOptions = shared.InputOptions
 
-type TextareaOptions struct {
-	Placeholder string
-	Rows        int
-	Required    bool
-	Props       ComponentProps
-}
+type TextareaOptions = shared.TextareaOptions
 
-type EmptyStateProps struct {
-	Title       string
-	Description string
-	Skeleton    bool
-	Rows        int
-	Icon        string
-	Props       ComponentProps
-}
+type EmptyStateProps = shared.EmptyStateProps
 
 type AlertProps struct {
 	Title       string

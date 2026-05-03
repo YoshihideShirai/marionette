@@ -1,6 +1,8 @@
 package daisyui
 
 import (
+	"strconv"
+
 	frontend "github.com/YoshihideShirai/marionette/frontend"
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
 )
@@ -347,4 +349,73 @@ func Indicator(item, target frontend.Node) frontend.Node {
 		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "indicator-item badge badge-secondary"}, Children: []frontend.Node{item}},
 		target,
 	}}
+}
+
+func Link(label, href string, props frontend.ComponentProps) frontend.Node {
+	className := "link"
+	if props.Class != "" {
+		className += " " + props.Class
+	}
+	return lowhtml.ElementNode{Tag: "a", Attrs: map[string]string{"class": className, "href": href}, Text: label}
+}
+
+func Dropdown(trigger, menu frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "dropdown"}, Children: []frontend.Node{
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []frontend.Node{trigger}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "class": "dropdown-content z-1 card card-sm bg-base-100 shadow-md"}, Children: []frontend.Node{menu}},
+	}}
+}
+
+func Tooltip(text string, child frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "tooltip", "data-tip": text}, Children: []frontend.Node{child}}
+}
+
+func Loading(sizeClass string) frontend.Node {
+	className := "loading loading-spinner"
+	if sizeClass != "" {
+		className += " " + sizeClass
+	}
+	return lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": className}}
+}
+
+func RadialProgress(value int, sizeClass string) frontend.Node {
+	attrs := map[string]string{"class": "radial-progress " + sizeClass, "style": "--value:" + strconv.Itoa(value) + ";", "role": "progressbar"}
+	return lowhtml.ElementNode{Tag: "div", Attrs: attrs, Text: strconv.Itoa(value) + "%"}
+}
+
+func Rating(name string, max int, checked int) frontend.Node {
+	stars := make([]frontend.Node, 0, max)
+	for i := 1; i <= max; i++ {
+		attrs := map[string]string{"type": "radio", "name": name, "class": "mask mask-star-2 bg-orange-400", "value": strconv.Itoa(i)}
+		if i == checked {
+			attrs["checked"] = "checked"
+		}
+		stars = append(stars, lowhtml.ElementNode{Tag: "input", Attrs: attrs})
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "rating"}, Children: stars}
+}
+
+func Range(name string, value int, min int, max int) frontend.Node {
+	return lowhtml.ElementNode{Tag: "input", Attrs: map[string]string{"type": "range", "name": name, "value": strconv.Itoa(value), "min": strconv.Itoa(min), "max": strconv.Itoa(max), "class": "range"}}
+}
+
+func Toggle(name string, checked bool) frontend.Node {
+	attrs := map[string]string{"type": "checkbox", "name": name, "class": "toggle"}
+	if checked {
+		attrs["checked"] = "checked"
+	}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
+}
+
+func Join(children ...frontend.Node) frontend.Node {
+	wrapped := make([]frontend.Node, 0, len(children))
+	for _, child := range children {
+		wrapped = append(wrapped, lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join-item"}, Children: []frontend.Node{child}})
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join"}, Children: wrapped}
+}
+
+func Mask(shapeClass string, child frontend.Node) frontend.Node {
+	className := "mask " + shapeClass
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: []frontend.Node{child}}
 }

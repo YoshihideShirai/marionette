@@ -27,6 +27,14 @@
       "description": "Marionette built-in theme toggle action button."
     },
     {
+      "id": "theme-controller",
+      "name": "ThemeController",
+      "group": "Components",
+      "example": "/marionette/examples/theme-controller.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "ThemeController and ThemeControllerOption aliases exposed from frontend package."
+    },
+    {
       "id": "sidebar",
       "name": "Sidebar",
       "group": "Components",

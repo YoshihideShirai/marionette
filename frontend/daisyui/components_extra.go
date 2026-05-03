@@ -406,6 +406,21 @@ func ThemeController(options ...shared.Node) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join"}, Children: options}
 }
 
+// ThemeControllerOption renders a daisyUI theme-controller radio input.
+// See: https://daisyui.com/components/theme-controller/
+func ThemeControllerOption(theme string, checked bool, className string) shared.Node {
+	attrs := map[string]string{
+		"type":  "radio",
+		"name":  "theme-buttons",
+		"class": strings.TrimSpace("theme-controller " + className),
+		"value": theme,
+	}
+	if checked {
+		attrs["checked"] = "checked"
+	}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs, Text: theme}
+}
+
 func DockItem(child shared.Node, active bool) shared.Node {
 	className := "dock-label"
 	if active {

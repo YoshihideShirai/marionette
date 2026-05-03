@@ -1,6 +1,6 @@
 {{define "components/switch" -}}
 <label class="label cursor-pointer justify-start gap-2">
-  <input type="checkbox" role="switch" name="{{.Name}}" value="{{.Value}}" class="{{.Class}}" {{if .Checked}}checked{{end}} {{if .Disabled}}disabled{{end}} />
+  <input type="checkbox" name="{{.Name}}" value="{{.Value}}" class="{{.Class}}" {{if .Checked}}checked{{end}} {{if .Disabled}}disabled{{end}} />
   <span class="label-text">{{.Label}}</span>
 </label>
 {{- end}}

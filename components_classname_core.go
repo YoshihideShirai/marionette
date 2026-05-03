@@ -72,24 +72,75 @@ func textareaClass(props ComponentProps) string {
 }
 
 func buttonVariantClass(variant string) string {
-	switch variant {
-	case "secondary":
-		return "btn-secondary"
-	case "ghost":
-		return "btn-ghost"
-	case "danger":
-		return "btn-error"
-	default:
+	tokens := strings.Fields(strings.TrimSpace(variant))
+	if len(tokens) == 0 {
 		return "btn-primary"
 	}
+	classes := make([]string, 0, len(tokens))
+	for _, token := range tokens {
+		switch token {
+		case "default", "base":
+			// plain DaisyUI button (no tone class)
+		case "primary":
+			classes = append(classes, "btn-primary")
+		case "secondary":
+			classes = append(classes, "btn-secondary")
+		case "accent":
+			classes = append(classes, "btn-accent")
+		case "neutral":
+			classes = append(classes, "btn-neutral")
+		case "info":
+			classes = append(classes, "btn-info")
+		case "success":
+			classes = append(classes, "btn-success")
+		case "warning":
+			classes = append(classes, "btn-warning")
+		case "danger", "error":
+			classes = append(classes, "btn-error")
+		case "ghost":
+			classes = append(classes, "btn-ghost")
+		case "link":
+			classes = append(classes, "btn-link")
+		case "outline":
+			classes = append(classes, "btn-outline")
+		case "dash", "dashed":
+			classes = append(classes, "btn-dash")
+		case "soft":
+			classes = append(classes, "btn-soft")
+		case "glass":
+			classes = append(classes, "btn-glass")
+		case "active":
+			classes = append(classes, "btn-active")
+		case "disabled":
+			classes = append(classes, "btn-disabled")
+		case "wide":
+			classes = append(classes, "btn-wide")
+		case "block":
+			classes = append(classes, "btn-block")
+		case "square":
+			classes = append(classes, "btn-square")
+		case "circle":
+			classes = append(classes, "btn-circle")
+		}
+	}
+	if len(classes) == 0 {
+		return "btn-primary"
+	}
+	return joinClass(classes...)
 }
 
 func buttonSizeClass(size string) string {
-	switch size {
+	switch strings.TrimSpace(size) {
+	case "xs":
+		return "btn-xs"
 	case "sm":
 		return "btn-sm"
+	case "md", "":
+		return ""
 	case "lg":
 		return "btn-lg"
+	case "xl":
+		return "btn-xl"
 	default:
 		return ""
 	}

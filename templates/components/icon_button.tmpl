@@ -1,0 +1,7 @@
+{{define "components/icon_button" -}}
+<button class="{{.Class}}" type="{{.Type}}"{{if .Disabled}} disabled{{end}}>
+  {{if .IconStart}}<span class="ui-button-icon" aria-hidden="true">{{.IconSVG}}</span>{{end}}
+  <span>{{.Label}}</span>
+  {{if .IconEnd}}<span class="ui-button-icon" aria-hidden="true">{{.IconSVG}}</span>{{end}}
+</button>
+{{- end}}

@@ -1,0 +1,6 @@
+{{define "components/login_button" -}}
+<button class="{{.Class}}" type="{{.Type}}"{{if .Disabled}} disabled{{end}}>
+  {{if .IconSVG}}<span class="ui-login-icon" aria-hidden="true">{{.IconSVG}}</span>{{end}}
+  <span>{{.Label}}</span>
+</button>
+{{- end}}

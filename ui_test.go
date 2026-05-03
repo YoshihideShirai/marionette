@@ -1,6 +1,7 @@
 package marionette
 
 import (
+	"html/template"
 	"strings"
 	"sync"
 	"testing"
@@ -219,6 +220,105 @@ func TestTemplatePartialsRenderSharedProps(t *testing.T) {
 				t.Fatalf("%s expected %q in %q", tc.name, want, tc.html)
 			}
 		}
+	}
+}
+
+func TestButtonSupportsDaisyUIVariants(t *testing.T) {
+	tests := []struct {
+		variant string
+		want    string
+	}{
+		{variant: "default", want: `class="btn w-fit`},
+		{variant: "accent", want: "btn-accent"},
+		{variant: "neutral", want: "btn-neutral"},
+		{variant: "info", want: "btn-info"},
+		{variant: "success", want: "btn-success"},
+		{variant: "warning", want: "btn-warning"},
+		{variant: "error", want: "btn-error"},
+		{variant: "outline", want: "btn-outline"},
+		{variant: "link", want: "btn-link"},
+		{variant: "soft", want: "btn-soft"},
+		{variant: "glass", want: "btn-glass"},
+		{variant: "active", want: "btn-active"},
+		{variant: "disabled", want: "btn-disabled"},
+		{variant: "wide", want: "btn-wide"},
+		{variant: "block", want: "btn-block"},
+		{variant: "square", want: "btn-square"},
+		{variant: "circle", want: "btn-circle"},
+		{variant: "primary outline", want: "btn-outline"},
+		{variant: "dashed", want: "btn-dash"},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.variant, func(t *testing.T) {
+			html, err := Button("Send", ComponentProps{Variant: tc.variant}).Render()
+			if err != nil {
+				t.Fatalf("button render failed: %v", err)
+			}
+			if got := string(html); !strings.Contains(got, tc.want) {
+				t.Fatalf("expected %q in %q", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestButtonSupportsDaisyUISizes(t *testing.T) {
+	tests := []struct {
+		size string
+		want string
+	}{
+		{size: "xs", want: "btn-xs"},
+		{size: "sm", want: "btn-sm"},
+		{size: "md", want: `class="btn w-fit btn-primary`},
+		{size: "lg", want: "btn-lg"},
+		{size: "xl", want: "btn-xl"},
+	}
+	for _, tc := range tests {
+		html, err := Button("Send", ComponentProps{Size: tc.size}).Render()
+		if err != nil {
+			t.Fatalf("button render failed: %v", err)
+		}
+		if got := string(html); !strings.Contains(got, tc.want) {
+			t.Fatalf("expected %q in %q", tc.want, got)
+		}
+	}
+}
+
+func TestLoginButtonRendersIconAndLabel(t *testing.T) {
+	html, err := LoginButton(LoginButtonProps{
+		Label:   "Login with Email",
+		IconSVG: template.HTML(`<svg aria-label="Email icon"></svg>`),
+		Props:   ComponentProps{Variant: "default", Class: "bg-white text-black"},
+	}).Render()
+	if err != nil {
+		t.Fatalf("login button render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{`ui-login-icon`, `Login with Email`, `bg-white text-black`, `<svg aria-label="Email icon"></svg>`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestIconButtonSupportsStartAndEndIcon(t *testing.T) {
+	icon := template.HTML(`<svg aria-label="heart"></svg>`)
+	startHTML, err := IconButton(IconButtonProps{Label: "Like", IconSVG: icon, Props: ComponentProps{Variant: "default"}}).Render()
+	if err != nil {
+		t.Fatalf("start icon button render failed: %v", err)
+	}
+	endHTML, err := IconButton(IconButtonProps{Label: "Like", IconSVG: icon, IconPosition: "end", Props: ComponentProps{Variant: "default"}}).Render()
+	if err != nil {
+		t.Fatalf("end icon button render failed: %v", err)
+	}
+	start := string(startHTML)
+	end := string(endHTML)
+	if !(strings.Contains(start, `<span class="ui-button-icon" aria-hidden="true"><svg aria-label="heart"></svg></span>`) && strings.Contains(start, `<span>Like</span>`)) {
+		t.Fatalf("unexpected start icon markup: %q", start)
+	}
+	if !(strings.Index(end, `<span>Like</span>`) >= 0 && strings.Index(end, `<span class="ui-button-icon" aria-hidden="true"><svg aria-label="heart"></svg></span>`) > strings.Index(end, `<span>Like</span>`)) {
+		t.Fatalf("unexpected end icon markup: %q", end)
 	}
 }
 

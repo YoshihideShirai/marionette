@@ -1,6 +1,9 @@
 package daisyui
 
-import frontend "github.com/YoshihideShirai/marionette/frontend"
+import (
+	frontend "github.com/YoshihideShirai/marionette/frontend"
+	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
+)
 
 func Button(label string, props frontend.ComponentProps) frontend.Node {
 	return frontend.Button(label, props)
@@ -215,4 +218,42 @@ func GhostButton(label string, props frontend.ComponentProps) frontend.Node {
 		props.Variant = "ghost"
 	}
 	return frontend.Button(label, props)
+}
+
+// Avatar follows daisyUI's avatar markup: .avatar > .w-*/mask wrapper > img
+func Avatar(src, alt, class string) frontend.Node {
+	return lowhtml.ElementNode{
+		Tag:   "div",
+		Attrs: map[string]string{"class": "avatar"},
+		Children: []frontend.Node{
+			lowhtml.ElementNode{
+				Tag:      "div",
+				Attrs:    map[string]string{"class": class},
+				Children: []frontend.Node{lowhtml.ElementNode{Tag: "img", Attrs: map[string]string{"src": src, "alt": alt}}},
+			},
+		},
+	}
+}
+
+func Navbar(start, center, end frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar bg-base-100 shadow-sm"}, Children: []frontend.Node{
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar-start"}, Children: []frontend.Node{start}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar-center"}, Children: []frontend.Node{center}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar-end"}, Children: []frontend.Node{end}},
+	}}
+}
+
+func Hero(title, description string, actions ...frontend.Node) frontend.Node {
+	children := []frontend.Node{
+		lowhtml.ElementNode{Tag: "h1", Attrs: map[string]string{"class": "text-5xl font-bold"}, Text: title},
+		lowhtml.ElementNode{Tag: "p", Attrs: map[string]string{"class": "py-6"}, Text: description},
+	}
+	if len(actions) > 0 {
+		children = append(children, lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "flex gap-2"}, Children: actions})
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "hero bg-base-200 rounded-box"}, Children: []frontend.Node{
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "hero-content text-center"}, Children: []frontend.Node{
+			lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "max-w-md"}, Children: children},
+		}},
+	}}
 }

@@ -1,9 +1,0 @@
-{{define "components/alert"}}
-<div class="{{.Class}}" role="alert" aria-live="assertive" aria-atomic="true">
-  {{if .Icon}}<span class="ui-feedback__icon ui-icon material-icons" aria-hidden="true">{{.Icon}}</span>{{end}}
-  <div class="ui-feedback__body">
-    {{if .Title}}<p class="ui-feedback__title">{{.Title}}</p>{{end}}
-    {{if .Description}}<p class="ui-feedback__description">{{.Description}}</p>{{end}}
-  </div>
-</div>
-{{end}}

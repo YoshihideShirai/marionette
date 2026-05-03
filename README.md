@@ -77,6 +77,12 @@ npm run dev
 
 The GitHub Pages workflow publishes `docs/site-astro/` via GitHub Actions.
 
+## Component template placement
+
+- The canonical component template directory is `templates/components/`.
+- `loadComponentTemplates` in both `components.go` and `frontend/components_impl.go` loads templates only from this directory.
+- Name templates as `components/<basename>` (for example: `components/link`, `components/button`), where `<basename>` is the file name without `.tmpl`/`.html`.
+
 ## Heavy Job Template (data apps)
 
 `cmd/marionette` includes a sample "Run aggregation" flow on the Analytics page:

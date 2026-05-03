@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
+	shared "github.com/YoshihideShirai/marionette/frontend/shared"
 	dataframeimports "github.com/rocketlaunchr/dataframe-go/imports"
 )
 
@@ -103,9 +104,7 @@ type table struct {
 	Rows    []TableRowData
 }
 
-type TableRowData struct {
-	Cells []Node
-}
+type TableRowData = shared.TableRowData
 
 func HTMXTable(headers []string, rows ...TableRowData) Node {
 	return table{Headers: headers, Rows: rows}
@@ -294,7 +293,15 @@ func (f *form) Render() (template.HTML, error) {
 
 func Input(name, value string, props ...ComponentProps) Node {
 	if len(props) > 0 {
-		return UIInput(name, value, props[0])
+		return element{
+			Tag: "input",
+			Attrs: map[string]string{
+				"class": joinClass("input input-bordered w-full", props[0].Class),
+				"name":  name,
+				"type":  "text",
+				"value": value,
+			},
+		}
 	}
 	return element{
 		Tag: "input",
@@ -312,11 +319,16 @@ func FileUpload(name string, required bool, props ...ComponentProps) Node {
 	if len(props) > 0 {
 		componentProps = props[0]
 	}
-	return UIInputWithOptions(name, "", InputOptions{
-		Type:     "file",
-		Required: required,
-		Props:    componentProps,
-	})
+	attrs := map[string]string{
+		"class": joinClass("input input-bordered w-full", componentProps.Class),
+		"name":  name,
+		"type":  "file",
+		"value": "",
+	}
+	if required {
+		attrs["required"] = "required"
+	}
+	return element{Tag: "input", Attrs: attrs}
 }
 
 func HiddenInput(name, value string) Node {

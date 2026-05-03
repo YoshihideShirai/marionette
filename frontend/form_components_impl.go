@@ -175,7 +175,7 @@ func Textarea(first any, rest ...any) Node {
 		if !ok {
 			return renderErrorNode{err: fmt.Errorf("textarea options must be TextareaOptions")}
 		}
-		return UITextarea(name, value, options)
+		return Textarea(name, value, options)
 	}
 	props, ok := first.(TextareaProps)
 	if !ok || len(rest) != 0 {
@@ -217,7 +217,7 @@ func Select(first any, rest ...any) Node {
 		if !ok {
 			return renderErrorNode{err: fmt.Errorf("select props must be ComponentProps")}
 		}
-		return UISelect(name, options, props)
+		return Select(name, options, props)
 	}
 	props, ok := first.(SelectFieldProps)
 	if !ok || len(rest) != 0 {
@@ -252,7 +252,7 @@ func selectField(props SelectFieldProps) Node {
 func Checkbox(props any) Node {
 	switch p := props.(type) {
 	case CheckboxComponentProps:
-		return UICheckbox(p)
+		return Checkbox(p)
 	case CheckboxProps:
 		return checkboxField(p)
 	default:
@@ -273,7 +273,7 @@ func checkboxField(props CheckboxProps) Node {
 func RadioGroup(props any) Node {
 	switch p := props.(type) {
 	case RadioGroupComponentProps:
-		return UIRadioGroup(p)
+		return RadioGroup(p)
 	case RadioGroupProps:
 		return radioGroupField(p)
 	default:
@@ -304,7 +304,7 @@ func radioGroupField(props RadioGroupProps) Node {
 func Switch(props any) Node {
 	switch p := props.(type) {
 	case SwitchComponentProps:
-		return UISwitch(p)
+		return Switch(p)
 	case SwitchProps:
 		return switchField(p)
 	default:

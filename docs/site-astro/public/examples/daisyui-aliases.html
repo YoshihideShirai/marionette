@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DaisyUI Aliases</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  </head>
+  <body class="p-6 bg-base-200">
+    <div class="max-w-3xl mx-auto space-y-4">
+      <div class="navbar bg-base-100 rounded-box shadow-sm">
+        <div class="navbar-start"><span class="font-semibold">Marionette</span></div>
+        <div class="navbar-center"><span class="badge badge-primary">frontend aliases</span></div>
+        <div class="navbar-end"><button class="btn btn-sm">Action</button></div>
+      </div>
+
+      <div class="hero bg-base-100 rounded-box">
+        <div class="hero-content text-center">
+          <div class="max-w-md">
+            <h1 class="text-2xl font-bold">DaisyUI aliases in frontend package</h1>
+            <p class="py-2">Use components such as Avatar, Hero, Timeline, and Dropdown without importing frontend/daisyui directly.</p>
+          </div>
+        </div>
+      </div>
+
+      <ul class="timeline timeline-vertical">
+        <li>
+          <div class="timeline-start">Step 1</div>
+          <div class="timeline-middle">●</div>
+          <div class="timeline-end timeline-box">Import <code>frontend</code></div>
+        </li>
+        <li>
+          <div class="timeline-start">Step 2</div>
+          <div class="timeline-middle">●</div>
+          <div class="timeline-end timeline-box">Call <code>frontend.Hero()</code> etc.</div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

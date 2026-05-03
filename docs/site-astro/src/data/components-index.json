@@ -35,6 +35,38 @@
       "description": "Application sidebar navigation with active links and optional note."
     },
     {
+      "id": "navbar",
+      "name": "Navbar",
+      "group": "Components",
+      "example": "/marionette/examples/navbar.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Top navigation bar alias exposed from frontend package."
+    },
+    {
+      "id": "hero",
+      "name": "Hero",
+      "group": "Components",
+      "example": "/marionette/examples/hero.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Hero section alias exposed from frontend package."
+    },
+    {
+      "id": "timeline",
+      "name": "Timeline",
+      "group": "Components",
+      "example": "/marionette/examples/timeline.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Timeline and TimelineItem aliases exposed from frontend package."
+    },
+    {
+      "id": "dropdown",
+      "name": "Dropdown",
+      "group": "Components",
+      "example": "/marionette/examples/dropdown.html",
+      "template": "frontend/daisyui_aliases_impl.go",
+      "description": "Dropdown alias exposed from frontend package."
+    },
+    {
       "id": "input",
       "name": "Input",
       "group": "Components",

@@ -195,3 +195,24 @@ func H2(children ...frontend.Node) frontend.Node { return frontend.H2(children..
 func H3(children ...frontend.Node) frontend.Node { return frontend.H3(children...) }
 func H4(children ...frontend.Node) frontend.Node { return frontend.H4(children...) }
 func TextNode(text string) frontend.Node         { return frontend.Text(text) }
+
+func PrimaryButton(label string, props frontend.ComponentProps) frontend.Node {
+	if props.Variant == "" {
+		props.Variant = "primary"
+	}
+	return frontend.Button(label, props)
+}
+
+func SecondaryButton(label string, props frontend.ComponentProps) frontend.Node {
+	if props.Variant == "" {
+		props.Variant = "secondary"
+	}
+	return frontend.Button(label, props)
+}
+
+func GhostButton(label string, props frontend.ComponentProps) frontend.Node {
+	if props.Variant == "" {
+		props.Variant = "ghost"
+	}
+	return frontend.Button(label, props)
+}

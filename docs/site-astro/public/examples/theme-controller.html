@@ -68,6 +68,87 @@
           </label>
         </div>
       </section>
+
+      <section class="space-y-2">
+        <h2 class="text-sm font-semibold">4) Theme preview swatches</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          <label class="cursor-pointer">
+            <input type="radio" name="theme-picker" value="light" class="theme-controller sr-only" />
+            <span class="block rounded-box border border-base-300 p-2">
+              <span class="font-semibold text-xs">Light</span>
+              <span class="mt-2 grid grid-cols-4 gap-1">
+                <span class="h-3 rounded bg-primary"></span>
+                <span class="h-3 rounded bg-secondary"></span>
+                <span class="h-3 rounded bg-accent"></span>
+                <span class="h-3 rounded bg-neutral"></span>
+              </span>
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="theme-picker" value="cupcake" class="theme-controller sr-only" />
+            <span class="block rounded-box border border-base-300 p-2">
+              <span class="font-semibold text-xs">Cupcake</span>
+              <span class="mt-2 grid grid-cols-4 gap-1">
+                <span class="h-3 rounded bg-primary"></span>
+                <span class="h-3 rounded bg-secondary"></span>
+                <span class="h-3 rounded bg-accent"></span>
+                <span class="h-3 rounded bg-neutral"></span>
+              </span>
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="theme-picker" value="emerald" class="theme-controller sr-only" />
+            <span class="block rounded-box border border-base-300 p-2">
+              <span class="font-semibold text-xs">Emerald</span>
+              <span class="mt-2 grid grid-cols-4 gap-1">
+                <span class="h-3 rounded bg-primary"></span>
+                <span class="h-3 rounded bg-secondary"></span>
+                <span class="h-3 rounded bg-accent"></span>
+                <span class="h-3 rounded bg-neutral"></span>
+              </span>
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="theme-picker" value="night" class="theme-controller sr-only" />
+            <span class="block rounded-box border border-base-300 p-2">
+              <span class="font-semibold text-xs">Night</span>
+              <span class="mt-2 grid grid-cols-4 gap-1">
+                <span class="h-3 rounded bg-primary"></span>
+                <span class="h-3 rounded bg-secondary"></span>
+                <span class="h-3 rounded bg-accent"></span>
+                <span class="h-3 rounded bg-neutral"></span>
+              </span>
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="theme-picker" value="dracula" class="theme-controller sr-only" />
+            <span class="block rounded-box border border-base-300 p-2">
+              <span class="font-semibold text-xs">Dracula</span>
+              <span class="mt-2 grid grid-cols-4 gap-1">
+                <span class="h-3 rounded bg-primary"></span>
+                <span class="h-3 rounded bg-secondary"></span>
+                <span class="h-3 rounded bg-accent"></span>
+                <span class="h-3 rounded bg-neutral"></span>
+              </span>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-sm font-semibold">5) Dropdown selector</h2>
+        <label class="form-control w-full max-w-xs">
+          <span class="label-text mb-1">Choose a theme</span>
+          <select class="select select-bordered theme-controller" name="theme-picker">
+            <option value="light">Light</option>
+            <option value="cupcake">Cupcake</option>
+            <option value="bumblebee">Bumblebee</option>
+            <option value="synthwave">Synthwave</option>
+            <option value="forest">Forest</option>
+            <option value="black">Black</option>
+          </select>
+        </label>
+      </section>
     </div>
   </body>
 </html>

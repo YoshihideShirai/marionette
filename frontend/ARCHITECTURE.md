@@ -15,8 +15,14 @@ Clarify responsibilities within `frontend` and preserve clear boundaries between
 - Centralizes definitions required to represent and compose daisyUI components.
 - Primitive HTML construction logic should remain in `frontend/html` to avoid responsibility overlap.
 
+### `frontend` (root)
+- Provides user-facing aliases only.
+- Should not contain daisyUI component rendering details directly.
+- Public helpers in this layer should delegate to the daisyUI/UI implementation layer.
+
 ## Separation Rules
 - **Primitive layer**: `frontend/html`
 - **Design-system layer (daisyUI)**: `frontend/daisyui`
 - User-facing APIs should hide `frontend/html` internal details whenever possible.
 - daisyUI-specific implementations should remain encapsulated in `frontend/daisyui` and not leak into other layers.
+- Keep root-level alias files (e.g. `component_aliases_impl.go`) free of rendering logic.

@@ -4,6 +4,12 @@ import (
 	rdf "github.com/rocketlaunchr/dataframe-go"
 )
 
+// NOTE:
+// The `frontend` package exposes these aliases as a thin public facade.
+// Actual daisyUI-compatible rendering behavior is implemented by the UI*
+// functions and daisyUI adapter package under `frontend/daisyui`.
+// Keep this file alias-only (no rendering logic).
+
 func SubmitButton(label string, props ComponentProps) Node { return UISubmitButton(label, props) }
 func ThemeToggleButton(props ComponentProps) Node          { return UIThemeToggleButton(props) }
 func InputWithOptions(name, value string, options InputOptions) Node {

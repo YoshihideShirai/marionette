@@ -2,6 +2,7 @@ package daisyui
 
 import (
 	"strconv"
+	"strings"
 
 	frontend "github.com/YoshihideShirai/marionette/frontend"
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
@@ -16,163 +17,428 @@ func textNode(tag string, attrs map[string]string, text string) frontend.Node {
 }
 
 func Button(label string, props frontend.ComponentProps) frontend.Node {
-	return frontend.Button(label, props)
+	className := strings.TrimSpace("btn " + props.Class)
+	attrs := map[string]string{"class": className}
+	if props.Disabled {
+		attrs["disabled"] = "disabled"
+	}
+	return textNode("button", attrs, label)
 }
 
 func Alert(title, description string, props frontend.ComponentProps) frontend.Node {
-	return frontend.UIAlert(frontend.AlertProps{Title: title, Description: description, Props: props})
+	return node("div", map[string]string{"class": strings.TrimSpace("alert " + props.Class)},
+		textNode("span", nil, strings.TrimSpace(title+" "+description)),
+	)
 }
 
 func Card(title, description string, actions frontend.Node, children []frontend.Node, props frontend.ComponentProps) frontend.Node {
-	return frontend.UICard(frontend.CardProps{Title: title, Description: description, Actions: actions, Props: props}, children...)
+	cardChildren := make([]frontend.Node, 0, len(children)+1)
+	if title != "" || description != "" || actions != nil {
+		headerChildren := []frontend.Node{}
+		if title != "" {
+			headerChildren = append(headerChildren, textNode("h2", map[string]string{"class": "card-title"}, title))
+		}
+		if description != "" {
+			headerChildren = append(headerChildren, textNode("p", nil, description))
+		}
+		if actions != nil {
+			headerChildren = append(headerChildren, node("div", map[string]string{"class": "card-actions justify-end"}, actions))
+		}
+		cardChildren = append(cardChildren, node("div", map[string]string{"class": "card-body"}, headerChildren...))
+	}
+	cardChildren = append(cardChildren, children...)
+	return node("div", map[string]string{"class": strings.TrimSpace("card bg-base-100 shadow-sm " + props.Class)}, cardChildren...)
 }
 
 func Input(name, value string, props frontend.ComponentProps) frontend.Node {
-	return frontend.Input(name, value, props)
+	attrs := map[string]string{
+		"name":  name,
+		"value": value,
+		"class": strings.TrimSpace("input input-bordered w-full " + props.Class),
+	}
+	if props.Disabled {
+		attrs["disabled"] = "disabled"
+	}
+	return node("input", attrs)
 }
 
 func Toast(title, description string, props frontend.ComponentProps) frontend.Node {
-	return frontend.UIToast(frontend.ToastProps{Title: title, Description: description, Props: props})
+	return node("div", map[string]string{"class": strings.TrimSpace("toast " + props.Class)},
+		node("div", map[string]string{"class": "alert"}, textNode("span", nil, strings.TrimSpace(title+" "+description))),
+	)
 }
 
 func Modal(props frontend.ModalProps) frontend.Node {
-	return frontend.UIModal(props)
+	className := "modal"
+	if props.Open {
+		className += " modal-open"
+	}
+	return node("div", map[string]string{"class": className},
+		node("div", map[string]string{"class": "modal-box"},
+			textNode("h3", map[string]string{"class": "font-bold text-lg"}, props.Title),
+			props.Body,
+			node("div", map[string]string{"class": "modal-action"}, props.Actions),
+		),
+	)
 }
 
 func Select(name string, options []frontend.SelectOption, props frontend.ComponentProps) frontend.Node {
-	return frontend.UISelect(name, options, props)
+	children := make([]frontend.Node, 0, len(options))
+	for _, opt := range options {
+		attrs := map[string]string{"value": opt.Value}
+		if opt.Selected {
+			attrs["selected"] = "selected"
+		}
+		children = append(children, textNode("option", attrs, opt.Label))
+	}
+	return node("select", map[string]string{
+		"name":  name,
+		"class": strings.TrimSpace("select select-bordered " + props.Class),
+	}, children...)
 }
 
 func Tabs(props frontend.TabsProps) frontend.Node {
-	return frontend.UITabs(props)
+	tabNodes := make([]frontend.Node, 0, len(props.Items))
+	for _, item := range props.Items {
+		className := "tab"
+		if item.Active {
+			className += " tab-active"
+		}
+		tabNodes = append(tabNodes, textNode("a", map[string]string{"class": className, "href": item.Href}, item.Label))
+	}
+	return node("div", map[string]string{"class": strings.TrimSpace("tabs " + props.Props.Class)}, tabNodes...)
 }
 
 func Badge(props frontend.BadgeProps) frontend.Node {
-	return frontend.UIBadge(props)
+	return textNode("span", map[string]string{"class": strings.TrimSpace("badge " + props.Props.Class)}, props.Label)
 }
 
 func Skeleton(rows int, props frontend.ComponentProps) frontend.Node {
-	return frontend.UISkeleton(frontend.SkeletonProps{Rows: rows, Props: props})
+	if rows <= 0 {
+		rows = 3
+	}
+	items := make([]frontend.Node, 0, rows)
+	for i := 0; i < rows; i++ {
+		items = append(items, node("div", map[string]string{"class": "skeleton h-4 w-full"}))
+	}
+	return node("div", map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Class)}, items...)
 }
 
 func Progress(value, max float64, label string, props frontend.ComponentProps) frontend.Node {
-	return frontend.UIProgress(frontend.ProgressProps{Value: value, Max: max, Label: label, Props: props})
+	return node("progress", map[string]string{"class": strings.TrimSpace("progress w-full " + props.Class), "value": strconv.FormatFloat(value, 'f', -1, 64), "max": strconv.FormatFloat(max, 'f', -1, 64)}, textNode("span", nil, label))
 }
 
 func Checkbox(props frontend.CheckboxComponentProps) frontend.Node {
-	return frontend.UICheckbox(props)
+	inputAttrs := map[string]string{"type": "checkbox", "class": strings.TrimSpace("checkbox " + props.Props.Class), "name": props.Name, "value": props.Value}
+	if props.Checked {
+		inputAttrs["checked"] = "checked"
+	}
+	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", inputAttrs), textNode("span", map[string]string{"class": "label-text"}, props.Label))
 }
 
 func RadioGroup(props frontend.RadioGroupComponentProps) frontend.Node {
-	return frontend.UIRadioGroup(props)
+	items := make([]frontend.Node, 0, len(props.Items))
+	for _, item := range props.Items {
+		attrs := map[string]string{"type": "radio", "name": props.Name, "value": item.Value, "class": "radio"}
+		if item.Checked {
+			attrs["checked"] = "checked"
+		}
+		items = append(items, node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label-text"}, item.Label)))
+	}
+	return node("div", map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Props.Class)}, items...)
 }
 
 func Switch(props frontend.SwitchComponentProps) frontend.Node {
-	return frontend.UISwitch(props)
+	attrs := map[string]string{"type": "checkbox", "class": strings.TrimSpace("toggle " + props.Props.Class), "name": props.Name, "value": props.Value}
+	if props.Checked {
+		attrs["checked"] = "checked"
+	}
+	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label-text"}, props.Label))
 }
 
 func Pagination(props frontend.PaginationProps) frontend.Node {
-	return frontend.UIPagination(props)
+	return node("div", map[string]string{"class": "join"},
+		textNode("a", map[string]string{"class": "join-item btn", "href": props.PrevHref}, "«"),
+		textNode("button", map[string]string{"class": "join-item btn"}, strconv.Itoa(props.Page)),
+		textNode("a", map[string]string{"class": "join-item btn", "href": props.NextHref}, "»"),
+	)
 }
 
 func EmptyState(props frontend.EmptyStateProps) frontend.Node {
-	return frontend.UIEmptyState(props)
+	return node("div", map[string]string{"class": strings.TrimSpace("hero bg-base-200 rounded-box " + props.Props.Class)},
+		node("div", map[string]string{"class": "hero-content text-center"},
+			node("div", nil, textNode("h2", map[string]string{"class": "text-2xl font-bold"}, props.Title), textNode("p", nil, props.Description)),
+		),
+	)
 }
 
 func PageHeader(props frontend.PageHeaderProps) frontend.Node {
-	return frontend.UIPageHeader(props)
+	return node("header", map[string]string{"class": strings.TrimSpace("mb-6 space-y-2 " + props.Props.Class)},
+		textNode("h1", map[string]string{"class": "text-3xl font-bold"}, props.Title),
+		textNode("p", map[string]string{"class": "text-base-content/70"}, props.Description),
+		props.Actions,
+	)
 }
 
 func Section(props frontend.SectionProps, children ...frontend.Node) frontend.Node {
-	return frontend.UISection(props, children...)
+	nodes := make([]frontend.Node, 0, len(children)+2)
+	if props.Title != "" {
+		nodes = append(nodes, textNode("h2", map[string]string{"class": "text-xl font-semibold"}, props.Title))
+	}
+	if props.Description != "" {
+		nodes = append(nodes, textNode("p", map[string]string{"class": "text-base-content/70"}, props.Description))
+	}
+	nodes = append(nodes, children...)
+	return node("section", map[string]string{"class": strings.TrimSpace("space-y-4 " + props.Props.Class)}, nodes...)
 }
 
 func Grid(props frontend.GridProps, children ...frontend.Node) frontend.Node {
-	return frontend.UIGrid(props, children...)
+	className := "grid"
+	if props.Columns != "" {
+		className += " " + props.Columns
+	}
+	if props.Gap != "" {
+		className += " " + props.Gap
+	} else {
+		className += " gap-4"
+	}
+	if props.Props.Class != "" {
+		className += " " + props.Props.Class
+	}
+	return node("div", map[string]string{"class": className}, children...)
 }
 
 func Stack(props frontend.StackProps, children ...frontend.Node) frontend.Node {
-	return frontend.UIStack(props, children...)
+	className := "flex"
+	if props.Direction != "" {
+		className += " " + props.Direction
+	} else {
+		className += " flex-col"
+	}
+	if props.Gap != "" {
+		className += " " + props.Gap
+	} else {
+		className += " gap-2"
+	}
+	if props.Props.Class != "" {
+		className += " " + props.Props.Class
+	}
+	return node("div", map[string]string{"class": className}, children...)
 }
 
 func Breadcrumb(props frontend.BreadcrumbProps) frontend.Node {
-	return frontend.UIBreadcrumb(props)
+	items := make([]frontend.Node, 0, len(props.Items))
+	for _, item := range props.Items {
+		items = append(items, node("li", nil, textNode("a", map[string]string{"href": item.Href}, item.Label)))
+	}
+	return node("div", map[string]string{"class": strings.TrimSpace("breadcrumbs text-sm " + props.Props.Class)},
+		node("ul", nil, items...),
+	)
 }
 
 func Divider(props frontend.DividerProps) frontend.Node {
-	return frontend.UIDivider(props)
+	className := "divider"
+	if props.Props.Class != "" {
+		className += " " + props.Props.Class
+	}
+	if props.Spacing != "" {
+		className += " " + props.Spacing
+	}
+	return node("div", map[string]string{"class": className})
 }
 
 func Actions(props frontend.ActionsProps, children ...frontend.Node) frontend.Node {
-	return frontend.UIActions(props, children...)
+	return node("div", map[string]string{"class": strings.TrimSpace("flex items-center gap-2 " + props.Props.Class)}, children...)
 }
 
 func HiddenField(name, value string) frontend.Node {
-	return frontend.UIHiddenField(name, value)
+	return node("input", map[string]string{"type": "hidden", "name": name, "value": value})
 }
 
 func Box(props frontend.BoxProps, children ...frontend.Node) frontend.Node {
-	return frontend.UIBox(props, children...)
+	return node("div", map[string]string{"class": strings.TrimSpace("rounded-box border border-base-300 p-4 " + props.Props.Class)}, children...)
 }
 
 func AppShell(props frontend.AppShellProps) frontend.Node {
-	return frontend.UIAppShell(props)
+	attrs := map[string]string{"class": strings.TrimSpace("min-h-screen bg-base-100 " + props.Props.Class)}
+	if props.ID != "" {
+		attrs["id"] = props.ID
+	}
+	mainAttrs := map[string]string{"class": "mx-auto w-full max-w-7xl p-4 md:p-6"}
+	if props.MainID != "" {
+		mainAttrs["id"] = props.MainID
+	}
+	return node("div", attrs,
+		props.Sidebar,
+		props.Flashes,
+		props.Header,
+		node("main", mainAttrs, props.Content),
+	)
 }
 
 func Image(props frontend.ImageProps) frontend.Node {
-	return frontend.UIImage(props)
+	attrs := map[string]string{"src": props.Src, "alt": props.Alt, "class": strings.TrimSpace("rounded-lg " + props.Props.Class)}
+	if props.Width > 0 {
+		attrs["width"] = strconv.Itoa(props.Width)
+	}
+	if props.Height > 0 {
+		attrs["height"] = strconv.Itoa(props.Height)
+	}
+	return node("figure", nil, node("img", attrs), textNode("figcaption", map[string]string{"class": "text-sm mt-2"}, props.Caption))
 }
 
 func Chart(props frontend.ChartProps) frontend.Node {
-	return frontend.UIChart(props)
+	return node("div", map[string]string{"class": strings.TrimSpace("card bg-base-100 border border-base-300 " + props.Props.Class)},
+		node("div", map[string]string{"class": "card-body"},
+			textNode("h3", map[string]string{"class": "card-title"}, props.Title),
+			textNode("p", map[string]string{"class": "text-sm opacity-70"}, props.Description),
+		),
+	)
 }
 
 func Form(props frontend.FormProps, children ...frontend.Node) frontend.Node {
-	return frontend.UIForm(props, children...)
+	attrs := map[string]string{
+		"method": props.Method,
+		"action": props.Action,
+		"class":  strings.TrimSpace("space-y-4 " + props.Class),
+	}
+	if props.ID != "" {
+		attrs["id"] = props.ID
+	}
+	return node("form", attrs, children...)
 }
 
 func ActionForm(props frontend.ActionFormProps, children ...frontend.Node) frontend.Node {
-	return frontend.UIActionForm(props, children...)
+	attrs := map[string]string{
+		"method": props.Method,
+		"action": props.Action,
+		"class":  strings.TrimSpace("space-y-4 " + props.Props.Class),
+	}
+	if props.Target != "" {
+		attrs["hx-target"] = props.Target
+	}
+	if props.Swap != "" {
+		attrs["hx-swap"] = props.Swap
+	}
+	return node("form", attrs, children...)
 }
 
 func FormField(control frontend.Node, props frontend.FormFieldProps) frontend.Node {
-	return frontend.UIFormField(control, props)
+	children := []frontend.Node{textNode("span", map[string]string{"class": "label-text"}, props.Label), control}
+	if props.Hint != "" {
+		children = append(children, textNode("span", map[string]string{"class": "label-text-alt"}, props.Hint))
+	}
+	if props.Error != "" {
+		children = append(children, textNode("span", map[string]string{"class": "label-text-alt text-error"}, props.Error))
+	}
+	return node("label", map[string]string{"class": "form-control w-full gap-1"}, children...)
 }
 
 func Textarea(name, value string, options frontend.TextareaOptions) frontend.Node {
-	return frontend.UITextarea(name, value, options)
+	attrs := map[string]string{
+		"name":  name,
+		"class": strings.TrimSpace("textarea textarea-bordered w-full " + options.Props.Class),
+	}
+	if options.Rows > 0 {
+		attrs["rows"] = strconv.Itoa(options.Rows)
+	}
+	if options.Placeholder != "" {
+		attrs["placeholder"] = options.Placeholder
+	}
+	if options.Required {
+		attrs["required"] = "required"
+	}
+	return textNode("textarea", attrs, value)
 }
 
 func Region(props frontend.RegionProps, children ...frontend.Node) frontend.Node {
-	return frontend.UIRegion(props, children...)
+	attrs := map[string]string{
+		"class": strings.TrimSpace("space-y-3 " + props.Props.Class),
+	}
+	if props.ID != "" {
+		attrs["id"] = props.ID
+	}
+	return node("section", attrs, children...)
 }
 
 func Split(props frontend.SplitProps) frontend.Node {
-	return frontend.UISplit(props)
+	wrapClass := "flex flex-col gap-4"
+	if props.ReverseOnMobile {
+		wrapClass = "flex flex-col-reverse gap-4"
+	}
+	if props.Props.Class != "" {
+		wrapClass += " " + props.Props.Class
+	}
+	return node("div", map[string]string{"class": wrapClass},
+		node("div", map[string]string{"class": "flex-1"}, props.Main),
+		node("aside", map[string]string{"class": "w-full lg:w-80"}, props.Aside),
+	)
 }
 
 func Container(props frontend.ContainerProps, children ...frontend.Node) frontend.Node {
-	return frontend.Container(props, children...)
+	className := "w-full"
+	if props.MaxWidth != "" {
+		className += " " + props.MaxWidth
+	} else {
+		className += " max-w-7xl"
+	}
+	if props.Centered {
+		className += " mx-auto"
+	}
+	if props.Padding != "" {
+		className += " " + props.Padding
+	}
+	if props.Props.Class != "" {
+		className += " " + props.Props.Class
+	}
+	return node("div", map[string]string{"class": className}, children...)
 }
 
 func ThemeToggleButton(props frontend.ComponentProps) frontend.Node {
-	return frontend.UIThemeToggleButton(props)
+	className := strings.TrimSpace("btn btn-ghost " + props.Class)
+	return node("button", map[string]string{"class": className, "type": "button", "aria-label": "Toggle theme"},
+		textNode("span", nil, "🌓"),
+	)
 }
 
 func Text(props frontend.TextProps) frontend.Node {
-	return frontend.UIText(props)
+	return textNode("p", map[string]string{"class": strings.TrimSpace(props.Size + " " + props.Weight + " " + props.Props.Class)}, props.Text)
 }
 
 func FontIcon(props frontend.FontIconProps) frontend.Node {
-	return frontend.UIFontIcon(props)
+	attrs := map[string]string{"class": strings.TrimSpace(props.Library + " " + props.Name + " " + props.Props.Class)}
+	if props.AriaLabel != "" {
+		attrs["aria-label"] = props.AriaLabel
+	}
+	if props.Decorative {
+		attrs["aria-hidden"] = "true"
+	}
+	return node("i", attrs)
 }
 
 func ThemeToggle(props frontend.ComponentProps) frontend.Node {
-	return frontend.UIThemeToggleButton(props)
+	return ThemeToggleButton(props)
 }
 
 func HTMXTable(headers []string, rows ...frontend.TableRowData) frontend.Node {
-	return frontend.HTMXTable(headers, rows...)
+	headerNodes := make([]frontend.Node, 0, len(headers))
+	for _, h := range headers {
+		headerNodes = append(headerNodes, textNode("th", nil, h))
+	}
+	rowNodes := make([]frontend.Node, 0, len(rows))
+	for _, r := range rows {
+		cells := make([]frontend.Node, 0, len(r.Cells))
+		for _, c := range r.Cells {
+			cells = append(cells, node("td", nil, c))
+		}
+		rowNodes = append(rowNodes, node("tr", nil, cells...))
+	}
+	return node("div", map[string]string{"class": "overflow-x-auto"},
+		node("table", map[string]string{"class": "table table-zebra w-full"},
+			node("thead", nil, node("tr", nil, headerNodes...)),
+			node("tbody", nil, rowNodes...),
+		),
+	)
 }
 
 func TableRow(cells ...frontend.Node) frontend.TableRowData {
@@ -180,27 +446,54 @@ func TableRow(cells ...frontend.Node) frontend.TableRowData {
 }
 
 func SubmitButton(label string, props frontend.ComponentProps) frontend.Node {
-	return frontend.UISubmitButton(label, props)
+	btn := Button(label, props)
+	return btn
 }
 
 func InputWithOptions(name, value string, options frontend.InputOptions) frontend.Node {
-	return frontend.UIInputWithOptions(name, value, options)
+	attrs := map[string]string{
+		"name":  name,
+		"value": value,
+		"type":  options.Type,
+		"class": strings.TrimSpace("input input-bordered w-full " + options.Props.Class),
+	}
+	if options.Placeholder != "" {
+		attrs["placeholder"] = options.Placeholder
+	}
+	return node("input", attrs)
 }
 
 func FileUpload(name string, required bool, props ...frontend.ComponentProps) frontend.Node {
-	return frontend.FileUpload(name, required, props...)
+	p := frontend.ComponentProps{}
+	if len(props) > 0 {
+		p = props[0]
+	}
+	attrs := map[string]string{"type": "file", "name": name, "class": strings.TrimSpace("file-input file-input-bordered w-full " + p.Class)}
+	if required {
+		attrs["required"] = "required"
+	}
+	return node("input", attrs)
 }
 
 func Sidebar(brand, title string, items ...frontend.SidebarItem) frontend.Node {
-	return frontend.Sidebar(brand, title, items...)
+	nodes := make([]frontend.Node, 0, len(items))
+	for _, item := range items {
+		nodes = append(nodes, node("li", nil, textNode("a", map[string]string{"href": item.Href}, item.Label)))
+	}
+	return node("aside", map[string]string{"class": "w-80 bg-base-200 p-4"},
+		textNode("div", map[string]string{"class": "text-lg font-bold mb-1"}, brand),
+		textNode("div", map[string]string{"class": "text-sm opacity-70 mb-4"}, title),
+		node("ul", map[string]string{"class": "menu"}, nodes...),
+	)
 }
 
 func SidebarLink(label, href string) frontend.SidebarItem {
-	return frontend.SidebarLink(label, href)
+	return frontend.SidebarItem{Label: label, Href: href}
 }
 
 func DownloadLink(label, href, filename string, props frontend.ComponentProps) frontend.Node {
-	return frontend.DownloadLink(label, href, filename, props)
+	attrs := map[string]string{"href": href, "download": filename, "class": strings.TrimSpace("link link-primary " + props.Class)}
+	return textNode("a", attrs, label)
 }
 
 func DrawerLayout(drawerID string, navbar, content frontend.Node, sidebarItems []frontend.Node) frontend.Node {
@@ -247,31 +540,34 @@ func DrawerNavbar(drawerID, title string, desktopItems []frontend.Node) frontend
 	)
 }
 
-func H1(children ...frontend.Node) frontend.Node { return frontend.H1(children...) }
-func H2(children ...frontend.Node) frontend.Node { return frontend.H2(children...) }
-func H3(children ...frontend.Node) frontend.Node { return frontend.H3(children...) }
-func H4(children ...frontend.Node) frontend.Node { return frontend.H4(children...) }
-func TextNode(text string) frontend.Node         { return frontend.Text(text) }
+func H1(children ...frontend.Node) frontend.Node { return node("h1", map[string]string{"class": "text-4xl font-bold"}, children...) }
+func H2(children ...frontend.Node) frontend.Node { return node("h2", map[string]string{"class": "text-3xl font-bold"}, children...) }
+func H3(children ...frontend.Node) frontend.Node { return node("h3", map[string]string{"class": "text-2xl font-semibold"}, children...) }
+func H4(children ...frontend.Node) frontend.Node { return node("h4", map[string]string{"class": "text-xl font-semibold"}, children...) }
+func TextNode(text string) frontend.Node         { return textNode("span", nil, text) }
 
 func PrimaryButton(label string, props frontend.ComponentProps) frontend.Node {
 	if props.Variant == "" {
 		props.Variant = "primary"
 	}
-	return frontend.Button(label, props)
+	props.Class = strings.TrimSpace("btn btn-primary " + props.Class)
+	return Button(label, props)
 }
 
 func SecondaryButton(label string, props frontend.ComponentProps) frontend.Node {
 	if props.Variant == "" {
 		props.Variant = "secondary"
 	}
-	return frontend.Button(label, props)
+	props.Class = strings.TrimSpace("btn btn-secondary " + props.Class)
+	return Button(label, props)
 }
 
 func GhostButton(label string, props frontend.ComponentProps) frontend.Node {
 	if props.Variant == "" {
 		props.Variant = "ghost"
 	}
-	return frontend.Button(label, props)
+	props.Class = strings.TrimSpace("btn btn-ghost " + props.Class)
+	return Button(label, props)
 }
 
 // Avatar follows daisyUI's avatar markup: .avatar > .w-*/mask wrapper > img

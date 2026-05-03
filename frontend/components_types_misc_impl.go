@@ -1,5 +1,7 @@
 package frontend
 
+import shared "github.com/YoshihideShirai/marionette/frontend/shared"
+
 // このファイルはImage以降の補助コンポーネントProps/DTOを定義する。
 // ナビゲーション・レイアウト・装飾系の型はここに配置する。
 
@@ -21,16 +23,8 @@ type PaginationProps struct {
 	PrevHref, NextHref string
 }
 
-type TabsItem struct {
-	Label, Href      string
-	Active, Disabled bool
-}
-
-type TabsProps struct {
-	Items     []TabsItem
-	AriaLabel string
-	Props     ComponentProps
-}
+type TabsItem = shared.TabsItem
+type TabsProps = shared.TabsProps
 
 type BreadcrumbItem struct {
 	Label, Href string

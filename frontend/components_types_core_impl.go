@@ -1,15 +1,12 @@
 package frontend
 
+import shared "github.com/YoshihideShirai/marionette/frontend/shared"
+
 // このファイルは基本的なコンポーネントProps/DTO型を定義する。
 // 新しい汎用UIコンポーネントの型はここに追加する。
 
 // ComponentProps defines shared style knobs for template components.
-type ComponentProps struct {
-	Class    string
-	Variant  string
-	Size     string
-	Disabled bool
-}
+type ComponentProps = shared.ComponentProps
 
 type LinkProps struct {
 	Label     string
@@ -24,11 +21,7 @@ type LinkProps struct {
 	Props     ComponentProps
 }
 
-type SelectOption struct {
-	Label    string
-	Value    string
-	Selected bool
-}
+type SelectOption = shared.SelectOption
 
 type ModalProps struct {
 	Title   string

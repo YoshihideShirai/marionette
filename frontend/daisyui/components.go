@@ -6,6 +6,7 @@ import (
 
 	frontend "github.com/YoshihideShirai/marionette/frontend"
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
+	shared "github.com/YoshihideShirai/marionette/frontend/shared"
 )
 
 func node(tag string, attrs map[string]string, children ...frontend.Node) frontend.Node {
@@ -16,7 +17,7 @@ func textNode(tag string, attrs map[string]string, text string) frontend.Node {
 	return lowhtml.ElementNode{Tag: tag, Attrs: attrs, Text: text}
 }
 
-func Button(label string, props frontend.ComponentProps) frontend.Node {
+func Button(label string, props shared.ComponentProps) frontend.Node {
 	className := strings.TrimSpace("btn " + props.Class)
 	attrs := map[string]string{"class": className}
 	if props.Disabled {
@@ -25,13 +26,13 @@ func Button(label string, props frontend.ComponentProps) frontend.Node {
 	return textNode("button", attrs, label)
 }
 
-func Alert(title, description string, props frontend.ComponentProps) frontend.Node {
+func Alert(title, description string, props shared.ComponentProps) frontend.Node {
 	return node("div", map[string]string{"class": strings.TrimSpace("alert " + props.Class)},
 		textNode("span", nil, strings.TrimSpace(title+" "+description)),
 	)
 }
 
-func Card(title, description string, actions frontend.Node, children []frontend.Node, props frontend.ComponentProps) frontend.Node {
+func Card(title, description string, actions frontend.Node, children []frontend.Node, props shared.ComponentProps) frontend.Node {
 	cardChildren := make([]frontend.Node, 0, len(children)+1)
 	if title != "" || description != "" || actions != nil {
 		headerChildren := []frontend.Node{}
@@ -50,7 +51,7 @@ func Card(title, description string, actions frontend.Node, children []frontend.
 	return node("div", map[string]string{"class": strings.TrimSpace("card bg-base-100 shadow-sm " + props.Class)}, cardChildren...)
 }
 
-func Input(name, value string, props frontend.ComponentProps) frontend.Node {
+func Input(name, value string, props shared.ComponentProps) frontend.Node {
 	attrs := map[string]string{
 		"name":  name,
 		"value": value,
@@ -62,7 +63,7 @@ func Input(name, value string, props frontend.ComponentProps) frontend.Node {
 	return node("input", attrs)
 }
 
-func Toast(title, description string, props frontend.ComponentProps) frontend.Node {
+func Toast(title, description string, props shared.ComponentProps) frontend.Node {
 	return node("div", map[string]string{"class": strings.TrimSpace("toast " + props.Class)},
 		node("div", map[string]string{"class": "alert"}, textNode("span", nil, strings.TrimSpace(title+" "+description))),
 	)
@@ -82,7 +83,7 @@ func Modal(props frontend.ModalProps) frontend.Node {
 	)
 }
 
-func Select(name string, options []frontend.SelectOption, props frontend.ComponentProps) frontend.Node {
+func Select(name string, options []shared.SelectOption, props shared.ComponentProps) frontend.Node {
 	children := make([]frontend.Node, 0, len(options))
 	for _, opt := range options {
 		attrs := map[string]string{"value": opt.Value}
@@ -97,7 +98,7 @@ func Select(name string, options []frontend.SelectOption, props frontend.Compone
 	}, children...)
 }
 
-func Tabs(props frontend.TabsProps) frontend.Node {
+func Tabs(props shared.TabsProps) frontend.Node {
 	tabNodes := make([]frontend.Node, 0, len(props.Items))
 	for _, item := range props.Items {
 		className := "tab"
@@ -113,7 +114,7 @@ func Badge(props frontend.BadgeProps) frontend.Node {
 	return textNode("span", map[string]string{"class": strings.TrimSpace("badge " + props.Props.Class)}, props.Label)
 }
 
-func Skeleton(rows int, props frontend.ComponentProps) frontend.Node {
+func Skeleton(rows int, props shared.ComponentProps) frontend.Node {
 	if rows <= 0 {
 		rows = 3
 	}
@@ -124,7 +125,7 @@ func Skeleton(rows int, props frontend.ComponentProps) frontend.Node {
 	return node("div", map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Class)}, items...)
 }
 
-func Progress(value, max float64, label string, props frontend.ComponentProps) frontend.Node {
+func Progress(value, max float64, label string, props shared.ComponentProps) frontend.Node {
 	return node("progress", map[string]string{"class": strings.TrimSpace("progress w-full " + props.Class), "value": strconv.FormatFloat(value, 'f', -1, 64), "max": strconv.FormatFloat(max, 'f', -1, 64)}, textNode("span", nil, label))
 }
 
@@ -394,7 +395,7 @@ func Container(props frontend.ContainerProps, children ...frontend.Node) fronten
 	return node("div", map[string]string{"class": className}, children...)
 }
 
-func ThemeToggleButton(props frontend.ComponentProps) frontend.Node {
+func ThemeToggleButton(props shared.ComponentProps) frontend.Node {
 	className := strings.TrimSpace("btn btn-ghost " + props.Class)
 	return node("button", map[string]string{"class": className, "type": "button", "aria-label": "Toggle theme"},
 		textNode("span", nil, "🌓"),
@@ -416,7 +417,7 @@ func FontIcon(props frontend.FontIconProps) frontend.Node {
 	return node("i", attrs)
 }
 
-func ThemeToggle(props frontend.ComponentProps) frontend.Node {
+func ThemeToggle(props shared.ComponentProps) frontend.Node {
 	return ThemeToggleButton(props)
 }
 
@@ -445,7 +446,7 @@ func TableRow(cells ...frontend.Node) frontend.TableRowData {
 	return frontend.TableRow(cells...)
 }
 
-func SubmitButton(label string, props frontend.ComponentProps) frontend.Node {
+func SubmitButton(label string, props shared.ComponentProps) frontend.Node {
 	btn := Button(label, props)
 	return btn
 }
@@ -463,8 +464,8 @@ func InputWithOptions(name, value string, options frontend.InputOptions) fronten
 	return node("input", attrs)
 }
 
-func FileUpload(name string, required bool, props ...frontend.ComponentProps) frontend.Node {
-	p := frontend.ComponentProps{}
+func FileUpload(name string, required bool, props ...shared.ComponentProps) frontend.Node {
+	p := shared.ComponentProps{}
 	if len(props) > 0 {
 		p = props[0]
 	}
@@ -491,7 +492,7 @@ func SidebarLink(label, href string) frontend.SidebarItem {
 	return frontend.SidebarItem{Label: label, Href: href}
 }
 
-func DownloadLink(label, href, filename string, props frontend.ComponentProps) frontend.Node {
+func DownloadLink(label, href, filename string, props shared.ComponentProps) frontend.Node {
 	attrs := map[string]string{"href": href, "download": filename, "class": strings.TrimSpace("link link-primary " + props.Class)}
 	return textNode("a", attrs, label)
 }
@@ -546,7 +547,7 @@ func H3(children ...frontend.Node) frontend.Node { return node("h3", map[string]
 func H4(children ...frontend.Node) frontend.Node { return node("h4", map[string]string{"class": "text-xl font-semibold"}, children...) }
 func TextNode(text string) frontend.Node         { return textNode("span", nil, text) }
 
-func PrimaryButton(label string, props frontend.ComponentProps) frontend.Node {
+func PrimaryButton(label string, props shared.ComponentProps) frontend.Node {
 	if props.Variant == "" {
 		props.Variant = "primary"
 	}
@@ -554,7 +555,7 @@ func PrimaryButton(label string, props frontend.ComponentProps) frontend.Node {
 	return Button(label, props)
 }
 
-func SecondaryButton(label string, props frontend.ComponentProps) frontend.Node {
+func SecondaryButton(label string, props shared.ComponentProps) frontend.Node {
 	if props.Variant == "" {
 		props.Variant = "secondary"
 	}
@@ -562,7 +563,7 @@ func SecondaryButton(label string, props frontend.ComponentProps) frontend.Node 
 	return Button(label, props)
 }
 
-func GhostButton(label string, props frontend.ComponentProps) frontend.Node {
+func GhostButton(label string, props shared.ComponentProps) frontend.Node {
 	if props.Variant == "" {
 		props.Variant = "ghost"
 	}
@@ -699,7 +700,7 @@ func Indicator(item, target frontend.Node) frontend.Node {
 	}}
 }
 
-func Link(label, href string, props frontend.ComponentProps) frontend.Node {
+func Link(label, href string, props shared.ComponentProps) frontend.Node {
 	className := "link"
 	if props.Class != "" {
 		className += " " + props.Class

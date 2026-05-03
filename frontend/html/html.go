@@ -1,5 +1,10 @@
-// Package html provides low-level UI node constructors for advanced Marionette
-// users who need custom markup below the component API.
+// Package html provides low-level HTML/HTMX primitives and tag-building
+// utilities used by higher-level frontend packages.
+//
+// This package is primarily an internal implementation layer. Most Marionette
+// applications should depend on user-facing APIs from package frontend (and
+// package frontend/daisyui when using daisyUI components) instead of consuming
+// these primitives directly.
 package html
 
 import (

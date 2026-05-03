@@ -7,6 +7,6 @@ import (
 
 func RegisterFooterExample(app *mb.App) {
 	app.Page("/footer", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "footer example"})
+		return mf.Footer(mf.TextComponent(mf.TextProps{Text: "Footer alias"}))
 	})
 }

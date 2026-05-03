@@ -7,6 +7,6 @@ import (
 
 func RegisterMenuExample(app *mb.App) {
 	app.Page("/menu", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "menu example"})
+		return mf.Menu(mf.TextComponent(mf.TextProps{Text: "Item 1"}), mf.TextComponent(mf.TextProps{Text: "Item 2"}))
 	})
 }

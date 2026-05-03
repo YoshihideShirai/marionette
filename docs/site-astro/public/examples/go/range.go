@@ -7,6 +7,6 @@ import (
 
 func RegisterRangeExample(app *mb.App) {
 	app.Page("/range", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "range example"})
+		return mf.Range("volume", 40, 0, 100)
 	})
 }

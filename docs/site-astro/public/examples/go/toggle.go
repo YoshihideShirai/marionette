@@ -7,6 +7,6 @@ import (
 
 func RegisterToggleExample(app *mb.App) {
 	app.Page("/toggle", func(ctx *mb.Context) mf.Node {
-		return mf.TextComponent(mf.TextProps{Text: "toggle example"})
+		return mf.Toggle("demo-toggle", true)
 	})
 }

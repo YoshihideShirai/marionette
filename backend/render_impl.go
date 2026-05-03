@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+
+	frontend "github.com/YoshihideShirai/marionette/frontend"
 )
 
 var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
@@ -13,8 +15,9 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{.Title}}</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    {{range .FrameworkStylesheets}}<link href="{{.}}" rel="stylesheet" type="text/css" />
+    {{end}}{{range .FrameworkScripts}}<script src="{{.}}"></script>
+    {{end}}
     <style>
       :root {
         --mrn-page-max-width: 80rem;
@@ -147,11 +150,13 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
 </html>`))
 
 type shellOptions struct {
-	Title       string
-	Stylesheets []string
-	Styles      []template.CSS
-	Scripts     []string
-	JavaScripts []template.JS
+	Title                string
+	Stylesheets          []string
+	Styles               []template.CSS
+	FrameworkStylesheets []string
+	FrameworkScripts     []string
+	Scripts              []string
+	JavaScripts          []template.JS
 }
 
 func shell(content template.HTML) (string, error) {
@@ -164,19 +169,28 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 		title = "Marionette"
 	}
 	view := struct {
-		Title       string
-		Content     template.HTML
-		Stylesheets []string
-		Styles      []template.CSS
-		Scripts     []string
-		JavaScripts []template.JS
+		Title                string
+		Content              template.HTML
+		Stylesheets          []string
+		Styles               []template.CSS
+		FrameworkStylesheets []string
+		FrameworkScripts     []string
+		Scripts              []string
+		JavaScripts          []template.JS
 	}{
-		Title:       title,
-		Content:     content,
-		Stylesheets: options.Stylesheets,
-		Styles:      options.Styles,
-		Scripts:     options.Scripts,
-		JavaScripts: options.JavaScripts,
+		Title:                title,
+		Content:              content,
+		Stylesheets:          options.Stylesheets,
+		Styles:               options.Styles,
+		FrameworkStylesheets: options.FrameworkStylesheets,
+		FrameworkScripts:     options.FrameworkScripts,
+		Scripts:              options.Scripts,
+		JavaScripts:          options.JavaScripts,
+	}
+	if len(view.FrameworkStylesheets) == 0 && len(view.FrameworkScripts) == 0 {
+		defaults := frontend.DefaultStyleTemplate()
+		view.FrameworkStylesheets = defaults.FrameworkStylesheets
+		view.FrameworkScripts = defaults.FrameworkScripts
 	}
 
 	var out bytes.Buffer

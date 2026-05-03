@@ -64,6 +64,61 @@ func TestPageCanSetHTMLTitle(t *testing.T) {
 	}
 }
 
+func TestPageCanSwitchStyleTemplateImports(t *testing.T) {
+	app := New()
+	app.UseStyleTemplate(frontend.StyleTemplate{
+		Name:                 "tailadmin-custom",
+		FrameworkStylesheets: []string{"https://cdn.example.com/tailadmin.css"},
+		FrameworkScripts:     []string{"https://cdn.example.com/tailwind.js"},
+	})
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `href="https://cdn.example.com/tailadmin.css"`) {
+		t.Fatalf("expected template stylesheet import, got %q", body)
+	}
+	if !strings.Contains(body, `src="https://cdn.example.com/tailwind.js"`) {
+		t.Fatalf("expected template script import, got %q", body)
+	}
+	if strings.Contains(body, `cdn.jsdelivr.net/npm/daisyui@5`) {
+		t.Fatalf("expected default framework import to be replaced, got %q", body)
+	}
+}
+
+func TestPageCanUseTailwindTemplatePreset(t *testing.T) {
+	app := New()
+	app.UseTailwindCSSTemplate()
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"`) {
+		t.Fatalf("expected tailwind framework script import, got %q", body)
+	}
+	if strings.Contains(body, `cdn.jsdelivr.net/npm/daisyui@5`) {
+		t.Fatalf("did not expect daisyui import for tailwind template, got %q", body)
+	}
+}
+
+func TestUseStyleTemplateByNameRejectsUnknown(t *testing.T) {
+	app := New()
+	err := app.UseStyleTemplateByName("unknown-template")
+	if err == nil {
+		t.Fatal("expected error for unknown template")
+	}
+}
+
 func TestPageIncludesCustomScripts(t *testing.T) {
 	app := New()
 	app.AddScript("https://cdn.example.com/widget.js")

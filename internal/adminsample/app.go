@@ -8,6 +8,7 @@ import (
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	du "github.com/YoshihideShirai/marionette/frontend/daisyui"
 )
 
 //go:embed assets/*
@@ -43,9 +44,7 @@ func BuildApp() *mb.App {
 	assetsFS, err := fs.Sub(embeddedAssets, "assets")
 	if err == nil {
 		app.Assets("/assets", assetsFS)
-		app.AddStylesheet(app.Asset("admin-sample.css"))
 	}
-	app.AddStylesheet("https://fonts.googleapis.com/icon?family=Material+Icons")
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
@@ -53,7 +52,7 @@ func BuildApp() *mb.App {
 		}
 		ctx.Set("currentPage", "overview")
 		return dashboardFromState(ctx, "overview")
-	}, mb.WithTitle("Revenue Ops Console"))
+	}, mb.WithTitle("Admin Sample"))
 
 	app.Page("/pipeline", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
@@ -61,7 +60,7 @@ func BuildApp() *mb.App {
 		}
 		ctx.Set("currentPage", "pipeline")
 		return dashboardFromState(ctx, "pipeline")
-	}, mb.WithTitle("Pipeline - Revenue Ops Console"))
+	}, mb.WithTitle("Pipeline - Admin Sample"))
 
 	app.Page("/playbooks", func(ctx *mb.Context) mf.Node {
 		if !ctx.Get("loggedIn").(bool) {
@@ -69,7 +68,7 @@ func BuildApp() *mb.App {
 		}
 		ctx.Set("currentPage", "playbooks")
 		return dashboardFromState(ctx, "playbooks")
-	}, mb.WithTitle("Revenue Ops Console"))
+	}, mb.WithTitle("Playbooks - Admin Sample"))
 
 	app.Action("auth/login", func(ctx *mb.Context) mf.Node {
 		email := strings.TrimSpace(ctx.FormValue("email"))
@@ -77,7 +76,7 @@ func BuildApp() *mb.App {
 		if email == "ops@example.com" && password == "marionette" {
 			ctx.Set("loggedIn", true)
 			ctx.Set("authError", "")
-			ctx.Set("flash", "Welcome back. Live controls are ready.")
+			ctx.Set("flash", "Signed in successfully")
 			return dashboardFromState(ctx, "overview")
 		}
 		ctx.Set("loggedIn", false)
@@ -122,7 +121,7 @@ func BuildApp() *mb.App {
 				orders[i].Status = "Blocked"
 				orders[i].Risk = "High"
 			}
-			ctx.Set("flash", fmt.Sprintf("%s moved to %s", id, orders[i].Status))
+			ctx.Set("flash", fmt.Sprintf("%s -> %s", id, orders[i].Status))
 			break
 		}
 		ctx.Set("orders", orders)
@@ -133,138 +132,116 @@ func BuildApp() *mb.App {
 }
 
 func dashboardFromState(ctx *mb.Context, currentPage string) mf.Node {
-	return mf.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-8"}},
-		mf.Region(mf.RegionProps{ID: "app-body"},
-			mf.Split(mf.SplitProps{
-				Aside:      sidebar(currentPage),
-				Main:       dashboardMainContent(dashboardBody(ctx, currentPage)),
-				AsideWidth: "w-full md:w-72",
-				Gap:        "6",
-			}),
-		),
+	return du.Region(mf.RegionProps{ID: "app-body"},
+		du.DrawerLayout("my-drawer-2", topbar(currentPage), du.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "py-6"}}, dashboardMainContent(dashboardBody(ctx, currentPage))), sidebarItems(currentPage)),
 	)
 }
 
+func topbar(currentPage string) mf.Node {
+	return du.DrawerNavbar("my-drawer-2", "admin-sample", []mf.Node{
+		navLink("Overview", "/", currentPage == "overview"),
+		navLink("Pipeline", "/pipeline", currentPage == "pipeline"),
+	})
+}
+
 func dashboardMainContent(content mf.Node) mf.Node {
-	return mf.Region(mf.RegionProps{ID: "main-content"}, content)
+	return du.Region(mf.RegionProps{ID: "main-content"}, content)
 }
 
 func sessionExpiredAlert() mf.Node {
-	return mf.Alert(mf.AlertProps{Title: "Session expired", Description: "Please sign in again.", Props: mf.ComponentProps{Variant: "warning"}})
+	return du.Alert("Session expired", "Please sign in again.", mf.ComponentProps{Variant: "warning"})
 }
 
 func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 	selectedStatus := ctx.Get("selectedStatus").(string)
 	orders := filteredOrders(ctx.Get("orders").([]order), selectedStatus)
 	flash := ctx.Get("flash").(string)
-
-	nodes := []mf.Node{
-		mf.PageHeader(mf.PageHeaderProps{Title: "Revenue Ops Console", Description: "Prioritize opportunities and monitor risk from a single screen"}),
-		mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "self-end"}}, formIconButton("logout", "Sign out", "Sign out")),
+	children := []mf.Node{
+		du.PageHeader(mf.PageHeaderProps{Title: "Dashboard", Description: "Default daisyUI style admin layout"}),
+		du.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML"}, du.Button("Sign out", mf.ComponentProps{Variant: "outline"})),
 	}
 	if flash != "" {
-		nodes = append(nodes, mf.Alert(mf.AlertProps{Title: "Live update", Description: flash, Props: mf.ComponentProps{Variant: "success", Class: "ops-live"}}))
+		children = append(children, du.Alert("Updated", flash, mf.ComponentProps{Variant: "info"}))
 	}
-	nodes = append(nodes,
-		mf.Alert(mf.AlertProps{Title: "Morning briefing", Description: "1 high-risk deal needs legal review before renewal.", Props: mf.ComponentProps{Variant: "warning"}}),
-		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "ops-toolbar flex flex-wrap items-end gap-3"}},
-			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Deal status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
-			formIconButton("tune", "Apply", "Apply filter"),
+	children = append(children,
+		du.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "card bg-base-100 border border-base-300 p-4"}},
+			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
+			du.Button("Apply", mf.ComponentProps{Variant: "primary"}),
 		),
 		pageContent(currentPage, orders),
 	)
-	return mf.Stack(mf.StackProps{Direction: "column", Gap: "6"}, nodes...)
+	return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)
 }
 
 func loginPage(authError string) mf.Node {
 	children := []mf.Node{
-		mf.PageHeader(mf.PageHeaderProps{Title: "Revenue Ops Console", Description: "Sign in to access the admin dashboard"}),
-		mf.Card(mf.CardProps{}, mf.Stack(mf.StackProps{Direction: "column", Gap: "3"}, mf.Text("Demo credentials"), mf.Text("Email: ops@example.com"), mf.Text("Password: marionette"))),
+		du.PageHeader(mf.PageHeaderProps{Title: "Admin Login", Description: "Use demo account to continue"}),
+		du.Alert("Demo credentials", "ops@example.com / marionette", mf.ComponentProps{Variant: "info"}),
 	}
 	if authError != "" {
-		children = append(children, mf.Alert(mf.AlertProps{Title: "Login failed", Description: authError, Props: mf.ComponentProps{Variant: "error"}}))
+		children = append(children, du.Alert("Login failed", authError, mf.ComponentProps{Variant: "error"}))
 	}
 	children = append(children,
-		mf.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
+		du.Card("", "", nil, []mf.Node{du.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
 			mf.FormRow(mf.FormRowProps{ID: "email", Label: "Email", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "email", Name: "email", Type: "email", Placeholder: "ops@example.com", Required: true})}),
 			mf.FormRow(mf.FormRowProps{ID: "password", Label: "Password", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "password", Name: "password", Type: "password", Placeholder: "••••••••", Required: true})}),
-			formIconButton("login", "Sign in", "Sign in"),
-		),
+			du.Button("Sign in", mf.ComponentProps{Variant: "primary"}),
+		)}, mf.ComponentProps{}),
 	)
-	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "ops-shell py-12"}}, mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
+	return du.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "py-12"}}, du.Region(mf.RegionProps{ID: "app-body"}, du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
 }
 
 func summaryCards(orders []order) mf.Node {
-	total := 0
-	highRisk := 0
+	return du.Grid(mf.GridProps{Columns: "md:grid-cols-3", Gap: "4"}, statCard("Deals", fmt.Sprintf("%d", len(orders)), "Visible"), statCard("Value", "$"+formatNumber(totalAmount(orders)), "Projected ARR"), statCard("High risk", fmt.Sprintf("%d", highRiskCount(orders)), "Needs review"))
+}
+
+func totalAmount(orders []order) int {
+	t := 0
 	for _, o := range orders {
-		total += o.Amount
+		t += o.Amount
+	}
+	return t
+}
+func highRiskCount(orders []order) int {
+	c := 0
+	for _, o := range orders {
 		if o.Risk == "High" {
-			highRisk++
+			c++
 		}
 	}
-	return mf.Grid(mf.GridProps{Columns: "md:grid-cols-3", Gap: "4"},
-		statCard("work", "Visible deals", fmt.Sprintf("%d", len(orders)), "Deals after filters"),
-		statCard("monitoring", "Pipeline value", fmt.Sprintf("$%s", formatNumber(total)), "Total projected revenue"),
-		statCard("warning", "High-risk deals", fmt.Sprintf("%d", highRisk), "Needs escalation"),
-	)
+	return c
 }
 
 func pageContent(currentPage string, orders []order) mf.Node {
 	switch currentPage {
 	case "pipeline":
-		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
-			mf.PageHeader(mf.PageHeaderProps{Title: "Pipeline Drilldown", Description: "Track conversion pressure and risk concentration by status."}),
-			pipelineChart(orders),
-			ordersTable(orders),
-		)
+		return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, pipelineChart(orders), ordersTable(orders))
 	case "playbooks":
-		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
-			mf.PageHeader(mf.PageHeaderProps{Title: "Ops Playbooks", Description: "Suggested actions for this week's pipeline signals."}),
-			mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}},
-				mf.Stack(mf.StackProps{Direction: "column", Gap: "2"},
-					mf.Text("1. Escalate all blocked enterprise deals within 24h."),
-					mf.Text("2. Ask CSMs to attach renewal risk notes for review deals."),
-					mf.Text("3. Confirm procurement contacts for deals over $75k ARR."),
-				),
-			),
-			ordersTable(orders),
-		)
+		return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, du.Card("", "", nil, []mf.Node{du.Stack(mf.StackProps{Direction: "column", Gap: "2"}, mf.Text("Escalate blocked enterprise deals"), mf.Text("Follow up on review deals"), mf.Text("Validate procurement contacts"))}, mf.ComponentProps{}), ordersTable(orders))
 	default:
-		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders))
+		return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders))
 	}
 }
 
-func sidebar(currentPage string) mf.Node {
-	return mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}},
-		mf.Stack(mf.StackProps{Direction: "column", Gap: "3"},
-			mf.Text("Revenue Ops"),
-			navLink("Overview", "/", currentPage == "overview"),
-			navLink("Pipeline", "/pipeline", currentPage == "pipeline"),
-			navLink("Playbooks", "/playbooks", currentPage == "playbooks"),
-		),
-	)
+func sidebarItems(currentPage string) []mf.Node {
+	return []mf.Node{
+		navLink("Overview", "/", currentPage == "overview"),
+		navLink("Pipeline", "/pipeline", currentPage == "pipeline"),
+		navLink("Playbooks", "/playbooks", currentPage == "playbooks"),
+	}
 }
-
 func navLink(label, href string, active bool) mf.Node {
-	className := "btn btn-ghost justify-start"
-	if active {
-		className = "btn btn-primary justify-start"
-	}
-	return mf.Link(mf.LinkProps{Label: label, Href: href, Props: mf.ComponentProps{Class: className}})
+	return mf.Link(mf.LinkProps{Label: label, Href: href, Props: mf.ComponentProps{Class: navClass(active)}})
 }
 
-func statCard(iconName, title, value, desc string) mf.Node {
-	return mf.Card(mf.CardProps{Props: mf.ComponentProps{Class: "ops-card"}},
-		mf.Stack(mf.StackProps{Direction: "column", Gap: "1"},
-			mf.Stack(mf.StackProps{Direction: "row", Gap: "2", Align: "center"},
-				mf.FontIcon(mf.FontIconProps{Name: iconName, Library: "material-icons", Decorative: true}),
-				mf.Text(title),
-			),
-			mf.H3(mf.Text(value)),
-			mf.Text(desc),
-		),
-	)
+func navClass(active bool) string {
+	if active {
+		return "active"
+	}
+	return ""
+}
+func statCard(title, value, desc string) mf.Node {
+	return du.Card("", "", nil, []mf.Node{du.Stack(mf.StackProps{Direction: "column", Gap: "1"}, mf.Text(title), mf.H3(mf.Text(value)), mf.Text(desc))}, mf.ComponentProps{})
 }
 
 func pipelineHealth(orders []order) mf.Node {
@@ -278,10 +255,10 @@ func pipelineHealth(orders []order) mf.Node {
 	if len(orders) > 0 {
 		value = float64(active) / float64(len(orders)) * 100
 	}
-	return mf.Section(mf.SectionProps{Title: "Pipeline health"}, mf.Progress(mf.ProgressProps{Label: "Active ratio", Value: value, Max: 100, ShowValue: true}))
+	return du.Section(mf.SectionProps{Title: "Pipeline health"}, du.Progress(value, 100, "Active ratio", mf.ComponentProps{}))
 }
 
-func pipelineChart(orders []order) mf.Node {
+func pipelineChart(orders []order) mf.Node { /* unchanged behavior */
 	statusOrder := []string{"Active", "Review", "Blocked"}
 	counts := map[string]float64{"Active": 0, "Review": 0, "Blocked": 0}
 	for _, o := range orders {
@@ -291,38 +268,20 @@ func pipelineChart(orders []order) mf.Node {
 	for _, status := range statusOrder {
 		values = append(values, counts[status])
 	}
-	return mf.Section(mf.SectionProps{Title: "Deal distribution"},
-		mf.Chart(mf.ChartProps{
-			Type:      mf.ChartTypeBar,
-			Title:     "Deals by status",
-			Labels:    statusOrder,
-			Height:    260,
-			AriaLabel: "Bar chart showing deal counts by status",
-			Datasets: []mf.ChartDataset{{
-				Label:           "Deals",
-				Data:            values,
-				BackgroundColor: "rgba(56, 189, 248, 0.55)",
-				BorderColor:     "rgba(14, 165, 233, 1)",
-			}},
-			Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true, YAxisLabel: "Count"},
-		}),
-	)
+	return du.Section(mf.SectionProps{Title: "Deals by status"}, du.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: statusOrder, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}}))
 }
 
 func ordersTable(orders []order) mf.Node {
 	rows := make([]mf.TableComponentRow, 0, len(orders))
 	for _, o := range orders {
-		label := "Escalate"
+		label := "Block"
 		if o.Status == "Blocked" {
 			label = "Re-open"
 		}
-		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML"},
-			mf.TextField(mf.TextFieldProps{ID: "id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}),
-			formIconButton("bolt", label, label),
-		)
+		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML"}, mf.TextField(mf.TextFieldProps{ID: "id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}), mf.Button(label, mf.ComponentProps{Variant: "secondary"}))
 		rows = append(rows, mf.TableRowValues(o.ID, o.Customer, o.Plan, "$"+formatNumber(o.Amount), o.Risk, o.Status, action))
 	}
-	return mf.Table(mf.TableProps{Columns: []mf.TableColumn{{Label: "Deal"}, {Label: "Customer"}, {Label: "Plan"}, {Label: "ARR"}, {Label: "Risk"}, {Label: "Status"}, {Label: "Action"}}, Rows: rows, EmptyTitle: "No deals match the selected filters"})
+	return mf.Table(mf.TableProps{Columns: []mf.TableColumn{{Label: "Deal"}, {Label: "Customer"}, {Label: "Plan"}, {Label: "ARR"}, {Label: "Risk"}, {Label: "Status"}, {Label: "Action"}}, Rows: rows, EmptyTitle: "No deals"})
 }
 
 func statusOptions(selected string) []mf.SelectOption {
@@ -333,7 +292,6 @@ func statusOptions(selected string) []mf.SelectOption {
 	}
 	return opts
 }
-
 func filteredOrders(orders []order, status string) []order {
 	if status == "" || status == "all" {
 		return orders
@@ -367,8 +325,4 @@ func formatNumber(v int) string {
 		}
 	}
 	return string(out)
-}
-
-func formIconButton(iconName, label, ariaLabel string) mf.Node {
-	return mf.Raw(fmt.Sprintf(`<button type="submit" class="btn btn-primary inline-flex items-center gap-2" aria-label="%s"><span class="material-icons" aria-hidden="true">%s</span><span>%s</span></button>`, ariaLabel, iconName, label))
 }

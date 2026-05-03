@@ -203,6 +203,50 @@ func DownloadLink(label, href, filename string, props frontend.ComponentProps) f
 	return frontend.DownloadLink(label, href, filename, props)
 }
 
+func DrawerLayout(drawerID string, navbar, content frontend.Node, sidebarItems []frontend.Node) frontend.Node {
+	if drawerID == "" {
+		drawerID = "drawer"
+	}
+	items := make([]frontend.Node, 0, len(sidebarItems))
+	for _, item := range sidebarItems {
+		items = append(items, node("li", nil, item))
+	}
+	return node("div", map[string]string{"class": "drawer lg:drawer-open"},
+		node("input", map[string]string{"id": drawerID, "type": "checkbox", "class": "drawer-toggle"}),
+		node("div", map[string]string{"class": "drawer-content flex flex-col"}, navbar, content),
+		node("div", map[string]string{"class": "drawer-side"},
+			node("label", map[string]string{"for": drawerID, "aria-label": "close sidebar", "class": "drawer-overlay"}),
+			node("ul", map[string]string{"class": "menu bg-base-200 min-h-full w-80 p-4"}, items...),
+		),
+	)
+}
+
+func DrawerNavbar(drawerID, title string, desktopItems []frontend.Node) frontend.Node {
+	if drawerID == "" {
+		drawerID = "drawer"
+	}
+	if title == "" {
+		title = "Navbar Title"
+	}
+	menuItems := make([]frontend.Node, 0, len(desktopItems))
+	for _, item := range desktopItems {
+		menuItems = append(menuItems, node("li", nil, item))
+	}
+	return node("div", map[string]string{"class": "navbar bg-base-300 w-full"},
+		node("div", map[string]string{"class": "flex-none lg:hidden"},
+			node("label", map[string]string{"for": drawerID, "aria-label": "open sidebar", "class": "btn btn-square btn-ghost"},
+				node("svg", map[string]string{"xmlns": "http://www.w3.org/2000/svg", "fill": "none", "viewBox": "0 0 24 24", "class": "inline-block h-6 w-6 stroke-current"},
+					node("path", map[string]string{"stroke-linecap": "round", "stroke-linejoin": "round", "stroke-width": "2", "d": "M4 6h16M4 12h16M4 18h16"}),
+				),
+			),
+		),
+		textNode("div", map[string]string{"class": "mx-2 flex-1 px-2"}, title),
+		node("div", map[string]string{"class": "hidden flex-none lg:block"},
+			node("ul", map[string]string{"class": "menu menu-horizontal"}, menuItems...),
+		),
+	)
+}
+
 func H1(children ...frontend.Node) frontend.Node { return frontend.H1(children...) }
 func H2(children ...frontend.Node) frontend.Node { return frontend.H2(children...) }
 func H3(children ...frontend.Node) frontend.Node { return frontend.H3(children...) }

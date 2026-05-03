@@ -10,6 +10,6 @@ func RegisterSectionExample(app *mb.App) {
 		return mf.Section(mf.SectionProps{
 			Title:       "Details",
 			Description: "Supporting information for the current workflow.",
-		}, mf.UIText(mf.TextProps{Text: "Section body"}))
+		}, mf.TextComponent(mf.TextProps{Text: "Section body"}))
 	})
 }

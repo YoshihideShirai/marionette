@@ -43,11 +43,11 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "select",
-			node: UISelect("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
+			node: selectComponent("role", []SelectOption{{Label: "Admin", Value: "admin", Selected: true}, {Label: "Viewer", Value: "viewer"}}, ComponentProps{Variant: "ghost", Size: "sm"}),
 		},
 		{
 			name: "form_field",
-			node: UIFormField(
+			node: FormField(
 				InputWithOptions("name", "", InputOptions{Required: true, Props: ComponentProps{Size: "sm"}}),
 				FormFieldProps{Label: "Name", Required: true, Hint: "Enter a display name.", Error: "Name is required."},
 			),
@@ -161,7 +161,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "textarea",
-			node: UITextarea("notes", "hello", TextareaOptions{
+			node: TextComponentarea("notes", "hello", TextareaOptions{
 				Placeholder: "Memo",
 				Rows:        4,
 				Required:    true,
@@ -170,7 +170,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "checkbox",
-			node: UICheckbox(CheckboxComponentProps{
+			node: checkboxComponent(CheckboxComponentProps{
 				Name:    "active",
 				Value:   "1",
 				Label:   "Active user",
@@ -180,7 +180,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "radio_group",
-			node: UIRadioGroup(RadioGroupComponentProps{
+			node: radioGroupComponent(RadioGroupComponentProps{
 				Name:      "role",
 				AriaLabel: "role",
 				Items: []RadioItem{
@@ -192,7 +192,7 @@ func TestTemplateRenderingGolden(t *testing.T) {
 		},
 		{
 			name: "switch",
-			node: UISwitch(SwitchComponentProps{
+			node: switchComponent(SwitchComponentProps{
 				Name:    "notify",
 				Value:   "1",
 				Label:   "Enable notifications",

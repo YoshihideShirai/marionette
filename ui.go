@@ -357,7 +357,7 @@ func (f *form) Render() (template.HTML, error) {
 
 func Input(name, value string, props ...ComponentProps) Node {
 	if len(props) > 0 {
-		return UIInput(name, value, props[0])
+		return InputWithOptions(name, value, InputOptions{Props: props[0]})
 	}
 	return element{
 		Tag: "input",
@@ -375,7 +375,7 @@ func FileUpload(name string, required bool, props ...ComponentProps) Node {
 	if len(props) > 0 {
 		componentProps = props[0]
 	}
-	return UIInputWithOptions(name, "", InputOptions{
+	return InputWithOptions(name, "", InputOptions{
 		Type:     "file",
 		Required: required,
 		Props:    componentProps,

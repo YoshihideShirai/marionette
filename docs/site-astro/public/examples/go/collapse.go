@@ -7,6 +7,6 @@ import (
 
 func RegisterCollapseExample(app *mb.App) {
 	app.Page("/collapse", func(ctx *mb.Context) mf.Node {
-		return mf.Collapse("Title", mf.Paragraph(mf.ParagraphProps{Text: "Content"}), false)
+		return mf.Collapse("Title", mf.TextComponent(mf.TextProps{Text: "Content"}), false)
 	})
 }

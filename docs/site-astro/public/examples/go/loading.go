@@ -7,6 +7,6 @@ import (
 
 func RegisterLoadingExample(app *mb.App) {
 	app.Page("/loading", func(ctx *mb.Context) mf.Node {
-		return mf.Loading("spinner", "lg")
+		return mf.Loading("loading-lg")
 	})
 }

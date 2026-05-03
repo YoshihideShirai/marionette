@@ -7,6 +7,6 @@ import (
 
 func RegisterDrawerExample(app *mb.App) {
 	app.Page("/drawer", func(ctx *mb.Context) mf.Node {
-		return mf.Drawer("d1", mf.Menu(mf.Anchor("#", mf.TextComponent(mf.TextProps{Text: "Sidebar"}))), mf.Button("open", mf.ComponentProps{}))
+		return mf.Drawer("d1", mf.Menu(mf.TextComponent(mf.TextProps{Text: "Sidebar"})), mf.Button("open", mf.ComponentProps{}))
 	})
 }

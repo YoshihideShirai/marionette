@@ -1,8 +1,0 @@
-{{define "components/image" -}}
-<figure class="{{.Class}}">
-  <div class="{{.FrameClass}}">
-    <img class="{{.ImageClass}}" src="{{.Src}}" alt="{{.Alt}}"{{if gt .Width 0}} width="{{.Width}}"{{end}}{{if gt .Height 0}} height="{{.Height}}"{{end}} loading="{{.Loading}}" decoding="{{.Decoding}}">
-  </div>
-  {{if .Caption}}<figcaption class="text-sm text-base-content/60">{{.Caption}}</figcaption>{{end}}
-</figure>
-{{- end}}

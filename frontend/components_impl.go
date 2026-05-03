@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/YoshihideShirai/marionette/internal/componenttmpl"
 )
 
 // ComponentProps defines shared style knobs for template components.
@@ -1471,26 +1473,11 @@ func loadComponentTemplates() (*template.Template, error) {
 	componentTemplatesOnce.Do(func() {
 		_, currentFile, _, ok := runtime.Caller(0)
 		if !ok {
-			cachedTemplatesErr = fmt.Errorf("failed to resolve component template path")
+			cachedTemplatesErr = fmt.Errorf("failed to resolve component template path for %s", "templates/components")
 			return
 		}
-		componentsDir := filepath.Join(filepath.Dir(currentFile), "templates", "components")
-		tmplFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.tmpl"))
-		if err != nil {
-			cachedTemplatesErr = err
-			return
-		}
-		htmlFiles, err := filepath.Glob(filepath.Join(componentsDir, "*.html"))
-		if err != nil {
-			cachedTemplatesErr = err
-			return
-		}
-		files := append(tmplFiles, htmlFiles...)
-		if len(files) == 0 {
-			cachedTemplatesErr = fmt.Errorf("no component templates found in %s", componentsDir)
-			return
-		}
-		cachedTemplates, cachedTemplatesErr = template.ParseFiles(files...)
+		componentsDir := filepath.Join(filepath.Dir(currentFile), "..", "templates", "components")
+		cachedTemplates, cachedTemplatesErr = componenttmpl.Load(componentsDir)
 	})
 	return cachedTemplates, cachedTemplatesErr
 }

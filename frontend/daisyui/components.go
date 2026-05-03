@@ -257,3 +257,19 @@ func Hero(title, description string, actions ...frontend.Node) frontend.Node {
 		}},
 	}}
 }
+
+func Menu(items ...frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "menu bg-base-200 rounded-box"}, Children: items}
+}
+
+func Footer(children ...frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "footer", Attrs: map[string]string{"class": "footer sm:footer-horizontal bg-base-200 text-base-content p-10"}, Children: children}
+}
+
+func Drawer(id string, side, content frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer", "id": id}, Children: []frontend.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: map[string]string{"id": id + "-toggle", "type": "checkbox", "class": "drawer-toggle"}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer-content"}, Children: []frontend.Node{content}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer-side"}, Children: []frontend.Node{side}},
+	}}
+}

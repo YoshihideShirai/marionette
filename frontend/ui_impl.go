@@ -53,6 +53,22 @@ func Text(v string) Node {
 	return textNode(v)
 }
 
+func Element(tag string, props ElementProps, children ...Node) Node {
+	return htmlElement(tag, props, children...)
+}
+
+func Div(children ...Node) Node {
+	return DivProps(ElementProps{}, children...)
+}
+
+func DivProps(props ElementProps, children ...Node) Node {
+	return htmlElement("div", props, children...)
+}
+
+func SpanProps(props ElementProps, children ...Node) Node {
+	return htmlElement("span", props, children...)
+}
+
 func H1(children ...Node) Node {
 	return H1Props(ElementProps{}, children...)
 }

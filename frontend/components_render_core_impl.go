@@ -19,6 +19,60 @@ func SubmitButton(label string, props ComponentProps) Node {
 	return componentButton(label, "submit", props)
 }
 
+func LoginButton(props LoginButtonProps) Node {
+	buttonType := strings.TrimSpace(props.Type)
+	if buttonType == "" {
+		buttonType = "button"
+	}
+	label := strings.TrimSpace(props.Label)
+	return templateNode{
+		name: "components/login_button",
+		data: struct {
+			Class    string
+			Type     string
+			Label    string
+			IconSVG  template.HTML
+			Disabled bool
+		}{
+			Class:    buttonClass(props.Props),
+			Type:     buttonType,
+			Label:    label,
+			IconSVG:  props.IconSVG,
+			Disabled: props.Props.Disabled,
+		},
+	}
+}
+
+func IconButton(props IconButtonProps) Node {
+	buttonType := strings.TrimSpace(props.Type)
+	if buttonType == "" {
+		buttonType = "button"
+	}
+	position := strings.ToLower(strings.TrimSpace(props.IconPosition))
+	iconEnd := position == "end" || position == "right"
+	label := strings.TrimSpace(props.Label)
+	return templateNode{
+		name: "components/icon_button",
+		data: struct {
+			Class     string
+			Type      string
+			Label     string
+			IconSVG   template.HTML
+			IconStart bool
+			IconEnd   bool
+			Disabled  bool
+		}{
+			Class:     buttonClass(props.Props),
+			Type:      buttonType,
+			Label:     label,
+			IconSVG:   props.IconSVG,
+			IconStart: !iconEnd,
+			IconEnd:   iconEnd,
+			Disabled:  props.Props.Disabled,
+		},
+	}
+}
+
 func Link(props LinkProps) Node {
 	href := strings.TrimSpace(props.Href)
 	if href == "" || props.Props.Disabled {
@@ -269,7 +323,6 @@ func Pagination(props PaginationProps) Node {
 		},
 	}
 }
-
 
 func Tabs(props TabsProps) Node {
 	items := make([]TabsItem, 0, len(props.Items))

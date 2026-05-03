@@ -1,5 +1,7 @@
 package marionette
 
+import "html/template"
+
 // このファイルは基本的なコンポーネントProps/DTO型を定義する。
 // 新しい汎用UIコンポーネントの型はここに追加する。
 
@@ -22,6 +24,21 @@ type LinkProps struct {
 	Filename  string
 	AriaLabel string
 	Props     ComponentProps
+}
+
+type IconButtonProps struct {
+	Label        string
+	IconSVG      template.HTML
+	IconPosition string
+	Type         string
+	Props        ComponentProps
+}
+
+type LoginButtonProps struct {
+	Label   string
+	IconSVG template.HTML
+	Type    string
+	Props   ComponentProps
 }
 
 type SelectOption struct {

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>theme-controller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  </head>
+  <body class="p-6 bg-base-200">
+    <div class="max-w-4xl p-6 bg-base-100 rounded-box shadow space-y-8">
+      <h1 class="text-xl font-bold">Theme Controller variations</h1>
+
+      <section class="space-y-2">
+        <h2 class="text-sm font-semibold">1) Button group</h2>
+        <div class="join">
+          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Light" value="light" />
+          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Dark" value="dark" />
+          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Cupcake" value="cupcake" checked />
+          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Dracula" value="dracula" />
+        </div>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-sm font-semibold">2) Compact radio cards</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
+            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="corporate" checked />
+            <span class="label-text">Corporate</span>
+          </label>
+          <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
+            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="forest" />
+            <span class="label-text">Forest</span>
+          </label>
+          <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
+            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="luxury" />
+            <span class="label-text">Luxury</span>
+          </label>
+          <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
+            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="night" />
+            <span class="label-text">Night</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-sm font-semibold">3) Toggle / checkbox style</h2>
+        <div class="flex flex-wrap items-center gap-4">
+          <label class="label cursor-pointer gap-2">
+            <span class="label-text">Dark</span>
+            <input type="checkbox" class="toggle theme-controller" value="dark" />
+          </label>
+          <label class="label cursor-pointer gap-2">
+            <span class="label-text">Retro</span>
+            <input type="checkbox" class="checkbox theme-controller" value="retro" />
+          </label>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

@@ -13,11 +13,23 @@
 
       <section class="space-y-2">
         <h2 class="text-sm font-semibold">1) Button group</h2>
-        <div class="join">
-          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Light" value="light" />
-          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Dark" value="dark" />
-          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Cupcake" value="cupcake" checked />
-          <input type="radio" name="theme-buttons" class="btn join-item theme-controller" aria-label="Dracula" value="dracula" />
+        <div class="join" role="radiogroup" aria-label="Theme button group">
+          <label class="btn join-item">
+            <input type="radio" name="theme-picker" class="theme-controller sr-only" value="light" />
+            Light
+          </label>
+          <label class="btn join-item">
+            <input type="radio" name="theme-picker" class="theme-controller sr-only" value="dark" />
+            Dark
+          </label>
+          <label class="btn join-item">
+            <input type="radio" name="theme-picker" class="theme-controller sr-only" value="cupcake" checked />
+            Cupcake
+          </label>
+          <label class="btn join-item">
+            <input type="radio" name="theme-picker" class="theme-controller sr-only" value="dracula" />
+            Dracula
+          </label>
         </div>
       </section>
 
@@ -25,19 +37,19 @@
         <h2 class="text-sm font-semibold">2) Compact radio cards</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
           <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
-            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="corporate" checked />
+            <input type="radio" name="theme-picker" class="radio radio-xs theme-controller" value="corporate" checked />
             <span class="label-text">Corporate</span>
           </label>
           <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
-            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="forest" />
+            <input type="radio" name="theme-picker" class="radio radio-xs theme-controller" value="forest" />
             <span class="label-text">Forest</span>
           </label>
           <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
-            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="luxury" />
+            <input type="radio" name="theme-picker" class="radio radio-xs theme-controller" value="luxury" />
             <span class="label-text">Luxury</span>
           </label>
           <label class="label cursor-pointer justify-start gap-2 rounded-box border border-base-300 px-3 py-2">
-            <input type="radio" name="theme-cards" class="radio radio-xs theme-controller" value="night" />
+            <input type="radio" name="theme-picker" class="radio radio-xs theme-controller" value="night" />
             <span class="label-text">Night</span>
           </label>
         </div>

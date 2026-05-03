@@ -7,6 +7,14 @@ import (
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
 )
 
+func node(tag string, attrs map[string]string, children ...frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: tag, Attrs: attrs, Children: children}
+}
+
+func textNode(tag string, attrs map[string]string, text string) frontend.Node {
+	return lowhtml.ElementNode{Tag: tag, Attrs: attrs, Text: text}
+}
+
 func Button(label string, props frontend.ComponentProps) frontend.Node {
 	return frontend.Button(label, props)
 }
@@ -238,26 +246,26 @@ func Avatar(src, alt, class string) frontend.Node {
 }
 
 func Navbar(start, center, end frontend.Node) frontend.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar bg-base-100 shadow-sm"}, Children: []frontend.Node{
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar-start"}, Children: []frontend.Node{start}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar-center"}, Children: []frontend.Node{center}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "navbar-end"}, Children: []frontend.Node{end}},
-	}}
+	return node("div", map[string]string{"class": "navbar bg-base-100 shadow-sm"},
+		node("div", map[string]string{"class": "navbar-start"}, start),
+		node("div", map[string]string{"class": "navbar-center"}, center),
+		node("div", map[string]string{"class": "navbar-end"}, end),
+	)
 }
 
 func Hero(title, description string, actions ...frontend.Node) frontend.Node {
 	children := []frontend.Node{
-		lowhtml.ElementNode{Tag: "h1", Attrs: map[string]string{"class": "text-5xl font-bold"}, Text: title},
-		lowhtml.ElementNode{Tag: "p", Attrs: map[string]string{"class": "py-6"}, Text: description},
+		textNode("h1", map[string]string{"class": "text-5xl font-bold"}, title),
+		textNode("p", map[string]string{"class": "py-6"}, description),
 	}
 	if len(actions) > 0 {
-		children = append(children, lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "flex gap-2"}, Children: actions})
+		children = append(children, node("div", map[string]string{"class": "flex gap-2"}, actions...))
 	}
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "hero bg-base-200 rounded-box"}, Children: []frontend.Node{
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "hero-content text-center"}, Children: []frontend.Node{
-			lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "max-w-md"}, Children: children},
-		}},
-	}}
+	return node("div", map[string]string{"class": "hero bg-base-200 rounded-box"},
+		node("div", map[string]string{"class": "hero-content text-center"},
+			node("div", map[string]string{"class": "max-w-md"}, children...),
+		),
+	)
 }
 
 func Menu(items ...frontend.Node) frontend.Node {

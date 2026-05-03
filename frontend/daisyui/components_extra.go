@@ -231,6 +231,52 @@ func Toggle(name string, checked bool) shared.Node {
 	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
 }
 
+func ToggleVariant(name string, checked bool, variant string) shared.Node {
+	className := "toggle"
+	switch strings.TrimSpace(variant) {
+	case "primary":
+		className += " toggle-primary"
+	case "secondary":
+		className += " toggle-secondary"
+	case "accent":
+		className += " toggle-accent"
+	case "neutral":
+		className += " toggle-neutral"
+	case "info":
+		className += " toggle-info"
+	case "success":
+		className += " toggle-success"
+	case "warning":
+		className += " toggle-warning"
+	case "danger", "error":
+		className += " toggle-error"
+	}
+	attrs := map[string]string{"type": "checkbox", "name": name, "class": className}
+	if checked {
+		attrs["checked"] = "checked"
+	}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
+}
+
+func ToggleWithIcons(name string, checked bool, className string) shared.Node {
+	inputAttrs := map[string]string{"type": "checkbox", "name": name}
+	if checked {
+		inputAttrs["checked"] = "checked"
+	}
+	return lowhtml.ElementNode{Tag: "label", Attrs: map[string]string{"class": strings.TrimSpace("toggle text-base-content " + className)}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: inputAttrs},
+		lowhtml.ElementNode{Tag: "svg", Attrs: map[string]string{"aria-label": "enabled", "xmlns": "http://www.w3.org/2000/svg", "viewBox": "0 0 24 24"}, Children: []shared.Node{
+			lowhtml.ElementNode{Tag: "g", Attrs: map[string]string{"stroke-linejoin": "round", "stroke-linecap": "round", "stroke-width": "4", "fill": "none", "stroke": "currentColor"}, Children: []shared.Node{
+				lowhtml.ElementNode{Tag: "path", Attrs: map[string]string{"d": "M20 6 9 17l-5-5"}},
+			}},
+		}},
+		lowhtml.ElementNode{Tag: "svg", Attrs: map[string]string{"aria-label": "disabled", "xmlns": "http://www.w3.org/2000/svg", "viewBox": "0 0 24 24", "fill": "none", "stroke": "currentColor", "stroke-width": "4", "stroke-linecap": "round", "stroke-linejoin": "round"}, Children: []shared.Node{
+			lowhtml.ElementNode{Tag: "path", Attrs: map[string]string{"d": "M18 6 6 18"}},
+			lowhtml.ElementNode{Tag: "path", Attrs: map[string]string{"d": "m6 6 12 12"}},
+		}},
+	}}
+}
+
 func Join(children ...shared.Node) shared.Node {
 	wrapped := make([]shared.Node, 0, len(children))
 	for _, child := range children {

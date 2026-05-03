@@ -31,6 +31,12 @@ func RadialProgress(value int, sizeClass string) Node     { return daisy.RadialP
 func Rating(name string, max int, checked int) Node       { return daisy.Rating(name, max, checked) }
 func Range(name string, value int, min int, max int) Node { return daisy.Range(name, value, min, max) }
 func Toggle(name string, checked bool) Node               { return daisy.Toggle(name, checked) }
+func ToggleVariant(name string, checked bool, variant string) Node {
+	return daisy.ToggleVariant(name, checked, variant)
+}
+func ToggleWithIcons(name string, checked bool, className string) Node {
+	return daisy.ToggleWithIcons(name, checked, className)
+}
 func Join(children ...Node) Node                          { return daisy.Join(children...) }
 func Mask(shapeClass string, child Node) Node             { return daisy.Mask(shapeClass, child) }
 func Carousel(items ...Node) Node                         { return daisy.Carousel(items...) }

@@ -333,3 +333,18 @@ func MockupWindow(title string, content frontend.Node) frontend.Node {
 		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "sr-only"}, Text: title},
 	}}
 }
+
+func Kbd(text string) frontend.Node {
+	return lowhtml.ElementNode{Tag: "kbd", Attrs: map[string]string{"class": "kbd"}, Text: text}
+}
+
+func Code(text string) frontend.Node {
+	return lowhtml.ElementNode{Tag: "code", Attrs: map[string]string{"class": "bg-base-200 rounded px-1 py-0.5"}, Text: text}
+}
+
+func Indicator(item, target frontend.Node) frontend.Node {
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "indicator"}, Children: []frontend.Node{
+		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "indicator-item badge badge-secondary"}, Children: []frontend.Node{item}},
+		target,
+	}}
+}

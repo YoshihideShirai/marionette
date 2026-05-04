@@ -12,7 +12,7 @@ func RegisterChartDoughnutExample(app *mb.App) {
 			Title:  "Plan mix",
 			Labels: []string{"Free", "Team", "Enterprise"},
 			Datasets: []mf.ChartDataset{
-				{Label: "Accounts", Data: []float64{64, 28, 8}},
+				{Label: "Accounts", Data: []float64{64, 28, 8}, BackgroundColor: "#64748b"},
 			},
 		})
 	})

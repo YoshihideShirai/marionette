@@ -17,13 +17,13 @@
             <p class="text-sm text-base-content/60">Category comparison for weekday signups.</p>
           </figcaption>
           <div class="relative w-full" style="height: 300px;">
-            <canvas data-mrn-chart role="img" aria-label="Weekly signups">
+            <canvas data-mrn-chart role="img" aria-label="Role distribution by role">
               <p>Weekly signups data is available in the fallback table below.</p>
             </canvas>
           </div>
-          <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":"rgba(37, 99, 235, 0.16)","borderColor":"#2563eb","data":[12,19,14,22,18],"fill":true,"label":"Signups","tension":0.3}],"labels":["Mon","Tue","Wed","Thu","Fri"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":true}},"responsive":true,"scales":{"x":{},"y":{"beginAtZero":true,"title":{"display":true,"text":"Users"}}}},"type":"bar"}</script>
+          <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":["#2563eb","#14b8a6","#f59e0b"],"borderColor":["#1d4ed8","#0f766e","#d97706"],"borderWidth":1,"data":[3,7,12],"label":"Users"}],"labels":["Admin","Editor","Viewer"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":false}},"responsive":true,"scales":{"x":{},"y":{"beginAtZero":true}}},"type":"bar"}</script>
           <details class="sr-only">
-            <summary>Weekly signups data is available in the fallback table below.</summary>
+            <summary>Role distribution data is available in the fallback table below.</summary>
             <table>
               <thead>
                 <tr>

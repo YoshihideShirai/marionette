@@ -12,7 +12,7 @@ func RegisterChartPieExample(app *mb.App) {
 			Title:  "Traffic sources",
 			Labels: []string{"Search", "Direct", "Referral"},
 			Datasets: []mf.ChartDataset{
-				{Label: "Sessions", Data: []float64{48, 32, 20}},
+				{Label: "Sessions", Data: []float64{48, 32, 20}, BackgroundColor: "#2563eb"},
 			},
 		})
 	})

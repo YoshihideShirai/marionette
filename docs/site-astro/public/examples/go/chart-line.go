@@ -12,7 +12,7 @@ func RegisterChartLineExample(app *mb.App) {
 			Title:  "Onboarding trend",
 			Labels: []string{"Jan", "Feb", "Mar"},
 			Datasets: []mf.ChartDataset{
-				{Label: "Starts", Data: []float64{8, 14, 18}, BorderColor: "#2563eb", Fill: true, Tension: 0.35},
+				{Label: "Starts", Data: []float64{8, 14, 18}, BorderColor: "#2563eb", BackgroundColor: "rgba(37, 99, 235, 0.14)", Fill: true, Tension: 0.35},
 			},
 		})
 	})

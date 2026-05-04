@@ -655,9 +655,13 @@ func chartConfigJSON(props ChartProps) (string, error) {
 		}
 		if color := strings.TrimSpace(dataset.BackgroundColor); color != "" {
 			item["backgroundColor"] = color
+		} else if colors := defaultChartColors(chartType, len(dataset.Data)); len(colors) > 0 {
+			item["backgroundColor"] = colors
 		}
 		if color := strings.TrimSpace(dataset.BorderColor); color != "" {
 			item["borderColor"] = color
+		} else if colors := defaultChartBorderColors(chartType, len(dataset.Data)); len(colors) > 0 {
+			item["borderColor"] = colors
 		}
 		if dataset.Fill {
 			item["fill"] = true
@@ -697,6 +701,38 @@ func chartConfigJSON(props ChartProps) (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+func defaultChartColors(chartType string, count int) []string {
+	if count <= 1 {
+		return nil
+	}
+	switch chartType {
+	case string(ChartTypeBar), string(ChartTypePie), string(ChartTypeDoughnut):
+		palette := []string{"#2563eb", "#14b8a6", "#f59e0b", "#8b5cf6", "#ef4444", "#22c55e"}
+		if count > len(palette) {
+			count = len(palette)
+		}
+		return palette[:count]
+	default:
+		return nil
+	}
+}
+
+func defaultChartBorderColors(chartType string, count int) []string {
+	if count <= 1 {
+		return nil
+	}
+	switch chartType {
+	case string(ChartTypePie), string(ChartTypeDoughnut):
+		colors := make([]string, count)
+		for i := range colors {
+			colors[i] = "#ffffff"
+		}
+		return colors
+	default:
+		return nil
+	}
 }
 
 func chartScales(options ChartOptions) map[string]any {

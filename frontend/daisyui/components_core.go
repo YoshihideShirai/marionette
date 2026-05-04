@@ -193,37 +193,105 @@ func Section(props shared.SectionProps, children ...shared.Node) shared.Node {
 }
 
 func Grid(props shared.GridProps, children ...shared.Node) shared.Node {
-	className := "grid"
-	if props.Columns != "" {
-		className += " " + props.Columns
-	}
-	if props.Gap != "" {
-		className += " " + props.Gap
-	} else {
-		className += " gap-4"
-	}
-	if props.Props.Class != "" {
-		className += " " + props.Props.Class
-	}
-	return node("div", map[string]string{"class": className}, children...)
+	return node("div", map[string]string{"class": gridClass(props)}, children...)
 }
 
 func Stack(props shared.StackProps, children ...shared.Node) shared.Node {
-	className := "flex"
-	if props.Direction != "" {
-		className += " " + props.Direction
-	} else {
-		className += " flex-col"
-	}
-	if props.Gap != "" {
-		className += " " + props.Gap
-	} else {
-		className += " gap-2"
+	return node("div", map[string]string{"class": stackClass(props)}, children...)
+}
+
+func stackClass(props shared.StackProps) string {
+	className := []string{"flex", stackDirectionClass(props.Direction), gapClass(props.Gap), alignClass(props.Align), justifyClass(props.Justify)}
+	if props.Wrap {
+		className = append(className, "flex-wrap")
 	}
 	if props.Props.Class != "" {
-		className += " " + props.Props.Class
+		className = append(className, props.Props.Class)
 	}
-	return node("div", map[string]string{"class": className}, children...)
+	return strings.TrimSpace(strings.Join(className, " "))
+}
+
+func stackDirectionClass(direction string) string {
+	switch strings.TrimSpace(direction) {
+	case "horizontal", "row":
+		return "flex-row"
+	default:
+		return "flex-col"
+	}
+}
+
+func gridClass(props shared.GridProps) string {
+	className := []string{"grid", gapClass(props.Gap), gridColumnsClass(props.Columns, props.MinColumnWidth)}
+	if props.Props.Class != "" {
+		className = append(className, props.Props.Class)
+	}
+	return strings.TrimSpace(strings.Join(className, " "))
+}
+
+func gapClass(gap string) string {
+	switch strings.TrimSpace(gap) {
+	case "none", "0":
+		return "gap-0"
+	case "xs":
+		return "gap-1"
+	case "sm":
+		return "gap-2"
+	case "lg":
+		return "gap-6"
+	case "xl":
+		return "gap-8"
+	default:
+		return "gap-4"
+	}
+}
+
+func alignClass(align string) string {
+	switch strings.TrimSpace(align) {
+	case "start":
+		return "items-start"
+	case "center":
+		return "items-center"
+	case "end":
+		return "items-end"
+	default:
+		return "items-stretch"
+	}
+}
+
+func justifyClass(justify string) string {
+	switch strings.TrimSpace(justify) {
+	case "center":
+		return "justify-center"
+	case "end":
+		return "justify-end"
+	case "between":
+		return "justify-between"
+	default:
+		return "justify-start"
+	}
+}
+
+func gridColumnsClass(columns, minColumnWidth string) string {
+	switch strings.TrimSpace(minColumnWidth) {
+	case "sm":
+		return "grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]"
+	case "md":
+		return "grid-cols-[repeat(auto-fit,minmax(18rem,1fr))]"
+	case "lg":
+		return "grid-cols-[repeat(auto-fit,minmax(22rem,1fr))]"
+	}
+	switch strings.TrimSpace(columns) {
+	case "1":
+		return "grid-cols-1"
+	case "2":
+		return "grid-cols-1 sm:grid-cols-2"
+	case "3":
+		return "grid-cols-1 md:grid-cols-3"
+	case "4":
+		return "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+	default:
+		return strings.TrimSpace(columns)
+	}
 }
 
 func Breadcrumb(props shared.BreadcrumbProps) shared.Node {
@@ -309,11 +377,16 @@ func Form(props shared.FormProps, children ...shared.Node) shared.Node {
 }
 
 func ActionForm(props shared.ActionFormProps, children ...shared.Node) shared.Node {
+	method := strings.ToLower(strings.TrimSpace(props.Method))
+	if method == "" {
+		method = "post"
+	}
 	attrs := map[string]string{
-		"method": props.Method,
+		"method": method,
 		"action": props.Action,
 		"class":  strings.TrimSpace("space-y-4 " + props.Props.Class),
 	}
+	attrs["hx-"+method] = props.Action
 	if props.Target != "" {
 		attrs["hx-target"] = props.Target
 	}

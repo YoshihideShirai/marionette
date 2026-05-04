@@ -71,16 +71,15 @@ func BuildApp() *mb.App {
 	}, mb.WithTitle("Playbooks - Admin Sample"))
 
 	app.Action("auth/login", func(ctx *mb.Context) mf.Node {
-		email := strings.TrimSpace(ctx.FormValue("email"))
-		password := strings.TrimSpace(ctx.FormValue("password"))
-		if email == "ops@example.com" && password == "marionette" {
+		provider := strings.TrimSpace(ctx.FormValue("provider"))
+		if provider == "demo-sso" {
 			ctx.Set("loggedIn", true)
 			ctx.Set("authError", "")
-			ctx.Set("flash", "Signed in successfully")
+			ctx.Set("flash", "Signed in with Demo SSO")
 			return dashboardFromState(ctx, "overview")
 		}
 		ctx.Set("loggedIn", false)
-		ctx.Set("authError", "Invalid credentials. Try ops@example.com / marionette")
+		ctx.Set("authError", "External authentication failed. Please try again.")
 		return loginPage(ctx.Get("authError").(string))
 	})
 
@@ -175,17 +174,16 @@ func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 
 func loginPage(authError string) mf.Node {
 	children := []mf.Node{
-		du.PageHeader(mf.PageHeaderProps{Title: "Admin Login", Description: "Use demo account to continue"}),
-		du.Alert("Demo credentials", "ops@example.com / marionette", mf.ComponentProps{Variant: "info"}),
+		du.PageHeader(mf.PageHeaderProps{Title: "Admin Login", Description: "Sign in via an external identity provider."}),
 	}
 	if authError != "" {
 		children = append(children, du.Alert("Login failed", authError, mf.ComponentProps{Variant: "error"}))
 	}
 	children = append(children,
 		du.Card("", "", nil, []mf.Node{du.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
-			mf.FormRow(mf.FormRowProps{ID: "email", Label: "Email", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "email", Name: "email", Type: "email", Placeholder: "ops@example.com", Required: true})}),
-			mf.FormRow(mf.FormRowProps{ID: "password", Label: "Password", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "password", Name: "password", Type: "password", Placeholder: "••••••••", Required: true})}),
-			du.Button("Sign in", mf.ComponentProps{Variant: "primary"}),
+			mf.HiddenField("provider", "demo-sso"),
+			mf.Text("Sign in with an external identity provider to continue."),
+			du.Button("Continue with Demo SSO", mf.ComponentProps{Variant: "primary", Class: "w-full"}),
 		)}, mf.ComponentProps{}),
 	)
 	return du.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "py-12"}}, du.Region(mf.RegionProps{ID: "app-body"}, du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))

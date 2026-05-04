@@ -3,6 +3,7 @@ package adminsample
 import (
 	"embed"
 	"fmt"
+	"html/template"
 	"io/fs"
 	"strings"
 
@@ -71,16 +72,15 @@ func BuildApp() *mb.App {
 	}, mb.WithTitle("Playbooks - Admin Sample"))
 
 	app.Action("auth/login", func(ctx *mb.Context) mf.Node {
-		email := strings.TrimSpace(ctx.FormValue("email"))
-		password := strings.TrimSpace(ctx.FormValue("password"))
-		if email == "ops@example.com" && password == "marionette" {
+		provider := strings.TrimSpace(ctx.FormValue("provider"))
+		if provider == "demo-sso" {
 			ctx.Set("loggedIn", true)
 			ctx.Set("authError", "")
-			ctx.Set("flash", "Signed in successfully")
+			ctx.Set("flash", "Signed in with Demo SSO")
 			return dashboardFromState(ctx, "overview")
 		}
 		ctx.Set("loggedIn", false)
-		ctx.Set("authError", "Invalid credentials. Try ops@example.com / marionette")
+		ctx.Set("authError", "External authentication failed. Please try again.")
 		return loginPage(ctx.Get("authError").(string))
 	})
 
@@ -132,8 +132,8 @@ func BuildApp() *mb.App {
 }
 
 func dashboardFromState(ctx *mb.Context, currentPage string) mf.Node {
-	return du.Region(mf.RegionProps{ID: "app-body"},
-		du.DrawerLayout("my-drawer-2", topbar(currentPage), du.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "py-6"}}, dashboardMainContent(dashboardBody(ctx, currentPage))), sidebarItems(currentPage)),
+	return mf.Region(mf.RegionProps{ID: "app-body"},
+		du.DrawerLayout("my-drawer-2", topbar(currentPage), mf.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "py-6"}}, dashboardMainContent(dashboardBody(ctx, currentPage))), sidebarItems(currentPage)),
 	)
 }
 
@@ -145,11 +145,11 @@ func topbar(currentPage string) mf.Node {
 }
 
 func dashboardMainContent(content mf.Node) mf.Node {
-	return du.Region(mf.RegionProps{ID: "main-content"}, content)
+	return mf.Region(mf.RegionProps{ID: "main-content"}, content)
 }
 
 func sessionExpiredAlert() mf.Node {
-	return du.Alert("Session expired", "Please sign in again.", mf.ComponentProps{Variant: "warning"})
+	return mf.Alert(mf.AlertProps{Title: "Session expired", Description: "Please sign in again.", Props: mf.ComponentProps{Variant: "warning"}})
 }
 
 func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
@@ -157,42 +157,61 @@ func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 	orders := filteredOrders(ctx.Get("orders").([]order), selectedStatus)
 	flash := ctx.Get("flash").(string)
 	children := []mf.Node{
-		du.PageHeader(mf.PageHeaderProps{Title: "Dashboard", Description: "Default daisyUI style admin layout"}),
-		du.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML"}, du.Button("Sign out", mf.ComponentProps{Variant: "outline"})),
+		mf.PageHeader(mf.PageHeaderProps{
+			Title:       "Dashboard",
+			Description: "Default daisyUI style admin layout",
+			Actions:     mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML"}, mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Sign out", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`), Props: mf.ComponentProps{Variant: "outline"}})),
+		}),
+		mf.Breadcrumb(mf.BreadcrumbProps{Items: []mf.BreadcrumbItem{{Label: "Home", Href: "/"}, {Label: "Dashboard", Active: true}}}),
+		mf.Tabs(mf.TabsProps{Items: []mf.TabsItem{
+			{Label: "Overview", Href: "/", Active: currentPage == "overview"},
+			{Label: "Pipeline", Href: "/pipeline", Active: currentPage == "pipeline"},
+			{Label: "Playbooks", Href: "/playbooks", Active: currentPage == "playbooks"},
+		}}),
+		mf.Box(mf.BoxProps{Padding: "4", Border: true, Props: mf.ComponentProps{Class: "bg-base-100"}},
+			mf.Text("Key metrics for your business are shown below."),
+			mf.Actions(mf.ActionsProps{Align: "end", Gap: "2"},
+				mf.Badge(mf.BadgeProps{Label: "Live", Props: mf.ComponentProps{Class: "badge-success"}}),
+				mf.Badge(mf.BadgeProps{Label: "Updated", Props: mf.ComponentProps{Class: "badge-outline"}}),
+			),
+		),
 	}
 	if flash != "" {
-		children = append(children, du.Alert("Updated", flash, mf.ComponentProps{Variant: "info"}))
+		children = append(children, mf.Alert(mf.AlertProps{Title: "Updated", Description: flash, Props: mf.ComponentProps{Variant: "info"}}))
 	}
 	children = append(children,
-		du.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "card bg-base-100 border border-base-300 p-4"}},
+		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "card bg-base-100 border border-base-300 p-4"}},
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
-			du.Button("Apply", mf.ComponentProps{Variant: "primary"}),
+			mf.Switch(mf.SwitchComponentProps{Name: "high_risk_only", Value: "1", Label: "High risk only", Checked: false, Props: mf.ComponentProps{Class: "mt-2"}}),
+			mf.Actions(mf.ActionsProps{Align: "end", Gap: "2"}, mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Apply", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>`), Props: mf.ComponentProps{Variant: "primary"}})),
 		),
 		pageContent(currentPage, orders),
 	)
-	return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)
+	return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)
 }
 
 func loginPage(authError string) mf.Node {
 	children := []mf.Node{
-		du.PageHeader(mf.PageHeaderProps{Title: "Admin Login", Description: "Use demo account to continue"}),
-		du.Alert("Demo credentials", "ops@example.com / marionette", mf.ComponentProps{Variant: "info"}),
+		mf.PageHeader(mf.PageHeaderProps{Title: "Admin Login", Description: "Sign in via an external identity provider."}),
 	}
 	if authError != "" {
-		children = append(children, du.Alert("Login failed", authError, mf.ComponentProps{Variant: "error"}))
+		children = append(children, mf.Alert(mf.AlertProps{Title: "Login failed", Description: authError, Props: mf.ComponentProps{Variant: "error"}}))
 	}
 	children = append(children,
-		du.Card("", "", nil, []mf.Node{du.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
-			mf.FormRow(mf.FormRowProps{ID: "email", Label: "Email", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "email", Name: "email", Type: "email", Placeholder: "ops@example.com", Required: true})}),
-			mf.FormRow(mf.FormRowProps{ID: "password", Label: "Password", Required: true, Control: mf.TextField(mf.TextFieldProps{ID: "password", Name: "password", Type: "password", Placeholder: "••••••••", Required: true})}),
-			du.Button("Sign in", mf.ComponentProps{Variant: "primary"}),
-		)}, mf.ComponentProps{}),
+		mf.Card(mf.CardProps{Title: "", Description: "", Actions: nil, Gap: "", Props: mf.ComponentProps{}}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+			mf.Image(mf.ImageProps{Src: "https://placehold.co/720x280/0d9488/ffffff?text=Secure+SSO", Alt: "Secure SSO illustration", Props: mf.ComponentProps{Class: "rounded-xl shadow-lg"}}),
+			mf.Text("Sign in with an external identity provider to continue."),
+			mf.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
+				mf.HiddenField("provider", "demo-sso"),
+				mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Continue with Demo SSO", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M12 2l7 7-7 7-7-7 7-7z"/><path d="M12 22V10"/></svg>`), Props: mf.ComponentProps{Variant: "primary", Class: "w-full"}}),
+			),
+		)),
 	)
-	return du.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "py-12"}}, du.Region(mf.RegionProps{ID: "app-body"}, du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
+	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "py-12"}}, mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
 }
 
 func summaryCards(orders []order) mf.Node {
-	return du.Grid(mf.GridProps{Columns: "md:grid-cols-3", Gap: "4"}, statCard("Deals", fmt.Sprintf("%d", len(orders)), "Visible"), statCard("Value", "$"+formatNumber(totalAmount(orders)), "Projected ARR"), statCard("High risk", fmt.Sprintf("%d", highRiskCount(orders)), "Needs review"))
+	return mf.Grid(mf.GridProps{Columns: "md:grid-cols-3", Gap: "4"}, statCard("Deals", fmt.Sprintf("%d", len(orders)), "Visible"), statCard("Value", "$"+formatNumber(totalAmount(orders)), "Projected ARR"), statCard("High risk", fmt.Sprintf("%d", highRiskCount(orders)), "Needs review"))
 }
 
 func totalAmount(orders []order) int {
@@ -215,11 +234,11 @@ func highRiskCount(orders []order) int {
 func pageContent(currentPage string, orders []order) mf.Node {
 	switch currentPage {
 	case "pipeline":
-		return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, pipelineChart(orders), ordersTable(orders))
+		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, pipelineChart(orders), riskChart(orders), ordersTable(orders))
 	case "playbooks":
-		return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, du.Card("", "", nil, []mf.Node{du.Stack(mf.StackProps{Direction: "column", Gap: "2"}, mf.Text("Escalate blocked enterprise deals"), mf.Text("Follow up on review deals"), mf.Text("Validate procurement contacts"))}, mf.ComponentProps{}), ordersTable(orders))
+		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, mf.Card(mf.CardProps{Title: "", Description: "", Actions: nil, Gap: "", Props: mf.ComponentProps{}}, mf.Stack(mf.StackProps{Direction: "column", Gap: "2"}, mf.Text("Escalate blocked enterprise deals"), mf.Text("Follow up on review deals"), mf.Text("Validate procurement contacts"))), ordersTable(orders))
 	default:
-		return du.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), ordersTable(orders))
+		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), pipelineChart(orders), riskChart(orders), ordersTable(orders))
 	}
 }
 
@@ -241,7 +260,27 @@ func navClass(active bool) string {
 	return ""
 }
 func statCard(title, value, desc string) mf.Node {
-	return du.Card("", "", nil, []mf.Node{du.Stack(mf.StackProps{Direction: "column", Gap: "1"}, mf.Text(title), mf.H3(mf.Text(value)), mf.Text(desc))}, mf.ComponentProps{})
+	iconText := "?"
+	switch title {
+	case "Deals":
+		iconText = "D"
+	case "Value":
+		iconText = "$"
+	case "High risk":
+		iconText = "!"
+	}
+	return mf.Card(mf.CardProps{Title: "", Description: "", Actions: nil, Gap: "", Props: mf.ComponentProps{Class: "text-center"}}, mf.Image(mf.ImageProps{Src: "https://placehold.co/80x80/ffffff/0d9488?text=" + iconText, Alt: title + " icon", Width: 80, Height: 80, Props: mf.ComponentProps{Class: "mx-auto rounded-full bg-base-200"}}), mf.Stack(mf.StackProps{Direction: "column", Gap: "1", Align: "center"}, mf.Text(title), mf.H3(mf.Text(value)), mf.Text(desc)))
+}
+
+func badgeClass(risk string) string {
+	switch risk {
+	case "High":
+		return "badge-error"
+	case "Medium":
+		return "badge-warning"
+	default:
+		return "badge-success"
+	}
 }
 
 func pipelineHealth(orders []order) mf.Node {
@@ -255,7 +294,7 @@ func pipelineHealth(orders []order) mf.Node {
 	if len(orders) > 0 {
 		value = float64(active) / float64(len(orders)) * 100
 	}
-	return du.Section(mf.SectionProps{Title: "Pipeline health"}, du.Progress(value, 100, "Active ratio", mf.ComponentProps{}))
+	return mf.Section(mf.SectionProps{Title: "Pipeline health"}, mf.Progress(mf.ProgressProps{Value: value, Max: 100, Label: "Active ratio", Props: mf.ComponentProps{}}))
 }
 
 func pipelineChart(orders []order) mf.Node { /* unchanged behavior */
@@ -268,7 +307,17 @@ func pipelineChart(orders []order) mf.Node { /* unchanged behavior */
 	for _, status := range statusOrder {
 		values = append(values, counts[status])
 	}
-	return du.Section(mf.SectionProps{Title: "Deals by status"}, du.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: statusOrder, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}}))
+	return mf.Section(mf.SectionProps{Title: "Deals by status"}, mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: statusOrder, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}}))
+}
+
+func riskChart(orders []order) mf.Node {
+	labels := []string{"Low", "Medium", "High"}
+	counts := map[string]float64{"Low": 0, "Medium": 0, "High": 0}
+	for _, o := range orders {
+		counts[o.Risk]++
+	}
+	values := []float64{counts["Low"], counts["Medium"], counts["High"]}
+	return mf.Section(mf.SectionProps{Title: "Risk distribution"}, mf.Chart(mf.ChartProps{Type: mf.ChartTypeDoughnut, Labels: labels, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values, BackgroundColor: "rgba(59,130,246,0.35)", BorderColor: "#2563eb"}}, Options: mf.ChartOptions{HideLegend: false}}))
 }
 
 func ordersTable(orders []order) mf.Node {
@@ -278,8 +327,9 @@ func ordersTable(orders []order) mf.Node {
 		if o.Status == "Blocked" {
 			label = "Re-open"
 		}
-		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML"}, mf.TextField(mf.TextFieldProps{ID: "id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}), mf.Button(label, mf.ComponentProps{Variant: "secondary"}))
-		rows = append(rows, mf.TableRowValues(o.ID, o.Customer, o.Plan, "$"+formatNumber(o.Amount), o.Risk, o.Status, action))
+		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML"}, mf.TextField(mf.TextFieldProps{ID: "id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}), mf.SubmitButton(label, mf.ComponentProps{Variant: "secondary"}))
+		risk := mf.Badge(mf.BadgeProps{Label: o.Risk, Props: mf.ComponentProps{Class: badgeClass(o.Risk)}})
+		rows = append(rows, mf.TableRowValues(o.ID, o.Customer, o.Plan, "$"+formatNumber(o.Amount), risk, o.Status, action))
 	}
 	return mf.Table(mf.TableProps{Columns: []mf.TableColumn{{Label: "Deal"}, {Label: "Customer"}, {Label: "Plan"}, {Label: "ARR"}, {Label: "Risk"}, {Label: "Status"}, {Label: "Action"}}, Rows: rows, EmptyTitle: "No deals"})
 }

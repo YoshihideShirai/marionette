@@ -120,3 +120,29 @@ func TestLoadComponentTemplatesCachesParsedTemplates(t *testing.T) {
 		t.Fatalf("expected cached template pointer reuse, got %p and %p", first, second)
 	}
 }
+
+func TestActionFormRendersHTMXActionAttributes(t *testing.T) {
+	html, err := ActionForm(ActionFormProps{
+		Action: "tasks/create",
+		Target: "#task-list",
+		Swap:   "innerHTML",
+		Props:  ComponentProps{Class: "space-y-3"},
+	}, TextField(TextFieldProps{ID: "task-name", Name: "name"})).Render()
+	if err != nil {
+		t.Fatalf("action form render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`action="tasks/create"`,
+		`method="post"`,
+		`hx-post="tasks/create"`,
+		`hx-target="#task-list"`,
+		`hx-swap="innerHTML"`,
+		`class="space-y-4 space-y-3"`,
+		`name="name"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}

@@ -3,6 +3,8 @@ package frontend
 import (
 	"fmt"
 	"strings"
+
+	daisy "github.com/YoshihideShirai/marionette/frontend/daisyui"
 )
 
 type FormRowProps struct {
@@ -252,7 +254,7 @@ func selectField(props SelectFieldProps) Node {
 func Checkbox(props any) Node {
 	switch p := props.(type) {
 	case CheckboxComponentProps:
-		return Checkbox(p)
+		return daisy.Checkbox(p)
 	case CheckboxProps:
 		return checkboxField(p)
 	default:
@@ -273,7 +275,7 @@ func checkboxField(props CheckboxProps) Node {
 func RadioGroup(props any) Node {
 	switch p := props.(type) {
 	case RadioGroupComponentProps:
-		return RadioGroup(p)
+		return daisy.RadioGroup(p)
 	case RadioGroupProps:
 		return radioGroupField(p)
 	default:
@@ -304,7 +306,7 @@ func radioGroupField(props RadioGroupProps) Node {
 func Switch(props any) Node {
 	switch p := props.(type) {
 	case SwitchComponentProps:
-		return Switch(p)
+		return daisy.Switch(p)
 	case SwitchProps:
 		return switchField(p)
 	default:

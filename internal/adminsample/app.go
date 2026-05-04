@@ -160,7 +160,7 @@ func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 		mf.PageHeader(mf.PageHeaderProps{
 			Title:       "Dashboard",
 			Description: "Default daisyUI style admin layout",
-			Actions: mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML"}, mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Sign out", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`), Props: mf.ComponentProps{Variant: "outline"}})),
+			Actions:     mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML"}, mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Sign out", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`), Props: mf.ComponentProps{Variant: "outline"}})),
 		}),
 		mf.Breadcrumb(mf.BreadcrumbProps{Items: []mf.BreadcrumbItem{{Label: "Home", Href: "/"}, {Label: "Dashboard", Active: true}}}),
 		mf.Tabs(mf.TabsProps{Items: []mf.TabsItem{

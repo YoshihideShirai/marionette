@@ -32,6 +32,28 @@ func TestOrdersFilterFragmentKeepsMainContentTarget(t *testing.T) {
 	}
 }
 
+func TestDashboardUsesOverlayDrawerNavigation(t *testing.T) {
+	app := BuildApp()
+	app.Set("loggedIn", true)
+	handler := app.Handler()
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	for _, want := range []string{`class="drawer min-h-screen bg-base-200"`, `id="admin-nav-drawer"`, `drawer-side z-40`, `Open navigation drawer`, `Revenue Ops`} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected dashboard to contain %q, got %q", want, body)
+		}
+	}
+	if strings.Contains(body, "lg:drawer-open") {
+		t.Fatalf("expected overlay drawer without permanently open sidebar, got %q", body)
+	}
+}
+
 func postFilter(t *testing.T, handler http.Handler, status string) string {
 	t.Helper()
 	form := url.Values{"status": {status}}

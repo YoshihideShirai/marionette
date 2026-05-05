@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DataFrameChart example</title><style>body{font-family:system-ui;padding:16px}.bars{display:grid;gap:10px;max-width:520px}.row{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center}.bar{height:16px;background:#93c5fd;border-radius:999px}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DataFrameChart example</title><link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" /><script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script><style>body{font-family:system-ui;padding:16px}.bars{display:grid;gap:10px;max-width:520px}.row{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center}.bar{height:16px;background:#93c5fd;border-radius:999px}</style></head><body>
     <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root data-mrn-filter-column="Name">
       <div class="card-body gap-4">
         <figcaption class="space-y-1">
@@ -46,4 +46,20 @@
         </details>
       </div>
     </figure>
+    <script>
+      (function() {
+        function initCharts(root) {
+          if (!window.Chart) return;
+          (root || document).querySelectorAll("[data-mrn-chart]").forEach(function(canvas) {
+            var container = canvas.closest("[data-mrn-chart-root]");
+            var configEl = container && container.querySelector("[data-mrn-chart-config]");
+            if (!configEl) return;
+            new window.Chart(canvas, JSON.parse(configEl.textContent || "{}"));
+          });
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+          initCharts(document);
+        });
+      })();
+    </script>
   </body></html>

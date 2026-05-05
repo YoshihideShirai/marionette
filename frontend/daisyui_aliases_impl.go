@@ -81,3 +81,51 @@ func TextRotate(words []string, animationClass string) Node {
 }
 func Hover3DCard(content Node) Node   { return daisy.Hover3DCard(content) }
 func HoverGallery(items ...Node) Node { return daisy.HoverGallery(items...) }
+
+func SelectWithVariants(name string, options []SelectOption, color, size, style string, props ComponentProps) Node {
+	return daisy.SelectWithVariants(name, options, color, size, style, props)
+}
+func ProgressWithVariant(value, max float64, label, color string, props ComponentProps) Node {
+	return daisy.ProgressWithVariant(value, max, label, color, props)
+}
+func BadgeWithVariant(label, color, size, style string, props ComponentProps) Node {
+	return daisy.BadgeWithVariant(label, color, size, style, props)
+}
+func RangeWithVariants(name string, value int, min int, max int, color string, size string) Node {
+	return daisy.RangeWithVariants(name, value, min, max, color, size)
+}
+func RatingWithVariants(name string, max int, checked int, size string, half bool, allowClear bool) Node {
+	return daisy.RatingWithVariants(name, max, checked, size, half, allowClear)
+}
+func ToastWithPlacement(children []Node, horizontal, vertical, className string) Node {
+	return daisy.ToastWithPlacement(children, horizontal, vertical, className)
+}
+func TooltipWithVariants(text string, child Node, placement string, color string, open bool) Node {
+	return daisy.TooltipWithVariants(text, child, placement, color, open)
+}
+func TableWithVariants(headers []string, rows [][]Node, zebra bool, pinRows bool, pinCols bool, size string) Node {
+	return daisy.TableWithVariants(headers, rows, zebra, pinRows, pinCols, size)
+}
+func ModalWithPlacement(props ModalProps, placement string) Node {
+	return daisy.ModalWithPlacement(props, placement)
+}
+func StepsWithVariants(items []Node, direction string, color string, className string) Node {
+	return daisy.StepsWithVariants(items, direction, color, className)
+}
+func TimelineWithDirection(items []Node, direction string, compact bool, snapIcon bool, className string) Node {
+	return daisy.TimelineWithDirection(items, direction, compact, snapIcon, className)
+}
+func LoadingWithVariants(kind string, size string) Node { return daisy.LoadingWithVariants(kind, size) }
+func StatusWithVariants(color string, size string) Node { return daisy.StatusWithVariants(color, size) }
+func ToggleWithVariants(name string, checked bool, color string, size string) Node {
+	return daisy.ToggleWithVariants(name, checked, color, size)
+}
+func SwapWithVariants(onNode, offNode Node, active bool, rotate bool, flip bool) Node {
+	return daisy.SwapWithVariants(onNode, offNode, active, rotate, flip)
+}
+func JoinWithDirection(direction string, children ...Node) Node {
+	return daisy.JoinWithDirection(direction, children...)
+}
+func DropdownWithPlacement(trigger, menu Node, placement string) Node {
+	return daisy.DropdownWithPlacement(trigger, menu, placement)
+}

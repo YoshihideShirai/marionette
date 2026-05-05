@@ -21,7 +21,11 @@
 - `RadioGroup(props RadioGroupComponentProps) Node` (blank `AriaLabel` -> `radio group`)
 - `Switch(props SwitchComponentProps) Node`
 - `Badge(props BadgeProps) Node`
-- `BadgeWithVariants(label string, props BadgeVariantProps) Node`
+- `BadgeWithVariant(label, color, size, style string, props ComponentProps) Node`
+- `TableWithVariants(headers []string, rows [][]Node, zebra bool, pinRows bool, pinCols bool, size string) Node`
+- `RangeWithVariants(name string, value int, min int, max int, color, size string) Node`
+- `RatingWithVariants(name string, max int, checked int, size string, half bool, allowClear bool) Node`
+- `StatusWithVariants(color, size string) Node`
 - `TextComponent(props TextProps) Node`
 - `DataFrame(df *dataframe.DataFrame, props TableProps) Node`
 - `DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`

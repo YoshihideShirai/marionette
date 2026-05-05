@@ -2,6 +2,7 @@
 
 ### Button / SubmitButton
 - `Button(label string, props ComponentProps) Node`
+- `ButtonWithVariants(label, variant, size, style string, props ComponentProps) Node`
 - `SubmitButton(label string, props ComponentProps) Node`
 - Extend with `props.Class`, `props.ID`, and `props.Attrs`.
 

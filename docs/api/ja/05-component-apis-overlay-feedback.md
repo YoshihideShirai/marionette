@@ -5,7 +5,11 @@
 - `Toast(props ToastProps) Node`
   - `Live`: `polite`（デフォルト）, `assertive`, `off`
 - `Alert(props AlertProps) Node`
-- `AlertWithVariants(title, description string, props AlertVariantProps) Node`
+- `ToastWithPlacement(children []Node, horizontal, vertical, className string) Node`
+- `TooltipWithVariants(text string, child Node, placement, color string, open bool) Node`
+- `ModalWithPlacement(props ModalProps, placement string) Node`
+- `LoadingWithVariants(kind, size string) Node`
+- `SwapWithVariants(onNode, offNode Node, active, rotate, flip bool) Node`
 - `Skeleton(props SkeletonProps) Node`
   - `Rows <= 0` は `3`。
 - `Progress(props ProgressProps) Node`

@@ -486,3 +486,372 @@ func FilterItem(label string, active bool) shared.Node {
 func CalendarGrid(days ...shared.Node) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "grid grid-cols-7 gap-1"}, Children: days}
 }
+
+func ButtonWithVariants(label string, variant string, size string, style string, props shared.ComponentProps) shared.Node {
+	classes := []string{"btn"}
+	if variant != "" {
+		classes = append(classes, "btn-"+variant)
+	}
+	if size != "" {
+		classes = append(classes, "btn-"+size)
+	}
+	if style != "" {
+		classes = append(classes, "btn-"+style)
+	}
+	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
+	return Button(label, props)
+}
+
+func InputWithVariants(name, value, color, size, style string, props shared.ComponentProps) shared.Node {
+	classes := []string{"input", "input-bordered"}
+	if color != "" {
+		classes = append(classes, "input-"+color)
+	}
+	if size != "" {
+		classes = append(classes, "input-"+size)
+	}
+	if style != "" {
+		classes = append(classes, "input-"+style)
+	}
+	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
+	return Input(name, value, props)
+}
+
+func SelectWithVariants(name string, options []shared.SelectOption, color, size, style string, props shared.ComponentProps) shared.Node {
+	classes := []string{"select", "select-bordered"}
+	if color != "" {
+		classes = append(classes, "select-"+color)
+	}
+	if size != "" {
+		classes = append(classes, "select-"+size)
+	}
+	if style != "" {
+		classes = append(classes, "select-"+style)
+	}
+	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
+	return Select(name, options, props)
+}
+
+func TextareaWithVariants(name, value, color, size, style string, options shared.TextareaOptions) shared.Node {
+	classes := []string{"textarea", "textarea-bordered"}
+	if color != "" {
+		classes = append(classes, "textarea-"+color)
+	}
+	if size != "" {
+		classes = append(classes, "textarea-"+size)
+	}
+	if style != "" {
+		classes = append(classes, "textarea-"+style)
+	}
+	options.Props.Class = strings.TrimSpace(strings.Join(append(classes, options.Props.Class), " "))
+	return Textarea(name, value, options)
+}
+
+func ProgressWithVariant(value, max float64, label, color string, props shared.ComponentProps) shared.Node {
+	if color != "" {
+		props.Class = strings.TrimSpace("progress-" + color + " " + props.Class)
+	}
+	return Progress(value, max, label, props)
+}
+
+func BadgeWithVariant(label, color, size, style string, props shared.ComponentProps) shared.Node {
+	classes := []string{"badge"}
+	if color != "" {
+		classes = append(classes, "badge-"+color)
+	}
+	if size != "" {
+		classes = append(classes, "badge-"+size)
+	}
+	if style != "" {
+		classes = append(classes, "badge-"+style)
+	}
+	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
+	return Badge(shared.BadgeProps{Label: label, Props: props})
+}
+
+func CheckboxWithVariants(name, value, label, color, size string, checked bool, props shared.ComponentProps) shared.Node {
+	classes := []string{}
+	if color != "" {
+		classes = append(classes, "checkbox-"+color)
+	}
+	if size != "" {
+		classes = append(classes, "checkbox-"+size)
+	}
+	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
+	return Checkbox(shared.CheckboxComponentProps{Name: name, Value: value, Label: label, Checked: checked, Props: props})
+}
+
+func RadioGroupWithVariants(name, color, size string, items []shared.RadioItem, props shared.ComponentProps) shared.Node {
+	inputClass := "radio"
+	if color != "" {
+		inputClass += " radio-" + color
+	}
+	if size != "" {
+		inputClass += " radio-" + size
+	}
+	children := make([]shared.Node, 0, len(items))
+	for _, item := range items {
+		attrs := map[string]string{"type": "radio", "name": name, "value": item.Value, "class": inputClass}
+		if item.Checked {
+			attrs["checked"] = "checked"
+		}
+		if item.Disabled {
+			attrs["disabled"] = "disabled"
+		}
+		children = append(children,
+			lowhtml.ElementNode{Tag: "label", Attrs: map[string]string{"class": "label cursor-pointer gap-2"}, Children: []shared.Node{
+				lowhtml.ElementNode{Tag: "input", Attrs: attrs},
+				textNode("span", map[string]string{"class": "label-text"}, item.Label),
+			}},
+		)
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Class)}, Children: children}
+}
+
+func RangeWithVariants(name string, value int, min int, max int, color string, size string) shared.Node {
+	classes := []string{"range"}
+	if color != "" {
+		classes = append(classes, "range-"+color)
+	}
+	if size != "" {
+		classes = append(classes, "range-"+size)
+	}
+	return lowhtml.ElementNode{Tag: "input", Attrs: map[string]string{"type": "range", "name": name, "value": strconv.Itoa(value), "min": strconv.Itoa(min), "max": strconv.Itoa(max), "class": strings.Join(classes, " ")}}
+}
+
+func RatingWithVariants(name string, max int, checked int, size string, half bool, allowClear bool) shared.Node {
+	classes := []string{"rating"}
+	if size != "" {
+		classes = append(classes, "rating-"+size)
+	}
+	if half {
+		classes = append(classes, "rating-half")
+	}
+	stars := make([]shared.Node, 0, max+1)
+	if allowClear {
+		stars = append(stars, lowhtml.ElementNode{Tag: "input", Attrs: map[string]string{"type": "radio", "name": name, "class": "rating-hidden", "value": "0"}})
+	}
+	for i := 1; i <= max; i++ {
+		attrs := map[string]string{"type": "radio", "name": name, "class": "mask mask-star-2 bg-orange-400", "value": strconv.Itoa(i)}
+		if i == checked {
+			attrs["checked"] = "checked"
+		}
+		stars = append(stars, lowhtml.ElementNode{Tag: "input", Attrs: attrs})
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: stars}
+}
+
+func ToastWithPlacement(children []shared.Node, horizontal, vertical string, className string) shared.Node {
+	classes := []string{"toast"}
+	if horizontal != "" {
+		classes = append(classes, "toast-"+horizontal)
+	}
+	if vertical != "" {
+		classes = append(classes, "toast-"+vertical)
+	}
+	if className != "" {
+		classes = append(classes, className)
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: children}
+}
+
+func TooltipWithVariants(text string, child shared.Node, placement string, color string, open bool) shared.Node {
+	classes := []string{"tooltip"}
+	if placement != "" {
+		classes = append(classes, "tooltip-"+placement)
+	}
+	if color != "" {
+		classes = append(classes, "tooltip-"+color)
+	}
+	if open {
+		classes = append(classes, "tooltip-open")
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": strings.Join(classes, " "), "data-tip": text}, Children: []shared.Node{child}}
+}
+
+func TableWithVariants(headers []string, rows [][]shared.Node, zebra bool, pinRows bool, pinCols bool, size string) shared.Node {
+	classes := []string{"table"}
+	if zebra {
+		classes = append(classes, "table-zebra")
+	}
+	if pinRows {
+		classes = append(classes, "table-pin-rows")
+	}
+	if pinCols {
+		classes = append(classes, "table-pin-cols")
+	}
+	if size != "" {
+		classes = append(classes, "table-"+size)
+	}
+	headersNode := make([]shared.Node, 0, len(headers))
+	for _, h := range headers {
+		headersNode = append(headersNode, lowhtml.ElementNode{Tag: "th", Text: h})
+	}
+	tbodyRows := make([]shared.Node, 0, len(rows))
+	for _, row := range rows {
+		cells := make([]shared.Node, 0, len(row))
+		for _, cell := range row {
+			cells = append(cells, lowhtml.ElementNode{Tag: "td", Children: []shared.Node{cell}})
+		}
+		tbodyRows = append(tbodyRows, lowhtml.ElementNode{Tag: "tr", Children: cells})
+	}
+	return lowhtml.ElementNode{Tag: "table", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "thead", Children: []shared.Node{lowhtml.ElementNode{Tag: "tr", Children: headersNode}}},
+		lowhtml.ElementNode{Tag: "tbody", Children: tbodyRows},
+	}}
+}
+
+func ModalWithPlacement(props shared.ModalProps, placement string) shared.Node {
+	className := "modal"
+	if props.Open {
+		className += " modal-open"
+	}
+	if placement != "" {
+		className += " modal-" + placement
+	}
+	return node("div", map[string]string{"class": className},
+		node("div", map[string]string{"class": "modal-box"},
+			textNode("h3", map[string]string{"class": "font-bold text-lg"}, props.Title),
+			props.Body,
+			node("div", map[string]string{"class": "modal-action"}, props.Actions),
+		),
+	)
+}
+
+func TabsWithVariants(items []shared.TabsItem, style string, placement string, size string, className string) shared.Node {
+	classes := []string{"tabs"}
+	if style != "" {
+		classes = append(classes, "tabs-"+style)
+	}
+	if placement != "" {
+		classes = append(classes, "tabs-"+placement)
+	}
+	if size != "" {
+		classes = append(classes, "tabs-"+size)
+	}
+	if className != "" {
+		classes = append(classes, className)
+	}
+	tabNodes := make([]shared.Node, 0, len(items))
+	for _, item := range items {
+		tabClass := "tab"
+		if item.Active {
+			tabClass += " tab-active"
+		}
+		if item.Disabled {
+			tabClass += " tab-disabled"
+		}
+		tabNodes = append(tabNodes, textNode("a", map[string]string{"class": tabClass, "href": item.Href}, item.Label))
+	}
+	return node("div", map[string]string{"class": strings.Join(classes, " ")}, tabNodes...)
+}
+
+func StepsWithVariants(items []shared.Node, direction string, color string, className string) shared.Node {
+	classes := []string{"steps"}
+	if direction != "" {
+		classes = append(classes, "steps-"+direction)
+	}
+	if color != "" {
+		classes = append(classes, "step-"+color)
+	}
+	if className != "" {
+		classes = append(classes, className)
+	}
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: items}
+}
+
+func TimelineWithDirection(items []shared.Node, direction string, compact bool, snapIcon bool, className string) shared.Node {
+	classes := []string{"timeline"}
+	if direction != "" {
+		classes = append(classes, "timeline-"+direction)
+	}
+	if compact {
+		classes = append(classes, "timeline-compact")
+	}
+	if snapIcon {
+		classes = append(classes, "timeline-snap-icon")
+	}
+	if className != "" {
+		classes = append(classes, className)
+	}
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: items}
+}
+
+func LoadingWithVariants(kind string, size string) shared.Node {
+	classes := []string{"loading"}
+	if kind == "" {
+		kind = "spinner"
+	}
+	classes = append(classes, "loading-"+kind)
+	if size != "" {
+		classes = append(classes, "loading-"+size)
+	}
+	return lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": strings.Join(classes, " ")}}
+}
+
+func StatusWithVariants(color string, size string) shared.Node {
+	classes := []string{"status"}
+	if color != "" {
+		classes = append(classes, "status-"+color)
+	}
+	if size != "" {
+		classes = append(classes, "status-"+size)
+	}
+	return lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": strings.Join(classes, " ")}}
+}
+
+func ToggleWithVariants(name string, checked bool, color string, size string) shared.Node {
+	className := "toggle"
+	if color != "" {
+		className += " toggle-" + color
+	}
+	if size != "" {
+		className += " toggle-" + size
+	}
+	attrs := map[string]string{"type": "checkbox", "name": name, "class": className}
+	if checked {
+		attrs["checked"] = "checked"
+	}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
+}
+
+func SwapWithVariants(onNode, offNode shared.Node, active bool, rotate bool, flip bool) shared.Node {
+	className := "swap"
+	if active {
+		className += " swap-active"
+	}
+	if rotate {
+		className += " swap-rotate"
+	}
+	if flip {
+		className += " swap-flip"
+	}
+	return lowhtml.ElementNode{Tag: "label", Attrs: map[string]string{"class": className}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: map[string]string{"type": "checkbox"}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "swap-on"}, Children: []shared.Node{onNode}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "swap-off"}, Children: []shared.Node{offNode}},
+	}}
+}
+
+func JoinWithDirection(direction string, children ...shared.Node) shared.Node {
+	className := "join"
+	if direction != "" {
+		className += " join-" + direction
+	}
+	wrapped := make([]shared.Node, 0, len(children))
+	for _, child := range children {
+		wrapped = append(wrapped, lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join-item"}, Children: []shared.Node{child}})
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: wrapped}
+}
+
+func DropdownWithPlacement(trigger, menu shared.Node, placement string) shared.Node {
+	className := "dropdown"
+	if placement != "" {
+		className += " dropdown-" + placement
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "class": "dropdown-content z-1 card card-sm bg-base-100 shadow-md"}, Children: []shared.Node{menu}},
+	}}
+}

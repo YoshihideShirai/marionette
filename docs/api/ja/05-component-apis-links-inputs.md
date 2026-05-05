@@ -29,7 +29,7 @@
 - `Textarea(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` は `3`。
 - `Select(name string, options []SelectOption, props ComponentProps) Node`
-- `SelectWithVariants(name string, options []SelectOption, props SelectVariantProps) Node`
+- `SelectWithVariants(name string, options []SelectOption, color, size, style string, props ComponentProps) Node`
   - `SelectOption` の `Value`, `Label`, `Selected`, `Disabled` を反映。
 
 ### Form 系

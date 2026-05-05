@@ -694,6 +694,30 @@
       "template": "frontend/ui_impl.go",
       "example": "/marionette/examples/text-component.html",
       "description": "Semantic text helper with size, weight, and tone options."
+    },
+    {
+      "id": "loading-with-variants",
+      "name": "LoadingWithVariants",
+      "group": "Components",
+      "description": "Loading helper with type and size variants.",
+      "template": "frontend/daisyui/components_extra.go",
+      "example": "/marionette/examples/loading-with-variants.html"
+    },
+    {
+      "id": "table-with-variants",
+      "name": "TableWithVariants",
+      "group": "Components",
+      "description": "Table helper with zebra, pin rows/cols, and size variants.",
+      "template": "frontend/daisyui/components_extra.go",
+      "example": "/marionette/examples/table-with-variants.html"
+    },
+    {
+      "id": "tooltip-with-variants",
+      "name": "TooltipWithVariants",
+      "group": "Components",
+      "description": "Tooltip helper with placement, color, and forced-open variants.",
+      "template": "frontend/daisyui/components_extra.go",
+      "example": "/marionette/examples/tooltip-with-variants.html"
     }
   ]
 }

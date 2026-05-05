@@ -9,55 +9,60 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   </head>
   <body class="bg-base-200 p-6 text-base-content">
-    <main class="max-w-3xl">
-      <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root>
-        <div class="card-body gap-4">
-          <figcaption class="space-y-1">
-            <h2 class="card-title">Signup share by channel</h2>
-            <p class="text-sm text-base-content/60">Part-to-whole ratio with center space.</p>
+    <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root>
+      <div class="card-body gap-4">
+        <figcaption class="space-y-1">
+            <h2 class="card-title">Plan mix</h2>
+
           </figcaption>
-          <div class="relative w-full" style="height: 300px;">
-            <canvas data-mrn-chart role="img" aria-label="Plan mix share">
-              <p>Weekly signups data is available in the fallback table below.</p>
-            </canvas>
-          </div>
-          <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":["#64748b","#2563eb","#14b8a6"],"borderColor":"#ffffff","data":[64,28,8],"label":"Accounts"}],"labels":["Free","Team","Enterprise"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":true}},"responsive":true},"type":"doughnut"}</script>
-          <details class="sr-only">
-            <summary>Plan mix data is available in the fallback table below.</summary>
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Label</th>
-                  <th scope="col">Signups</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">Mon</th><td>12</td></tr>
-                <tr><th scope="row">Tue</th><td>19</td></tr>
-                <tr><th scope="row">Wed</th><td>14</td></tr>
-                <tr><th scope="row">Thu</th><td>22</td></tr>
-                <tr><th scope="row">Fri</th><td>18</td></tr>
-              </tbody>
-            </table>
-          </details>
+        <div class="relative w-full" style="height: 320px;">
+          <canvas data-mrn-chart role="img" aria-label="Plan mix">
+            <p>Plan mix data is available in the fallback table below.</p>
+          </canvas>
         </div>
-      </figure>
-    </main>
+        <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":"#64748b","borderColor":["#ffffff","#ffffff","#ffffff"],"data":[64,28,8],"label":"Accounts"}],"labels":["Free","Team","Enterprise"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":true}},"responsive":true},"type":"doughnut"}</script>
+        <details class="sr-only">
+          <summary>Plan mix data is available in the fallback table below.</summary>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Label</th>
+                <th scope="col">Accounts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                  <th scope="row">Free</th>
+                  <td>64</td>
+                </tr>
+              <tr>
+                  <th scope="row">Team</th>
+                  <td>28</td>
+                </tr>
+              <tr>
+                  <th scope="row">Enterprise</th>
+                  <td>8</td>
+                </tr>
+              </tbody>
+          </table>
+        </details>
+      </div>
+    </figure>
     <script>
-      (function() {
-        function initCharts(root) {
-          if (!window.Chart) return;
-          (root || document).querySelectorAll("[data-mrn-chart]").forEach(function(canvas) {
-            var container = canvas.closest("[data-mrn-chart-root]");
-            var configEl = container && container.querySelector("[data-mrn-chart-config]");
-            if (!configEl) return;
-            new window.Chart(canvas, JSON.parse(configEl.textContent || "{}"));
-          });
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-          initCharts(document);
-        });
-      })();
-    </script>
+          (function() {
+            function initCharts(root) {
+              if (!window.Chart) return;
+              (root || document).querySelectorAll("[data-mrn-chart]").forEach(function(canvas) {
+                var container = canvas.closest("[data-mrn-chart-root]");
+                var configEl = container && container.querySelector("[data-mrn-chart-config]");
+                if (!configEl) return;
+                new window.Chart(canvas, JSON.parse(configEl.textContent || "{}"));
+              });
+            }
+            document.addEventListener("DOMContentLoaded", function() {
+              initCharts(document);
+            });
+          })();
+        </script>
   </body>
 </html>

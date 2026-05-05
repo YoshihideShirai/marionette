@@ -9,55 +9,48 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   </head>
   <body class="bg-base-200 p-6 text-base-content">
-    <main class="max-w-3xl">
-      <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root>
-        <div class="card-body gap-4">
-          <figcaption class="space-y-1">
-            <h2 class="card-title">Campaign efficiency</h2>
-            <p class="text-sm text-base-content/60">Correlation between ad spend and signups.</p>
+    <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root>
+      <div class="card-body gap-4">
+        <figcaption class="space-y-1">
+            <h2 class="card-title">Response time by load</h2>
+
           </figcaption>
-          <div class="relative w-full" style="height: 300px;">
-            <canvas data-mrn-chart role="img" aria-label="Response time by request load">
-              <p>Weekly signups data is available in the fallback table below.</p>
-            </canvas>
-          </div>
-          <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":["#2563eb","#14b8a6","#f59e0b","#ef4444"],"borderColor":"#0f766e","data":[{"x":10,"y":80},{"x":20,"y":120},{"x":30,"y":170},{"x":40,"y":220}],"label":"Campaigns"}]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":true}},"responsive":true,"scales":{"x":{"title":{"display":true,"text":"Ad spend"}},"y":{"beginAtZero":true,"title":{"display":true,"text":"Signups"}}}},"type":"scatter"}</script>
-          <details class="sr-only">
-            <summary>Response time by load data is available in the fallback table below.</summary>
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Label</th>
-                  <th scope="col">Signups</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">Mon</th><td>12</td></tr>
-                <tr><th scope="row">Tue</th><td>19</td></tr>
-                <tr><th scope="row">Wed</th><td>14</td></tr>
-                <tr><th scope="row">Thu</th><td>22</td></tr>
-                <tr><th scope="row">Fri</th><td>18</td></tr>
-              </tbody>
-            </table>
-          </details>
+        <div class="relative w-full" style="height: 320px;">
+          <canvas data-mrn-chart role="img" aria-label="Response time by load">
+            <p>Response time by load data is available in the fallback table below.</p>
+          </canvas>
         </div>
-      </figure>
-    </main>
+        <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"borderColor":"#0f766e","data":[{"x":10,"y":80},{"x":40,"y":130},{"x":80,"y":220}],"label":"Requests"}],"labels":null},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":true}},"responsive":true,"scales":{"x":{"title":{"display":true,"text":"Requests/sec"}},"y":{"beginAtZero":false,"title":{"display":true,"text":"Latency (ms)"}}}},"type":"scatter"}</script>
+        <details class="sr-only">
+          <summary>Response time by load data is available in the fallback table below.</summary>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Label</th>
+                <th scope="col">Requests</th>
+              </tr>
+            </thead>
+            <tbody>
+              </tbody>
+          </table>
+        </details>
+      </div>
+    </figure>
     <script>
-      (function() {
-        function initCharts(root) {
-          if (!window.Chart) return;
-          (root || document).querySelectorAll("[data-mrn-chart]").forEach(function(canvas) {
-            var container = canvas.closest("[data-mrn-chart-root]");
-            var configEl = container && container.querySelector("[data-mrn-chart-config]");
-            if (!configEl) return;
-            new window.Chart(canvas, JSON.parse(configEl.textContent || "{}"));
-          });
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-          initCharts(document);
-        });
-      })();
-    </script>
+          (function() {
+            function initCharts(root) {
+              if (!window.Chart) return;
+              (root || document).querySelectorAll("[data-mrn-chart]").forEach(function(canvas) {
+                var container = canvas.closest("[data-mrn-chart-root]");
+                var configEl = container && container.querySelector("[data-mrn-chart-config]");
+                if (!configEl) return;
+                new window.Chart(canvas, JSON.parse(configEl.textContent || "{}"));
+              });
+            }
+            document.addEventListener("DOMContentLoaded", function() {
+              initCharts(document);
+            });
+          })();
+        </script>
   </body>
 </html>

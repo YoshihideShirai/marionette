@@ -9,25 +9,6 @@
     <link rel="stylesheet" href="./form-primitives.css" />
   </head>
   <body class="p-6 bg-base-100 text-base-content">
-    <main class="max-w-3xl">
-      <form class="ui-form" aria-label="Account form">
-        <div class="ui-form-row">
-          <label class="ui-form-label" for="email">Email</label>
-          <input id="email" class="ui-form-control" type="email" placeholder="you@example.com" />
-          <p class="ui-form-description">We'll only use this for account notifications.</p>
-        </div>
-        <div class="ui-form-row">
-          <label class="ui-form-label" for="role">Role</label>
-          <select id="role" class="ui-form-control">
-            <option>Viewer</option>
-            <option>Editor</option>
-            <option>Admin</option>
-          </select>
-        </div>
-        <div class="ui-form-actions">
-          <button class="btn btn-primary" type="button">Submit</button>
-        </div>
-      </form>
-    </main>
+    <form class="flex flex-col gap-3" hx-post="/users" hx-swap="outerHTML" hx-target="#app"><label class="form-control w-full gap-1"><span class="label-text">Name</span><input class="input input-bordered w-full" name="name" type="text" value=""></input><span class="label-text-alt">Enter a display name.</span></label><button class="btn w-fit btn-primary" type="submit">Create user</button></form>
   </body>
 </html>

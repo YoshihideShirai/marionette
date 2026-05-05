@@ -58,11 +58,6 @@
     <style>body{font-family:system-ui,sans-serif;padding:16px}.stack{display:grid;gap:12px}.mobile{max-width:375px}</style>
   </head>
   <body>
-    <div class="stack">
-      <div class="ui-feedback ui-feedback-toast ui-feedback-success ui-feedback-md" role="status" aria-live="polite"><span class="ui-feedback__icon">✓</span><div><p class="ui-feedback__title">Toast / Default</p><p class="ui-feedback__description">Saved successfully.</p></div></div>
-      <div class="ui-feedback ui-feedback-alert ui-feedback-error ui-feedback-lg" role="alert" aria-live="assertive"><span class="ui-feedback__icon">!</span><div><p class="ui-feedback__title">Alert / Long content</p><p class="ui-feedback__description">An error occurred. Please wait a moment and try again.</p></div></div>
-      <section class="ui-feedback ui-feedback-empty-state ui-feedback-info ui-feedback-md" role="region" aria-live="polite" aria-busy="false"><span class="ui-feedback__icon">ℹ</span><div><p class="ui-feedback__title">EmptyState / With icon</p><p class="ui-feedback__description">No results found.</p></div></section>
-      <div class="ui-feedback ui-feedback-skeleton ui-feedback-warning ui-feedback-sm ui-feedback-loading mobile" role="status" aria-live="polite" aria-busy="true"><div style="width:100%"><div class="ui-feedback__skeleton-line"></div><div class="ui-feedback__skeleton-line"></div></div></div>
-    </div>
+    <div class="flex flex-col gap-2 items-stretch justify-start"><div class="toast"><div class="alert"><span>Saved All changes were synced.</span></div></div><div class="alert"><span>Needs review Please check the highlighted fields.</span></div><div class="hero bg-base-200 rounded-box"><div class="hero-content text-center"><div><h2 class="text-2xl font-bold">No data</h2><p>Create a record to get started.</p></div></div></div><div class="space-y-2"><div class="skeleton h-4 w-full"></div><div class="skeleton h-4 w-full"></div></div></div>
   </body>
 </html>

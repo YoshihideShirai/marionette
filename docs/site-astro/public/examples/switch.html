@@ -8,15 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body class="bg-base-100 p-6 text-base-content">
-    <main class="max-w-md space-y-3">
-      <label class="label cursor-pointer justify-between rounded-box border border-base-300 p-4">
-        <span class="label-text">Enable notifications</span>
-        <input type="checkbox" role="switch" name="notify" value="1" class="toggle toggle-sm" checked />
-      </label>
-      <label class="label cursor-pointer justify-between rounded-box border border-base-300 p-4">
-        <span class="label-text">Maintenance mode</span>
-        <input type="checkbox" role="switch" name="maintenance" value="1" class="toggle toggle-sm" />
-      </label>
-    </main>
+    <label class="label cursor-pointer gap-2"><input checked="checked" class="toggle" name="notifications" type="checkbox" value="enabled"></input><span class="label-text">Enable notifications</span></label>
   </body>
 </html>

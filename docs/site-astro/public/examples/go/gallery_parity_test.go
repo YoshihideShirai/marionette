@@ -149,16 +149,14 @@ func extractMarionetteRoot(t *testing.T, page string) string {
 	return strings.TrimSpace(matches[1])
 }
 
-func extractSampleBody(t *testing.T, page string, id string) string {
+func extractSampleBody(t *testing.T, page string, _ string) string {
 	t.Helper()
 	matches := bodyRe.FindStringSubmatch(page)
 	if matches == nil {
 		t.Fatal("sample body not found")
 	}
 	body := strings.TrimSpace(matches[1])
-	if id == "chart" || strings.HasPrefix(id, "chart-") {
-		body = chartInitRe.ReplaceAllString(body, "")
-	}
+	body = chartInitRe.ReplaceAllString(body, "")
 	return strings.TrimSpace(body)
 }
 

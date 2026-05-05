@@ -1,0 +1,30 @@
+## 6.3 Data display components
+
+- `TableRowValues(values ...any) TableRow`
+  - `nil` -> empty text, `Node` -> direct render, everything else -> `fmt.Sprint`.
+- `Table(props TableProps) Node`
+- `Chart(props ChartProps) Node`
+  - Defaults: blank `Type` -> `ChartTypeLine`, blank `Height` -> `"320"`
+  - `ChartDataset.Data`: scalar values
+  - `ChartDataset.Points`: `{x,y}` values
+  - `Type`: `ChartTypeLine`, `ChartTypeBar`, `ChartTypePie`, `ChartTypeDoughnut`, `ChartTypeRadar`, `ChartTypePolarArea`, `ChartTypeScatter`
+- `Image(props ImageProps) Node`
+  - Required: `Src`
+  - Defaults: `Loading="lazy"`, `Decoding="async"`
+  - `AspectRatio`: `square`, `video`, `wide`, `portrait`
+  - `ObjectFit`: `cover` (including blank), `contain`, `fill`, `none`, `scale-down`
+- `Pagination(props PaginationProps) Node`
+  - `Page < 1` -> `1`, `TotalPages < 1` -> `1`
+- `Tabs(props TabsProps) Node` (blank `AriaLabel` -> `tabs`)
+- `Breadcrumb(props BreadcrumbProps) Node` (blank `AriaLabel` -> `breadcrumb`)
+- `Checkbox(props CheckboxComponentProps) Node`
+- `RadioGroup(props RadioGroupComponentProps) Node` (blank `AriaLabel` -> `radio group`)
+- `Switch(props SwitchComponentProps) Node`
+- `Badge(props BadgeProps) Node`
+- `TextComponent(props TextProps) Node`
+- `DataFrame(df *dataframe.DataFrame, props TableProps) Node`
+- `DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`
+  - Blank `LabelColumn` uses first column
+  - Blank `Series` uses all columns after the label column
+- `DataFrameFromCSV(...)`, `DataFrameFromTSV(...)`
+  - TSV default: `Comma: '\t'`

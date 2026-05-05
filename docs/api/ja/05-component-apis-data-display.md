@@ -1,0 +1,30 @@
+## 6.3 データ表示
+
+- `TableRowValues(values ...any) TableRow`
+  - `nil`→空文字, `Node`→そのまま, その他→`fmt.Sprint`
+- `Table(props TableProps) Node`
+- `Chart(props ChartProps) Node`
+  - デフォルト: `Type` 空文字=`ChartTypeLine`, `Height` 空文字=`"320"`
+  - `ChartDataset.Data`: 数値系列
+  - `ChartDataset.Points`: `{x,y}` 系列
+  - `Type`: `ChartTypeLine`, `ChartTypeBar`, `ChartTypePie`, `ChartTypeDoughnut`, `ChartTypeRadar`, `ChartTypePolarArea`, `ChartTypeScatter`
+- `Image(props ImageProps) Node`
+  - 必須: `Src`
+  - デフォルト: `Loading="lazy"`, `Decoding="async"`
+  - `AspectRatio`: `square`, `video`, `wide`, `portrait`
+  - `ObjectFit`: `cover`（空文字含む）, `contain`, `fill`, `none`, `scale-down`
+- `Pagination(props PaginationProps) Node`
+  - `Page < 1` は `1`, `TotalPages < 1` は `1`
+- `Tabs(props TabsProps) Node`（`AriaLabel` 空文字=`tabs`）
+- `Breadcrumb(props BreadcrumbProps) Node`（`AriaLabel` 空文字=`breadcrumb`）
+- `Checkbox(props CheckboxComponentProps) Node`
+- `RadioGroup(props RadioGroupComponentProps) Node`（`AriaLabel` 空文字=`radio group`）
+- `Switch(props SwitchComponentProps) Node`
+- `Badge(props BadgeProps) Node`
+- `TextComponent(props TextProps) Node`
+- `DataFrame(df *dataframe.DataFrame, props TableProps) Node`
+- `DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`
+  - `LabelColumn` 空文字は先頭列
+  - `Series` 空はラベル列以外を全採用
+- `DataFrameFromCSV(...)`, `DataFrameFromTSV(...)`
+  - TSV は `Comma: '\t'` 既定

@@ -1,0 +1,28 @@
+## 6.4 レイアウト・サーフェス
+
+- `Actions(props ActionsProps, children ...Node) Node`
+  - `Align`: `start`（空文字含む）, `center`, `end`, `between`
+- `Divider(props DividerProps) Node`
+  - `Spacing`: `none`, `xs`, `sm`, `md`（空文字含む）, `lg`
+- `Box(props BoxProps, children ...Node) Node`
+- `AppShell(props AppShellProps) Node`
+- `Stack(props StackProps, children ...Node) Node`
+  - `Direction`: `vertical`（空文字含む）, `horizontal`/`row`
+  - `Gap`: `none`, `xs`, `sm`, `md`（空文字含む）, `lg`, `xl`
+  - `Align`: `start`, `center`, `end`, 空文字=`stretch`
+  - `Justify`: `start`（空文字含む）, `center`, `end`, `between`
+- `Grid(props GridProps, children ...Node) Node`
+  - `Columns`: `1`, `2`, `3`（空文字含む）, `4`
+  - `MinColumnWidth`: `sm`, `md`, `lg`
+- `Split(props SplitProps) Node`
+  - `AsideWidth`: `sm`, `md`（空文字含む）, `lg`
+  - `ReverseOnMobile: true` で順序反転
+- `PageHeader(props PageHeaderProps) Node`
+- `Container(props ContainerProps, children ...Node) Node`
+  - `MaxWidth`: `sm`, `md`, `lg`（空文字含む）, `full`
+  - `Padding`: `none`, `sm`, `md`（空文字含む）, `lg`
+  - `Centered: true` で `mx-auto`
+- `Region(props RegionProps, children ...Node) Node`
+  - `ID` 必須（空でエラーノード）
+- `Card(props CardProps, children ...Node) Node`
+- `Section(props SectionProps, children ...Node) Node`

@@ -1,0 +1,28 @@
+## 6.4 Layout and surface components
+
+- `Actions(props ActionsProps, children ...Node) Node`
+  - `Align`: `start` (including blank), `center`, `end`, `between`
+- `Divider(props DividerProps) Node`
+  - `Spacing`: `none`, `xs`, `sm`, `md` (including blank), `lg`
+- `Box(props BoxProps, children ...Node) Node`
+- `AppShell(props AppShellProps) Node`
+- `Stack(props StackProps, children ...Node) Node`
+  - `Direction`: `vertical` (including blank), `horizontal`/`row`
+  - `Gap`: `none`, `xs`, `sm`, `md` (including blank), `lg`, `xl`
+  - `Align`: `start`, `center`, `end`, blank = `stretch`
+  - `Justify`: `start` (including blank), `center`, `end`, `between`
+- `Grid(props GridProps, children ...Node) Node`
+  - `Columns`: `1`, `2`, `3` (including blank), `4`
+  - `MinColumnWidth`: `sm`, `md`, `lg`
+- `Split(props SplitProps) Node`
+  - `AsideWidth`: `sm`, `md` (including blank), `lg`
+  - `ReverseOnMobile: true` reverses visual order on mobile
+- `PageHeader(props PageHeaderProps) Node`
+- `Container(props ContainerProps, children ...Node) Node`
+  - `MaxWidth`: `sm`, `md`, `lg` (including blank), `full`
+  - `Padding`: `none`, `sm`, `md` (including blank), `lg`
+  - `Centered: true` adds `mx-auto`
+- `Region(props RegionProps, children ...Node) Node`
+  - `ID` is required (blank returns render error node)
+- `Card(props CardProps, children ...Node) Node`
+- `Section(props SectionProps, children ...Node) Node`

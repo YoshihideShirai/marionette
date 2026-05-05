@@ -26,6 +26,12 @@
 - `Height int`: native window height; defaults to `800`.
 - `Debug bool`: passes WebView debug mode through to the adapter.
 
+### Page options
+- `type PageOptions struct { Title string }`
+- `type PageOption func(*PageOptions)`
+- `WithTitle(title string) PageOption`
+  - Trims whitespace and sets the HTML `<title>` for that page route.
+
 ### `SetCookieSecure(secure bool)`
 - Enables/disables `Secure` on the flash cookie (`marionette_flash`).
 - Default is `false`.
@@ -98,7 +104,7 @@
   - `GET /` returns `500 Internal Server Error` with configuration message.
   - non-root unmatched paths are `404`.
 
-### `Page(path string, fn Handler)`
+### `Page(path string, fn Handler, options ...PageOption)`
 - Registers full-page handler for `GET`.
 - Path normalization:
   - `""` -> `"/"`
@@ -112,7 +118,7 @@
 - Parse failure in request form body -> `400`.
 - Render mode: handler `Node` is returned as fragment HTML.
 
-### `Render(fn Handler)`
+### `Render(fn Handler, options ...PageOption)`
 - Compatibility alias for root page registration.
 - Equivalent to `Page("/", fn)`.
 
@@ -124,6 +130,9 @@
 
 #### `Set(key string, value any)`
 - Writes into app shared state map with lock.
+
+#### `Get(key string) any`
+- Reads from app shared state map with lock.
 
 #### `GetInt(key string) int`
 - Reads app shared state and type-asserts to `int`.

@@ -4,14 +4,22 @@ import path from 'node:path';
 import MarkdownIt from 'markdown-it';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
-const apiDocsDir = path.resolve(process.cwd(), '..', '..', 'docs', 'api');
-const sectionFiles = (await fs.readdir(apiDocsDir))
-  .filter((name) => name.endsWith('.md'))
-  .sort();
+const apiDocsBaseDir = path.resolve(process.cwd(), '..', '..', 'docs', 'api');
+const apiDocsJaDir = path.join(apiDocsBaseDir, 'ja');
 
-const markdownSections = await Promise.all(
-  sectionFiles.map((name) => fs.readFile(path.join(apiDocsDir, name), 'utf-8')),
+const [baseSectionFiles, jaSectionFiles] = await Promise.all([
+  fs.readdir(apiDocsBaseDir),
+  fs.readdir(apiDocsJaDir),
+]);
+
+const normalizedBaseFiles = baseSectionFiles.filter((name) => name.endsWith('.md')).sort();
+const localizedFiles = new Set(jaSectionFiles.filter((name) => name.endsWith('.md')));
+
+const sectionPaths = normalizedBaseFiles.map((name) =>
+  localizedFiles.has(name) ? path.join(apiDocsJaDir, name) : path.join(apiDocsBaseDir, name),
 );
+
+const markdownSections = await Promise.all(sectionPaths.map((filePath) => fs.readFile(filePath, 'utf-8')));
 const markdown = markdownSections.join('\n\n');
 const html = new MarkdownIt({ html: false, linkify: true, typographer: true }).render(markdown);
 ---

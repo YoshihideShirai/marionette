@@ -19,10 +19,14 @@ package exposes component APIs; use the `mh` import shown above for custom marku
 - `DivClass(className string, children ...Node) Node`
 - `DivAttrs(attrs Attrs, children ...Node) Node`
 - `DivProps(props ElementProps, children ...Node) Node`
+- `H1(children ...Node) Node` / `H1Props(props ElementProps, children ...Node) Node`
+- `H2(children ...Node) Node` / `H2Props(props ElementProps, children ...Node) Node`
+- `H3(children ...Node) Node` / `H3Props(props ElementProps, children ...Node) Node`
+- `H4(children ...Node) Node` / `H4Props(props ElementProps, children ...Node) Node`
 - `Column(children ...Node) Node`
 
 ### Table / layout helpers
-- `Table(headers []string, rows ...TableRowData) Node`
+- `HTMXTable(headers []string, rows ...TableRowData) Node`
 - `TableRow(cells ...Node) TableRowData`
 - `Sidebar(brand, title string, items ...SidebarItem) *sidebar`
 - `SidebarLink(label, href string) SidebarItem`

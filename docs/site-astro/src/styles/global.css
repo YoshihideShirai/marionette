@@ -52,6 +52,10 @@ body {
   background: var(--bg);
 }
 
+body.drawer-open {
+  overflow: hidden;
+}
+
 img,
 svg,
 video,
@@ -104,7 +108,9 @@ button:focus-visible {
   text-decoration: none;
 }
 
-.theme-toggle {
+.theme-toggle,
+.drawer-toggle-button,
+.drawer-close-button {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -118,7 +124,9 @@ button:focus-visible {
 }
 
 .container {
+  width: min(100%, 72rem);
   min-width: 0;
+  margin-inline: auto;
 }
 
 .docs-shell {
@@ -126,21 +134,63 @@ button:focus-visible {
   margin-inline: auto;
   padding-inline: clamp(1rem, 2vw, 2rem);
   padding-block: var(--space-6) 4rem;
-  display: grid;
-  grid-template-columns: 17rem minmax(0, 1fr);
-  gap: clamp(1.5rem, 2.5vw, 3rem);
 }
 
-.sidebar {
-  position: sticky;
-  top: var(--space-4);
-  align-self: start;
-  max-height: calc(100vh - var(--space-8));
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  border: 0;
+  background: rgb(15 23 42 / 55%);
+  cursor: pointer;
+}
+
+.drawer-backdrop[hidden] {
+  display: none;
+}
+
+.docs-drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1001;
+  width: min(90vw, 22rem);
+  max-height: 100dvh;
   overflow: auto;
-  padding: var(--space-2) var(--space-4) var(--space-4) 0;
+  padding: var(--space-4);
   border-right: 1px solid var(--line);
+  background: var(--surface);
   color: var(--muted);
+  box-shadow: var(--shadow-md);
   scrollbar-width: thin;
+  transform: translateX(-100%);
+  transition: transform 0.18s ease;
+}
+
+.docs-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.drawer-title {
+  margin: 0;
+  color: var(--fg);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.drawer-close-button {
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  justify-content: center;
+  padding: 0;
 }
 
 .sidebar a.sidebar-search-link {
@@ -716,18 +766,7 @@ iframe {
 
 @media (max-width: 900px) {
   .docs-shell {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
     padding-inline: var(--space-4);
-  }
-
-  .sidebar {
-    position: static;
-    max-height: 60vh;
-    padding: var(--space-3);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    background: var(--surface);
   }
 
   .sidebar-search-link {

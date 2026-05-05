@@ -107,6 +107,16 @@ if (uncategorizedComponents.length > 0) {
         <span>Marionette Docs</span>
       </a>
       <nav class="site-nav">
+        <button
+          type="button"
+          id="docs-drawer-open"
+          class="drawer-toggle-button"
+          aria-controls="docs-drawer"
+          aria-expanded="false"
+        >
+          <span class="ui-icon material-icons" aria-hidden="true">menu</span>
+          <span>{isJa ? 'メニュー' : 'Menu'}</span>
+        </button>
         <a href={languageSwitcherPath} hreflang={isJa ? 'en' : 'ja'}>{isJa ? 'English' : '日本語'}</a>
         <a href="https://github.com/YoshihideShirai/marionette" target="_blank" rel="noreferrer">
           GitHub
@@ -118,7 +128,20 @@ if (uncategorizedComponents.length > 0) {
       </nav>
     </header>
     <main class="docs-shell">
-      <aside class="sidebar" aria-label={isJa ? 'ドキュメントナビゲーション' : 'Documentation navigation'}>
+      <button type="button" id="docs-drawer-backdrop" class="drawer-backdrop" aria-label={isJa ? 'ナビゲーションを閉じる' : 'Close navigation'} hidden></button>
+      <aside
+        id="docs-drawer"
+        class="sidebar docs-drawer"
+        aria-label={isJa ? 'ドキュメントナビゲーション' : 'Documentation navigation'}
+        aria-hidden="true"
+        inert
+      >
+        <div class="drawer-header">
+          <p class="drawer-title">{isJa ? 'ナビゲーション' : 'Navigation'}</p>
+          <button type="button" id="docs-drawer-close" class="drawer-close-button" aria-label={isJa ? 'ナビゲーションを閉じる' : 'Close navigation'}>
+            <span class="ui-icon material-icons" aria-hidden="true">close</span>
+          </button>
+        </div>
         <a class="sidebar-search-link" href={`${langRoot}/search/`}>
           <span>{isJa ? '検索' : 'Search'}</span>
           <kbd>Ctrl K</kbd>
@@ -247,6 +270,49 @@ if (uncategorizedComponents.length > 0) {
       });
 
       syncLabel();
+    })();
+
+    (() => {
+      const drawer = document.getElementById('docs-drawer');
+      const openButton = document.getElementById('docs-drawer-open');
+      const closeButton = document.getElementById('docs-drawer-close');
+      const backdrop = document.getElementById('docs-drawer-backdrop');
+      if (!(drawer instanceof HTMLElement) || !(openButton instanceof HTMLButtonElement) || !(closeButton instanceof HTMLButtonElement) || !(backdrop instanceof HTMLButtonElement)) return;
+
+      let lastFocused = null;
+      drawer.inert = true;
+
+      const setOpen = (open) => {
+        drawer.classList.toggle('open', open);
+        document.body.classList.toggle('drawer-open', open);
+        openButton.setAttribute('aria-expanded', String(open));
+        drawer.setAttribute('aria-hidden', String(!open));
+        drawer.inert = !open;
+        backdrop.hidden = !open;
+
+        if (open) {
+          lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          closeButton.focus();
+        } else {
+          const focusTarget = lastFocused && document.contains(lastFocused) ? lastFocused : openButton;
+          focusTarget.focus();
+          lastFocused = null;
+        }
+      };
+
+      openButton.addEventListener('click', () => setOpen(true));
+      closeButton.addEventListener('click', () => setOpen(false));
+      backdrop.addEventListener('click', () => setOpen(false));
+
+      drawer.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => setOpen(false));
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && drawer.classList.contains('open')) {
+          setOpen(false);
+        }
+      });
     })();
 
     (() => {

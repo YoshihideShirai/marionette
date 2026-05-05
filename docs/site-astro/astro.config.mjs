@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://yoshihideshirai.github.io/marionette',
+  site: 'https://yoshihideshirai.github.io',
   base: '/marionette',
   integrations: [],
 });

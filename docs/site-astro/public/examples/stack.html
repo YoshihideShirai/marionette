@@ -8,23 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body class="bg-base-100 p-6 text-base-content">
-    <main class="max-w-3xl space-y-5">
-      <section class="space-y-2">
-        <p class="text-xs font-semibold uppercase text-base-content/60">Vertical stack / lg gap</p>
-        <div class="flex flex-col gap-6 rounded-box border border-base-300 bg-base-200 p-4">
-          <div class="rounded-box bg-primary/15 p-3 font-medium">Profile summary</div>
-          <div class="rounded-box bg-secondary/15 p-3 font-medium">Permissions</div>
-          <div class="rounded-box bg-accent/15 p-3 font-medium">Activity</div>
-        </div>
-      </section>
-      <section class="space-y-2">
-        <p class="text-xs font-semibold uppercase text-base-content/60">Horizontal stack / align center / justify between</p>
-        <div class="flex flex-row flex-wrap items-center justify-between gap-2 rounded-box border border-base-300 p-4">
-          <span class="font-semibold">Aiko Tanaka</span>
-          <span class="badge badge-primary">Admin</span>
-          <button class="btn btn-secondary btn-sm" type="button">Open</button>
-        </div>
-      </section>
-    </main>
+    <div class="flex flex-row gap-2 items-center justify-start"><span class="badge">Admin</span><p class="medium">Aiko Tanaka</p></div>
   </body>
 </html>

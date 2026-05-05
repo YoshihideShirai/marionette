@@ -177,7 +177,7 @@ func Textarea(first any, rest ...any) Node {
 		if !ok {
 			return renderErrorNode{err: fmt.Errorf("textarea options must be TextareaOptions")}
 		}
-		return Textarea(name, value, options)
+		return daisy.Textarea(name, value, options)
 	}
 	props, ok := first.(TextareaProps)
 	if !ok || len(rest) != 0 {
@@ -229,7 +229,7 @@ func Select(first any, rest ...any) Node {
 		if !ok {
 			return renderErrorNode{err: fmt.Errorf("select props must be ComponentProps")}
 		}
-		return Select(name, options, props)
+		return daisy.Select(name, options, props)
 	}
 	props, ok := first.(SelectFieldProps)
 	if !ok || len(rest) != 0 {

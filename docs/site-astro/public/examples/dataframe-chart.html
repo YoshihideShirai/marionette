@@ -1,1 +1,49 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DataFrameChart example</title><style>body{font-family:system-ui;padding:16px}.bars{display:grid;gap:10px;max-width:520px}.row{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center}.bar{height:16px;background:#93c5fd;border-radius:999px}</style></head><body><div class="bars"><div class="row"><span>North</span><div class="bar" style="width:70%"></div></div><div class="row"><span>South</span><div class="bar" style="width:56%"></div></div><div class="row"><span>West</span><div class="bar" style="width:82%"></div></div></div></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DataFrameChart example</title><style>body{font-family:system-ui;padding:16px}.bars{display:grid;gap:10px;max-width:520px}.row{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center}.bar{height:16px;background:#93c5fd;border-radius:999px}</style></head><body>
+    <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root data-mrn-filter-column="Name">
+      <div class="card-body gap-4">
+        <figcaption class="space-y-1">
+            <h2 class="card-title">DataFrame chart</h2>
+
+          </figcaption>
+        <div class="relative w-full" style="height: 320px;">
+          <canvas data-mrn-chart role="img" aria-label="DataFrame chart">
+            <p>DataFrame chart data is available in the fallback table below.</p>
+          </canvas>
+        </div>
+        <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":["#2563eb","#14b8a6","#f59e0b","#8b5cf6","#ef4444"],"data":[95,88,81,72,65],"label":"Score"},{"backgroundColor":["#2563eb","#14b8a6","#f59e0b","#8b5cf6","#ef4444"],"data":[15,12,10,8,6],"label":"Tasks"}],"labels":["Sora","Aiko","Yui","Ren","Mina"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":true}},"responsive":true,"scales":{"x":{},"y":{"beginAtZero":false}}},"type":"bar"}</script>
+        <details class="sr-only">
+          <summary>DataFrame chart data is available in the fallback table below.</summary>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Label</th>
+                <th scope="col">Score</th><th scope="col">Tasks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                  <th scope="row">Sora</th>
+                  <td>95</td><td>15</td>
+                </tr>
+              <tr>
+                  <th scope="row">Aiko</th>
+                  <td>88</td><td>12</td>
+                </tr>
+              <tr>
+                  <th scope="row">Yui</th>
+                  <td>81</td><td>10</td>
+                </tr>
+              <tr>
+                  <th scope="row">Ren</th>
+                  <td>72</td><td>8</td>
+                </tr>
+              <tr>
+                  <th scope="row">Mina</th>
+                  <td>65</td><td>6</td>
+                </tr>
+              </tbody>
+          </table>
+        </details>
+      </div>
+    </figure>
+  </body></html>

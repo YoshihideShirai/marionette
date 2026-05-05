@@ -2,6 +2,8 @@ package goexamples
 
 import (
 	"bytes"
+	"fmt"
+	"strconv"
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
@@ -21,7 +23,8 @@ func RegisterDataFrameExample(app *mb.App) {
 		sort := ctx.Query("sort")
 
 		view := mf.DataFrameViewProps{PageSize: 3, ComputedColumns: []mf.DataFrameComputedColumn{{Name: "Tier", Compute: func(row map[string]any) any {
-			if row["Score"].(float64) >= 85 {
+			score, _ := strconv.ParseFloat(fmt.Sprint(row["Score"]), 64)
+			if score >= 85 {
 				return "Gold"
 			}
 			return "Silver"

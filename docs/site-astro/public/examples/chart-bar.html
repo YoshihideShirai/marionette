@@ -9,55 +9,60 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   </head>
   <body class="bg-base-200 p-6 text-base-content">
-    <main class="max-w-3xl">
-      <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root>
-        <div class="card-body gap-4">
-          <figcaption class="space-y-1">
-            <h2 class="card-title">Signups by weekday</h2>
-            <p class="text-sm text-base-content/60">Category comparison for weekday signups.</p>
+    <figure class="card bg-base-100 shadow-sm" data-mrn-chart-root>
+      <div class="card-body gap-4">
+        <figcaption class="space-y-1">
+            <h2 class="card-title">Role distribution</h2>
+
           </figcaption>
-          <div class="relative w-full" style="height: 300px;">
-            <canvas data-mrn-chart role="img" aria-label="Role distribution by role">
-              <p>Weekly signups data is available in the fallback table below.</p>
-            </canvas>
-          </div>
-          <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":["#2563eb","#14b8a6","#f59e0b"],"borderColor":["#1d4ed8","#0f766e","#d97706"],"borderWidth":1,"data":[3,7,12],"label":"Users"}],"labels":["Admin","Editor","Viewer"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":false}},"responsive":true,"scales":{"x":{},"y":{"beginAtZero":true}}},"type":"bar"}</script>
-          <details class="sr-only">
-            <summary>Role distribution data is available in the fallback table below.</summary>
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Label</th>
-                  <th scope="col">Signups</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">Mon</th><td>12</td></tr>
-                <tr><th scope="row">Tue</th><td>19</td></tr>
-                <tr><th scope="row">Wed</th><td>14</td></tr>
-                <tr><th scope="row">Thu</th><td>22</td></tr>
-                <tr><th scope="row">Fri</th><td>18</td></tr>
-              </tbody>
-            </table>
-          </details>
+        <div class="relative w-full" style="height: 320px;">
+          <canvas data-mrn-chart role="img" aria-label="Role distribution">
+            <p>Role distribution data is available in the fallback table below.</p>
+          </canvas>
         </div>
-      </figure>
-    </main>
+        <script type="application/json" data-mrn-chart-config>{"data":{"datasets":[{"backgroundColor":"#2563eb","data":[3,7,12],"label":"Users"}],"labels":["Admin","Editor","Viewer"]},"options":{"maintainAspectRatio":false,"plugins":{"legend":{"display":false}},"responsive":true,"scales":{"x":{},"y":{"beginAtZero":true}}},"type":"bar"}</script>
+        <details class="sr-only">
+          <summary>Role distribution data is available in the fallback table below.</summary>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Label</th>
+                <th scope="col">Users</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                  <th scope="row">Admin</th>
+                  <td>3</td>
+                </tr>
+              <tr>
+                  <th scope="row">Editor</th>
+                  <td>7</td>
+                </tr>
+              <tr>
+                  <th scope="row">Viewer</th>
+                  <td>12</td>
+                </tr>
+              </tbody>
+          </table>
+        </details>
+      </div>
+    </figure>
     <script>
-      (function() {
-        function initCharts(root) {
-          if (!window.Chart) return;
-          (root || document).querySelectorAll("[data-mrn-chart]").forEach(function(canvas) {
-            var container = canvas.closest("[data-mrn-chart-root]");
-            var configEl = container && container.querySelector("[data-mrn-chart-config]");
-            if (!configEl) return;
-            new window.Chart(canvas, JSON.parse(configEl.textContent || "{}"));
-          });
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-          initCharts(document);
-        });
-      })();
-    </script>
+          (function() {
+            function initCharts(root) {
+              if (!window.Chart) return;
+              (root || document).querySelectorAll("[data-mrn-chart]").forEach(function(canvas) {
+                var container = canvas.closest("[data-mrn-chart-root]");
+                var configEl = container && container.querySelector("[data-mrn-chart-config]");
+                if (!configEl) return;
+                new window.Chart(canvas, JSON.parse(configEl.textContent || "{}"));
+              });
+            }
+            document.addEventListener("DOMContentLoaded", function() {
+              initCharts(document);
+            });
+          })();
+        </script>
   </body>
 </html>

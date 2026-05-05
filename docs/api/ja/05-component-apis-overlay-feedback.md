@@ -5,6 +5,7 @@
 - `Toast(props ToastProps) Node`
   - `Live`: `polite`（デフォルト）, `assertive`, `off`
 - `Alert(props AlertProps) Node`
+- `AlertWithVariants(title, description string, props AlertVariantProps) Node`
 - `Skeleton(props SkeletonProps) Node`
   - `Rows <= 0` は `3`。
 - `Progress(props ProgressProps) Node`

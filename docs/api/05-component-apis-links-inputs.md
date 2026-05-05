@@ -29,6 +29,7 @@
 - `Textarea(name, value string, options TextareaOptions) Node`
   - `Rows <= 0` defaults to `3`.
 - `Select(name string, options []SelectOption, props ComponentProps) Node`
+- `SelectWithVariants(name string, options []SelectOption, props SelectVariantProps) Node`
   - Uses `SelectOption.Value`, `Label`, `Selected`, `Disabled`.
 
 ### Form family

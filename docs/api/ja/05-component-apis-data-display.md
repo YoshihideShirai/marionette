@@ -21,6 +21,7 @@
 - `RadioGroup(props RadioGroupComponentProps) Node`（`AriaLabel` 空文字=`radio group`）
 - `Switch(props SwitchComponentProps) Node`
 - `Badge(props BadgeProps) Node`
+- `BadgeWithVariants(label string, props BadgeVariantProps) Node`
 - `TextComponent(props TextProps) Node`
 - `DataFrame(df *dataframe.DataFrame, props TableProps) Node`
 - `DataFrameChart(df *dataframe.DataFrame, props DataFrameChartProps) Node`

@@ -2,8 +2,16 @@ package frontend
 
 import daisy "github.com/YoshihideShirai/marionette/frontend/daisyui"
 
-func Avatar(src, alt, class string) Node  { return daisy.Avatar(src, alt, class) }
-func Navbar(start, center, end Node) Node { return daisy.Navbar(start, center, end) }
+func TextNode(text string) Node { return daisy.TextNode(text) }
+func PrimaryButton(label string, props ComponentProps) Node {
+	return daisy.PrimaryButton(label, props)
+}
+func SecondaryButton(label string, props ComponentProps) Node {
+	return daisy.SecondaryButton(label, props)
+}
+func GhostButton(label string, props ComponentProps) Node { return daisy.GhostButton(label, props) }
+func Avatar(src, alt, class string) Node                  { return daisy.Avatar(src, alt, class) }
+func Navbar(start, center, end Node) Node                 { return daisy.Navbar(start, center, end) }
 func Hero(title, description string, actions ...Node) Node {
 	return daisy.Hero(title, description, actions...)
 }
@@ -37,12 +45,39 @@ func ToggleVariant(name string, checked bool, variant string) Node {
 func ToggleWithIcons(name string, checked bool, className string) Node {
 	return daisy.ToggleWithIcons(name, checked, className)
 }
-func Join(children ...Node) Node                          { return daisy.Join(children...) }
-func Mask(shapeClass string, child Node) Node             { return daisy.Mask(shapeClass, child) }
-func Carousel(items ...Node) Node                         { return daisy.Carousel(items...) }
-func CarouselItem(id string, child Node) Node             { return daisy.CarouselItem(id, child) }
-func ChatBubble(content Node, end bool) Node              { return daisy.ChatBubble(content, end) }
-func ThemeController(options ...Node) Node                { return daisy.ThemeController(options...) }
+func Join(children ...Node) Node              { return daisy.Join(children...) }
+func Mask(shapeClass string, child Node) Node { return daisy.Mask(shapeClass, child) }
+func Carousel(items ...Node) Node             { return daisy.Carousel(items...) }
+func CarouselItem(id string, child Node) Node { return daisy.CarouselItem(id, child) }
+func ChatBubble(content Node, end bool) Node  { return daisy.ChatBubble(content, end) }
+func ThemeController(options ...Node) Node    { return daisy.ThemeController(options...) }
 func ThemeControllerOption(theme string, checked bool, className string) Node {
 	return daisy.ThemeControllerOption(theme, checked, className)
 }
+func Countdown(value int) Node                    { return daisy.Countdown(value) }
+func Status(colorClass string) Node               { return daisy.Status(colorClass) }
+func Dock(items ...Node) Node                     { return daisy.Dock(items...) }
+func Fieldset(legend string, fields ...Node) Node { return daisy.Fieldset(legend, fields...) }
+func Label(text string) Node                      { return daisy.Label(text) }
+func Validator(message string) Node               { return daisy.Validator(message) }
+func BrowserMockup(content Node) Node             { return daisy.BrowserMockup(content) }
+func PhoneMockup(content Node) Node               { return daisy.PhoneMockup(content) }
+func CodeMockup(lines ...string) Node             { return daisy.CodeMockup(lines...) }
+func Calendar(content Node) Node                  { return daisy.Calendar(content) }
+func Swap(onNode, offNode Node, active bool) Node { return daisy.Swap(onNode, offNode, active) }
+func Filter(items ...Node) Node                   { return daisy.Filter(items...) }
+func Diff(before, after Node) Node                { return daisy.Diff(before, after) }
+func List(items ...Node) Node                     { return daisy.List(items...) }
+func Accordion(title string, content Node, open bool) Node {
+	return daisy.Accordion(title, content, open)
+}
+func FAB(icon Node, label string) Node           { return daisy.FAB(icon, label) }
+func SpeedDial(trigger Node, items ...Node) Node { return daisy.SpeedDial(trigger, items...) }
+func DockItem(child Node, active bool) Node      { return daisy.DockItem(child, active) }
+func FilterItem(label string, active bool) Node  { return daisy.FilterItem(label, active) }
+func CalendarGrid(days ...Node) Node             { return daisy.CalendarGrid(days...) }
+func TextRotate(words []string, animationClass string) Node {
+	return daisy.TextRotate(words, animationClass)
+}
+func Hover3DCard(content Node) Node   { return daisy.Hover3DCard(content) }
+func HoverGallery(items ...Node) Node { return daisy.HoverGallery(items...) }

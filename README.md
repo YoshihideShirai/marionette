@@ -4,9 +4,12 @@
 
 ![Marionette concept art](docs/assets/concept.png)
 
-Marionette is a Go-first framework for building admin UIs and internal tools.
-It lets you describe screens, state, and actions in Go while htmx handles
-partial updates in the browser.
+Marionette is a **Go-first framework that makes admin UI and internal tool development dramatically simpler**.
+It lets you describe screens, state, and actions end-to-end in Go, while htmx handles
+fast partial updates in the browser.
+
+If your team is tired of maintaining frontend and backend separately, Marionette gives you
+a **practical, operations-friendly UI architecture** built for real product teams.
 
 ## Why Marionette
 
@@ -17,7 +20,14 @@ partial updates in the browser.
 - Share a single `DataQueryState` between charts and tables so clicking a region filters all widgets together.
 - Run the same app as a web UI or inside a desktop WebView shell.
 
-## Try it
+## Great fit for teams that
+
+- Want to stay backend-first in Go and reduce frontend maintenance overhead.
+- Need to ship admin/operations interfaces quickly without committing to a full SPA stack.
+- Care about server-side observability, access control, and debugging ergonomics.
+- Want flexibility to deploy as browser UI today and desktop shell later.
+
+## Try it in 1 minute
 
 Run the full demo:
 

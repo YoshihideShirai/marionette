@@ -184,6 +184,16 @@ func Textarea(first any, rest ...any) Node {
 	return textareaField(props)
 }
 
+func TextareaWithVariants(name, value string, options TextareaOptions, props TextareaVariantProps) Node {
+	options.Props = ComponentProps{
+		Class:    props.Class,
+		Variant:  string(props.Variant),
+		Size:     string(props.Size),
+		Disabled: props.Disabled,
+	}
+	return Textarea(name, value, options)
+}
+
 func textareaField(props TextareaProps) Node {
 	attrs := inputControlAttrs(controlAttrConfig{
 		ID:          props.ID,
@@ -224,6 +234,15 @@ func Select(first any, rest ...any) Node {
 		return renderErrorNode{err: fmt.Errorf("select requires SelectFieldProps or name, []SelectOption, ComponentProps")}
 	}
 	return selectField(props)
+}
+
+func SelectWithVariants(name string, options []SelectOption, props SelectVariantProps) Node {
+	return Select(name, options, ComponentProps{
+		Class:    props.Class,
+		Variant:  string(props.Variant),
+		Size:     string(props.Size),
+		Disabled: props.Disabled,
+	})
 }
 
 func selectField(props SelectFieldProps) Node {

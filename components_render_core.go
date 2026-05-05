@@ -17,8 +17,30 @@ func Button(label string, props ComponentProps) Node {
 	return componentButton(label, "button", props)
 }
 
+func ButtonWithVariants(label string, props ButtonVariantProps) Node {
+	variants := make([]string, 0, len(props.Variants))
+	for _, v := range props.Variants {
+		variants = append(variants, string(v))
+	}
+	return Button(label, ComponentProps{
+		Class:    props.Class,
+		Variant:  strings.Join(variants, " "),
+		Size:     string(props.Size),
+		Disabled: props.Disabled,
+	})
+}
+
 func SubmitButton(label string, props ComponentProps) Node {
 	return componentButton(label, "submit", props)
+}
+
+func InputWithVariants(name, value string, props InputVariantProps) Node {
+	return inputComponent(name, value, ComponentProps{
+		Class:    props.Class,
+		Variant:  string(props.Variant),
+		Size:     string(props.Size),
+		Disabled: props.Disabled,
+	})
 }
 
 func LoginButton(props LoginButtonProps) Node {
@@ -356,6 +378,10 @@ func Modal(props ModalProps) Node {
 	}
 }
 
+func ModalWithVariants(props ModalProps, variant ModalVariantProps) Node {
+	return DivClass(joinClass(variant.Class, "modal-variant", string(variant.Variant), string(variant.Size)), Modal(props))
+}
+
 func Toast(props ToastProps) Node {
 	live := strings.TrimSpace(props.Live)
 	if live == "" {
@@ -394,6 +420,19 @@ func Alert(props AlertProps) Node {
 			Icon:        strings.TrimSpace(props.Icon),
 		},
 	}
+}
+
+func AlertWithVariants(title, description string, props AlertVariantProps) Node {
+	return Alert(AlertProps{
+		Title:       title,
+		Description: description,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
 }
 
 func Skeleton(props SkeletonProps) Node {
@@ -458,6 +497,20 @@ func Progress(props ProgressProps) Node {
 			Indeterminate: props.Indeterminate,
 		},
 	}
+}
+
+func ProgressWithVariants(value, max float64, label string, props ProgressVariantProps) Node {
+	return Progress(ProgressProps{
+		Value: value,
+		Max:   max,
+		Label: label,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
 }
 
 func EmptyState(props EmptyStateProps) Node {
@@ -637,6 +690,10 @@ func Pagination(props PaginationProps) Node {
 	}
 }
 
+func PaginationWithVariants(props PaginationProps, variant PaginationVariantProps) Node {
+	return DivClass(joinClass(variant.Class, "pagination-variant", string(variant.Variant), string(variant.Size)), Pagination(props))
+}
+
 func chartConfigJSON(props ChartProps) (string, error) {
 	chartType := strings.TrimSpace(string(props.Type))
 	if chartType == "" {
@@ -809,6 +866,18 @@ func Tabs(props TabsProps) Node {
 	}
 }
 
+func TabsWithVariants(props TabsProps, variant TabsVariantProps) Node {
+	props.Props.Class = joinClass(props.Props.Class, variant.Class)
+	props.Props.Variant = strings.TrimSpace(joinClass(props.Props.Variant, string(variant.Variant)))
+	if strings.TrimSpace(props.Props.Size) == "" {
+		props.Props.Size = string(variant.Size)
+	}
+	if variant.Disabled {
+		props.Props.Disabled = true
+	}
+	return Tabs(props)
+}
+
 func Breadcrumb(props BreadcrumbProps) Node {
 	items := make([]BreadcrumbItem, 0, len(props.Items))
 	for _, item := range props.Items {
@@ -857,6 +926,21 @@ func checkboxComponent(props CheckboxComponentProps) Node {
 	}
 }
 
+func CheckboxWithVariants(name, value, label string, checked bool, props CheckboxVariantProps) Node {
+	return Checkbox(CheckboxComponentProps{
+		Name:    name,
+		Value:   value,
+		Label:   label,
+		Checked: checked,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
+}
+
 func radioGroupComponent(props RadioGroupComponentProps) Node {
 	items := make([]RadioItem, 0, len(props.Items))
 	for _, item := range props.Items {
@@ -889,6 +973,20 @@ func radioGroupComponent(props RadioGroupComponentProps) Node {
 	}
 }
 
+func RadioGroupWithVariants(name, ariaLabel string, items []RadioItem, props RadioVariantProps) Node {
+	return RadioGroup(RadioGroupComponentProps{
+		Name:      name,
+		AriaLabel: ariaLabel,
+		Items:     items,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
+}
+
 func switchComponent(props SwitchComponentProps) Node {
 	return templateNode{
 		name: "components/switch",
@@ -910,8 +1008,35 @@ func switchComponent(props SwitchComponentProps) Node {
 	}
 }
 
+func SwitchWithVariants(name, value, label string, checked bool, props SwitchVariantProps) Node {
+	return Switch(SwitchComponentProps{
+		Name:    name,
+		Value:   value,
+		Label:   label,
+		Checked: checked,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
+}
+
 func Badge(props BadgeProps) Node {
 	return element{Tag: "span", Attrs: map[string]string{"class": badgeClass(props.Props)}, Text: strings.TrimSpace(props.Label)}
+}
+
+func BadgeWithVariants(label string, props BadgeVariantProps) Node {
+	return Badge(BadgeProps{
+		Label: label,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
 }
 
 func Actions(props ActionsProps, children ...Node) Node {
@@ -1091,6 +1216,18 @@ func Card(props CardProps, children ...Node) Node {
 			Children:    childHTML,
 		},
 	}
+}
+
+func CardWithVariants(props CardProps, variant CardVariantProps, children ...Node) Node {
+	props.Props.Class = joinClass(props.Props.Class, variant.Class)
+	props.Props.Variant = strings.TrimSpace(joinClass(props.Props.Variant, string(variant.Variant)))
+	if strings.TrimSpace(props.Props.Size) == "" {
+		props.Props.Size = string(variant.Size)
+	}
+	if variant.Disabled {
+		props.Props.Disabled = true
+	}
+	return Card(props, children...)
 }
 
 func Section(props SectionProps, children ...Node) Node {

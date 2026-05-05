@@ -23,9 +23,16 @@ func ActionForm(props ActionFormProps, children ...Node) Node {
 }
 func FormField(control Node, props FormFieldProps) Node { return daisy.FormField(control, props) }
 func Modal(props ModalProps) Node                       { return daisy.Modal(props) }
-func Toast(props ToastProps) Node                       { return daisy.Toast(props.Title, props.Description, props.Props) }
-func Alert(props AlertProps) Node                       { return daisy.Alert(props.Title, props.Description, props.Props) }
-func Skeleton(props SkeletonProps) Node                 { return daisy.Skeleton(props.Rows, props.Props) }
+func ModalWithVariants(props ModalProps, variant ModalVariantProps) Node {
+	return lowhtml.ElementNode{
+		Tag:      "div",
+		Attrs:    map[string]string{"class": joinClass(variant.Class, "modal-variant", string(variant.Variant), string(variant.Size))},
+		Children: []Node{Modal(props)},
+	}
+}
+func Toast(props ToastProps) Node       { return daisy.Toast(props.Title, props.Description, props.Props) }
+func Alert(props AlertProps) Node       { return daisy.Alert(props.Title, props.Description, props.Props) }
+func Skeleton(props SkeletonProps) Node { return daisy.Skeleton(props.Rows, props.Props) }
 func Progress(props ProgressProps) Node {
 	max := props.Max
 	if max <= 0 {
@@ -75,5 +82,16 @@ func Box(props BoxProps, children ...Node) Node { return daisy.Box(props, childr
 func AppShell(props AppShellProps) Node         { return daisy.AppShell(props) }
 func Card(props CardProps, children ...Node) Node {
 	return daisy.Card(props.Title, props.Description, props.Actions, children, props.Props)
+}
+func CardWithVariants(props CardProps, variant CardVariantProps, children ...Node) Node {
+	props.Props.Class = joinClass(props.Props.Class, variant.Class)
+	props.Props.Variant = joinClass(props.Props.Variant, string(variant.Variant))
+	if props.Props.Size == "" {
+		props.Props.Size = string(variant.Size)
+	}
+	if variant.Disabled {
+		props.Props.Disabled = true
+	}
+	return Card(props, children...)
 }
 func Section(props SectionProps, children ...Node) Node { return daisy.Section(props, children...) }

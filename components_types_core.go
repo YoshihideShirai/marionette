@@ -132,3 +132,60 @@ type ProgressProps struct {
 	Indeterminate bool
 	Props         ComponentProps
 }
+
+type VariantToken string
+
+const (
+	VariantDefault   VariantToken = "default"
+	VariantPrimary   VariantToken = "primary"
+	VariantSecondary VariantToken = "secondary"
+	VariantAccent    VariantToken = "accent"
+	VariantNeutral   VariantToken = "neutral"
+	VariantInfo      VariantToken = "info"
+	VariantSuccess   VariantToken = "success"
+	VariantWarning   VariantToken = "warning"
+	VariantError     VariantToken = "error"
+	VariantGhost     VariantToken = "ghost"
+	VariantOutline   VariantToken = "outline"
+	VariantDash      VariantToken = "dash"
+	VariantSoft      VariantToken = "soft"
+	VariantLink      VariantToken = "link"
+)
+
+type SizeToken string
+
+const (
+	SizeXS SizeToken = "xs"
+	SizeSM SizeToken = "sm"
+	SizeMD SizeToken = "md"
+	SizeLG SizeToken = "lg"
+	SizeXL SizeToken = "xl"
+)
+
+type ButtonVariantProps struct {
+	Class    string
+	Variants []VariantToken
+	Size     SizeToken
+	Disabled bool
+}
+
+type InputVariantProps struct {
+	Class    string
+	Variant  VariantToken
+	Size     SizeToken
+	Disabled bool
+}
+
+type SelectVariantProps = InputVariantProps
+type BadgeVariantProps = InputVariantProps
+type AlertVariantProps = InputVariantProps
+type TextareaVariantProps = InputVariantProps
+type CheckboxVariantProps = InputVariantProps
+type RadioVariantProps = InputVariantProps
+type SwitchVariantProps = InputVariantProps
+type ProgressVariantProps = InputVariantProps
+type TabsVariantProps = InputVariantProps
+type CardVariantProps = InputVariantProps
+type ModalVariantProps = InputVariantProps
+type DrawerVariantProps = InputVariantProps
+type PaginationVariantProps = InputVariantProps

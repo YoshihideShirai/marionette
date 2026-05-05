@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	chartjs "github.com/YoshihideShirai/marionette/frontend/chartjs"
+	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
 )
 
 // このファイルはNode生成ロジックを定義する。
@@ -15,8 +16,44 @@ func Button(label string, props ComponentProps) Node {
 	return componentButton(label, "button", props)
 }
 
+func ButtonWithVariants(label string, props ButtonVariantProps) Node {
+	variants := make([]string, 0, len(props.Variants))
+	for _, v := range props.Variants {
+		variants = append(variants, string(v))
+	}
+	return Button(label, ComponentProps{
+		Class:    props.Class,
+		Variant:  strings.Join(variants, " "),
+		Size:     string(props.Size),
+		Disabled: props.Disabled,
+	})
+}
+
 func SubmitButton(label string, props ComponentProps) Node {
 	return componentButton(label, "submit", props)
+}
+
+func InputWithVariants(name, value string, props InputVariantProps) Node {
+	return Input(name, value, ComponentProps{
+		Class:    props.Class,
+		Variant:  string(props.Variant),
+		Size:     string(props.Size),
+		Disabled: props.Disabled,
+	})
+}
+
+func ProgressWithVariants(value, max float64, label string, props ProgressVariantProps) Node {
+	return Progress(ProgressProps{
+		Value: value,
+		Max:   max,
+		Label: label,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
 }
 
 func LoginButton(props LoginButtonProps) Node {
@@ -324,6 +361,14 @@ func Pagination(props PaginationProps) Node {
 	}
 }
 
+func PaginationWithVariants(props PaginationProps, variant PaginationVariantProps) Node {
+	return lowhtml.ElementNode{
+		Tag:      "div",
+		Attrs:    map[string]string{"class": joinClass(variant.Class, "pagination-variant", string(variant.Variant), string(variant.Size))},
+		Children: []Node{Pagination(props)},
+	}
+}
+
 func Tabs(props TabsProps) Node {
 	items := make([]TabsItem, 0, len(props.Items))
 	for _, item := range props.Items {
@@ -350,6 +395,18 @@ func Tabs(props TabsProps) Node {
 			Items:     items,
 		},
 	}
+}
+
+func TabsWithVariants(props TabsProps, variant TabsVariantProps) Node {
+	props.Props.Class = joinClass(props.Props.Class, variant.Class)
+	props.Props.Variant = strings.TrimSpace(joinClass(props.Props.Variant, string(variant.Variant)))
+	if strings.TrimSpace(props.Props.Size) == "" {
+		props.Props.Size = string(variant.Size)
+	}
+	if variant.Disabled {
+		props.Props.Disabled = true
+	}
+	return Tabs(props)
 }
 
 func Breadcrumb(props BreadcrumbProps) Node {
@@ -400,6 +457,21 @@ func checkboxComponent(props CheckboxComponentProps) Node {
 	}
 }
 
+func CheckboxWithVariants(name, value, label string, checked bool, props CheckboxVariantProps) Node {
+	return Checkbox(CheckboxComponentProps{
+		Name:    name,
+		Value:   value,
+		Label:   label,
+		Checked: checked,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
+}
+
 func radioGroupComponent(props RadioGroupComponentProps) Node {
 	items := make([]RadioItem, 0, len(props.Items))
 	for _, item := range props.Items {
@@ -432,6 +504,20 @@ func radioGroupComponent(props RadioGroupComponentProps) Node {
 	}
 }
 
+func RadioGroupWithVariants(name, ariaLabel string, items []RadioItem, props RadioVariantProps) Node {
+	return RadioGroup(RadioGroupComponentProps{
+		Name:      name,
+		AriaLabel: ariaLabel,
+		Items:     items,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
+}
+
 func switchComponent(props SwitchComponentProps) Node {
 	return templateNode{
 		name: "components/switch",
@@ -451,6 +537,21 @@ func switchComponent(props SwitchComponentProps) Node {
 			Disabled: props.Props.Disabled,
 		},
 	}
+}
+
+func SwitchWithVariants(name, value, label string, checked bool, props SwitchVariantProps) Node {
+	return Switch(SwitchComponentProps{
+		Name:    name,
+		Value:   value,
+		Label:   label,
+		Checked: checked,
+		Props: ComponentProps{
+			Class:    props.Class,
+			Variant:  string(props.Variant),
+			Size:     string(props.Size),
+			Disabled: props.Disabled,
+		},
+	})
 }
 
 func Container(props ContainerProps, children ...Node) Node {

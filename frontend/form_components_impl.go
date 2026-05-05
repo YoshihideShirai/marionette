@@ -186,6 +186,16 @@ func Textarea(first any, rest ...any) Node {
 	return textareaField(props)
 }
 
+func TextareaWithVariants(name, value string, options TextareaOptions, props TextareaVariantProps) Node {
+	options.Props = ComponentProps{
+		Class:    props.Class,
+		Variant:  string(props.Variant),
+		Size:     string(props.Size),
+		Disabled: props.Disabled,
+	}
+	return Textarea(name, value, options)
+}
+
 func textareaField(props TextareaProps) Node {
 	attrs := inputControlAttrs(controlAttrConfig{
 		ID:          props.ID,

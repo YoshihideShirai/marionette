@@ -19,3 +19,4 @@ API documentation has been split into smaller files under `docs/api/`.
 - [日本語版 Introduction](docs/api/ja/00-introduction.md)
 - [日本語版 App](docs/api/ja/01-app.md)
 - [日本語版 Low-level HTML](docs/api/ja/03-low-level-html.md)
+- [日本語版 Component APIs](docs/api/ja/05-component-apis.md)

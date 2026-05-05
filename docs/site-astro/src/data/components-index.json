@@ -638,6 +638,62 @@
       "example": "/marionette/examples/chat-bubble.html",
       "template": "frontend/daisyui_aliases_impl.go",
       "description": "ChatBubble alias exposed from frontend package."
+    },
+    {
+      "id": "actions",
+      "name": "Actions",
+      "group": "Layout",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/actions.html",
+      "description": "Horizontal action group container with alignment, gap, and wrapping controls."
+    },
+    {
+      "id": "divider",
+      "name": "Divider",
+      "group": "Layout",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/divider.html",
+      "description": "Visual separator with configurable spacing."
+    },
+    {
+      "id": "box",
+      "name": "Box",
+      "group": "Layout",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/box.html",
+      "description": "Generic surface container with tone, border, and padding options."
+    },
+    {
+      "id": "app-shell",
+      "name": "AppShell",
+      "group": "Layout",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/app-shell.html",
+      "description": "Application shell with sidebar, flashes, header, and content regions."
+    },
+    {
+      "id": "region",
+      "name": "Region",
+      "group": "Layout",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/region.html",
+      "description": "ID-addressable content region designed for partial updates."
+    },
+    {
+      "id": "badge",
+      "name": "Badge",
+      "group": "Components",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/badge.html",
+      "description": "Compact label component with variant and size options."
+    },
+    {
+      "id": "text-component",
+      "name": "TextComponent",
+      "group": "Components",
+      "template": "frontend/ui_impl.go",
+      "example": "/marionette/examples/text-component.html",
+      "description": "Semantic text helper with size, weight, and tone options."
     }
   ]
 }

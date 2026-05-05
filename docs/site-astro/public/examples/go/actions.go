@@ -7,7 +7,7 @@ import (
 
 func RegisterActionsExample(app *mb.App) {
 	app.Page("/actions", func(ctx *mb.Context) mf.Node {
-		return mf.Actions(mf.ActionsProps{Gap: "sm", Justify: "between", Wrap: true},
+		return mf.Actions(mf.ActionsProps{Gap: "sm", Align: "between", Wrap: true},
 			mf.Button("Back", mf.ComponentProps{Variant: "ghost"}),
 			mf.Button("Save", mf.ComponentProps{Variant: "primary"}),
 		)

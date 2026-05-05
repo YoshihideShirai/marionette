@@ -8,7 +8,7 @@ import (
 func RegisterRegionExample(app *mb.App) {
 	app.Page("/region", func(ctx *mb.Context) mf.Node {
 		return mf.Region(mf.RegionProps{ID: "summary-region"},
-			mf.Card(mf.CardProps{Title: "Summary"}, mf.P("Region content can be updated independently.")),
+			mf.Card(mf.CardProps{Title: "Summary"}, mf.TextComponent(mf.TextProps{Text: "Region content can be updated independently."})),
 		)
 	})
 }

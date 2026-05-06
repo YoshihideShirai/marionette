@@ -7,6 +7,7 @@ import (
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	daisy "github.com/YoshihideShirai/marionette/frontend/daisyui"
 )
 
 type statCard struct{ Title, Value, Icon, Description, TrendClass string }
@@ -88,34 +89,65 @@ func BuildApp() *mb.App {
 }
 
 func shell(current string, body mf.Node) mf.Node {
-	return mf.Region(mf.RegionProps{ID: "dashwind-app"}, mf.DivProps(mf.ElementProps{Class: "drawer lg:drawer-open dashwind-shell"},
-		mf.Raw(`<input id="dashwind-drawer" type="checkbox" class="drawer-toggle" />`),
-		mf.DivProps(mf.ElementProps{Class: "drawer-content flex min-h-screen flex-col bg-base-200"}, topbar(current), mainContent(body)),
-		mf.DivProps(mf.ElementProps{Class: "drawer-side z-40"}, mf.Raw(`<label for="dashwind-drawer" aria-label="close sidebar" class="drawer-overlay"></label>`), sidebar(current)),
-	))
+	content := div("flex min-h-screen flex-col bg-base-200", topbar(current), mainContent(body))
+	side := sidebar(current)
+	return mf.Region(mf.RegionProps{ID: "dashwind-app"}, daisy.DrawerWithProps(daisy.DrawerProps{
+		ID:           "dashwind-drawer",
+		Class:        "lg:drawer-open dashwind-shell",
+		ContentClass: "flex min-h-screen flex-col bg-base-200",
+		SideClass:    "z-40",
+		Content:      content,
+		Side:         side,
+	}))
 }
+
 func mainContent(body mf.Node) mf.Node {
 	return mf.Region(mf.RegionProps{ID: mainTargetID, Props: mf.ComponentProps{Class: "flex-1 p-4 md:p-6 lg:p-8 space-y-6"}}, body)
 }
+
 func topbar(current string) mf.Node {
-	return mf.DivProps(mf.ElementProps{Class: "navbar sticky top-0 z-30 border-b border-base-300 bg-base-100/90 backdrop-blur"}, mf.DivProps(mf.ElementProps{Class: "flex-none lg:hidden"}, mf.Raw(`<label for="dashwind-drawer" class="btn btn-square btn-ghost" aria-label="open sidebar">☰</label>`)), mf.DivProps(mf.ElementProps{Class: "flex-1"}, mf.H1Props(mf.ElementProps{Class: "text-xl font-semibold"}, mf.Text(current))), mf.DivProps(mf.ElementProps{Class: "hidden max-w-md flex-1 md:block"}, mf.Raw(`<label class="input input-bordered flex items-center gap-2"><span class="opacity-60">⌕</span><input type="search" class="grow" placeholder="Search DashWind demo" /></label>`)), mf.DivProps(mf.ElementProps{Class: "flex-none gap-2"}, mf.Raw(`<button class="btn btn-ghost btn-circle" onclick="mrnToggleTheme()" aria-label="toggle theme">◐</button><button class="btn btn-ghost btn-circle indicator" aria-label="notifications"><span class="indicator-item badge badge-primary badge-xs"></span>🔔</button><div class="avatar placeholder"><div class="bg-primary text-primary-content w-10 rounded-full"><span>DW</span></div></div>`)))
+	return daisy.NavbarWithProps(daisy.NavbarProps{Class: "sticky top-0 z-30 border-b border-base-300 bg-base-100/90 backdrop-blur"},
+		div("flex-none lg:hidden", mf.Element("label", mf.ElementProps{Class: "btn btn-square btn-ghost", Attrs: mf.Attrs{"for": "dashwind-drawer", "aria-label": "open sidebar"}}, mf.Text("☰"))),
+		div("flex-1", mf.H1Props(mf.ElementProps{Class: "text-xl font-semibold"}, mf.Text(current))),
+		div("hidden max-w-md flex-1 md:block", searchInput()),
+		div("flex-none gap-2",
+			daisy.ButtonWithAttrs("◐", mf.ComponentProps{Class: "btn-ghost btn-circle"}, map[string]string{"type": "button", "onclick": "mrnToggleTheme()", "aria-label": "toggle theme"}),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-ghost btn-circle indicator"}, map[string]string{"type": "button", "aria-label": "notifications"}, span("indicator-item badge badge-primary badge-xs", ""), mf.Text("🔔")),
+			daisy.AvatarPlaceholder("DW", "", "bg-primary text-primary-content w-10 rounded-full"),
+		),
+	)
 }
+
+func searchInput() mf.Node {
+	return mf.Element("label", mf.ElementProps{Class: "input input-bordered flex items-center gap-2"},
+		span("opacity-60", "⌕"),
+		mf.Element("input", mf.ElementProps{Class: "grow", Attrs: mf.Attrs{"type": "search", "placeholder": "Search DashWind demo"}}),
+	)
+}
+
 func sidebar(current string) mf.Node {
-	return mf.DivProps(mf.ElementProps{Class: "min-h-full w-80 bg-base-100 text-base-content shadow-xl"}, mf.DivProps(mf.ElementProps{Class: "p-5"}, mf.DivProps(mf.ElementProps{Class: "mb-6 flex items-center gap-3"}, mf.DivProps(mf.ElementProps{Class: "grid h-11 w-11 place-items-center rounded-2xl bg-primary text-xl font-black text-primary-content"}, mf.Text("D")), mf.Div(mf.H2Props(mf.ElementProps{Class: "text-lg font-bold"}, mf.Text("DashWind")), mf.Raw(`<p class="text-xs text-base-content/60">DaisyUI admin template demo</p>`))), menuGroup("Menu", "main", current), menuGroup("Settings", "settings", current), mf.Raw(`<div class="mt-6 rounded-box bg-primary/10 p-4 text-sm"><p class="font-semibold">Marionette port</p><p class="mt-1 opacity-70">React/Redux template patterns rebuilt as Go handlers and htmx fragments.</p></div>`)))
+	return div("min-h-full w-80 bg-base-100 text-base-content shadow-xl",
+		div("p-5",
+			div("mb-6 flex items-center gap-3",
+				div("grid h-11 w-11 place-items-center rounded-2xl bg-primary text-xl font-black text-primary-content", mf.Text("D")),
+				div("", mf.H2Props(mf.ElementProps{Class: "text-lg font-bold"}, mf.Text("DashWind")), paragraph("text-xs text-base-content/60", "DaisyUI admin template demo")),
+			),
+			menuGroup("Menu", "main", current),
+			menuGroup("Settings", "settings", current),
+			div("mt-6 rounded-box bg-primary/10 p-4 text-sm", paragraph("font-semibold", "Marionette port"), paragraph("mt-1 opacity-70", "React/Redux template patterns rebuilt as Go handlers and htmx fragments.")),
+		),
+	)
 }
+
 func menuGroup(label, group, current string) mf.Node {
-	items := []mf.Node{mf.Raw(`<li class="menu-title"><span>` + label + `</span></li>`)}
+	items := []mf.Node{daisy.MenuTitle(label)}
 	for _, r := range routes {
 		if r.Group != group {
 			continue
 		}
-		active := ""
-		if r.Name == current {
-			active = " active"
-		}
-		items = append(items, mf.Raw(`<li><a class="`+active+`" href="`+r.Path+`"><span class="w-6 text-center">`+r.Icon+`</span>`+r.Name+`</a></li>`))
+		items = append(items, daisy.MenuLink(daisy.MenuLinkProps{Label: r.Name, Href: r.Path, Icon: r.Icon, Active: r.Name == current}))
 	}
-	return mf.Element("ul", mf.ElementProps{Class: "menu rounded-box gap-1 p-0"}, items...)
+	return daisy.MenuWithProps(daisy.MenuProps{Class: "rounded-box gap-1 p-0"}, items...)
 }
 
 func dashboardPage(ctx *mb.Context) mf.Node {
@@ -124,24 +156,43 @@ func dashboardPage(ctx *mb.Context) mf.Node {
 	for _, s := range statsData {
 		cards = append(cards, statCardNode(s))
 	}
-	return mf.DivProps(mf.ElementProps{Class: "space-y-6"}, pageTitle("Dashboard", "Marionette rebuild of DashWind DashboardTopBar, Stats, Chart, and UserChannels sections.", periodForm(ctx.Get("period").(string))), notice, mf.DivProps(mf.ElementProps{Class: "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4"}, cards...), mf.DivProps(mf.ElementProps{Class: "grid grid-cols-1 gap-6 xl:grid-cols-2"}, chartCard("Revenue", "Monthly recurring revenue", mf.Chart(mf.ChartProps{Type: mf.ChartTypeLine, Labels: []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "MRR", Data: []float64{18, 24, 28, 32, 38, 45}, BorderColor: "#3b82f6", BackgroundColor: "rgba(59,130,246,.18)", Fill: true, Tension: .35}}})), chartCard("Pipeline", "Qualified leads by stage", mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: []string{"Open", "Progress", "Sold", "Followup"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "Leads", Data: []float64{92, 128, 54, 76}, BackgroundColor: "#6366f1"}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}}))), mf.DivProps(mf.ElementProps{Class: "grid grid-cols-1 gap-6 xl:grid-cols-2"}, amountStats(), userChannels()))
+	return div("space-y-6",
+		pageTitle("Dashboard", "Marionette rebuild of DashWind DashboardTopBar, Stats, Chart, and UserChannels sections.", periodForm(ctx.Get("period").(string))),
+		notice,
+		div("grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4", cards...),
+		div("grid grid-cols-1 gap-6 xl:grid-cols-2",
+			chartCard("Revenue", "Monthly recurring revenue", mf.Chart(mf.ChartProps{Type: mf.ChartTypeLine, Labels: []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "MRR", Data: []float64{18, 24, 28, 32, 38, 45}, BorderColor: "#3b82f6", BackgroundColor: "rgba(59,130,246,.18)", Fill: true, Tension: .35}}})),
+			chartCard("Pipeline", "Qualified leads by stage", mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: []string{"Open", "Progress", "Sold", "Followup"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "Leads", Data: []float64{92, 128, 54, 76}, BackgroundColor: "#6366f1"}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}})),
+		),
+		div("grid grid-cols-1 gap-6 xl:grid-cols-2", amountStats(), userChannels()),
+	)
 }
+
 func statCardNode(s statCard) mf.Node {
-	return mf.DivProps(mf.ElementProps{Class: "stats shadow bg-base-100"}, mf.DivProps(mf.ElementProps{Class: "stat"}, mf.DivProps(mf.ElementProps{Class: "stat-figure text-primary text-3xl"}, mf.Text(s.Icon)), mf.DivProps(mf.ElementProps{Class: "stat-title"}, mf.Text(s.Title)), mf.DivProps(mf.ElementProps{Class: "stat-value text-primary"}, mf.Text(s.Value)), mf.DivProps(mf.ElementProps{Class: "stat-desc font-medium " + s.TrendClass}, mf.Text(s.Description))))
+	return daisy.StatsWithProps(daisy.StatsProps{Class: "shadow bg-base-100"}, daisy.StatItem(daisy.StatProps{
+		Title:            s.Title,
+		Value:            s.Value,
+		Description:      s.Description,
+		Figure:           mf.Text(s.Icon),
+		FigureClass:      "text-primary text-3xl",
+		ValueClass:       "text-primary",
+		DescriptionClass: "font-medium " + s.TrendClass,
+	}))
 }
+
 func periodForm(period string) mf.Node {
 	period = normalizePeriod(period)
-	opts := []string{"Last 7 days", "Last 30 days", "This quarter"}
-	children := []mf.Node{}
-	for _, o := range opts {
-		cls := "btn btn-sm"
-		if o == period {
-			cls += " btn-primary"
+	buttons := []mf.Node{}
+	for _, option := range []string{"Last 7 days", "Last 30 days", "This quarter"} {
+		className := "btn-sm"
+		if option == period {
+			className += " btn-primary"
 		}
-		children = append(children, mf.Raw(`<button class="`+cls+`" name="period" value="`+o+`" hx-post="/dashboard/period" hx-target="#`+mainTargetID+`" hx-swap="outerHTML">`+o+`</button>`))
+		buttons = append(buttons, daisy.ButtonWithAttrs(option, mf.ComponentProps{Class: className}, map[string]string{"type": "submit", "name": "period", "value": option}))
 	}
-	return mf.Element("form", mf.ElementProps{Class: "join", Attrs: mf.Attrs{"method": "post"}}, children...)
+	return daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/dashboard/period", Target: "#" + mainTargetID, Swap: "outerHTML", Class: "join"}, buttons...)
 }
+
 func normalizePeriod(period string) string {
 	period = strings.TrimSpace(period)
 	for _, allowed := range []string{"Last 7 days", "Last 30 days", "This quarter"} {
@@ -153,41 +204,77 @@ func normalizePeriod(period string) string {
 }
 
 func amountStats() mf.Node {
-	return mf.DivProps(mf.ElementProps{Class: "stats stats-vertical lg:stats-horizontal bg-base-100 shadow"}, mf.Raw(`<div class="stat"><div class="stat-title">Total Likes</div><div class="stat-value">25.6K</div><div class="stat-desc">21% more than last month</div></div><div class="stat"><div class="stat-title">Page Views</div><div class="stat-value">2.6M</div><div class="stat-desc">14% more than last month</div></div>`))
+	return daisy.StatsWithProps(daisy.StatsProps{Class: "stats-vertical lg:stats-horizontal bg-base-100 shadow"},
+		daisy.StatItem(daisy.StatProps{Title: "Total Likes", Value: "25.6K", Description: "21% more than last month"}),
+		daisy.StatItem(daisy.StatProps{Title: "Page Views", Value: "2.6M", Description: "14% more than last month"}),
+	)
 }
+
 func userChannels() mf.Node {
-	rows := []string{"Organic search|12,432|46%", "Twitter|8,120|24%", "Newsletter|5,420|18%", "Partners|2,804|12%"}
-	trs := ""
-	for _, row := range rows {
-		p := strings.Split(row, "|")
-		trs += `<tr><td>` + p[0] + `</td><td>` + p[1] + `</td><td><progress class="progress progress-primary w-32" value="` + strings.TrimSuffix(p[2], "%") + `" max="100"></progress></td><td>` + p[2] + `</td></tr>`
+	rows := [][]mf.Node{}
+	for _, row := range []string{"Organic search|12,432|46%", "Twitter|8,120|24%", "Newsletter|5,420|18%", "Partners|2,804|12%"} {
+		parts := strings.Split(row, "|")
+		percent, _ := strconv.Atoi(strings.TrimSuffix(parts[2], "%"))
+		rows = append(rows, []mf.Node{
+			mf.Text(parts[0]),
+			mf.Text(parts[1]),
+			daisy.ProgressWithClass(float64(percent), 100, "progress-primary w-32"),
+			mf.Text(parts[2]),
+		})
 	}
-	return cardRaw("User Channels", "Traffic source breakdown", `<div class="overflow-x-auto"><table class="table"><tbody>`+trs+`</tbody></table></div>`)
+	return cardPanel("User Channels", "Traffic source breakdown", daisy.TableWithProps(daisy.TableProps{Rows: rows}))
 }
+
 func chartCard(title, desc string, chart mf.Node) mf.Node {
 	return mf.Card(mf.CardProps{Title: title, Description: desc, Props: mf.ComponentProps{Class: "bg-base-100 shadow"}}, chart)
 }
 
 func leadsPage(ctx *mb.Context) mf.Node {
-	leads := ctx.Get("leads").([]lead)
-	rows := ""
-	for _, l := range leads {
-		rows += `<tr><td><div class="flex items-center gap-3"><div class="avatar placeholder"><div class="mask mask-squircle w-12 bg-neutral text-neutral-content"><span>` + l.Avatar + `</span></div></div><div><div class="font-bold">` + l.Name + `</div><div class="text-sm opacity-60">` + l.Role + `</div></div></div></td><td>` + l.Email + `</td><td>` + l.CreatedAt + `</td><td>` + statusBadge(l.Status) + `</td><td>` + l.Owner + `</td><td><form method="post"><input type="hidden" name="email" value="` + l.Email + `"><button class="btn btn-square btn-ghost btn-sm" hx-post="/leads/delete" hx-target="#` + mainTargetID + `" hx-swap="outerHTML">✕</button></form></td></tr>`
+	rows := [][]mf.Node{}
+	for _, l := range ctx.Get("leads").([]lead) {
+		rows = append(rows, []mf.Node{leadIdentity(l), mf.Text(l.Email), mf.Text(l.CreatedAt), statusBadge(l.Status), mf.Text(l.Owner), deleteLeadForm(l.Email)})
 	}
-	return mf.DivProps(mf.ElementProps{Class: "space-y-6"}, pageTitle("Current Leads", "DashWind leads table with htmx-powered Add New and delete actions.", mf.Raw(`<button class="btn btn-primary btn-sm" hx-post="/leads/add" hx-target="#`+mainTargetID+`" hx-swap="outerHTML">Add New</button>`)), noticeNode(ctx), cardRaw("Leads List", "Rendered from Marionette server state instead of a Redux slice/API call.", `<div class="overflow-x-auto"><table class="table"><thead><tr><th>Name</th><th>Email Id</th><th>Created At</th><th>Status</th><th>Assigned To</th><th></th></tr></thead><tbody>`+rows+`</tbody></table></div>`))
+	return div("space-y-6",
+		pageTitle("Current Leads", "DashWind leads table with htmx-powered Add New and delete actions.", daisy.ButtonWithAttrs("Add New", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button", "hx-post": "/leads/add", "hx-target": "#" + mainTargetID, "hx-swap": "outerHTML"})),
+		noticeNode(ctx),
+		cardPanel("Leads List", "Rendered from Marionette server state instead of a Redux slice/API call.", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Name", "Email Id", "Created At", "Status", "Assigned To", ""}, Rows: rows})),
+	)
 }
+
+func leadIdentity(l lead) mf.Node {
+	return div("flex items-center gap-3",
+		daisy.AvatarPlaceholder(l.Avatar, "", "mask mask-squircle w-12 bg-neutral text-neutral-content"),
+		div("", div("font-bold", mf.Text(l.Name)), div("text-sm opacity-60", mf.Text(l.Role))),
+	)
+}
+
+func deleteLeadForm(email string) mf.Node {
+	return daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/leads/delete", Target: "#" + mainTargetID, Swap: "outerHTML"},
+		daisy.HiddenField("email", email),
+		daisy.ButtonWithAttrs("✕", mf.ComponentProps{Class: "btn-square btn-ghost btn-sm"}, map[string]string{"type": "submit"}),
+	)
+}
+
 func transactionsPage(ctx *mb.Context) mf.Node {
-	rows := ""
+	rows := [][]mf.Node{}
 	total := 0
 	for _, t := range seedTransactions {
 		total += t.Amount
-		rows += `<tr><td>` + t.Invoice + `</td><td>` + t.Customer + `</td><td>` + t.Plan + `</td><td>` + t.Date + `</td><td>` + statusBadge(t.Status) + `</td><td class="font-semibold">$` + strconv.Itoa(t.Amount) + `</td></tr>`
+		rows = append(rows, []mf.Node{mf.Text(t.Invoice), mf.Text(t.Customer), mf.Text(t.Plan), mf.Text(t.Date), statusBadge(t.Status), div("font-semibold", mf.Text("$"+strconv.Itoa(t.Amount)))})
 	}
-	return mf.DivProps(mf.ElementProps{Class: "space-y-6"}, pageTitle("Transactions", "DashWind-style billing and transactions list.", mf.Raw(`<div class="stats shadow"><div class="stat"><div class="stat-title">Total</div><div class="stat-value text-primary">$`+strconv.Itoa(total)+`</div></div></div>`)), cardRaw("Recent Transactions", "", `<div class="overflow-x-auto"><table class="table table-zebra"><thead><tr><th>Invoice</th><th>Customer</th><th>Plan</th><th>Date</th><th>Status</th><th>Amount</th></tr></thead><tbody>`+rows+`</tbody></table></div>`))
+	return div("space-y-6",
+		pageTitle("Transactions", "DashWind-style billing and transactions list.", daisy.StatsWithProps(daisy.StatsProps{Class: "shadow"}, daisy.StatItem(daisy.StatProps{Title: "Total", Value: "$" + strconv.Itoa(total), ValueClass: "text-primary"}))),
+		cardPanel("Recent Transactions", "", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Invoice", "Customer", "Plan", "Date", "Status", "Amount"}, Rows: rows, Class: "table-zebra"})),
+	)
 }
+
 func analyticsPage(ctx *mb.Context) mf.Node {
-	return mf.DivProps(mf.ElementProps{Class: "space-y-6"}, pageTitle("Analytics", "DashWind charts page with Chart.js widgets.", nil), mf.DivProps(mf.ElementProps{Class: "grid grid-cols-1 gap-6 xl:grid-cols-2"}, chartCard("Doughnut", "Channel mix", mf.Chart(mf.ChartProps{Type: mf.ChartTypeDoughnut, Labels: []string{"Organic", "Social", "Referral", "Ads"}, Height: 280, Datasets: []mf.ChartDataset{{Label: "Users", Data: []float64{46, 24, 18, 12}}}})), chartCard("Scatter", "Lead score vs. ARR", mf.Chart(mf.ChartProps{Type: mf.ChartTypeScatter, Height: 280, Datasets: []mf.ChartDataset{{Label: "Accounts", Points: []mf.ChartPoint{{X: 20, Y: 15}, {X: 42, Y: 38}, {X: 60, Y: 72}, {X: 82, Y: 120}}, BackgroundColor: "#14b8a6"}}}))))
+	return div("space-y-6", pageTitle("Analytics", "DashWind charts page with Chart.js widgets.", nil), div("grid grid-cols-1 gap-6 xl:grid-cols-2",
+		chartCard("Doughnut", "Channel mix", mf.Chart(mf.ChartProps{Type: mf.ChartTypeDoughnut, Labels: []string{"Organic", "Social", "Referral", "Ads"}, Height: 280, Datasets: []mf.ChartDataset{{Label: "Users", Data: []float64{46, 24, 18, 12}}}})),
+		chartCard("Scatter", "Lead score vs. ARR", mf.Chart(mf.ChartProps{Type: mf.ChartTypeScatter, Height: 280, Datasets: []mf.ChartDataset{{Label: "Accounts", Points: []mf.ChartPoint{{X: 20, Y: 15}, {X: 42, Y: 38}, {X: 60, Y: 72}, {X: 82, Y: 120}}, BackgroundColor: "#14b8a6"}}})),
+	))
 }
+
 func integrationPage(ctx *mb.Context) mf.Node {
 	return placeholderPage("Integration", "Connected apps", []string{"Stripe billing webhook", "Slack notifications", "HubSpot CRM sync"})
 }
@@ -201,35 +288,35 @@ func teamPage(ctx *mb.Context) mf.Node {
 	return placeholderPage("Team Members", "Team settings submenu example", []string{"Olivia - Admin", "Noah - Billing", "Emma - Support"})
 }
 func placeholderPage(title, desc string, items []string) mf.Node {
-	lis := ""
-	for _, it := range items {
-		lis += `<li>` + it + `</li>`
+	listItems := make([]mf.Node, 0, len(items))
+	for _, item := range items {
+		listItems = append(listItems, mf.Element("li", mf.ElementProps{}, mf.Text(item)))
 	}
-	return mf.DivProps(mf.ElementProps{Class: "space-y-6"}, pageTitle(title, desc, nil), cardRaw(title, "", `<ul class="list-disc space-y-2 pl-5">`+lis+`</ul>`))
+	return div("space-y-6", pageTitle(title, desc, nil), cardPanel(title, "", mf.Element("ul", mf.ElementProps{Class: "list-disc space-y-2 pl-5"}, listItems...)))
 }
+
 func pageTitle(title, desc string, actions mf.Node) mf.Node {
-	children := []mf.Node{mf.Div(mf.H1Props(mf.ElementProps{Class: "text-3xl font-bold"}, mf.Text(title)), mf.Raw(`<p class="mt-1 text-base-content/60">`+desc+`</p>`))}
+	children := []mf.Node{div("", mf.H1Props(mf.ElementProps{Class: "text-3xl font-bold"}, mf.Text(title)), paragraph("mt-1 text-base-content/60", desc))}
 	if actions != nil {
 		children = append(children, actions)
 	}
-	return mf.DivProps(mf.ElementProps{Class: "flex flex-col gap-4 md:flex-row md:items-center md:justify-between"}, children...)
+	return div("flex flex-col gap-4 md:flex-row md:items-center md:justify-between", children...)
 }
+
 func noticeNode(ctx *mb.Context) mf.Node {
 	notice, _ := ctx.Get("notice").(string)
 	if strings.TrimSpace(notice) == "" {
 		return mf.Raw("")
 	}
 	ctx.Set("notice", "")
-	return mf.Raw(`<div class="alert alert-success shadow"><span>` + notice + `</span></div>`)
+	return daisy.Alert(notice, "", mf.ComponentProps{Class: "alert-success shadow"})
 }
-func cardRaw(title, desc, body string) mf.Node {
-	sub := ""
-	if desc != "" {
-		sub = `<p class="text-sm text-base-content/60">` + desc + `</p>`
-	}
-	return mf.Raw(`<div class="card bg-base-100 shadow"><div class="card-body"><h2 class="card-title">` + title + `</h2>` + sub + body + `</div></div>`)
+
+func cardPanel(title, desc string, children ...mf.Node) mf.Node {
+	return daisy.CardPanel(daisy.CardPanelProps{Title: title, Description: desc, Class: "bg-base-100 shadow"}, children...)
 }
-func statusBadge(status string) string {
+
+func statusBadge(status string) mf.Node {
 	class := "badge-ghost"
 	switch status {
 	case "In Progress", "Pending":
@@ -241,7 +328,19 @@ func statusBadge(status string) string {
 	case "Failed", "Not Interested":
 		class = "badge-error"
 	}
-	return `<span class="badge ` + class + `">` + status + `</span>`
+	return daisy.Badge(mf.BadgeProps{Label: status, Props: mf.ComponentProps{Class: class}})
+}
+
+func div(className string, children ...mf.Node) mf.Node {
+	return mf.DivProps(mf.ElementProps{Class: className}, children...)
+}
+
+func paragraph(className string, text string) mf.Node {
+	return mf.Element("p", mf.ElementProps{Class: className}, mf.Text(text))
+}
+
+func span(className string, text string) mf.Node {
+	return mf.SpanProps(mf.ElementProps{Class: className}, mf.Text(text))
 }
 
 const dashwindCSS = `

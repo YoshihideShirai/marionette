@@ -3,6 +3,8 @@ package daisyui
 import (
 	"strings"
 	"testing"
+
+	shared "github.com/YoshihideShirai/marionette/frontend/shared"
 )
 
 func TestToggleVariantRendersDaisyUIColorClasses(t *testing.T) {
@@ -37,5 +39,44 @@ func TestToggleVariantRendersDaisyUIColorClasses(t *testing.T) {
 				t.Fatalf("expected checked attribute in %q", got)
 			}
 		})
+	}
+}
+
+func TestDrawerWithPropsRendersConfigurableShell(t *testing.T) {
+	html, err := DrawerWithProps(DrawerProps{
+		ID:           "demo-drawer",
+		Class:        "lg:drawer-open app-shell",
+		ContentClass: "flex min-h-screen",
+		SideClass:    "z-40",
+		Content:      TextNode("content"),
+		Side:         TextNode("side"),
+	}).Render()
+	if err != nil {
+		t.Fatalf("render DrawerWithProps: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{`class="drawer lg:drawer-open app-shell"`, `id="demo-drawer"`, `class="drawer-content flex min-h-screen"`, `class="drawer-side z-40"`, `aria-label="close sidebar"`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
+func TestDashwindPrimitiveComponentsRenderDaisyUIMarkup(t *testing.T) {
+	table := TableWithProps(TableProps{
+		Headers: []string{"Name", "Status"},
+		Rows:    [][]shared.Node{{TextNode("Acme"), Badge(shared.BadgeProps{Label: "Paid", Props: shared.ComponentProps{Class: "badge-success"}})}},
+		Class:   "table-zebra",
+	})
+	card := CardPanel(CardPanelProps{Title: "Recent", Description: "Transactions", Class: "bg-base-100 shadow"}, table)
+	html, err := card.Render()
+	if err != nil {
+		t.Fatalf("render card/table: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{`class="card bg-base-100 shadow"`, `class="card-body"`, `class="table table-zebra"`, `<th>Name</th>`, `class="badge badge-success"`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
 	}
 }

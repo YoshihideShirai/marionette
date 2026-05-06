@@ -44,6 +44,29 @@ func TestFileUploadRendersFileInput(t *testing.T) {
 	}
 }
 
+func TestMenuIconRendersHamburgerSVG(t *testing.T) {
+	html, err := MenuIcon(ComponentProps{Class: "text-primary"}).Render()
+	if err != nil {
+		t.Fatalf("render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`<svg`,
+		`class="inline-block h-6 w-6 stroke-current text-primary"`,
+		`fill="none"`,
+		`viewBox="0 0 24 24"`,
+		`<path`,
+		`d="M4 6h16M4 12h16M4 18h16"`,
+		`stroke-linecap="round"`,
+		`stroke-linejoin="round"`,
+		`stroke-width="2"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
 func TestLinkRendersExpectedAttributes(t *testing.T) {
 	tests := []struct {
 		name    string

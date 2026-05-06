@@ -159,29 +159,29 @@ func dashboardFromState(ctx *mb.Context, currentPage string) mf.Node {
 }
 
 func drawerLayout(navbar, content, menu mf.Node) mf.Node {
-	return mf.Element("div", mf.ElementProps{Class: "drawer min-h-screen bg-base-200"},
-		mf.Element("input", mf.ElementProps{ID: drawerID, Class: "drawer-toggle", Attrs: mf.Attrs{"type": "checkbox"}}),
-		mf.Element("div", mf.ElementProps{Class: "drawer-content flex min-h-screen flex-col"}, navbar, content),
-		mf.Element("div", mf.ElementProps{Class: "drawer-side z-40"},
-			mf.Element("label", mf.ElementProps{Class: "drawer-overlay", Attrs: mf.Attrs{"for": drawerID, "aria-label": "Close navigation drawer"}}),
+	return mf.DivProps(mf.ElementProps{Class: "drawer min-h-screen bg-base-200"},
+		mf.InputElement(mf.ElementProps{ID: drawerID, Class: "drawer-toggle", Attrs: mf.Attrs{"type": "checkbox"}}),
+		mf.DivProps(mf.ElementProps{Class: "drawer-content flex min-h-screen flex-col"}, navbar, content),
+		mf.DivProps(mf.ElementProps{Class: "drawer-side z-40"},
+			mf.LabelElementProps(mf.ElementProps{Class: "drawer-overlay", Attrs: mf.Attrs{"for": drawerID, "aria-label": "Close navigation drawer"}}),
 			menu,
 		),
 	)
 }
 
 func topbar(currentPage string) mf.Node {
-	return mf.Element("div", mf.ElementProps{Class: "navbar sticky top-0 z-30 border-b border-base-300 bg-base-100/95 shadow-sm backdrop-blur"},
-		mf.Element("div", mf.ElementProps{Class: "navbar-start gap-2"},
-			mf.Element("label", mf.ElementProps{Class: "btn btn-square btn-ghost", Attrs: mf.Attrs{"for": drawerID, "aria-label": "Open navigation drawer"}}, menuIcon()),
-			mf.Element("div", mf.ElementProps{Class: "flex flex-col leading-tight"},
-				mf.Element("span", mf.ElementProps{Class: "text-xs font-semibold uppercase tracking-wide text-base-content/50"}, mf.Text("Admin Sample")),
-				mf.Element("span", mf.ElementProps{Class: "font-bold"}, mf.Text(pageTitle(currentPage))),
+	return mf.DivProps(mf.ElementProps{Class: "navbar sticky top-0 z-30 border-b border-base-300 bg-base-100/95 shadow-sm backdrop-blur"},
+		mf.DivProps(mf.ElementProps{Class: "navbar-start gap-2"},
+			mf.LabelElementProps(mf.ElementProps{Class: "btn btn-square btn-ghost", Attrs: mf.Attrs{"for": drawerID, "aria-label": "Open navigation drawer"}}, menuIcon()),
+			mf.DivProps(mf.ElementProps{Class: "flex flex-col leading-tight"},
+				mf.SpanProps(mf.ElementProps{Class: "text-xs font-semibold uppercase tracking-wide text-base-content/50"}, mf.Text("Admin Sample")),
+				mf.SpanProps(mf.ElementProps{Class: "font-bold"}, mf.Text(pageTitle(currentPage))),
 			),
 		),
-		mf.Element("div", mf.ElementProps{Class: "navbar-center hidden lg:flex"},
+		mf.DivProps(mf.ElementProps{Class: "navbar-center hidden lg:flex"},
 			mf.Tabs(mf.TabsProps{Items: navigationTabs(currentPage), Props: mf.ComponentProps{Class: "tabs-boxed bg-base-200"}}),
 		),
-		mf.Element("div", mf.ElementProps{Class: "navbar-end gap-2"},
+		mf.DivProps(mf.ElementProps{Class: "navbar-end gap-2"},
 			mf.Badge(mf.BadgeProps{Label: "Live", Props: mf.ComponentProps{Class: "badge-success hidden sm:inline-flex"}}),
 			mf.ThemeToggleButton(mf.ComponentProps{}),
 		),
@@ -189,14 +189,14 @@ func topbar(currentPage string) mf.Node {
 }
 
 func drawerMenu(currentPage string) mf.Node {
-	return mf.Element("aside", mf.ElementProps{Class: "min-h-full w-80 bg-base-100 p-4 text-base-content"},
+	return mf.AsideProps(mf.ElementProps{Class: "min-h-full w-80 bg-base-100 p-4 text-base-content"},
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
-			mf.Element("div", mf.ElementProps{Class: "rounded-box bg-base-200 p-4"},
+			mf.DivProps(mf.ElementProps{Class: "rounded-box bg-base-200 p-4"},
 				mf.TextComponent(mf.TextProps{Text: "Workspace", Size: "text-xs", Weight: "font-semibold", Props: mf.ComponentProps{Class: "uppercase tracking-wide text-base-content/50"}}),
 				mf.H2Props(mf.ElementProps{Class: "text-xl font-bold"}, mf.Text("Revenue Ops")),
 				mf.TextComponent(mf.TextProps{Text: "Navigate without a fixed sidebar.", Props: mf.ComponentProps{Class: "text-sm text-base-content/60"}}),
 			),
-			mf.Element("ul", mf.ElementProps{Class: "menu gap-1 rounded-box bg-base-100 p-0"}, drawerItem("Overview", "/", currentPage == "overview"), drawerItem("Pipeline", "/pipeline", currentPage == "pipeline"), drawerItem("Playbooks", "/playbooks", currentPage == "playbooks")),
+			mf.UlProps(mf.ElementProps{Class: "menu gap-1 rounded-box bg-base-100 p-0"}, drawerItem("Overview", "/", currentPage == "overview"), drawerItem("Pipeline", "/pipeline", currentPage == "pipeline"), drawerItem("Playbooks", "/playbooks", currentPage == "playbooks")),
 			mf.Card(mf.CardProps{Title: "Today", Description: "Demo SSO is active for this session.", Props: mf.ComponentProps{Class: "border border-base-300 shadow-none"}},
 				mf.Progress(mf.ProgressProps{Value: 72, Max: 100, Label: "Readiness", ShowValue: true, Props: mf.ComponentProps{Variant: "success"}}),
 			),
@@ -209,7 +209,7 @@ func drawerItem(label, href string, active bool) mf.Node {
 	if active {
 		className = "active"
 	}
-	return mf.Element("li", mf.ElementProps{}, mf.Element("a", mf.ElementProps{Class: className, Attrs: mf.Attrs{"href": href}}, mf.Text(label)))
+	return mf.Li(mf.AnchorProps(mf.ElementProps{Class: className, Attrs: mf.Attrs{"href": href}}, mf.Text(label)))
 }
 
 func navigationTabs(currentPage string) []mf.TabsItem {
@@ -221,7 +221,7 @@ func navigationTabs(currentPage string) []mf.TabsItem {
 }
 
 func menuIcon() mf.Node {
-	return mf.Raw(`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-6 w-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>`)
+	return mf.MenuIcon(mf.ComponentProps{})
 }
 
 func dashboardMainContent(content mf.Node) mf.Node {
@@ -365,11 +365,11 @@ func pageContent(currentPage, selectedStatus string, orders, allOrders []order, 
 }
 
 func wideDashboardGrid(main, aside mf.Node) mf.Node {
-	return mf.Element("div", mf.ElementProps{Class: "grid gap-4 xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:grid-cols-[minmax(0,1fr)_28rem] xl:items-start"}, main, aside)
+	return mf.DivProps(mf.ElementProps{Class: "grid gap-4 xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:grid-cols-[minmax(0,1fr)_28rem] xl:items-start"}, main, aside)
 }
 
 func dashboardSideRail(selectedStatus string, orders []order) mf.Node {
-	return mf.Element("aside", mf.ElementProps{Class: "grid gap-4 xl:sticky xl:top-24"},
+	return mf.AsideProps(mf.ElementProps{Class: "grid gap-4 xl:sticky xl:top-24"},
 		filterPanel(selectedStatus),
 		pipelineHealth(orders),
 		riskChart(orders),
@@ -392,7 +392,7 @@ func orderDetailPage(id string, orders []order) mf.Node {
 			mf.Stat("Risk", o.Risk, "Current account signal"),
 			mf.Stat("Status", o.Status, "Workflow state"),
 		),
-		mf.Element("div", mf.ElementProps{Class: "grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"},
+		mf.DivProps(mf.ElementProps{Class: "grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"},
 			orderOverviewCard(o),
 			orderActionPanel(o),
 		),
@@ -401,7 +401,7 @@ func orderDetailPage(id string, orders []order) mf.Node {
 
 func orderOverviewCard(o order) mf.Node {
 	return mf.Section(mf.SectionProps{Title: o.ID + " - " + o.Customer, Description: "Account and commercial details for the selected deal."},
-		mf.Element("dl", mf.ElementProps{Class: "grid gap-4 md:grid-cols-2 xl:grid-cols-3"},
+		mf.DescriptionListProps(mf.ElementProps{Class: "grid gap-4 md:grid-cols-2 xl:grid-cols-3"},
 			detailField("Customer", o.Customer),
 			detailField("Plan", o.Plan),
 			detailField("Projected ARR", "$"+formatNumber(o.Amount)),
@@ -430,14 +430,14 @@ func orderActionPanel(o order) mf.Node {
 			mf.TextField(mf.TextFieldProps{ID: "detail-id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}),
 			mf.SubmitButton(label, mf.ComponentProps{Variant: variant, Class: "w-full"}),
 		),
-		mf.Element("p", mf.ElementProps{Class: "text-sm text-base-content/60"}, mf.Text("Inline updates keep you on this detail view.")),
+		mf.PProps(mf.ElementProps{Class: "text-sm text-base-content/60"}, mf.Text("Inline updates keep you on this detail view.")),
 	)
 }
 
 func detailField(label, value string) mf.Node {
-	return mf.Element("div", mf.ElementProps{Class: "rounded-box border border-base-300 bg-base-100 p-4"},
-		mf.Element("dt", mf.ElementProps{Class: "text-xs font-semibold uppercase tracking-wide text-base-content/50"}, mf.Text(label)),
-		mf.Element("dd", mf.ElementProps{Class: "mt-1 font-semibold text-base-content"}, mf.Text(value)),
+	return mf.DivProps(mf.ElementProps{Class: "rounded-box border border-base-300 bg-base-100 p-4"},
+		mf.DescriptionTermProps(mf.ElementProps{Class: "text-xs font-semibold uppercase tracking-wide text-base-content/50"}, mf.Text(label)),
+		mf.DescriptionDetailsProps(mf.ElementProps{Class: "mt-1 font-semibold text-base-content"}, mf.Text(value)),
 	)
 }
 

@@ -26,7 +26,7 @@ func PrimaryButton(label string, props shared.ComponentProps) shared.Node {
 	if props.Variant == "" {
 		props.Variant = "primary"
 	}
-	props.Class = strings.TrimSpace("btn btn-primary " + props.Class)
+	props.Class = strings.TrimSpace("btn-primary " + props.Class)
 	return Button(label, props)
 }
 
@@ -34,7 +34,7 @@ func SecondaryButton(label string, props shared.ComponentProps) shared.Node {
 	if props.Variant == "" {
 		props.Variant = "secondary"
 	}
-	props.Class = strings.TrimSpace("btn btn-secondary " + props.Class)
+	props.Class = strings.TrimSpace("btn-secondary " + props.Class)
 	return Button(label, props)
 }
 
@@ -42,7 +42,7 @@ func GhostButton(label string, props shared.ComponentProps) shared.Node {
 	if props.Variant == "" {
 		props.Variant = "ghost"
 	}
-	props.Class = strings.TrimSpace("btn btn-ghost " + props.Class)
+	props.Class = strings.TrimSpace("btn-ghost " + props.Class)
 	return Button(label, props)
 }
 
@@ -85,7 +85,7 @@ func Hero(title, description string, actions ...shared.Node) shared.Node {
 }
 
 func Menu(items ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "menu bg-base-200 rounded-box"}, Children: items}
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "menu bg-base-200 rounded-box"}, Children: listItemChildren("", items)}
 }
 
 func Footer(children ...shared.Node) shared.Node {
@@ -93,10 +93,13 @@ func Footer(children ...shared.Node) shared.Node {
 }
 
 func Drawer(id string, side, content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer", "id": id}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "input", Attrs: map[string]string{"id": id + "-toggle", "type": "checkbox", "class": "drawer-toggle"}},
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: map[string]string{"id": id, "type": "checkbox", "class": "drawer-toggle"}},
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer-content"}, Children: []shared.Node{content}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer-side"}, Children: []shared.Node{side}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "drawer-side"}, Children: []shared.Node{
+			lowhtml.ElementNode{Tag: "label", Attrs: map[string]string{"for": id, "aria-label": "close sidebar", "class": "drawer-overlay"}},
+			side,
+		}},
 	}}
 }
 
@@ -142,21 +145,21 @@ func TimelineItem(startLabel, endLabel string, content shared.Node) shared.Node 
 }
 
 func Collapse(title string, content shared.Node, open bool) shared.Node {
-	className := "collapse collapse-arrow bg-base-100 border border-base-300"
-	attrs := map[string]string{"class": className}
+	inputAttrs := map[string]string{"type": "checkbox"}
 	if open {
-		attrs["open"] = "open"
+		inputAttrs["checked"] = "checked"
 	}
-	return lowhtml.ElementNode{Tag: "details", Attrs: attrs, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "summary", Attrs: map[string]string{"class": "collapse-title font-semibold"}, Text: title},
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse collapse-arrow bg-base-100 border border-base-300"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: inputAttrs},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-title font-semibold"}, Text: title},
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-content text-sm"}, Children: []shared.Node{content}},
 	}}
 }
 
 func MockupWindow(title string, content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-window border border-base-300"}, Children: []shared.Node{
+	_ = title
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-window"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "px-4 py-16 bg-base-200"}, Children: []shared.Node{content}},
-		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "sr-only"}, Text: title},
 	}}
 }
 
@@ -170,7 +173,7 @@ func Code(text string) shared.Node {
 
 func Indicator(item, target shared.Node) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "indicator"}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "indicator-item badge badge-secondary"}, Children: []shared.Node{item}},
+		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "indicator-item"}, Children: []shared.Node{item}},
 		target,
 	}}
 }
@@ -186,8 +189,18 @@ func Link(label, href string, props shared.ComponentProps) shared.Node {
 func Dropdown(trigger, menu shared.Node) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "dropdown"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "class": "dropdown-content z-1 card card-sm bg-base-100 shadow-md"}, Children: []shared.Node{menu}},
+		dropdownContent(menu),
 	}}
+}
+
+func dropdownContent(content shared.Node) shared.Node {
+	if n, ok := content.(lowhtml.ElementNode); ok {
+		n.Attrs = cloneAttrs(n.Attrs)
+		n.Attrs["class"] = appendClass(n.Attrs["class"], "dropdown-content")
+		n.Attrs["tabindex"] = "-1"
+		return n
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "-1", "class": "dropdown-content"}, Children: []shared.Node{content}}
 }
 
 func Tooltip(text string, child shared.Node) shared.Node {
@@ -203,8 +216,9 @@ func Loading(sizeClass string) shared.Node {
 }
 
 func RadialProgress(value int, sizeClass string) shared.Node {
-	attrs := map[string]string{"class": "radial-progress " + sizeClass, "style": "--value:" + strconv.Itoa(value) + ";", "role": "progressbar"}
-	return lowhtml.ElementNode{Tag: "div", Attrs: attrs, Text: strconv.Itoa(value) + "%"}
+	valueText := strconv.Itoa(value)
+	attrs := map[string]string{"class": strings.TrimSpace("radial-progress " + sizeClass), "style": "--value:" + valueText + ";", "role": "progressbar", "aria-valuenow": valueText}
+	return lowhtml.ElementNode{Tag: "div", Attrs: attrs, Text: valueText + "%"}
 }
 
 func Rating(name string, max int, checked int) shared.Node {
@@ -278,11 +292,7 @@ func ToggleWithIcons(name string, checked bool, className string) shared.Node {
 }
 
 func Join(children ...shared.Node) shared.Node {
-	wrapped := make([]shared.Node, 0, len(children))
-	for _, child := range children {
-		wrapped = append(wrapped, lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join-item"}, Children: []shared.Node{child}})
-	}
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join"}, Children: wrapped}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join"}, Children: children}
 }
 
 func Mask(shapeClass string, child shared.Node) shared.Node {
@@ -309,8 +319,9 @@ func ChatBubble(content shared.Node, end bool) shared.Node {
 }
 
 func Countdown(value int) shared.Node {
-	return lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "countdown font-mono text-2xl"}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"style": "--value:" + strconv.Itoa(value) + ";"}},
+	valueText := strconv.Itoa(value)
+	return lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "countdown font-mono text-2xl", "aria-live": "polite", "aria-label": valueText}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"style": "--value:" + valueText + ";"}, Text: valueText},
 	}}
 }
 
@@ -337,14 +348,14 @@ func Validator(message string) shared.Node {
 }
 
 func BrowserMockup(content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-browser border border-base-300"}, Children: []shared.Node{
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-browser"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-browser-toolbar"}, Children: []shared.Node{lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "input"}, Text: "https://example.com"}}},
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "grid place-content-center h-80"}, Children: []shared.Node{content}},
 	}}
 }
 
 func PhoneMockup(content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone border-primary"}, Children: []shared.Node{
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone-camera"}},
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone-display"}, Children: []shared.Node{content}},
 	}}
@@ -353,7 +364,7 @@ func PhoneMockup(content shared.Node) shared.Node {
 func CodeMockup(lines ...string) shared.Node {
 	children := make([]shared.Node, 0, len(lines))
 	for _, line := range lines {
-		children = append(children, lowhtml.ElementNode{Tag: "pre", Children: []shared.Node{lowhtml.ElementNode{Tag: "code", Text: line}}})
+		children = append(children, lowhtml.ElementNode{Tag: "pre", Attrs: map[string]string{"data-prefix": "$"}, Children: []shared.Node{lowhtml.ElementNode{Tag: "code", Text: line}}})
 	}
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-code"}, Children: children}
 }
@@ -374,8 +385,28 @@ func Diff(before, after shared.Node) shared.Node {
 	}}
 }
 
+func listItemChildren(itemClass string, items []shared.Node) []shared.Node {
+	children := make([]shared.Node, 0, len(items))
+	for _, item := range items {
+		if n, ok := item.(lowhtml.ElementNode); ok && n.Tag == "li" {
+			if itemClass != "" {
+				n.Attrs = cloneAttrs(n.Attrs)
+				n.Attrs["class"] = appendClass(n.Attrs["class"], itemClass)
+			}
+			children = append(children, n)
+			continue
+		}
+		attrs := map[string]string{}
+		if itemClass != "" {
+			attrs["class"] = itemClass
+		}
+		children = append(children, lowhtml.ElementNode{Tag: "li", Attrs: attrs, Children: []shared.Node{item}})
+	}
+	return children
+}
+
 func List(items ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "list bg-base-100 rounded-box shadow-md"}, Children: items}
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "list bg-base-100 rounded-box shadow-md"}, Children: listItemChildren("list-row", items)}
 }
 
 func Table(headers []string, rows ...[]shared.Node) shared.Node {
@@ -391,49 +422,61 @@ func Table(headers []string, rows ...[]shared.Node) shared.Node {
 		}
 		tbodyRows = append(tbodyRows, lowhtml.ElementNode{Tag: "tr", Children: cells})
 	}
-	return lowhtml.ElementNode{Tag: "table", Attrs: map[string]string{"class": "table"}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "thead", Children: []shared.Node{lowhtml.ElementNode{Tag: "tr", Children: headersNode}}},
-		lowhtml.ElementNode{Tag: "tbody", Children: tbodyRows},
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "overflow-x-auto"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "table", Attrs: map[string]string{"class": "table"}, Children: []shared.Node{
+			lowhtml.ElementNode{Tag: "thead", Children: []shared.Node{lowhtml.ElementNode{Tag: "tr", Children: headersNode}}},
+			lowhtml.ElementNode{Tag: "tbody", Children: tbodyRows},
+		}},
 	}}
 }
 
 func TextRotate(words []string, animationClass string) shared.Node {
-	if animationClass == "" {
-		animationClass = "animate-pulse"
-	}
+	className := strings.TrimSpace("text-rotate " + animationClass)
 	items := make([]shared.Node, 0, len(words))
 	for _, w := range words {
-		items = append(items, lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": animationClass}, Text: w})
+		items = append(items, lowhtml.ElementNode{Tag: "span", Text: w})
 	}
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "flex gap-2"}, Children: items}
-}
-
-func Hover3DCard(content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "card bg-base-100 shadow-xl transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl"}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "card-body"}, Children: []shared.Node{content}},
+	return lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": className}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "span", Children: items},
 	}}
 }
 
+func Hover3DCard(content shared.Node) shared.Node {
+	children := make([]shared.Node, 0, 9)
+	children = append(children, content)
+	for i := 0; i < 8; i++ {
+		children = append(children, lowhtml.ElementNode{Tag: "div"})
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "hover-3d"}, Children: children}
+}
+
 func HoverGallery(items ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "grid grid-cols-2 md:grid-cols-3 gap-4"}, Children: items}
+	return lowhtml.ElementNode{Tag: "figure", Attrs: map[string]string{"class": "hover-gallery"}, Children: items}
 }
 
 func Accordion(title string, content shared.Node, open bool) shared.Node {
-	return Collapse(title, content, open)
+	inputAttrs := map[string]string{"type": "radio", "name": "accordion"}
+	if open {
+		inputAttrs["checked"] = "checked"
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse collapse-arrow bg-base-100 border border-base-300"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: inputAttrs},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-title font-semibold"}, Text: title},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-content text-sm"}, Children: []shared.Node{content}},
+	}}
 }
 
 func FAB(icon shared.Node, label string) shared.Node {
-	return lowhtml.ElementNode{Tag: "button", Attrs: map[string]string{"class": "btn btn-primary btn-circle fixed bottom-6 right-6"}, Children: []shared.Node{
-		icon,
-		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "sr-only"}, Text: label},
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "fab"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "button", Attrs: map[string]string{"class": "btn btn-lg btn-circle btn-primary", "aria-label": label}, Children: []shared.Node{icon}},
 	}}
 }
 
 func SpeedDial(trigger shared.Node, items ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "dropdown dropdown-top dropdown-end fixed bottom-6 right-6"}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
-		lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"tabindex": "0", "class": "dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow"}, Children: items},
-	}}
+	children := make([]shared.Node, 0, len(items)+1)
+	children = append(children, lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button", "class": "btn btn-lg btn-circle btn-primary"}, Children: []shared.Node{trigger}})
+	children = append(children, items...)
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "fab"}, Children: children}
 }
 
 func Swap(onNode, offNode shared.Node, active bool) shared.Node {
@@ -449,38 +492,39 @@ func Swap(onNode, offNode shared.Node, active bool) shared.Node {
 }
 
 func ThemeController(options ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join"}, Children: options}
+	return lowhtml.ElementNode{Tag: "div", Children: options}
 }
 
 // ThemeControllerOption renders a daisyUI theme-controller radio input.
 // See: https://daisyui.com/components/theme-controller/
 func ThemeControllerOption(theme string, checked bool, className string) shared.Node {
 	attrs := map[string]string{
-		"type":  "radio",
-		"name":  "theme-buttons",
-		"class": strings.TrimSpace("theme-controller " + className),
-		"value": theme,
+		"type":       "radio",
+		"name":       "theme-buttons",
+		"class":      strings.TrimSpace("theme-controller " + className),
+		"value":      theme,
+		"aria-label": theme,
 	}
 	if checked {
 		attrs["checked"] = "checked"
 	}
-	return lowhtml.ElementNode{Tag: "input", Attrs: attrs, Text: theme}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
 }
 
 func DockItem(child shared.Node, active bool) shared.Node {
-	className := "dock-label"
+	attrs := map[string]string{}
 	if active {
-		className = "dock-active"
+		attrs["class"] = "dock-active"
 	}
-	return lowhtml.ElementNode{Tag: "button", Attrs: map[string]string{"class": className}, Children: []shared.Node{child}}
+	return lowhtml.ElementNode{Tag: "button", Attrs: attrs, Children: []shared.Node{child}}
 }
 
 func FilterItem(label string, active bool) shared.Node {
-	className := "btn btn-sm"
+	attrs := map[string]string{"class": "btn btn-sm", "type": "radio", "name": "filter", "aria-label": label}
 	if active {
-		className += " btn-active"
+		attrs["checked"] = "checked"
 	}
-	return lowhtml.ElementNode{Tag: "button", Attrs: map[string]string{"class": className}, Text: label}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
 }
 
 func CalendarGrid(days ...shared.Node) shared.Node {
@@ -488,7 +532,7 @@ func CalendarGrid(days ...shared.Node) shared.Node {
 }
 
 func ButtonWithVariants(label string, variant string, size string, style string, props shared.ComponentProps) shared.Node {
-	classes := []string{"btn"}
+	classes := []string{}
 	if variant != "" {
 		classes = append(classes, "btn-"+variant)
 	}
@@ -503,14 +547,14 @@ func ButtonWithVariants(label string, variant string, size string, style string,
 }
 
 func InputWithVariants(name, value, color, size, style string, props shared.ComponentProps) shared.Node {
-	classes := []string{"input", "input-bordered"}
+	classes := []string{}
 	if color != "" {
 		classes = append(classes, "input-"+color)
 	}
 	if size != "" {
 		classes = append(classes, "input-"+size)
 	}
-	if style != "" {
+	if style != "" && style != "bordered" {
 		classes = append(classes, "input-"+style)
 	}
 	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
@@ -518,14 +562,14 @@ func InputWithVariants(name, value, color, size, style string, props shared.Comp
 }
 
 func SelectWithVariants(name string, options []shared.SelectOption, color, size, style string, props shared.ComponentProps) shared.Node {
-	classes := []string{"select", "select-bordered"}
+	classes := []string{}
 	if color != "" {
 		classes = append(classes, "select-"+color)
 	}
 	if size != "" {
 		classes = append(classes, "select-"+size)
 	}
-	if style != "" {
+	if style != "" && style != "bordered" {
 		classes = append(classes, "select-"+style)
 	}
 	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
@@ -533,14 +577,14 @@ func SelectWithVariants(name string, options []shared.SelectOption, color, size,
 }
 
 func TextareaWithVariants(name, value, color, size, style string, options shared.TextareaOptions) shared.Node {
-	classes := []string{"textarea", "textarea-bordered"}
+	classes := []string{}
 	if color != "" {
 		classes = append(classes, "textarea-"+color)
 	}
 	if size != "" {
 		classes = append(classes, "textarea-"+size)
 	}
-	if style != "" {
+	if style != "" && style != "bordered" {
 		classes = append(classes, "textarea-"+style)
 	}
 	options.Props.Class = strings.TrimSpace(strings.Join(append(classes, options.Props.Class), " "))
@@ -601,7 +645,7 @@ func RadioGroupWithVariants(name, color, size string, items []shared.RadioItem, 
 		children = append(children,
 			lowhtml.ElementNode{Tag: "label", Attrs: map[string]string{"class": "label cursor-pointer gap-2"}, Children: []shared.Node{
 				lowhtml.ElementNode{Tag: "input", Attrs: attrs},
-				textNode("span", map[string]string{"class": "label-text"}, item.Label),
+				textNode("span", map[string]string{"class": "label"}, item.Label),
 			}},
 		)
 	}
@@ -695,26 +739,29 @@ func TableWithVariants(headers []string, rows [][]shared.Node, zebra bool, pinRo
 		}
 		tbodyRows = append(tbodyRows, lowhtml.ElementNode{Tag: "tr", Children: cells})
 	}
-	return lowhtml.ElementNode{Tag: "table", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "thead", Children: []shared.Node{lowhtml.ElementNode{Tag: "tr", Children: headersNode}}},
-		lowhtml.ElementNode{Tag: "tbody", Children: tbodyRows},
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "overflow-x-auto"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "table", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: []shared.Node{
+			lowhtml.ElementNode{Tag: "thead", Children: []shared.Node{lowhtml.ElementNode{Tag: "tr", Children: headersNode}}},
+			lowhtml.ElementNode{Tag: "tbody", Children: tbodyRows},
+		}},
 	}}
 }
 
 func ModalWithPlacement(props shared.ModalProps, placement string) shared.Node {
-	className := "modal"
+	attrs := map[string]string{"class": "modal"}
 	if props.Open {
-		className += " modal-open"
+		attrs["open"] = "open"
 	}
 	if placement != "" {
-		className += " modal-" + placement
+		attrs["class"] += " modal-" + placement
 	}
-	return node("div", map[string]string{"class": className},
+	return node("dialog", attrs,
 		node("div", map[string]string{"class": "modal-box"},
 			textNode("h3", map[string]string{"class": "font-bold text-lg"}, props.Title),
 			props.Body,
 			node("div", map[string]string{"class": "modal-action"}, props.Actions),
 		),
+		node("form", map[string]string{"method": "dialog", "class": "modal-backdrop"}, textNode("button", nil, "close")),
 	)
 }
 
@@ -734,16 +781,18 @@ func TabsWithVariants(items []shared.TabsItem, style string, placement string, s
 	}
 	tabNodes := make([]shared.Node, 0, len(items))
 	for _, item := range items {
-		tabClass := "tab"
+		attrs := map[string]string{"class": "tab", "role": "tab", "type": "button", "aria-selected": "false"}
 		if item.Active {
-			tabClass += " tab-active"
+			attrs["class"] += " tab-active"
+			attrs["aria-selected"] = "true"
 		}
 		if item.Disabled {
-			tabClass += " tab-disabled"
+			attrs["class"] += " tab-disabled"
+			attrs["disabled"] = "disabled"
 		}
-		tabNodes = append(tabNodes, textNode("a", map[string]string{"class": tabClass, "href": item.Href}, item.Label))
+		tabNodes = append(tabNodes, textNode("button", attrs, item.Label))
 	}
-	return node("div", map[string]string{"class": strings.Join(classes, " ")}, tabNodes...)
+	return node("div", map[string]string{"class": strings.Join(classes, " "), "role": "tablist"}, tabNodes...)
 }
 
 func StepsWithVariants(items []shared.Node, direction string, color string, className string) shared.Node {
@@ -751,13 +800,62 @@ func StepsWithVariants(items []shared.Node, direction string, color string, clas
 	if direction != "" {
 		classes = append(classes, "steps-"+direction)
 	}
-	if color != "" {
-		classes = append(classes, "step-"+color)
-	}
 	if className != "" {
 		classes = append(classes, className)
 	}
+	if color != "" {
+		items = withStepColor(items, "step-"+color)
+	}
 	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: items}
+}
+
+func withStepColor(items []shared.Node, colorClass string) []shared.Node {
+	colored := make([]shared.Node, 0, len(items))
+	for _, item := range items {
+		switch n := item.(type) {
+		case lowhtml.ElementNode:
+			if n.Tag == "li" && hasClass(n.Attrs["class"], "step") {
+				n.Attrs = cloneAttrs(n.Attrs)
+				n.Attrs["class"] = appendClass(n.Attrs["class"], colorClass)
+			}
+			colored = append(colored, n)
+		default:
+			colored = append(colored, item)
+		}
+	}
+	return colored
+}
+
+func hasClass(className, target string) bool {
+	for _, class := range strings.Fields(className) {
+		if class == target {
+			return true
+		}
+	}
+	return false
+}
+
+func cloneAttrs(attrs map[string]string) map[string]string {
+	cloned := make(map[string]string, len(attrs)+1)
+	for key, value := range attrs {
+		cloned[key] = value
+	}
+	return cloned
+}
+
+func appendClass(className string, parts ...string) string {
+	classes := strings.Fields(className)
+	seen := make(map[string]bool, len(classes)+len(parts))
+	for _, class := range classes {
+		seen[class] = true
+	}
+	for _, part := range parts {
+		if part != "" && !seen[part] {
+			classes = append(classes, part)
+			seen[part] = true
+		}
+	}
+	return strings.Join(classes, " ")
 }
 
 func TimelineWithDirection(items []shared.Node, direction string, compact bool, snapIcon bool, className string) shared.Node {
@@ -838,11 +936,7 @@ func JoinWithDirection(direction string, children ...shared.Node) shared.Node {
 	if direction != "" {
 		className += " join-" + direction
 	}
-	wrapped := make([]shared.Node, 0, len(children))
-	for _, child := range children {
-		wrapped = append(wrapped, lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join-item"}, Children: []shared.Node{child}})
-	}
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: wrapped}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: children}
 }
 
 func DropdownWithPlacement(trigger, menu shared.Node, placement string) shared.Node {
@@ -852,6 +946,6 @@ func DropdownWithPlacement(trigger, menu shared.Node, placement string) shared.N
 	}
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "class": "dropdown-content z-1 card card-sm bg-base-100 shadow-md"}, Children: []shared.Node{menu}},
+		dropdownContent(menu),
 	}}
 }

@@ -26,7 +26,7 @@ func Button(label string, props shared.ComponentProps) shared.Node {
 }
 
 func Alert(title, description string, props shared.ComponentProps) shared.Node {
-	return node("div", map[string]string{"class": strings.TrimSpace("alert " + props.Class)},
+	return node("div", map[string]string{"class": strings.TrimSpace("alert " + props.Class), "role": "alert"},
 		textNode("span", nil, strings.TrimSpace(title+" "+description)),
 	)
 }
@@ -54,7 +54,7 @@ func Input(name, value string, props shared.ComponentProps) shared.Node {
 	attrs := map[string]string{
 		"name":  name,
 		"value": value,
-		"class": strings.TrimSpace("input input-bordered w-full " + props.Class),
+		"class": strings.TrimSpace("input w-full " + props.Class),
 	}
 	if props.Disabled {
 		attrs["disabled"] = "disabled"
@@ -64,21 +64,22 @@ func Input(name, value string, props shared.ComponentProps) shared.Node {
 
 func Toast(title, description string, props shared.ComponentProps) shared.Node {
 	return node("div", map[string]string{"class": strings.TrimSpace("toast " + props.Class)},
-		node("div", map[string]string{"class": "alert"}, textNode("span", nil, strings.TrimSpace(title+" "+description))),
+		node("div", map[string]string{"class": "alert", "role": "alert"}, textNode("span", nil, strings.TrimSpace(title+" "+description))),
 	)
 }
 
 func Modal(props shared.ModalProps) shared.Node {
-	className := "modal"
+	attrs := map[string]string{"class": "modal"}
 	if props.Open {
-		className += " modal-open"
+		attrs["open"] = "open"
 	}
-	return node("div", map[string]string{"class": className},
+	return node("dialog", attrs,
 		node("div", map[string]string{"class": "modal-box"},
 			textNode("h3", map[string]string{"class": "font-bold text-lg"}, props.Title),
 			props.Body,
 			node("div", map[string]string{"class": "modal-action"}, props.Actions),
 		),
+		node("form", map[string]string{"method": "dialog", "class": "modal-backdrop"}, textNode("button", nil, "close")),
 	)
 }
 
@@ -93,20 +94,29 @@ func Select(name string, options []shared.SelectOption, props shared.ComponentPr
 	}
 	return node("select", map[string]string{
 		"name":  name,
-		"class": strings.TrimSpace("select select-bordered " + props.Class),
+		"class": strings.TrimSpace("select " + props.Class),
 	}, children...)
 }
 
 func Tabs(props shared.TabsProps) shared.Node {
 	tabNodes := make([]shared.Node, 0, len(props.Items))
 	for _, item := range props.Items {
-		className := "tab"
+		attrs := map[string]string{"class": "tab", "role": "tab", "type": "button", "aria-selected": "false"}
 		if item.Active {
-			className += " tab-active"
+			attrs["class"] += " tab-active"
+			attrs["aria-selected"] = "true"
 		}
-		tabNodes = append(tabNodes, textNode("a", map[string]string{"class": className, "href": item.Href}, item.Label))
+		if item.Disabled {
+			attrs["class"] += " tab-disabled"
+			attrs["disabled"] = "disabled"
+		}
+		tabNodes = append(tabNodes, textNode("button", attrs, item.Label))
 	}
-	return node("div", map[string]string{"class": strings.TrimSpace("tabs " + props.Props.Class)}, tabNodes...)
+	attrs := map[string]string{"class": strings.TrimSpace("tabs " + props.Props.Class), "role": "tablist"}
+	if props.AriaLabel != "" {
+		attrs["aria-label"] = props.AriaLabel
+	}
+	return node("div", attrs, tabNodes...)
 }
 
 func Badge(props shared.BadgeProps) shared.Node {
@@ -125,7 +135,8 @@ func Skeleton(rows int, props shared.ComponentProps) shared.Node {
 }
 
 func Progress(value, max float64, label string, props shared.ComponentProps) shared.Node {
-	return node("progress", map[string]string{"class": strings.TrimSpace("progress w-full " + props.Class), "value": strconv.FormatFloat(value, 'f', -1, 64), "max": strconv.FormatFloat(max, 'f', -1, 64)}, textNode("span", nil, label))
+	_ = label
+	return node("progress", map[string]string{"class": strings.TrimSpace("progress w-full " + props.Class), "value": strconv.FormatFloat(value, 'f', -1, 64), "max": strconv.FormatFloat(max, 'f', -1, 64)})
 }
 
 func Checkbox(props shared.CheckboxComponentProps) shared.Node {
@@ -133,7 +144,7 @@ func Checkbox(props shared.CheckboxComponentProps) shared.Node {
 	if props.Checked {
 		inputAttrs["checked"] = "checked"
 	}
-	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", inputAttrs), textNode("span", map[string]string{"class": "label-text"}, props.Label))
+	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", inputAttrs), textNode("span", map[string]string{"class": "label"}, props.Label))
 }
 
 func RadioGroup(props shared.RadioGroupComponentProps) shared.Node {
@@ -143,7 +154,7 @@ func RadioGroup(props shared.RadioGroupComponentProps) shared.Node {
 		if item.Checked {
 			attrs["checked"] = "checked"
 		}
-		items = append(items, node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label-text"}, item.Label)))
+		items = append(items, node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label"}, item.Label)))
 	}
 	return node("div", map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Props.Class)}, items...)
 }
@@ -153,7 +164,7 @@ func Switch(props shared.SwitchComponentProps) shared.Node {
 	if props.Checked {
 		attrs["checked"] = "checked"
 	}
-	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label-text"}, props.Label))
+	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label"}, props.Label))
 }
 
 func Pagination(props shared.PaginationProps) shared.Node {
@@ -309,10 +320,21 @@ func Divider(props shared.DividerProps) shared.Node {
 	if props.Props.Class != "" {
 		className += " " + props.Props.Class
 	}
-	if props.Spacing != "" {
-		className += " " + props.Spacing
+	if modifier := dividerModifierClass(props.Spacing); modifier != "" {
+		className += " " + modifier
 	}
 	return node("div", map[string]string{"class": className})
+}
+
+func dividerModifierClass(value string) string {
+	switch strings.TrimSpace(value) {
+	case "neutral", "primary", "secondary", "accent", "success", "warning", "info", "error":
+		return "divider-" + strings.TrimSpace(value)
+	case "vertical", "horizontal", "start", "end":
+		return "divider-" + strings.TrimSpace(value)
+	default:
+		return ""
+	}
 }
 
 func Actions(props shared.ActionsProps, children ...shared.Node) shared.Node {
@@ -397,20 +419,24 @@ func ActionForm(props shared.ActionFormProps, children ...shared.Node) shared.No
 }
 
 func FormField(control shared.Node, props shared.FormFieldProps) shared.Node {
-	children := []shared.Node{textNode("span", map[string]string{"class": "label-text"}, props.Label), control}
+	legend := props.Label
+	if props.Required {
+		legend += " *"
+	}
+	children := []shared.Node{textNode("legend", map[string]string{"class": "fieldset-legend"}, legend), control}
 	if props.Hint != "" {
-		children = append(children, textNode("span", map[string]string{"class": "label-text-alt"}, props.Hint))
+		children = append(children, textNode("p", map[string]string{"class": "label"}, props.Hint))
 	}
 	if props.Error != "" {
-		children = append(children, textNode("span", map[string]string{"class": "label-text-alt text-error"}, props.Error))
+		children = append(children, textNode("p", map[string]string{"class": "label text-error"}, props.Error))
 	}
-	return node("label", map[string]string{"class": "form-control w-full gap-1"}, children...)
+	return node("fieldset", map[string]string{"class": "fieldset w-full"}, children...)
 }
 
 func Textarea(name, value string, options shared.TextareaOptions) shared.Node {
 	attrs := map[string]string{
 		"name":  name,
-		"class": strings.TrimSpace("textarea textarea-bordered w-full " + options.Props.Class),
+		"class": strings.TrimSpace("textarea w-full " + options.Props.Class),
 	}
 	if options.Rows > 0 {
 		attrs["rows"] = strconv.Itoa(options.Rows)
@@ -524,11 +550,15 @@ func SubmitButton(label string, props shared.ComponentProps) shared.Node {
 }
 
 func InputWithOptions(name, value string, options shared.InputOptions) shared.Node {
+	inputType := strings.TrimSpace(options.Type)
+	if inputType == "" {
+		inputType = "text"
+	}
 	attrs := map[string]string{
 		"name":  name,
 		"value": value,
-		"type":  options.Type,
-		"class": strings.TrimSpace("input input-bordered w-full " + options.Props.Class),
+		"type":  inputType,
+		"class": strings.TrimSpace("input w-full " + options.Props.Class),
 	}
 	if options.Placeholder != "" {
 		attrs["placeholder"] = options.Placeholder
@@ -541,7 +571,7 @@ func FileUpload(name string, required bool, props ...shared.ComponentProps) shar
 	if len(props) > 0 {
 		p = props[0]
 	}
-	attrs := map[string]string{"type": "file", "name": name, "class": strings.TrimSpace("file-input file-input-bordered w-full " + p.Class)}
+	attrs := map[string]string{"type": "file", "name": name, "class": strings.TrimSpace("file-input w-full " + p.Class)}
 	if required {
 		attrs["required"] = "required"
 	}

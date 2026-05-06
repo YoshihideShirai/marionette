@@ -8,6 +8,7 @@ import (
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
 	daisy "github.com/YoshihideShirai/marionette/frontend/daisyui"
+	dw "github.com/YoshihideShirai/marionette/frontend/dashwind"
 )
 
 type statCard struct{ Title, Value, Icon, Description, TrendClass string }
@@ -80,7 +81,7 @@ func BuildApp() *mb.App {
 	app.Set("period", "Last 30 days")
 	app.Set("notice", "")
 	app.Set("leads", append([]lead(nil), seedLeads...))
-	app.AddStyle(dashwindCSS)
+	app.AddStyle(dw.DefaultCSS)
 	registerPage := func(path, current, title string, body func(*mb.Context) mf.Node) {
 		app.Page(path, func(ctx *mb.Context) mf.Node { return shell(current, body(ctx)) }, mb.WithTitle(title))
 	}
@@ -132,79 +133,54 @@ func BuildApp() *mb.App {
 }
 
 func shell(current string, body mf.Node) mf.Node {
-	content := div("flex min-h-screen flex-col bg-base-200", topbar(current), mainContent(body))
-	side := sidebar(current)
-	return mf.Region(mf.RegionProps{ID: "dashwind-app"}, daisy.DrawerWithProps(daisy.DrawerProps{
-		ID:           "dashwind-drawer",
-		Class:        "lg:drawer-open dashwind-shell",
-		ContentClass: "flex min-h-screen flex-col bg-base-200",
-		SideClass:    "z-40",
-		Content:      content,
-		Side:         side,
-	}))
+	return dw.Shell(dw.ShellProps{
+		CurrentTitle:      current,
+		BrandTitle:        "DashWind",
+		BrandSubtitle:     "DaisyUI admin template demo",
+		SearchPlaceholder: "Search DashWind demo",
+		NavGroups:         navGroups(),
+		Content:           body,
+		SidebarFooter:     div("mt-6 rounded-box bg-primary/10 p-4 text-sm", paragraph("font-semibold", "Marionette port"), paragraph("mt-1 opacity-70", "React/Redux template patterns rebuilt as Go handlers and htmx fragments.")),
+	})
 }
 
 func mainContent(body mf.Node) mf.Node {
-	return mf.Region(mf.RegionProps{ID: mainTargetID, Props: mf.ComponentProps{Class: "flex-1 p-4 md:p-6 lg:p-8 space-y-6"}}, body)
+	return dw.ShellContent(mainTargetID, body)
 }
 
-func topbar(current string) mf.Node {
-	return daisy.NavbarWithProps(daisy.NavbarProps{Class: "sticky top-0 z-30 border-b border-base-300 bg-base-100/90 backdrop-blur"},
-		div("flex-none lg:hidden", mf.LabelElementProps(mf.ElementProps{Class: "btn btn-square btn-ghost", Attrs: mf.Attrs{"for": "dashwind-drawer", "aria-label": "open sidebar"}}, mf.Text("☰"))),
-		div("flex-1", mf.H1Props(mf.ElementProps{Class: "text-xl font-semibold"}, mf.Text(current))),
-		div("hidden max-w-md flex-1 md:block", searchInput()),
-		div("flex-none gap-2",
-			daisy.ButtonWithAttrs("◐", mf.ComponentProps{Class: "btn-ghost btn-circle"}, map[string]string{"type": "button", "onclick": "mrnToggleTheme()", "aria-label": "toggle theme"}),
-			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-ghost btn-circle indicator"}, map[string]string{"type": "button", "aria-label": "notifications"}, span("indicator-item badge badge-primary badge-xs", ""), mf.Text("🔔")),
-			daisy.AvatarPlaceholder("DW", "", "bg-primary text-primary-content w-10 rounded-full"),
-		),
-	)
-}
-
-func searchInput() mf.Node {
-	return mf.LabelElementProps(mf.ElementProps{Class: "input input-bordered flex items-center gap-2"},
-		span("opacity-60", "⌕"),
-		mf.InputElement(mf.ElementProps{Class: "grow", Attrs: mf.Attrs{"type": "search", "placeholder": "Search DashWind demo"}}),
-	)
-}
-
-func sidebar(current string) mf.Node {
-	return div("min-h-full w-80 bg-base-100 text-base-content shadow-xl",
-		div("p-5",
-			div("mb-6 flex items-center gap-3",
-				div("grid h-11 w-11 place-items-center rounded-2xl bg-primary text-xl font-black text-primary-content", mf.Text("D")),
-				div("", mf.H2Props(mf.ElementProps{Class: "text-lg font-bold"}, mf.Text("DashWind")), paragraph("text-xs text-base-content/60", "DaisyUI admin template demo")),
-			),
-			menuGroup("Menu", "main", current),
-			menuGroup("Pages", "pages", current),
-			menuGroup("Settings", "settings", current),
-			menuGroup("Documentation", "documentation", current),
-			div("mt-6 rounded-box bg-primary/10 p-4 text-sm", paragraph("font-semibold", "Marionette port"), paragraph("mt-1 opacity-70", "React/Redux template patterns rebuilt as Go handlers and htmx fragments.")),
-		),
-	)
-}
-
-func menuGroup(label, group, current string) mf.Node {
-	items := []mf.Node{daisy.MenuTitle(label)}
-	for _, r := range routes {
-		if r.Group != group {
-			continue
-		}
-		items = append(items, daisy.MenuLink(daisy.MenuLinkProps{Label: r.Name, Href: r.Path, Icon: r.Icon, Active: r.Name == current}))
+func navGroups() []dw.NavGroup {
+	labels := []struct {
+		Title string
+		Group string
+	}{
+		{"Menu", "main"},
+		{"Pages", "pages"},
+		{"Settings", "settings"},
+		{"Documentation", "documentation"},
 	}
-	return daisy.MenuWithProps(daisy.MenuProps{Class: "rounded-box gap-1 p-0"}, items...)
+	groups := make([]dw.NavGroup, 0, len(labels))
+	for _, label := range labels {
+		group := dw.NavGroup{Label: label.Title}
+		for _, route := range routes {
+			if route.Group == label.Group {
+				group.Items = append(group.Items, dw.NavItem{Label: route.Name, Href: route.Path, Icon: route.Icon})
+			}
+		}
+		groups = append(groups, group)
+	}
+	return groups
 }
 
 func dashboardPage(ctx *mb.Context) mf.Node {
 	notice := noticeNode(ctx)
-	cards := make([]mf.Node, 0, len(statsData))
+	stats := make([]dw.Stat, 0, len(statsData))
 	for _, s := range statsData {
-		cards = append(cards, statCardNode(s))
+		stats = append(stats, dashwindStat(s))
 	}
 	return div("space-y-6",
 		pageTitle("Dashboard", "Marionette rebuild of DashWind DashboardTopBar, Stats, Chart, and UserChannels sections.", periodForm(ctx.Get("period").(string))),
 		notice,
-		div("grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4", cards...),
+		dw.StatsGrid(dw.StatsGridProps{Items: stats}),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-2",
 			chartCard("Revenue", "Monthly recurring revenue", mf.Chart(mf.ChartProps{Type: mf.ChartTypeLine, Labels: []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "MRR", Data: []float64{18, 24, 28, 32, 38, 45}, BorderColor: "#3b82f6", BackgroundColor: "rgba(59,130,246,.18)", Fill: true, Tension: .35}}})),
 			chartCard("Pipeline", "Qualified leads by stage", mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: []string{"Open", "Progress", "Sold", "Followup"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "Leads", Data: []float64{92, 128, 54, 76}, BackgroundColor: "#6366f1"}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}})),
@@ -213,16 +189,14 @@ func dashboardPage(ctx *mb.Context) mf.Node {
 	)
 }
 
-func statCardNode(s statCard) mf.Node {
-	return daisy.StatsWithProps(daisy.StatsProps{Class: "shadow bg-base-100"}, daisy.StatItem(daisy.StatProps{
+func dashwindStat(s statCard) dw.Stat {
+	return dw.Stat{
 		Title:            s.Title,
 		Value:            s.Value,
 		Description:      s.Description,
 		Figure:           mf.Text(s.Icon),
-		FigureClass:      "text-primary text-3xl",
-		ValueClass:       "text-primary",
 		DescriptionClass: "font-medium " + s.TrendClass,
-	}))
+	}
 }
 
 func periodForm(period string) mf.Node {
@@ -267,7 +241,7 @@ func userChannels() mf.Node {
 			mf.Text(parts[2]),
 		})
 	}
-	return cardPanel("User Channels", "Traffic source breakdown", daisy.TableWithProps(daisy.TableProps{Rows: rows}))
+	return cardPanel("User Channels", "Traffic source breakdown", dw.DataTable(dw.DataTableProps{Rows: rows}))
 }
 
 func chartCard(title, desc string, chart mf.Node) mf.Node {
@@ -282,7 +256,7 @@ func leadsPage(ctx *mb.Context) mf.Node {
 	return div("space-y-6",
 		pageTitle("Current Leads", "DashWind leads table with htmx-powered Add New and delete actions.", daisy.ButtonWithAttrs("Add New", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button", "hx-post": "/leads/add", "hx-target": "#" + mainTargetID, "hx-swap": "outerHTML"})),
 		noticeNode(ctx),
-		cardPanel("Leads List", "Rendered from Marionette server state instead of a Redux slice/API call.", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Name", "Email Id", "Created At", "Status", "Assigned To", ""}, Rows: rows})),
+		cardPanel("Leads List", "Rendered from Marionette server state instead of a Redux slice/API call.", dw.DataTable(dw.DataTableProps{Headers: []string{"Name", "Email Id", "Created At", "Status", "Assigned To", ""}, Rows: rows})),
 	)
 }
 
@@ -309,7 +283,7 @@ func transactionsPage(ctx *mb.Context) mf.Node {
 	}
 	return div("space-y-6",
 		pageTitle("Transactions", "DashWind-style billing and transactions list.", daisy.StatsWithProps(daisy.StatsProps{Class: "shadow"}, daisy.StatItem(daisy.StatProps{Title: "Total", Value: "$" + strconv.Itoa(total), ValueClass: "text-primary"}))),
-		cardPanel("Recent Transactions", "", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Invoice", "Customer", "Plan", "Date", "Status", "Amount"}, Rows: rows, Class: "table-zebra"})),
+		cardPanel("Recent Transactions", "", dw.DataTable(dw.DataTableProps{Headers: []string{"Invoice", "Customer", "Plan", "Date", "Status", "Amount"}, Rows: rows, Class: "table-zebra"})),
 	)
 }
 
@@ -422,7 +396,7 @@ func billingPage(ctx *mb.Context) mf.Node {
 	}
 	return div("space-y-6",
 		pageTitle("Billing", "Billing table following the DashWind settings page.", daisy.ButtonWithAttrs("Download All", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
-		cardPanel("Billing History", "Product usage invoices", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Invoice No", "Amount", "Description", "Status", "Generated On", "Paid On"}, Rows: rows, Class: "table-zebra"})),
+		cardPanel("Billing History", "Product usage invoices", dw.DataTable(dw.DataTableProps{Headers: []string{"Invoice No", "Amount", "Description", "Status", "Generated On", "Paid On"}, Rows: rows, Class: "table-zebra"})),
 	)
 }
 
@@ -433,7 +407,7 @@ func teamPage(ctx *mb.Context) mf.Node {
 	}
 	return div("space-y-6",
 		pageTitle("Team Members", "Team settings list with member roles and status badges.", daisy.ButtonWithAttrs("Add New", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
-		cardPanel("Current Team", "DashWind team table", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Name", "Role", "Joined", "Status"}, Rows: rows})),
+		cardPanel("Current Team", "DashWind team table", dw.DataTable(dw.DataTableProps{Headers: []string{"Name", "Role", "Joined", "Status"}, Rows: rows})),
 	)
 }
 
@@ -446,7 +420,7 @@ func featuresPage(ctx *mb.Context) mf.Node {
 }
 
 func componentsPage(ctx *mb.Context) mf.Node {
-	return documentationPage("Components", "DaisyUI primitives used by the sample.", []string{"DrawerWithProps, NavbarWithProps, MenuWithProps", "StatsWithProps, CardPanel, TableWithProps", "ActionFormWithOptions and ButtonWithAttrs"})
+	return documentationPage("Components", "DaisyUI primitives used by the sample.", []string{"dashwind.Shell, NavGroup, and NavItem", "dashwind.StatsGrid, CardPanel, PageHeader", "dashwind.DataTable plus DaisyUI ActionFormWithOptions"})
 }
 
 func documentationPage(title, desc string, items []string) mf.Node {
@@ -477,11 +451,7 @@ func inputField(label string, inputType string, value string) mf.Node {
 }
 
 func pageTitle(title, desc string, actions mf.Node) mf.Node {
-	children := []mf.Node{div("", mf.H1Props(mf.ElementProps{Class: "text-3xl font-bold"}, mf.Text(title)), paragraph("mt-1 text-base-content/60", desc))}
-	if actions != nil {
-		children = append(children, actions)
-	}
-	return div("flex flex-col gap-4 md:flex-row md:items-center md:justify-between", children...)
+	return dw.PageHeader(dw.PageHeaderProps{Title: title, Description: desc, Actions: actions})
 }
 
 func noticeNode(ctx *mb.Context) mf.Node {
@@ -494,7 +464,7 @@ func noticeNode(ctx *mb.Context) mf.Node {
 }
 
 func cardPanel(title, desc string, children ...mf.Node) mf.Node {
-	return daisy.CardPanel(daisy.CardPanelProps{Title: title, Description: desc, Class: "bg-base-100 shadow"}, children...)
+	return dw.CardPanel(dw.CardPanelProps{Title: title, Description: desc}, children...)
 }
 
 func statusBadge(status string) mf.Node {
@@ -523,11 +493,3 @@ func paragraph(className string, text string) mf.Node {
 func span(className string, text string) mf.Node {
 	return mf.SpanProps(mf.ElementProps{Class: className}, mf.Text(text))
 }
-
-const dashwindCSS = `
-#marionette-root { width: 100%; max-width: none; padding: 0; }
-#marionette-root > * { animation: none; }
-.dashwind-shell .drawer-side .menu a.active { background: var(--color-primary); color: var(--color-primary-content); font-weight: 700; }
-.dashwind-shell .card, .dashwind-shell .stats { border: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent); }
-.dashwind-shell .stat-value { font-size: clamp(1.75rem, 2vw, 2.25rem); }
-`

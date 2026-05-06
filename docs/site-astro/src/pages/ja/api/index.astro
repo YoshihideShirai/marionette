@@ -8,6 +8,7 @@ const apiDocs = await getApiDocs('ja');
   <article class="api-docs api-index">
     <h1>APIドキュメント</h1>
     <p>API リファレンスは Markdown ソースファイル単位でページ分割しています。以下のセクション、またはサイドバーの API ナビゲーションから選択してください。</p>
+    <p>再利用可能な管理画面シェルを作るための公開 DashWind パッケージリファレンスも含まれます。</p>
     <div class="doc-card-grid">
       {apiDocs.map((doc) => (
         <a class="doc-card" href={`/marionette/ja/api/${doc.slug}/`}>

@@ -85,7 +85,7 @@ func Hero(title, description string, actions ...shared.Node) shared.Node {
 }
 
 func Menu(items ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "menu bg-base-200 rounded-box"}, Children: items}
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "menu bg-base-200 rounded-box"}, Children: listItemChildren("", items)}
 }
 
 func Footer(children ...shared.Node) shared.Node {
@@ -173,7 +173,7 @@ func Code(text string) shared.Node {
 
 func Indicator(item, target shared.Node) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "indicator"}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "indicator-item badge badge-secondary"}, Children: []shared.Node{item}},
+		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "indicator-item"}, Children: []shared.Node{item}},
 		target,
 	}}
 }
@@ -375,8 +375,28 @@ func Diff(before, after shared.Node) shared.Node {
 	}}
 }
 
+func listItemChildren(itemClass string, items []shared.Node) []shared.Node {
+	children := make([]shared.Node, 0, len(items))
+	for _, item := range items {
+		if n, ok := item.(lowhtml.ElementNode); ok && n.Tag == "li" {
+			if itemClass != "" {
+				n.Attrs = cloneAttrs(n.Attrs)
+				n.Attrs["class"] = appendClass(n.Attrs["class"], itemClass)
+			}
+			children = append(children, n)
+			continue
+		}
+		attrs := map[string]string{}
+		if itemClass != "" {
+			attrs["class"] = itemClass
+		}
+		children = append(children, lowhtml.ElementNode{Tag: "li", Attrs: attrs, Children: []shared.Node{item}})
+	}
+	return children
+}
+
 func List(items ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "list bg-base-100 rounded-box shadow-md"}, Children: items}
+	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "list bg-base-100 rounded-box shadow-md"}, Children: listItemChildren("list-row", items)}
 }
 
 func Table(headers []string, rows ...[]shared.Node) shared.Node {
@@ -489,11 +509,11 @@ func DockItem(child shared.Node, active bool) shared.Node {
 }
 
 func FilterItem(label string, active bool) shared.Node {
-	className := "btn btn-sm"
+	attrs := map[string]string{"class": "btn btn-sm", "type": "radio", "name": "filter", "aria-label": label}
 	if active {
-		className += " btn-active"
+		attrs["checked"] = "checked"
 	}
-	return lowhtml.ElementNode{Tag: "button", Attrs: map[string]string{"class": className}, Text: label}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
 }
 
 func CalendarGrid(days ...shared.Node) shared.Node {

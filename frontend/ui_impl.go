@@ -65,8 +65,48 @@ func DivProps(props ElementProps, children ...Node) Node {
 	return htmlElement("div", props, children...)
 }
 
+func Span(children ...Node) Node {
+	return SpanProps(ElementProps{}, children...)
+}
+
 func SpanProps(props ElementProps, children ...Node) Node {
 	return htmlElement("span", props, children...)
+}
+
+func P(children ...Node) Node {
+	return PProps(ElementProps{}, children...)
+}
+
+func PProps(props ElementProps, children ...Node) Node {
+	return htmlElement("p", props, children...)
+}
+
+func LabelElement(children ...Node) Node {
+	return LabelElementProps(ElementProps{}, children...)
+}
+
+func LabelElementProps(props ElementProps, children ...Node) Node {
+	return htmlElement("label", props, children...)
+}
+
+func InputElement(props ElementProps) Node {
+	return htmlElement("input", props)
+}
+
+func Ul(children ...Node) Node {
+	return UlProps(ElementProps{}, children...)
+}
+
+func UlProps(props ElementProps, children ...Node) Node {
+	return htmlElement("ul", props, children...)
+}
+
+func Li(children ...Node) Node {
+	return LiProps(ElementProps{}, children...)
+}
+
+func LiProps(props ElementProps, children ...Node) Node {
+	return htmlElement("li", props, children...)
 }
 
 func H1(children ...Node) Node {

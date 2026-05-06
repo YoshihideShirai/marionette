@@ -107,7 +107,7 @@ func mainContent(body mf.Node) mf.Node {
 
 func topbar(current string) mf.Node {
 	return daisy.NavbarWithProps(daisy.NavbarProps{Class: "sticky top-0 z-30 border-b border-base-300 bg-base-100/90 backdrop-blur"},
-		div("flex-none lg:hidden", mf.Element("label", mf.ElementProps{Class: "btn btn-square btn-ghost", Attrs: mf.Attrs{"for": "dashwind-drawer", "aria-label": "open sidebar"}}, mf.Text("☰"))),
+		div("flex-none lg:hidden", mf.LabelElementProps(mf.ElementProps{Class: "btn btn-square btn-ghost", Attrs: mf.Attrs{"for": "dashwind-drawer", "aria-label": "open sidebar"}}, mf.Text("☰"))),
 		div("flex-1", mf.H1Props(mf.ElementProps{Class: "text-xl font-semibold"}, mf.Text(current))),
 		div("hidden max-w-md flex-1 md:block", searchInput()),
 		div("flex-none gap-2",
@@ -119,9 +119,9 @@ func topbar(current string) mf.Node {
 }
 
 func searchInput() mf.Node {
-	return mf.Element("label", mf.ElementProps{Class: "input input-bordered flex items-center gap-2"},
+	return mf.LabelElementProps(mf.ElementProps{Class: "input input-bordered flex items-center gap-2"},
 		span("opacity-60", "⌕"),
-		mf.Element("input", mf.ElementProps{Class: "grow", Attrs: mf.Attrs{"type": "search", "placeholder": "Search DashWind demo"}}),
+		mf.InputElement(mf.ElementProps{Class: "grow", Attrs: mf.Attrs{"type": "search", "placeholder": "Search DashWind demo"}}),
 	)
 }
 
@@ -290,9 +290,9 @@ func teamPage(ctx *mb.Context) mf.Node {
 func placeholderPage(title, desc string, items []string) mf.Node {
 	listItems := make([]mf.Node, 0, len(items))
 	for _, item := range items {
-		listItems = append(listItems, mf.Element("li", mf.ElementProps{}, mf.Text(item)))
+		listItems = append(listItems, mf.Li(mf.Text(item)))
 	}
-	return div("space-y-6", pageTitle(title, desc, nil), cardPanel(title, "", mf.Element("ul", mf.ElementProps{Class: "list-disc space-y-2 pl-5"}, listItems...)))
+	return div("space-y-6", pageTitle(title, desc, nil), cardPanel(title, "", mf.UlProps(mf.ElementProps{Class: "list-disc space-y-2 pl-5"}, listItems...)))
 }
 
 func pageTitle(title, desc string, actions mf.Node) mf.Node {
@@ -336,7 +336,7 @@ func div(className string, children ...mf.Node) mf.Node {
 }
 
 func paragraph(className string, text string) mf.Node {
-	return mf.Element("p", mf.ElementProps{Class: className}, mf.Text(text))
+	return mf.PProps(mf.ElementProps{Class: className}, mf.Text(text))
 }
 
 func span(className string, text string) mf.Node {

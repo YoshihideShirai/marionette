@@ -124,6 +124,21 @@ func SpanProps(props ElementProps, children ...Node) Node { return Element("span
 func P(children ...Node) Node                          { return Element("p", ElementProps{}, children...) }
 func PProps(props ElementProps, children ...Node) Node { return Element("p", props, children...) }
 
+func LabelElement(children ...Node) Node {
+	return LabelElementProps(ElementProps{}, children...)
+}
+func LabelElementProps(props ElementProps, children ...Node) Node {
+	return Element("label", props, children...)
+}
+
+func InputElement(props ElementProps) Node { return Element("input", props) }
+
+func Ul(children ...Node) Node                          { return UlProps(ElementProps{}, children...) }
+func UlProps(props ElementProps, children ...Node) Node { return Element("ul", props, children...) }
+
+func Li(children ...Node) Node                          { return LiProps(ElementProps{}, children...) }
+func LiProps(props ElementProps, children ...Node) Node { return Element("li", props, children...) }
+
 func H1(children ...Node) Node                          { return Element("h1", ElementProps{}, children...) }
 func H1Props(props ElementProps, children ...Node) Node { return Element("h1", props, children...) }
 

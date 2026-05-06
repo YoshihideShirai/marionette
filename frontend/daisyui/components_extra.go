@@ -233,7 +233,7 @@ func Toggle(name string, checked bool) shared.Node {
 
 func ToggleVariant(name string, checked bool, variant string) shared.Node {
 	className := "toggle"
-	switch strings.TrimSpace(variant) {
+	switch strings.ToLower(strings.TrimSpace(variant)) {
 	case "primary":
 		className += " toggle-primary"
 	case "secondary":

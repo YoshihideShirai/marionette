@@ -15,15 +15,12 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     <p>
       SPA クライアント、API 契約、サーバーハンドラ、重複する状態モデルをそれぞれ説明する代わりに、プロダクト上の振る舞いと、それを描画・処理する Go コードを中心に会話できます。
     </p>
-  </section>
-
-
-  <section class="top-section" aria-labelledby="benchmark-ja">
-    <h2 id="benchmark-ja">CRUD 管理画面ベンチマーク</h2>
-    <p>
-      同じ CRUD 管理画面要件を SPA 構成と Marionette 構成で比較する簡易ベンチマークページを追加しました。実測 token 数がない段階では、token 削減率は記載しません。
-    </p>
-    <p><a href="/marionette/ja/ai-friendly/benchmark/">ベンチマーク定義を見る</a></p>
+    <ul>
+      <li><strong>One language, one context:</strong> プロダクトの流れを Go 中心に説明できます。</li>
+      <li><strong>UI / Action / State in Go:</strong> 画面、操作、状態変化の因果関係を追いやすくします。</li>
+      <li><strong>Fewer frontend/backend boundaries:</strong> AI が再構築すべき契約や境界を減らします。</li>
+      <li><strong>htmx partial updates:</strong> フル SPA の前提なしにサーバー主導の部分更新を扱えます。</li>
+    </ul>
   </section>
 
   <section class="top-section" aria-labelledby="one-language-ja">
@@ -32,20 +29,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       管理画面や社内ツールでは、アクションを追加する、テーブルを更新する、チャートをフィルタする、権限に応じて操作を制御する、といった具体的なワークフロー変更が頻繁に起きます。Marionette はそれらを Go に近づけ、関連する文脈をまとめます。
     </p>
     <p>
-      AI と一緒に実装するときも、複数のフロントエンド / バックエンドプロジェクトの連携を毎回説明するのではなく、ひとつの実装言語とサーバー側の実行モデルを前提にできます。
-    </p>
-  </section>
-
-  <section class="top-section" aria-labelledby="no-typescript-ja">
-    <h2 id="no-typescript-ja">コアアプリに TypeScript ビルドチェーンは不要</h2>
-    <p>
-      Marionette はアプリケーションロジックを Go 側に寄せ、ブラウザ側の部分更新は htmx が担います。そのため、典型的な管理画面や業務画面のコアアプリに TypeScript ビルドチェーンや SPA 前提のフロントエンドツールチェーンは必要ありません。
-    </p>
-    <p>
-      これは Go-first の方針であり、クライアント JS を完全排除するという意味ではありません。overlay など既存の共有ヘルパーは表示上の振る舞いを支えるために残る場合があります。一方で、プロダクトのワークフロー、状態遷移、バリデーションは主に Go ハンドラ側に寄せます。
-    </p>
-    <p>
-      新規 <code>.ts</code> / <code>.tsx</code> ファイルの扱いは <a href="https://github.com/yoshihideshirai/marionette/blob/main/docs/architecture/ui.md#2-new-typescript-files">UI architecture policy</a> を参照してください。
+      AI と一緒に実装するときも、複数のフロントエンド / バックエンドプロジェクトの連携を毎回説明するのではなく、ひとつの実装言語とサーバー側の実行モデルを前提にできます。実際のワークフロー変更に入る前の設計説明を短くできます。
     </p>
   </section>
 
@@ -79,5 +63,26 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     <p>
       これにより、フル SPA 構成を強制せずにインタラクティブな体験を作れます。AI 支援開発で重要なのは、保証されたトークン削減率ではありません。サーバーで描画されるコンポーネントと、それを生み出すアクションを同じ文脈で推論しやすいことです。
     </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="no-typescript-ja">
+    <h2 id="no-typescript-ja">コアアプリに TypeScript ビルドチェーンは不要</h2>
+    <p>
+      Marionette はアプリケーションロジックを Go 側に寄せ、ブラウザ側の部分更新は htmx が担います。そのため、典型的な管理画面や業務画面のコアアプリに TypeScript ビルドチェーンや SPA 前提のフロントエンドツールチェーンは必要ありません。
+    </p>
+    <p>
+      これは Go-first の方針であり、クライアント JS を完全排除するという意味ではありません。overlay など既存の共有ヘルパーは表示上の振る舞いを支えるために残る場合があります。一方で、プロダクトのワークフロー、状態遷移、バリデーションは主に Go ハンドラ側に寄せます。
+    </p>
+    <p>
+      新規 <code>.ts</code> / <code>.tsx</code> ファイルの扱いは <a href="https://github.com/yoshihideshirai/marionette/blob/main/docs/architecture/ui.md#2-new-typescript-files">UI architecture policy</a> を参照してください。
+    </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="benchmark-ja">
+    <h2 id="benchmark-ja">CRUD 管理画面ベンチマーク</h2>
+    <p>
+      同じ CRUD 管理画面要件を SPA 構成と Marionette 構成で比較する簡易ベンチマークページを追加しました。実測 token 数がない段階では、token 削減率は記載しません。
+    </p>
+    <p><a href="/marionette/ja/ai-friendly/benchmark/">ベンチマーク定義を見る</a></p>
   </section>
 </BaseLayout>

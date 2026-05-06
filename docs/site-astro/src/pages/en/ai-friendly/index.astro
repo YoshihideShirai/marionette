@@ -15,15 +15,12 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     <p>
       Instead of asking an AI tool to keep a SPA client, API contract, server handler, and duplicated state model in sync, you can describe the product behavior and point to the Go code that renders the screen and handles the action.
     </p>
-  </section>
-
-
-  <section class="top-section" aria-labelledby="benchmark-en">
-    <h2 id="benchmark-en">CRUD admin benchmark</h2>
-    <p>
-      A simple benchmark page compares the same CRUD admin requirement in a SPA architecture and a Marionette architecture without claiming a token reduction rate before measured token counts exist.
-    </p>
-    <p><a href="/marionette/en/ai-friendly/benchmark/">Open the benchmark definition</a></p>
+    <ul>
+      <li><strong>One language, one context:</strong> keep product-flow explanations centered on Go.</li>
+      <li><strong>UI / Action / State in Go:</strong> make the cause-and-effect path explicit.</li>
+      <li><strong>Fewer frontend/backend boundaries:</strong> reduce the contracts an assistant must reconstruct.</li>
+      <li><strong>htmx partial updates:</strong> keep interactivity server-led without a full SPA mental model.</li>
+    </ul>
   </section>
 
   <section class="top-section" aria-labelledby="one-language-en">
@@ -32,20 +29,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       Admin screens and internal tools often need precise workflow changes: add an action, update a table, filter a chart, or gate a control by permissions. Marionette keeps those changes in Go so the relevant context stays close together.
     </p>
     <p>
-      For AI-assisted work, that means prompts can be framed around one implementation language and one server-side execution model instead of restating how separate frontend and backend projects coordinate.
-    </p>
-  </section>
-
-  <section class="top-section" aria-labelledby="no-typescript-en">
-    <h2 id="no-typescript-en">No TypeScript build chain required for the core app</h2>
-    <p>
-      Marionette keeps application logic on the Go side, with htmx handling partial updates in the browser. The core app therefore does not need a TypeScript build chain or a SPA-oriented frontend toolchain to deliver typical admin and operations workflows.
-    </p>
-    <p>
-      This is a Go-first policy, not a claim that Marionette eliminates every byte of client JavaScript. Existing shared helpers such as overlay behavior can still provide presentation support, while product workflow, state transitions, and validation stay primarily in Go handlers.
-    </p>
-    <p>
-      See the <a href="https://github.com/yoshihideshirai/marionette/blob/main/docs/architecture/ui.md#2-new-typescript-files">UI architecture policy for new <code>.ts</code> / <code>.tsx</code> files</a>.
+      For AI-assisted work, that means prompts can be framed around one implementation language and one server-side execution model instead of restating how separate frontend and backend projects coordinate. The assistant needs less architectural setup before it can discuss the actual workflow change.
     </p>
   </section>
 
@@ -79,5 +63,26 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     <p>
       This keeps interactivity without forcing a full SPA architecture. For AI-assisted development, the important point is not a guaranteed token percentage; it is that the assistant can reason about the update from the server-rendered component and the action that produced it.
     </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="no-typescript-en">
+    <h2 id="no-typescript-en">No TypeScript build chain required for the core app</h2>
+    <p>
+      Marionette keeps application logic on the Go side, with htmx handling partial updates in the browser. The core app therefore does not need a TypeScript build chain or a SPA-oriented frontend toolchain to deliver typical admin and operations workflows.
+    </p>
+    <p>
+      This is a Go-first policy, not a claim that Marionette eliminates every byte of client JavaScript. Existing shared helpers such as overlay behavior can still provide presentation support, while product workflow, state transitions, and validation stay primarily in Go handlers.
+    </p>
+    <p>
+      See the <a href="https://github.com/yoshihideshirai/marionette/blob/main/docs/architecture/ui.md#2-new-typescript-files">UI architecture policy for new <code>.ts</code> / <code>.tsx</code> files</a>.
+    </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="benchmark-en">
+    <h2 id="benchmark-en">CRUD admin benchmark</h2>
+    <p>
+      A simple benchmark page compares the same CRUD admin requirement in a SPA architecture and a Marionette architecture without claiming a token reduction rate before measured token counts exist.
+    </p>
+    <p><a href="/marionette/en/ai-friendly/benchmark/">Open the benchmark definition</a></p>
   </section>
 </BaseLayout>

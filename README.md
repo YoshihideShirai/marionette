@@ -15,6 +15,7 @@ a **practical, operations-friendly UI architecture** built for real product team
 ## Why Marionette
 
 - Build operational UI without leaving Go.
+- **AI-friendly by design**: Reduce language boundaries, API schema handoff, frontend/backend synchronization, and state synchronization by keeping operational UI flows in Go.
 - Keep routing, state updates, and event handlers on the server.
 - Use htmx-powered partial rendering instead of maintaining a full SPA.
 - Compose admin screens from pages, forms, actions, tables, charts, and layout components.

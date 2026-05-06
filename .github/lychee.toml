@@ -8,6 +8,7 @@ timeout = 20
 exclude = [
   "http://127.0.0.1:8080/",
   "http://127.0.0.1:8081/",
+  "http://127.0.0.1:8082/",
   "http://localhost/",
   "https://github.com/YoshihideShirai/marionette/blob/main/"
 ]

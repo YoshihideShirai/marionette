@@ -29,6 +29,18 @@ a **practical, operations-friendly UI architecture** built for real product team
 
 ## Try it in 1 minute
 
+Run the representative admin sample:
+
+```bash
+go run ./cmd/admin-sample
+```
+
+Then open http://127.0.0.1:8082.
+
+![Admin sample dashboard](docs/assets/admin-sample.png)
+
+Source: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go), [`internal/adminsample/app.go`](internal/adminsample/app.go)
+
 Run the full demo:
 
 ```bash

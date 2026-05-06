@@ -20,6 +20,18 @@ Marionette は、**管理画面や社内ツール開発を圧倒的にシンプ�
 
 ## まずは 1 分で体験
 
+代表的な admin sample を起動します:
+
+```bash
+go run ./cmd/admin-sample
+```
+
+その後、http://127.0.0.1:8082 を開きます。
+
+![Admin sample dashboard](docs/assets/admin-sample.png)
+
+ソース: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go), [`internal/adminsample/app.go`](internal/adminsample/app.go)
+
 フルデモを起動します:
 
 ```bash

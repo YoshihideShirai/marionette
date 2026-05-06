@@ -6,5 +6,6 @@ This section is split into component-focused documents.
 - [6.2 Overlay, feedback, and state components](./05-component-apis-overlay-feedback.md)
 - [6.3 Data display components](./05-component-apis-data-display.md)
 - [6.4 Layout and surface components](./05-component-apis-layout-surfaces.md)
+- [6.5 daisyUI convenience components](./05-component-apis-daisyui-convenience.md)
 
 Each file documents defaults, edge-case behavior, and allowed option values.

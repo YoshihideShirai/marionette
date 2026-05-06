@@ -6,5 +6,6 @@
 - [6.2 オーバーレイ・通知・状態表示](./05-component-apis-overlay-feedback.md)
 - [6.3 データ表示](./05-component-apis-data-display.md)
 - [6.4 レイアウト・サーフェス](./05-component-apis-layout-surfaces.md)
+- [6.5 daisyUI 便利コンポーネント](./05-component-apis-daisyui-convenience.md)
 
 各ファイルで、デフォルト値・境界条件・オプションの取り得る値を整理しています。

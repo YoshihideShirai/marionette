@@ -1,191 +1,67 @@
 package marionette
 
-import "html/template"
+import mf "github.com/YoshihideShirai/marionette/frontend"
 
 // このファイルは基本的なコンポーネントProps/DTO型を定義する。
-// 新しい汎用UIコンポーネントの型はここに追加する。
+// 新しい汎用UIコンポーネントの型はfrontendを正として公開する。
 
-// ComponentProps defines shared style knobs for template components.
-type ComponentProps struct {
-	Class    string
-	Variant  string
-	Size     string
-	Disabled bool
-}
-
-type LinkProps struct {
-	Label     string
-	Icon      string
-	Href      string
-	Target    string
-	Rel       string
-	External  bool
-	Download  bool
-	Filename  string
-	AriaLabel string
-	Props     ComponentProps
-}
-
-type IconButtonProps struct {
-	Label        string
-	IconSVG      template.HTML
-	IconPosition string
-	Type         string
-	Props        ComponentProps
-}
-
-type LoginButtonProps struct {
-	Label   string
-	IconSVG template.HTML
-	Type    string
-	Props   ComponentProps
-}
-
-type SelectOption struct {
-	Label    string
-	Value    string
-	Selected bool
-}
-
-type ModalProps struct {
-	Title   string
-	Body    Node
-	Actions Node
-	Open    bool
-}
-
-type FormFieldProps struct {
-	Label    string
-	Required bool
-	Hint     string
-	Error    string
-}
-
-type FormProps struct {
-	ID     string
-	Class  string
-	Method string
-	Action string
-	Attrs  Attrs
-}
-
-type ActionFormProps struct {
-	ID     string
-	Action string
-	Target string
-	Swap   string
-	Method string
-	Props  ComponentProps
-}
-
-type InputOptions struct {
-	Type        string
-	Placeholder string
-	Min         string
-	Max         string
-	Required    bool
-	Props       ComponentProps
-}
-
-type TextareaOptions struct {
-	Placeholder string
-	Rows        int
-	Required    bool
-	Props       ComponentProps
-}
-
-type EmptyStateProps struct {
-	Title       string
-	Description string
-	Skeleton    bool
-	Rows        int
-	Icon        string
-	Props       ComponentProps
-}
-
-type AlertProps struct {
-	Title       string
-	Description string
-	Icon        string
-	Props       ComponentProps
-}
-
-type ToastProps struct {
-	Title       string
-	Description string
-	Icon        string
-	Props       ComponentProps
-	Live        string
-}
-
-type SkeletonProps struct {
-	Rows  int
-	Props ComponentProps
-}
-
-type ProgressProps struct {
-	Value         float64
-	Max           float64
-	Label         string
-	AriaLabel     string
-	ShowValue     bool
-	Indeterminate bool
-	Props         ComponentProps
-}
-
-type VariantToken string
+type ComponentProps = mf.ComponentProps
+type LinkProps = mf.LinkProps
+type IconButtonProps = mf.IconButtonProps
+type LoginButtonProps = mf.LoginButtonProps
+type SelectOption = mf.SelectOption
+type ModalProps = mf.ModalProps
+type FormFieldProps = mf.FormFieldProps
+type FormProps = mf.FormProps
+type ActionFormProps = mf.ActionFormProps
+type InputOptions = mf.InputOptions
+type TextareaOptions = mf.TextareaOptions
+type EmptyStateProps = mf.EmptyStateProps
+type AlertProps = mf.AlertProps
+type ToastProps = mf.ToastProps
+type SkeletonProps = mf.SkeletonProps
+type ProgressProps = mf.ProgressProps
+type VariantToken = mf.VariantToken
 
 const (
-	VariantDefault   VariantToken = "default"
-	VariantPrimary   VariantToken = "primary"
-	VariantSecondary VariantToken = "secondary"
-	VariantAccent    VariantToken = "accent"
-	VariantNeutral   VariantToken = "neutral"
-	VariantInfo      VariantToken = "info"
-	VariantSuccess   VariantToken = "success"
-	VariantWarning   VariantToken = "warning"
-	VariantError     VariantToken = "error"
-	VariantGhost     VariantToken = "ghost"
-	VariantOutline   VariantToken = "outline"
-	VariantDash      VariantToken = "dash"
-	VariantSoft      VariantToken = "soft"
-	VariantLink      VariantToken = "link"
+	VariantDefault   = mf.VariantDefault
+	VariantPrimary   = mf.VariantPrimary
+	VariantSecondary = mf.VariantSecondary
+	VariantAccent    = mf.VariantAccent
+	VariantNeutral   = mf.VariantNeutral
+	VariantInfo      = mf.VariantInfo
+	VariantSuccess   = mf.VariantSuccess
+	VariantWarning   = mf.VariantWarning
+	VariantError     = mf.VariantError
+	VariantGhost     = mf.VariantGhost
+	VariantOutline   = mf.VariantOutline
+	VariantDash      = mf.VariantDash
+	VariantSoft      = mf.VariantSoft
+	VariantLink      = mf.VariantLink
 )
 
-type SizeToken string
+type SizeToken = mf.SizeToken
 
 const (
-	SizeXS SizeToken = "xs"
-	SizeSM SizeToken = "sm"
-	SizeMD SizeToken = "md"
-	SizeLG SizeToken = "lg"
-	SizeXL SizeToken = "xl"
+	SizeXS = mf.SizeXS
+	SizeSM = mf.SizeSM
+	SizeMD = mf.SizeMD
+	SizeLG = mf.SizeLG
+	SizeXL = mf.SizeXL
 )
 
-type ButtonVariantProps struct {
-	Class    string
-	Variants []VariantToken
-	Size     SizeToken
-	Disabled bool
-}
-
-type InputVariantProps struct {
-	Class    string
-	Variant  VariantToken
-	Size     SizeToken
-	Disabled bool
-}
-
-type SelectVariantProps = InputVariantProps
-type BadgeVariantProps = InputVariantProps
-type AlertVariantProps = InputVariantProps
-type TextareaVariantProps = InputVariantProps
-type CheckboxVariantProps = InputVariantProps
-type RadioVariantProps = InputVariantProps
-type SwitchVariantProps = InputVariantProps
-type ProgressVariantProps = InputVariantProps
-type TabsVariantProps = InputVariantProps
-type CardVariantProps = InputVariantProps
-type ModalVariantProps = InputVariantProps
-type DrawerVariantProps = InputVariantProps
-type PaginationVariantProps = InputVariantProps
+type ButtonVariantProps = mf.ButtonVariantProps
+type InputVariantProps = mf.InputVariantProps
+type SelectVariantProps = mf.SelectVariantProps
+type BadgeVariantProps = mf.BadgeVariantProps
+type AlertVariantProps = mf.AlertVariantProps
+type TextareaVariantProps = mf.TextareaVariantProps
+type CheckboxVariantProps = mf.CheckboxVariantProps
+type RadioVariantProps = mf.RadioVariantProps
+type SwitchVariantProps = mf.SwitchVariantProps
+type ProgressVariantProps = mf.ProgressVariantProps
+type TabsVariantProps = mf.TabsVariantProps
+type CardVariantProps = mf.CardVariantProps
+type ModalVariantProps = mf.ModalVariantProps
+type DrawerVariantProps = mf.DrawerVariantProps
+type PaginationVariantProps = mf.PaginationVariantProps

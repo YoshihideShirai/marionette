@@ -178,8 +178,21 @@ type shellOptions struct {
 	JavaScripts []template.JS
 }
 
+// ShellOptions configures the HTML document shell rendered by ShellWithOptions.
+type ShellOptions = shellOptions
+
+// Shell renders content inside the default Marionette HTML document shell.
+func Shell(content template.HTML) (string, error) {
+	return shell(content)
+}
+
 func shell(content template.HTML) (string, error) {
 	return shellWithOptions(content, shellOptions{})
+}
+
+// ShellWithOptions renders content inside the Marionette HTML document shell.
+func ShellWithOptions(content template.HTML, options ShellOptions) (string, error) {
+	return shellWithOptions(content, shellOptions(options))
 }
 
 func shellWithOptions(content template.HTML, options shellOptions) (string, error) {
@@ -208,6 +221,11 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 		return "", err
 	}
 	return out.String(), nil
+}
+
+// WriteHTML writes an HTML response with Marionette's standard content type.
+func WriteHTML(w http.ResponseWriter, body string) {
+	writeHTML(w, body)
 }
 
 func writeHTML(w http.ResponseWriter, body string) {

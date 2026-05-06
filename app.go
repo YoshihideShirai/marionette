@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+
+	mf "github.com/YoshihideShirai/marionette/frontend"
 )
 
 // Context gives handlers controlled access to application state and request data.
@@ -20,19 +22,16 @@ type Context struct {
 	session map[string]string
 }
 
-type FlashLevel string
+type FlashLevel = mf.FlashLevel
 
 const (
-	FlashSuccess FlashLevel = "success"
-	FlashError   FlashLevel = "error"
-	FlashInfo    FlashLevel = "info"
-	FlashWarn    FlashLevel = "warn"
+	FlashSuccess = mf.FlashSuccess
+	FlashError   = mf.FlashError
+	FlashInfo    = mf.FlashInfo
+	FlashWarn    = mf.FlashWarn
 )
 
-type FlashMessage struct {
-	Level   FlashLevel `json:"level"`
-	Message string     `json:"message"`
-}
+type FlashMessage = mf.FlashMessage
 
 const flashCookieName = "marionette_flash"
 const sessionCookieName = "marionette_session"

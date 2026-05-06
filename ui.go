@@ -1,547 +1,158 @@
 package marionette
 
 import (
-	"bytes"
-	"context"
-	"fmt"
 	"html/template"
 	"io"
-	"regexp"
-	"sort"
 	"strings"
 
+	mf "github.com/YoshihideShirai/marionette/frontend"
+	mh "github.com/YoshihideShirai/marionette/frontend/html"
 	dataframeimports "github.com/rocketlaunchr/dataframe-go/imports"
 )
 
 // Node is a declarative UI element that can render itself as safe HTML.
-type Node interface {
-	Render() (template.HTML, error)
-}
+type Node = mf.Node
+type element = mh.ElementNode
 
-type element struct {
-	Tag      string
-	Attrs    map[string]string
-	Children []Node
-	Text     string
-}
+type Attrs = mf.Attrs
+type ElementProps = mf.ElementProps
+type Raw = mf.Raw
 
-// Attrs defines HTML attributes for low-level element constructors.
-type Attrs map[string]string
+type TableRowData = mf.TableRowData
 
-// ElementProps defines common HTML element attributes while keeping class and
-// id easy to scan at call sites.
-type ElementProps struct {
-	ID    string
-	Class string
-	Attrs Attrs
-}
+type SidebarItem = mf.SidebarItem
 
-var tagPattern = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9-]*$`)
-
-func (e element) Render() (template.HTML, error) {
-	if !tagPattern.MatchString(e.Tag) {
-		return "", fmt.Errorf("invalid tag: %q", e.Tag)
-	}
-
-	children := make([]template.HTML, 0, len(e.Children))
-	for _, child := range e.Children {
-		r, err := child.Render()
-		if err != nil {
-			return "", err
-		}
-		children = append(children, r)
-	}
-
-	var b bytes.Buffer
-	b.WriteString("<")
-	b.WriteString(e.Tag)
-
-	keys := make([]string, 0, len(e.Attrs))
-	for k := range e.Attrs {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		b.WriteString(" ")
-		b.WriteString(template.HTMLEscapeString(k))
-		b.WriteString(`="`)
-		b.WriteString(template.HTMLEscapeString(e.Attrs[k]))
-		b.WriteString(`"`)
-	}
-	b.WriteString(">")
-	b.WriteString(template.HTMLEscapeString(e.Text))
-	b.WriteString(string(joinHTML(children)))
-	b.WriteString("</")
-	b.WriteString(e.Tag)
-	b.WriteString(">")
-
-	return template.HTML(b.String()), nil
-}
-
-// Raw allows trusted HTML snippets (e.g. full page shell).
-type Raw string
-
-func (r Raw) Render() (template.HTML, error) { return template.HTML(r), nil }
-
-func Text(v string) Node {
-	return element{Tag: "span", Text: v}
-}
-
+func Text(v string) Node { return mf.Text(v) }
 func Element(tag string, props ElementProps, children ...Node) Node {
-	return element{Tag: tag, Attrs: elementAttrs(props), Children: children}
+	return mf.Element(tag, props, children...)
 }
-
-func Div(children ...Node) Node {
-	return DivProps(ElementProps{}, children...)
-}
-
-func DivID(id string, children ...Node) Node {
-	return DivProps(ElementProps{ID: id}, children...)
-}
-
-func DivClass(className string, children ...Node) Node {
-	return DivProps(ElementProps{Class: className}, children...)
-}
-
-func DivAttrs(attrs Attrs, children ...Node) Node {
-	return DivProps(ElementProps{Attrs: attrs}, children...)
-}
-
-func DivProps(props ElementProps, children ...Node) Node {
-	return Element("div", props, children...)
-}
-
-func Span(children ...Node) Node {
-	return SpanProps(ElementProps{}, children...)
-}
-
-func SpanProps(props ElementProps, children ...Node) Node {
-	return Element("span", props, children...)
-}
-
-func P(children ...Node) Node {
-	return PProps(ElementProps{}, children...)
-}
+func Div(children ...Node) Node                           { return mf.Div(children...) }
+func DivID(id string, children ...Node) Node              { return mh.DivID(id, children...) }
+func DivClass(className string, children ...Node) Node    { return mh.DivClass(className, children...) }
+func DivAttrs(attrs Attrs, children ...Node) Node         { return mh.DivAttrs(attrs, children...) }
+func DivProps(props ElementProps, children ...Node) Node  { return mf.DivProps(props, children...) }
+func Span(children ...Node) Node                          { return mf.Span(children...) }
+func SpanProps(props ElementProps, children ...Node) Node { return mf.SpanProps(props, children...) }
+func P(children ...Node) Node                             { return mf.P(children...) }
 func AnchorProps(props ElementProps, children ...Node) Node {
-	return Element("a", props, children...)
+	return mf.AnchorProps(props, children...)
 }
-
-func AsideProps(props ElementProps, children ...Node) Node {
-	return Element("aside", props, children...)
-}
-
+func AsideProps(props ElementProps, children ...Node) Node { return mf.AsideProps(props, children...) }
 func DescriptionListProps(props ElementProps, children ...Node) Node {
-	return Element("dl", props, children...)
+	return mf.DescriptionListProps(props, children...)
 }
-
 func DescriptionTermProps(props ElementProps, children ...Node) Node {
-	return Element("dt", props, children...)
+	return mf.DescriptionTermProps(props, children...)
 }
-
 func DescriptionDetailsProps(props ElementProps, children ...Node) Node {
-	return Element("dd", props, children...)
+	return mf.DescriptionDetailsProps(props, children...)
 }
-
-func PProps(props ElementProps, children ...Node) Node {
-	return Element("p", props, children...)
-}
-
-func LabelElement(children ...Node) Node {
-	return LabelElementProps(ElementProps{}, children...)
-}
-
+func PProps(props ElementProps, children ...Node) Node { return mf.PProps(props, children...) }
+func LabelElement(children ...Node) Node               { return mf.LabelElement(children...) }
 func LabelElementProps(props ElementProps, children ...Node) Node {
-	return Element("label", props, children...)
+	return mf.LabelElementProps(props, children...)
 }
-
-func InputElement(props ElementProps) Node {
-	return Element("input", props)
-}
-
-func Ul(children ...Node) Node {
-	return UlProps(ElementProps{}, children...)
-}
-
-func UlProps(props ElementProps, children ...Node) Node {
-	return Element("ul", props, children...)
-}
-
-func Li(children ...Node) Node {
-	return LiProps(ElementProps{}, children...)
-}
-
-func LiProps(props ElementProps, children ...Node) Node {
-	return Element("li", props, children...)
-}
-
-func H1(children ...Node) Node {
-	return H1Props(ElementProps{}, children...)
-}
-
-func H1Props(props ElementProps, children ...Node) Node {
-	return Element("h1", props, children...)
-}
-
-func H2(children ...Node) Node {
-	return H2Props(ElementProps{}, children...)
-}
-
-func H2Props(props ElementProps, children ...Node) Node {
-	return Element("h2", props, children...)
-}
-
-func H3(children ...Node) Node {
-	return H3Props(ElementProps{}, children...)
-}
-
-func H3Props(props ElementProps, children ...Node) Node {
-	return Element("h3", props, children...)
-}
-
-func H4(children ...Node) Node {
-	return H4Props(ElementProps{}, children...)
-}
-
-func H4Props(props ElementProps, children ...Node) Node {
-	return Element("h4", props, children...)
-}
-
-func elementAttrs(props ElementProps) map[string]string {
-	attrs := make(map[string]string, len(props.Attrs)+2)
-	for key, value := range props.Attrs {
-		attrs[key] = value
-	}
-	if props.ID != "" {
-		attrs["id"] = props.ID
-	}
-	if props.Class != "" {
-		attrs["class"] = joinClass(attrs["class"], props.Class)
-	}
-	return attrs
-}
-
-func Column(children ...Node) Node {
-	return element{Tag: "div", Attrs: map[string]string{"class": "flex flex-col gap-3"}, Children: children}
-}
-
-type table struct {
-	Headers []string
-	Rows    []TableRowData
-}
-
-type TableRowData struct {
-	Cells []Node
-}
-
-func HTMXTable(headers []string, rows ...TableRowData) Node {
-	return table{Headers: headers, Rows: rows}
-}
-
-func TableRow(cells ...Node) TableRowData {
-	return TableRowData{Cells: cells}
-}
+func InputElement(props ElementProps) Node                  { return mf.InputElement(props) }
+func Ul(children ...Node) Node                              { return mf.Ul(children...) }
+func UlProps(props ElementProps, children ...Node) Node     { return mf.UlProps(props, children...) }
+func Li(children ...Node) Node                              { return mf.Li(children...) }
+func LiProps(props ElementProps, children ...Node) Node     { return mf.LiProps(props, children...) }
+func H1(children ...Node) Node                              { return mf.H1(children...) }
+func H1Props(props ElementProps, children ...Node) Node     { return mf.H1Props(props, children...) }
+func H2(children ...Node) Node                              { return mf.H2(children...) }
+func H2Props(props ElementProps, children ...Node) Node     { return mf.H2Props(props, children...) }
+func H3(children ...Node) Node                              { return mf.H3(children...) }
+func H3Props(props ElementProps, children ...Node) Node     { return mf.H3Props(props, children...) }
+func H4(children ...Node) Node                              { return mf.H4(children...) }
+func H4Props(props ElementProps, children ...Node) Node     { return mf.H4Props(props, children...) }
+func Column(children ...Node) Node                          { return mh.Column(children...) }
+func HTMXTable(headers []string, rows ...TableRowData) Node { return mf.HTMXTable(headers, rows...) }
+func TableRow(cells ...Node) TableRowData                   { return mf.TableRow(cells...) }
 
 func DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
-	if r == nil {
-		return nil, fmt.Errorf("csv reader is nil")
-	}
-	df, err := dataframeimports.LoadFromCSV(context.Background(), r, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return DataFrame(df, props), nil
+	return mf.DataFrameFromCSV(r, props, opts...)
 }
-
 func DataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
-	tsvOpts := make([]dataframeimports.CSVLoadOptions, len(opts))
-	copy(tsvOpts, opts)
-	if len(tsvOpts) == 0 {
-		tsvOpts = append(tsvOpts, dataframeimports.CSVLoadOptions{Comma: '\t'})
-	} else if tsvOpts[0].Comma == 0 {
-		tsvOpts[0].Comma = '\t'
-	}
-	return DataFrameFromCSV(r, props, tsvOpts...)
+	return mf.DataFrameFromTSV(r, props, opts...)
 }
 
-func (t table) Render() (template.HTML, error) {
-	headerCells := make([]Node, 0, len(t.Headers))
-	for _, header := range t.Headers {
-		headerCells = append(headerCells, element{Tag: "th", Text: header})
-	}
-
-	bodyRows := make([]Node, 0, len(t.Rows))
-	for _, row := range t.Rows {
-		cells := make([]Node, 0, len(row.Cells))
-		for _, cell := range row.Cells {
-			cells = append(cells, element{Tag: "td", Children: []Node{cell}})
-		}
-		bodyRows = append(bodyRows, element{Tag: "tr", Children: cells})
-	}
-
-	return element{
-		Tag:   "table",
-		Attrs: map[string]string{"class": "table"},
-		Children: []Node{
-			element{
-				Tag: "thead",
-				Children: []Node{
-					element{Tag: "tr", Children: headerCells},
-				},
-			},
-			element{Tag: "tbody", Children: bodyRows},
-		},
-	}.Render()
-}
+func SidebarLink(label, href string) SidebarItem { return mf.SidebarLink(label, href) }
 
 type sidebar struct {
-	Brand     string
-	Title     string
-	Items     []SidebarItem
-	NoteTitle string
-	NoteText  string
-}
-
-type SidebarItem struct {
-	Label   string
-	Href    string
-	Current bool
+	brand     string
+	title     string
+	items     []SidebarItem
+	noteTitle string
+	noteText  string
 }
 
 func Sidebar(brand, title string, items ...SidebarItem) *sidebar {
-	return &sidebar{Brand: brand, Title: title, Items: items}
+	return &sidebar{brand: brand, title: title, items: items}
 }
-
-func SidebarLink(label, href string) SidebarItem {
-	return SidebarItem{Label: label, Href: href}
-}
-
-func (i SidebarItem) Active() SidebarItem {
-	i.Current = true
-	return i
-}
-
 func (s *sidebar) Note(title, text string) *sidebar {
-	s.NoteTitle = title
-	s.NoteText = text
+	s.noteTitle = title
+	s.noteText = text
 	return s
 }
-
 func (s *sidebar) Render() (template.HTML, error) {
-	children := []Node{
-		element{
-			Tag: "div",
-			Attrs: map[string]string{
-				"class": "mb-6",
-			},
-			Children: []Node{
-				element{
-					Tag:   "div",
-					Attrs: map[string]string{"class": "text-sm font-semibold uppercase tracking-wide text-base-content/50"},
-					Text:  s.Brand,
-				},
-				element{
-					Tag:   "div",
-					Attrs: map[string]string{"class": "text-lg font-bold"},
-					Text:  s.Title,
-				},
-			},
-		},
-		s.renderNav(),
+	inner := mf.Sidebar(s.brand, s.title, s.items...)
+	if strings.TrimSpace(s.noteTitle) != "" || strings.TrimSpace(s.noteText) != "" {
+		inner = inner.Note(s.noteTitle, s.noteText)
 	}
-	if s.NoteTitle != "" || s.NoteText != "" {
-		children = append(children, element{
-			Tag:   "div",
-			Attrs: map[string]string{"class": "mt-6 rounded-box bg-base-200 p-3 text-sm text-base-content/70"},
-			Children: []Node{
-				element{Tag: "div", Attrs: map[string]string{"class": "font-medium text-base-content"}, Text: s.NoteTitle},
-				element{Tag: "div", Text: s.NoteText},
-			},
-		})
-	}
-
-	return element{
-		Tag:      "aside",
-		Attrs:    map[string]string{"class": "rounded-box border border-base-300 bg-base-100 p-4 shadow-sm lg:min-h-[calc(100vh-3rem)]"},
-		Children: children,
-	}.Render()
-}
-
-func (s *sidebar) renderNav() Node {
-	items := make([]Node, 0, len(s.Items))
-	for _, item := range s.Items {
-		href := item.Href
-		if href == "" {
-			href = "#"
-		}
-		className := "btn btn-ghost justify-start text-base-content/70"
-		if item.Current {
-			className = "btn btn-primary justify-start"
-		}
-		items = append(items, element{
-			Tag:   "a",
-			Attrs: map[string]string{"class": className, "href": href},
-			Text:  item.Label,
-		})
-	}
-	return element{
-		Tag:      "nav",
-		Attrs:    map[string]string{"class": "flex flex-col gap-1"},
-		Children: items,
-	}
+	return inner.Render()
 }
 
 type form struct {
-	Action   string
-	TargetQ  string
-	Children []Node
+	action string
+	target string
+	kids   []Node
 }
 
-func Form(action string, children ...Node) *form {
-	return &form{Action: action, TargetQ: "#app", Children: children}
-}
-
-func (f *form) Target(selector string) *form {
-	f.TargetQ = selector
-	return f
-}
-
+func Form(action string, children ...Node) *form { return &form{action: action, kids: children} }
+func (f *form) Target(selector string) *form     { f.target = selector; return f }
 func (f *form) Render() (template.HTML, error) {
-	return element{
-		Tag: "form",
-		Attrs: map[string]string{
-			"class":     "flex flex-col gap-3",
-			"hx-post":   actionPath(f.Action),
-			"hx-target": f.TargetQ,
-			"hx-swap":   "outerHTML",
-		},
-		Children: f.Children,
-	}.Render()
+	inner := mf.Form(f.action, f.kids...)
+	if f.target != "" {
+		inner = inner.Target(f.target)
+	}
+	return inner.Render()
 }
 
-func Input(name, value string, props ...ComponentProps) Node {
-	if len(props) > 0 {
-		return InputWithOptions(name, value, InputOptions{Props: props[0]})
-	}
-	return element{
-		Tag: "input",
-		Attrs: map[string]string{
-			"class": "input input-bordered w-full",
-			"name":  name,
-			"type":  "text",
-			"value": value,
-		},
-	}
-}
-
+func Input(name, value string, props ...ComponentProps) Node { return mf.Input(name, value, props...) }
 func FileUpload(name string, required bool, props ...ComponentProps) Node {
-	componentProps := ComponentProps{}
-	if len(props) > 0 {
-		componentProps = props[0]
-	}
-	return InputWithOptions(name, "", InputOptions{
-		Type:     "file",
-		Required: required,
-		Props:    componentProps,
-	})
+	return mf.FileUpload(name, required, props...)
 }
-
-func HiddenInput(name, value string) Node {
-	return element{
-		Tag: "input",
-		Attrs: map[string]string{
-			"name":  name,
-			"type":  "hidden",
-			"value": value,
-		},
-	}
-}
-
-func Submit(label string) Node {
-	return element{
-		Tag: "button",
-		Attrs: map[string]string{
-			"class": "btn btn-primary w-fit",
-			"type":  "submit",
-		},
-		Text: label,
-	}
-}
+func HiddenInput(name, value string) Node { return mf.HiddenInput(name, value) }
+func Submit(label string) Node            { return mf.Submit(label) }
 
 type button struct {
-	Label   string
-	Action  string
-	TargetQ string
+	label  string
+	action string
+	target string
 }
 
-var buttonTmpl = template.Must(template.New("button").Parse(`<button class="btn btn-primary w-fit" hx-post="/{{.Action}}" hx-target="{{.TargetQ}}" hx-swap="outerHTML">{{.Label}}</button>`))
-
-func HTMXButton(label string) *button {
-	return &button{Label: label, TargetQ: "#app"}
-}
-
-func (b *button) OnClick(action string) *button {
-	return b.Post(action)
-}
-
-func (b *button) Post(action string) *button {
-	b.Action = strings.TrimPrefix(action, "/")
-	return b
-}
-
-func (b *button) TargetSelector(selector string) *button {
-	b.TargetQ = selector
-	return b
-}
-
-func (b *button) Target(selector string) *button {
-	return b.TargetSelector(selector)
-}
-
+func HTMXButton(label string) *button                    { return &button{label: label} }
+func (b *button) OnClick(action string) *button          { return b.Post(action) }
+func (b *button) Post(action string) *button             { b.action = action; return b }
+func (b *button) TargetSelector(selector string) *button { return b.Target(selector) }
+func (b *button) Target(selector string) *button         { b.target = selector; return b }
 func (b *button) Render() (template.HTML, error) {
-	var out bytes.Buffer
-	if err := buttonTmpl.Execute(&out, b); err != nil {
-		return "", err
+	inner := mf.HTMXButton(b.label)
+	if b.action != "" {
+		inner = inner.Post(b.action)
 	}
-	return template.HTML(out.String()), nil
+	if b.target != "" {
+		inner = inner.Target(b.target)
+	}
+	return inner.Render()
 }
+
+func FlashAlerts(flashes []FlashMessage) Node { return mf.FlashAlerts(flashes) }
 
 func actionPath(action string) string {
-	if strings.HasPrefix(action, "/") {
-		return action
+	trimmed := strings.TrimSpace(action)
+	if strings.HasPrefix(trimmed, "/") {
+		return trimmed
 	}
-	return "/" + action
-}
-
-func joinHTML(parts []template.HTML) template.HTML {
-	var b bytes.Buffer
-	for _, p := range parts {
-		b.WriteString(string(p))
-	}
-	return template.HTML(b.String())
-}
-
-func FlashAlerts(flashes []FlashMessage) Node {
-	if len(flashes) == 0 {
-		return DivProps(ElementProps{ID: "flash-alerts", Class: "hidden"})
-	}
-
-	children := make([]Node, 0, len(flashes))
-	for _, flash := range flashes {
-		children = append(children, DivClass("alert "+flashLevelClass(flash.Level), Text(flash.Message)))
-	}
-
-	return DivProps(ElementProps{ID: "flash-alerts", Class: "space-y-2"}, children...)
-}
-
-func flashLevelClass(level FlashLevel) string {
-	switch level {
-	case FlashSuccess:
-		return "alert-success"
-	case FlashError:
-		return "alert-error"
-	case FlashWarn:
-		return "alert-warning"
-	default:
-		return "alert-info"
-	}
+	return "/" + strings.TrimLeft(trimmed, "/")
 }

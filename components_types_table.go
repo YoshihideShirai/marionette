@@ -1,42 +1,12 @@
 package marionette
 
-import "fmt"
+import mf "github.com/YoshihideShirai/marionette/frontend"
 
 // このファイルはTableコンポーネントのProps/DTO型と補助関数を定義する。
 // テーブル表示に関する型・変換ロジックをここに集約する。
 
-type TableColumn struct {
-	Label      string
-	SortKey    string
-	SortHref   string
-	SortActive bool
-}
+type TableColumn = mf.TableColumn
+type TableComponentRow = mf.TableComponentRow
+type TableProps = mf.TableProps
 
-type TableComponentRow struct {
-	Cells []Node
-}
-
-func TableRowValues(values ...any) TableComponentRow {
-	cells := make([]Node, 0, len(values))
-	for _, value := range values {
-		switch v := value.(type) {
-		case nil:
-			cells = append(cells, Text(""))
-		case Node:
-			cells = append(cells, v)
-		default:
-			cells = append(cells, Text(fmt.Sprint(v)))
-		}
-	}
-	return TableComponentRow{Cells: cells}
-}
-
-type TableProps struct {
-	Columns          []TableColumn
-	Rows             []TableComponentRow
-	EmptyTitle       string
-	EmptyDescription string
-	View             DataFrameViewProps
-	QueryStateName   string
-	SelectedFilters  []DataFrameFilter
-}
+func TableRowValues(values ...any) TableComponentRow { return mf.TableRowValues(values...) }

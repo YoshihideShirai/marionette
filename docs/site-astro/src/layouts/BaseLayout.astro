@@ -108,21 +108,24 @@ if (uncategorizedComponents.length > 0) {
   </head>
   <body>
     <header class="site-header">
-      <a href={isJa ? '/marionette/ja/' : '/marionette/en/'} class="brand">
-        <img src={logo.src} width={logo.width} height={logo.height} alt="" class="brand-logo" />
-        <span>Marionette Docs</span>
-      </a>
-      <nav class="site-nav">
+      <div class="site-header-main">
         <button
           type="button"
           id="docs-drawer-open"
           class="drawer-toggle-button"
           aria-controls="docs-drawer"
           aria-expanded="false"
+          aria-label={isJa ? 'ナビゲーションを開く' : 'Open navigation'}
         >
           <span class="ui-icon material-icons" aria-hidden="true">menu</span>
-          <span>{isJa ? 'メニュー' : 'Menu'}</span>
+          <span class="sr-only">{isJa ? 'メニュー' : 'Menu'}</span>
         </button>
+        <a href={isJa ? '/marionette/ja/' : '/marionette/en/'} class="brand">
+          <img src={logo.src} width={logo.width} height={logo.height} alt="" class="brand-logo" />
+          <span>Marionette Docs</span>
+        </a>
+      </div>
+      <nav class="site-nav">
         <a href={languageSwitcherPath} hreflang={isJa ? 'en' : 'ja'}>{isJa ? 'English' : '日本語'}</a>
         <a href="https://github.com/YoshihideShirai/marionette" target="_blank" rel="noreferrer">
           GitHub

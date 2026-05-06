@@ -420,15 +420,19 @@ func TestImageRequiresSrc(t *testing.T) {
 }
 
 func TestLoadComponentTemplatesCachesParsedTemplates(t *testing.T) {
-	cachedTemplates = nil
-	cachedTemplatesErr = nil
-	componentTemplatesOnce = sync.Once{}
+	componentTemplateSource = nil
+	componentTemplateSourceErr = nil
+	componentTemplateSourceOnce = sync.Once{}
 
-	first, err := loadComponentTemplates()
+	source := componentTemplateSourceForPackage()
+	if componentTemplateSourceErr != nil {
+		t.Fatalf("source setup failed: %v", componentTemplateSourceErr)
+	}
+	first, err := source.Load()
 	if err != nil {
 		t.Fatalf("first load failed: %v", err)
 	}
-	second, err := loadComponentTemplates()
+	second, err := source.Load()
 	if err != nil {
 		t.Fatalf("second load failed: %v", err)
 	}

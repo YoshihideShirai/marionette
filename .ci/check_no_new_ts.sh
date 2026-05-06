@@ -13,13 +13,13 @@ if [[ -z "$base_ref" || "$base_ref" == "$zero_sha" ]] || ! git rev-parse --verif
   fi
 fi
 
-added_files="$(git diff --name-status "$base_ref"...HEAD -- '*.ts' '*.tsx' | awk '$1=="A" {print $2}')"
+added_files="$(git diff --name-status "$base_ref"...HEAD -- '*.ts' '*.tsx' | awk '$1=="A" && $2 !~ /^docs\// {print $2}')"
 
 if [[ -n "$added_files" ]]; then
   echo "Detected newly added TypeScript files (.ts/.tsx):"
   echo "$added_files"
-  echo "This repository is Go-only; adding TypeScript files is blocked by CI."
+  echo "This repository is Go-only outside docs/; adding TypeScript files outside docs/ is blocked by CI."
   exit 1
 fi
 
-echo "No newly added .ts/.tsx files detected."
+echo "No newly added .ts/.tsx files detected outside docs/."

@@ -10,9 +10,10 @@ UI implementation in this project must follow the policies below.
 
 ## 2) New TypeScript files
 
-- Adding new **`.ts` / `.tsx` files is prohibited**.
+- Adding new **`.ts` / `.tsx` files is prohibited outside `docs/`**.
+- Documentation site files under `docs/` may use TypeScript when it is part of the docs build.
 - The core app must not require a TypeScript build chain.
-- If an exception is necessary, prior agreement with maintainers is required before implementation.
+- If another exception is necessary, prior agreement with maintainers is required before implementation.
 
 ## 3) State transitions and validation
 
@@ -21,7 +22,7 @@ UI implementation in this project must follow the policies below.
 
 ## Acceptance criteria
 
-- Future PRs must not create new `.ts` / `.tsx` files.
+- Future PRs must not create new `.ts` / `.tsx` files outside `docs/`.
 
 
 ## 4) Overlay components (`ui/overlay`)

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getApiDocs, renderApiMarkdown } from '../../../lib/api-docs.mjs';
+import { getApiDocs, renderApiMarkdown } from '../../../lib/api-docs';
 
 export async function getStaticPaths() {
   const docs = await getApiDocs('ja');

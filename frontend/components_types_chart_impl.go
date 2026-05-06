@@ -1,27 +1,27 @@
 package frontend
 
-import chartjs "github.com/YoshihideShirai/marionette/frontend/chartjs"
+import shared "github.com/YoshihideShirai/marionette/frontend/shared"
 
 // このファイルはChartコンポーネントのProps/DTO型を定義する。
-// グラフ描画に関する型をここに集約する。
+// グラフ描画に関する型はfrontend/sharedを正として公開する。
 
-type ChartType = chartjs.ChartType
+type ChartType = shared.ChartType
 
 const (
-	ChartTypeBar      = chartjs.ChartTypeBar
-	ChartTypeLine     = chartjs.ChartTypeLine
-	ChartTypePie      = chartjs.ChartTypePie
-	ChartTypeDoughnut = chartjs.ChartTypeDoughnut
-	ChartTypeScatter  = chartjs.ChartTypeScatter
+	ChartTypeBar      = shared.ChartTypeBar
+	ChartTypeLine     = shared.ChartTypeLine
+	ChartTypePie      = shared.ChartTypePie
+	ChartTypeDoughnut = shared.ChartTypeDoughnut
+	ChartTypeScatter  = shared.ChartTypeScatter
 )
 
-type ChartDataset = chartjs.ChartDataset
+type ChartDataset = shared.ChartDataset
 
-type ChartPoint = chartjs.ChartPoint
+type ChartPoint = shared.ChartPoint
 
-type ChartOptions = chartjs.ChartOptions
+type ChartOptions = shared.ChartOptions
 
-type ChartProps = chartjs.ChartProps
+type ChartProps = shared.ChartProps
 
 type chartFallbackRow struct {
 	Label  string

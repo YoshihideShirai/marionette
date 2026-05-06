@@ -93,6 +93,7 @@ API details, and component examples:
 - Tutorial: https://yoshihideshirai.github.io/marionette/en/tutorial/
 - API docs: https://yoshihideshirai.github.io/marionette/en/api/
 - Components gallery: https://yoshihideshirai.github.io/marionette/en/components/
+- AI-friendly architecture: https://yoshihideshirai.github.io/marionette/en/ai-friendly/
 
 Japanese docs are available from the language switcher on the site.
 

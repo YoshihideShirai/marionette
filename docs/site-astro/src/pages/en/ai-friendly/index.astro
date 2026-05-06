@@ -1,31 +1,61 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="AI-friendly context compression - Marionette" lang="en" languageSwitcherPath="/marionette/ja/ai-friendly/">
-  <h1>AI-friendly context compression</h1>
+<BaseLayout title="AI-friendly architecture - Marionette" lang="en" languageSwitcherPath="/marionette/ja/ai-friendly/">
+  <h1>AI-friendly architecture</h1>
   <p class="lead">
-    Marionette is AI-friendly because it reduces cross-stack context and gives AI tools fewer boundaries to reason across.
+    Marionette is AI-friendly because it reduces the architecture an AI assistant has to reconstruct: one Go-first context for UI, actions, and state, with htmx handling browser-side partial updates.
   </p>
 
   <section class="top-section" aria-labelledby="context-compression-en">
-    <h2 id="context-compression-en">Context compression, not unverified token claims</h2>
+    <h2 id="context-compression-en">Context compression, not inflated token claims</h2>
     <p>
-      Marionette does not lead with unverified token metrics. Instead, it focuses on context compression: screens, state transitions, and action handlers stay close together in Go, while htmx handles browser-side partial updates.
+      Marionette does not rely on exaggerated token-reduction percentages. The structural advantage is simpler: there are fewer moving parts to explain when the UI, server behavior, and state transitions live in one Go-oriented flow.
     </p>
     <p>
-      This reduces cross-stack context, creates fewer boundaries between backend and frontend work, and leaves less schema handoff for both humans and AI tools to reconstruct.
+      Instead of asking an AI tool to keep a SPA client, API contract, server handler, and duplicated state model in sync, you can describe the product behavior and point to the Go code that renders the screen and handles the action.
     </p>
   </section>
 
-  <section class="top-section" aria-labelledby="ai-workflow-en">
-    <h2 id="ai-workflow-en">What changes in an AI coding workflow</h2>
-    <ul>
-      <li><strong>Less context switching:</strong> route logic, state updates, and UI composition are described in one Go-first flow.</li>
-      <li><strong>Fewer boundaries:</strong> teams avoid repeatedly explaining separate client state, API contracts, and backend handlers for the same admin screen.</li>
-      <li><strong>Less schema handoff:</strong> component and action definitions stay close to the server-side behavior they trigger.</li>
-    </ul>
+  <section class="top-section" aria-labelledby="one-language-en">
+    <h2 id="one-language-en">One language, one context</h2>
     <p>
-      As a secondary effect, this can make token consumption easier to keep under control because prompts can focus on product behavior instead of re-explaining cross-stack coordination.
+      Admin screens and internal tools often need precise workflow changes: add an action, update a table, filter a chart, or gate a control by permissions. Marionette keeps those changes in Go so the relevant context stays close together.
+    </p>
+    <p>
+      For AI-assisted work, that means prompts can be framed around one implementation language and one server-side execution model instead of restating how separate frontend and backend projects coordinate.
+    </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="ui-action-state-en">
+    <h2 id="ui-action-state-en">UI / Action / State in Go</h2>
+    <p>
+      Marionette groups the things an AI assistant needs to reason about for operational UI: what the user sees, what action they can trigger, and how state changes after that action. Keeping UI / Action / State in Go makes the causal path explicit.
+    </p>
+    <ul>
+      <li><strong>UI:</strong> pages and components describe the visible admin workflow.</li>
+      <li><strong>Action:</strong> server-side handlers define what happens when the operator clicks or submits.</li>
+      <li><strong>State:</strong> shared Go state can drive coordinated widgets such as tables, filters, and charts.</li>
+    </ul>
+  </section>
+
+  <section class="top-section" aria-labelledby="boundaries-en">
+    <h2 id="boundaries-en">Fewer frontend/backend boundaries</h2>
+    <p>
+      Every boundary between frontend and backend is another contract the team and the AI assistant must understand: request shapes, response shapes, client state, optimistic updates, validation, and error display.
+    </p>
+    <p>
+      Marionette does not remove every boundary, but it reduces the number of boundaries needed for typical admin and operations screens. That makes reviews and AI prompts more focused on the business workflow instead of cross-stack plumbing.
+    </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="htmx-en">
+    <h2 id="htmx-en">htmx partial updates</h2>
+    <p>
+      htmx gives Marionette a small browser-side interaction model: the server can return partial HTML for the part of the page that changed, while the browser swaps it into place.
+    </p>
+    <p>
+      This keeps interactivity without forcing a full SPA architecture. For AI-assisted development, the important point is not a guaranteed token percentage; it is that the assistant can reason about the update from the server-rendered component and the action that produced it.
     </p>
   </section>
 </BaseLayout>

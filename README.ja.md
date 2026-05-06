@@ -90,6 +90,7 @@ README は意図的に小さく保っています。チュートリアル、API 
 - チュートリアル: https://yoshihideshirai.github.io/marionette/ja/tutorial/
 - API ドキュメント: https://yoshihideshirai.github.io/marionette/ja/api/
 - コンポーネントギャラリー: https://yoshihideshirai.github.io/marionette/ja/components/
+- AI-friendly architecture: https://yoshihideshirai.github.io/marionette/ja/ai-friendly/
 
 英語ドキュメントへは、サイト内の言語切り替えから移動できます。
 

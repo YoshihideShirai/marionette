@@ -16,6 +16,12 @@ type transaction struct {
 	Invoice, Customer, Plan, Date, Status string
 	Amount                                int
 }
+type integrationItem struct {
+	Name, Icon, Description string
+	Active                  bool
+}
+type bill struct{ InvoiceNo, Amount, Description, Status, GeneratedOn, PaidOn string }
+type teamMember struct{ Name, Email, Role, Joined, Avatar string }
 type routeItem struct{ Path, Icon, Name, Group string }
 
 var statsData = []statCard{
@@ -37,7 +43,35 @@ var seedTransactions = []transaction{
 	{"INV-8844", "Blue Peak", "Starter", "May 02, 2026", "Failed", 1200},
 	{"INV-8845", "Sora Labs", "Enterprise", "Apr 30, 2026", "Paid", 15200},
 }
-var routes = []routeItem{{"/", "▦", "Dashboard", "main"}, {"/leads", "▣", "Leads", "main"}, {"/transactions", "$", "Transactions", "main"}, {"/analytics", "◒", "Analytics", "main"}, {"/integration", "⚡", "Integration", "main"}, {"/calendar", "◷", "Calendar", "main"}, {"/settings-profile", "⚙", "Profile", "settings"}, {"/settings-team", "◎", "Team Members", "settings"}}
+var integrationList = []integrationItem{
+	{"Slack", "S", "Instant messaging and workflow notifications for customer operations.", true},
+	{"Facebook", "f", "Meta campaign audience sync and lead-form capture for growth teams.", false},
+	{"LinkedIn", "in", "Business network enrichment and account-based lead routing.", true},
+	{"Google Ads", "G", "Paid-search campaign spend and conversion import for dashboards.", false},
+	{"Gmail", "M", "Shared inbox import for support and success handoffs.", false},
+	{"Salesforce", "SF", "CRM account, opportunity, and forecast synchronization.", false},
+	{"HubSpot", "H", "Inbound marketing, sales, and customer service contact sync.", false},
+}
+var bills = []bill{
+	{"#4567", "23,989", "Product usages", "Pending", "06 Apr 2026", "-"},
+	{"#4523", "34,989", "Product usages", "Pending", "07 Mar 2026", "-"},
+	{"#4453", "39,989", "Product usages", "Paid", "05 Feb 2026", "12 Apr 2026"},
+	{"#4359", "28,927", "Product usages", "Paid", "06 Jan 2026", "13 Mar 2026"},
+	{"#3359", "28,927", "Product usages", "Paid", "07 Dec 2025", "14 Feb 2026"},
+	{"#3367", "28,927", "Product usages", "Paid", "07 Nov 2025", "15 Jan 2026"},
+}
+var teamMembers = []teamMember{
+	{"Olivia Martin", "olivia@example.com", "Admin", "12 Jan 2026", "OM"},
+	{"Noah Williams", "noah@example.com", "Billing", "18 Jan 2026", "NW"},
+	{"Emma Brown", "emma@example.com", "Support", "02 Feb 2026", "EB"},
+	{"Liam Johnson", "liam@example.com", "Developer", "20 Feb 2026", "LJ"},
+}
+var routes = []routeItem{
+	{"/", "▦", "Dashboard", "main"}, {"/leads", "▣", "Leads", "main"}, {"/transactions", "$", "Transactions", "main"}, {"/analytics", "◒", "Analytics", "main"}, {"/integration", "⚡", "Integration", "main"}, {"/calendar", "◷", "Calendar", "main"},
+	{"/login", "↪", "Login", "pages"}, {"/register", "U", "Register", "pages"}, {"/forgot-password", "K", "Forgot Password", "pages"}, {"/blank", "□", "Blank Page", "pages"}, {"/404", "!", "404", "pages"},
+	{"/settings-profile", "⚙", "Profile", "settings"}, {"/settings-billing", "W", "Billing", "settings"}, {"/settings-team", "◎", "Team Members", "settings"},
+	{"/getting-started", "D", "Getting Started", "documentation"}, {"/features", "▤", "Features", "documentation"}, {"/components", "<> ", "Components", "documentation"},
+}
 
 const mainTargetID = "dashwind-main"
 
@@ -56,8 +90,17 @@ func BuildApp() *mb.App {
 	registerPage("/analytics", "Analytics", "Analytics - DashWind Demo", analyticsPage)
 	registerPage("/integration", "Integration", "Integration - DashWind Demo", integrationPage)
 	registerPage("/calendar", "Calendar", "Calendar - DashWind Demo", calendarPage)
+	registerPage("/login", "Login", "Login - DashWind Demo", loginPage)
+	registerPage("/register", "Register", "Register - DashWind Demo", registerPreviewPage)
+	registerPage("/forgot-password", "Forgot Password", "Forgot Password - DashWind Demo", forgotPasswordPage)
+	registerPage("/blank", "Blank Page", "Blank Page - DashWind Demo", blankPage)
+	registerPage("/404", "404", "404 - DashWind Demo", notFoundPage)
 	registerPage("/settings-profile", "Profile", "Profile - DashWind Demo", profilePage)
+	registerPage("/settings-billing", "Billing", "Billing - DashWind Demo", billingPage)
 	registerPage("/settings-team", "Team Members", "Team - DashWind Demo", teamPage)
+	registerPage("/getting-started", "Getting Started", "Getting Started - DashWind Demo", gettingStartedPage)
+	registerPage("/features", "Features", "Features - DashWind Demo", featuresPage)
+	registerPage("/components", "Components", "Components - DashWind Demo", componentsPage)
 
 	app.Action("dashboard/period", func(ctx *mb.Context) mf.Node {
 		period := normalizePeriod(ctx.FormValue("period"))
@@ -133,7 +176,9 @@ func sidebar(current string) mf.Node {
 				div("", mf.H2Props(mf.ElementProps{Class: "text-lg font-bold"}, mf.Text("DashWind")), paragraph("text-xs text-base-content/60", "DaisyUI admin template demo")),
 			),
 			menuGroup("Menu", "main", current),
+			menuGroup("Pages", "pages", current),
 			menuGroup("Settings", "settings", current),
+			menuGroup("Documentation", "documentation", current),
 			div("mt-6 rounded-box bg-primary/10 p-4 text-sm", paragraph("font-semibold", "Marionette port"), paragraph("mt-1 opacity-70", "React/Redux template patterns rebuilt as Go handlers and htmx fragments.")),
 		),
 	)
@@ -276,23 +321,159 @@ func analyticsPage(ctx *mb.Context) mf.Node {
 }
 
 func integrationPage(ctx *mb.Context) mf.Node {
-	return placeholderPage("Integration", "Connected apps", []string{"Stripe billing webhook", "Slack notifications", "HubSpot CRM sync"})
-}
-func calendarPage(ctx *mb.Context) mf.Node {
-	return placeholderPage("Calendar", "Upcoming customer-success events", []string{"May 08 - Enterprise QBR", "May 13 - Renewal review", "May 20 - Product webinar"})
-}
-func profilePage(ctx *mb.Context) mf.Node {
-	return placeholderPage("Profile", "Settings page example", []string{"Name: DashWind Admin", "Role: Revenue Ops", "Theme: DaisyUI corporate/dark"})
-}
-func teamPage(ctx *mb.Context) mf.Node {
-	return placeholderPage("Team Members", "Team settings submenu example", []string{"Olivia - Admin", "Noah - Billing", "Emma - Support"})
-}
-func placeholderPage(title, desc string, items []string) mf.Node {
-	listItems := make([]mf.Node, 0, len(items))
-	for _, item := range items {
-		listItems = append(listItems, mf.Li(mf.Text(item)))
+	cards := make([]mf.Node, 0, len(integrationList))
+	for _, item := range integrationList {
+		cards = append(cards, integrationCard(item))
 	}
-	return div("space-y-6", pageTitle(title, desc, nil), cardPanel(title, "", mf.UlProps(mf.ElementProps{Class: "list-disc space-y-2 pl-5"}, listItems...)))
+	return div("space-y-6",
+		pageTitle("Integration", "DashWind-style connected app cards with DaisyUI toggles.", nil),
+		div("grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3", cards...),
+	)
+}
+
+func integrationCard(item integrationItem) mf.Node {
+	return cardPanel(item.Name, "",
+		div("flex gap-4", daisy.AvatarPlaceholder(item.Icon, "", "w-12 rounded-box bg-primary/10 text-primary font-bold"), paragraph("text-sm text-base-content/70", item.Description)),
+		div("mt-6 text-right", daisy.ToggleWithVariants(strings.ToLower(item.Name)+"-enabled", item.Active, "success", "lg")),
+	)
+}
+
+func calendarPage(ctx *mb.Context) mf.Node {
+	days := []mf.Node{}
+	for day := 1; day <= 35; day++ {
+		className := "min-h-20 rounded-box border border-base-300 bg-base-100 p-2 text-sm"
+		label := strconv.Itoa(day)
+		if day > 31 {
+			className += " opacity-30"
+			label = strconv.Itoa(day - 31)
+		}
+		if day == 8 || day == 13 || day == 20 {
+			className += " ring-2 ring-primary/30"
+		}
+		days = append(days, div(className, div("font-semibold", mf.Text(label))))
+	}
+	return div("space-y-6",
+		pageTitle("Calendar", "Calendar view and customer-success events matching the DashWind sample area.", nil),
+		div("grid grid-cols-1 gap-6 xl:grid-cols-3",
+			cardPanel("May 2026", "Monthly schedule", div("grid grid-cols-7 gap-2", days...)),
+			cardPanel("Upcoming events", "Right drawer event feed", bulletList("May 08 - Enterprise QBR", "May 13 - Renewal review", "May 20 - Product webinar", "May 28 - Campaign retrospective")),
+		),
+	)
+}
+
+func loginPage(ctx *mb.Context) mf.Node {
+	return authPreviewPage("Login", []string{"Email Id", "Password"}, "Forgot Password?", "Don't have an account yet? Register")
+}
+
+func registerPreviewPage(ctx *mb.Context) mf.Node {
+	return authPreviewPage("Register", []string{"Name", "Email Id", "Password"}, "", "Already have an account? Login")
+}
+
+func forgotPasswordPage(ctx *mb.Context) mf.Node {
+	return authPreviewPage("Forgot Password", []string{"Email Id"}, "", "Remembered your password? Login")
+}
+
+func authPreviewPage(title string, fields []string, helper string, footer string) mf.Node {
+	controls := []mf.Node{}
+	for _, field := range fields {
+		inputType := "text"
+		if strings.Contains(strings.ToLower(field), "password") {
+			inputType = "password"
+		}
+		controls = append(controls, inputField(field, inputType, ""))
+	}
+	if helper != "" {
+		controls = append(controls, div("text-right text-primary text-sm", mf.Text(helper)))
+	}
+	controls = append(controls, daisy.ButtonWithAttrs(title, mf.ComponentProps{Class: "mt-2 w-full btn-primary"}, map[string]string{"type": "button"}), div("text-center mt-4", mf.Text(footer)))
+	return div("space-y-6",
+		pageTitle(title, "DashWind user page preview rendered inside the Marionette demo shell.", nil),
+		div("card mx-auto w-full max-w-5xl shadow-xl bg-base-100",
+			div("grid grid-cols-1 rounded-xl md:grid-cols-2",
+				div("rounded-l-xl bg-primary p-10 text-primary-content", mf.H2Props(mf.ElementProps{Class: "text-3xl font-bold"}, mf.Text("DashWind")), paragraph("mt-4 opacity-80", "Build admin dashboards with DaisyUI, htmx fragments, and Go state.")),
+				div("py-16 px-10", mf.H2Props(mf.ElementProps{Class: "mb-4 text-center text-2xl font-semibold"}, mf.Text(title)), formBlock(controls...)),
+			),
+		),
+	)
+}
+
+func blankPage(ctx *mb.Context) mf.Node {
+	return div("space-y-6", pageTitle("Blank Page", "A clean DashWind starter surface for new features.", nil), cardPanel("Blank", "Start composing your next Marionette screen here.", div("min-h-64 rounded-box border border-dashed border-base-300")))
+}
+
+func notFoundPage(ctx *mb.Context) mf.Node {
+	return div("space-y-6", pageTitle("404", "DashWind not-found screen pattern.", nil), div("hero min-h-96 rounded-box bg-base-100 shadow", div("hero-content text-center", div("max-w-md", mf.H1Props(mf.ElementProps{Class: "text-8xl font-bold text-primary"}, mf.Text("404")), paragraph("py-6 text-base-content/70", "The page you are looking for does not exist in this demo."), daisy.ButtonWithAttrs("Back to dashboard", mf.ComponentProps{Class: "btn-primary"}, map[string]string{"type": "button"})))))
+}
+
+func profilePage(ctx *mb.Context) mf.Node {
+	return div("space-y-6",
+		pageTitle("Profile", "Profile settings page with DashWind-style input cards.", daisy.ButtonWithAttrs("Save", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
+		div("grid grid-cols-1 gap-6 xl:grid-cols-3",
+			cardPanel("Profile photo", "Avatar and account role", div("flex items-center gap-4", daisy.AvatarPlaceholder("DW", "", "w-20 rounded-full bg-primary text-primary-content text-xl"), div("", mf.H3Props(mf.ElementProps{Class: "font-semibold"}, mf.Text("DashWind Admin")), paragraph("text-sm opacity-70", "Revenue Ops")))),
+			cardPanel("Account", "Editable account fields", inputField("Name", "text", "DashWind Admin"), inputField("Email Id", "email", "admin@example.com"), inputField("Role", "text", "Revenue Ops")),
+		),
+	)
+}
+
+func billingPage(ctx *mb.Context) mf.Node {
+	rows := [][]mf.Node{}
+	for _, bill := range bills {
+		rows = append(rows, []mf.Node{mf.Text(bill.InvoiceNo), mf.Text("$" + bill.Amount), mf.Text(bill.Description), statusBadge(bill.Status), mf.Text(bill.GeneratedOn), mf.Text(bill.PaidOn)})
+	}
+	return div("space-y-6",
+		pageTitle("Billing", "Billing table following the DashWind settings page.", daisy.ButtonWithAttrs("Download All", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
+		cardPanel("Billing History", "Product usage invoices", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Invoice No", "Amount", "Description", "Status", "Generated On", "Paid On"}, Rows: rows, Class: "table-zebra"})),
+	)
+}
+
+func teamPage(ctx *mb.Context) mf.Node {
+	rows := [][]mf.Node{}
+	for _, member := range teamMembers {
+		rows = append(rows, []mf.Node{div("flex items-center gap-3", daisy.AvatarPlaceholder(member.Avatar, "", "w-10 rounded-full bg-neutral text-neutral-content"), div("", div("font-bold", mf.Text(member.Name)), div("text-sm opacity-60", mf.Text(member.Email)))), mf.Text(member.Role), mf.Text(member.Joined), daisy.Badge(mf.BadgeProps{Label: "Active", Props: mf.ComponentProps{Class: "badge-success"}})})
+	}
+	return div("space-y-6",
+		pageTitle("Team Members", "Team settings list with member roles and status badges.", daisy.ButtonWithAttrs("Add New", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
+		cardPanel("Current Team", "DashWind team table", daisy.TableWithProps(daisy.TableProps{Headers: []string{"Name", "Role", "Joined", "Status"}, Rows: rows})),
+	)
+}
+
+func gettingStartedPage(ctx *mb.Context) mf.Node {
+	return documentationPage("Getting Started", "Quick start steps from the DashWind documentation section.", []string{"Install dependencies", "Run the Marionette DashWind demo", "Customize routes, stats, and tables"})
+}
+
+func featuresPage(ctx *mb.Context) mf.Node {
+	return documentationPage("Features", "Template feature checklist mirrored in the demo.", []string{"Sidebar and submenu navigation", "Dashboard stats and charts", "Leads, integrations, calendar, billing, and auth pages"})
+}
+
+func componentsPage(ctx *mb.Context) mf.Node {
+	return documentationPage("Components", "DaisyUI primitives used by the sample.", []string{"DrawerWithProps, NavbarWithProps, MenuWithProps", "StatsWithProps, CardPanel, TableWithProps", "ActionFormWithOptions and ButtonWithAttrs"})
+}
+
+func documentationPage(title, desc string, items []string) mf.Node {
+	return div("space-y-6", pageTitle(title, desc, nil), div("grid grid-cols-1 gap-6 lg:grid-cols-3", cardPanel("Navigation", "Documentation submenu", bulletList("Getting Started", "Features", "Components")), cardPanel(title, "Content", bulletList(items...)), cardPanel("Code pointers", "Marionette implementation", bulletList("cmd/dashwind-demo", "internal/dashwinddemo", "frontend/daisyui"))))
+}
+
+func bulletList(items ...string) mf.Node {
+	children := make([]mf.Node, 0, len(items))
+	for _, item := range items {
+		children = append(children, mf.Li(mf.Text(item)))
+	}
+	return mf.UlProps(mf.ElementProps{Class: "list-disc space-y-2 pl-5"}, children...)
+}
+
+func formBlock(children ...mf.Node) mf.Node {
+	return mf.DivProps(mf.ElementProps{Class: "space-y-4"}, children...)
+}
+
+func inputField(label string, inputType string, value string) mf.Node {
+	if strings.TrimSpace(inputType) == "" {
+		inputType = "text"
+	}
+	name := strings.ToLower(strings.ReplaceAll(label, " ", "-"))
+	return mf.LabelElementProps(mf.ElementProps{Class: "form-control w-full"},
+		span("label-text mb-1", label),
+		mf.InputElement(mf.ElementProps{Class: "input input-bordered w-full", Attrs: mf.Attrs{"type": inputType, "name": name, "value": value}}),
+	)
 }
 
 func pageTitle(title, desc string, actions mf.Node) mf.Node {

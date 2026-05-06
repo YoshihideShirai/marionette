@@ -1,9 +1,7 @@
 package marionette
 
 import (
-	"html/template"
 	"io"
-	"strings"
 
 	mf "github.com/YoshihideShirai/marionette/frontend"
 	mh "github.com/YoshihideShirai/marionette/frontend/html"
@@ -79,45 +77,11 @@ func DataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...dataframeimport
 
 func SidebarLink(label, href string) SidebarItem { return mf.SidebarLink(label, href) }
 
-type sidebar struct {
-	brand     string
-	title     string
-	items     []SidebarItem
-	noteTitle string
-	noteText  string
+func Sidebar(brand, title string, items ...SidebarItem) *mh.Sidebar {
+	return mh.NewSidebar(brand, title, items...)
 }
 
-func Sidebar(brand, title string, items ...SidebarItem) *sidebar {
-	return &sidebar{brand: brand, title: title, items: items}
-}
-func (s *sidebar) Note(title, text string) *sidebar {
-	s.noteTitle = title
-	s.noteText = text
-	return s
-}
-func (s *sidebar) Render() (template.HTML, error) {
-	inner := mf.Sidebar(s.brand, s.title, s.items...)
-	if strings.TrimSpace(s.noteTitle) != "" || strings.TrimSpace(s.noteText) != "" {
-		inner = inner.Note(s.noteTitle, s.noteText)
-	}
-	return inner.Render()
-}
-
-type form struct {
-	action string
-	target string
-	kids   []Node
-}
-
-func Form(action string, children ...Node) *form { return &form{action: action, kids: children} }
-func (f *form) Target(selector string) *form     { f.target = selector; return f }
-func (f *form) Render() (template.HTML, error) {
-	inner := mf.Form(f.action, f.kids...)
-	if f.target != "" {
-		inner = inner.Target(f.target)
-	}
-	return inner.Render()
-}
+func Form(action string, children ...Node) *mh.Form { return mh.NewForm(action, children...) }
 
 func Input(name, value string, props ...ComponentProps) Node { return mf.Input(name, value, props...) }
 func FileUpload(name string, required bool, props ...ComponentProps) Node {
@@ -126,34 +90,8 @@ func FileUpload(name string, required bool, props ...ComponentProps) Node {
 func HiddenInput(name, value string) Node { return mf.HiddenInput(name, value) }
 func Submit(label string) Node            { return mf.Submit(label) }
 
-type button struct {
-	label  string
-	action string
-	target string
-}
-
-func HTMXButton(label string) *button                    { return &button{label: label} }
-func (b *button) OnClick(action string) *button          { return b.Post(action) }
-func (b *button) Post(action string) *button             { b.action = action; return b }
-func (b *button) TargetSelector(selector string) *button { return b.Target(selector) }
-func (b *button) Target(selector string) *button         { b.target = selector; return b }
-func (b *button) Render() (template.HTML, error) {
-	inner := mf.HTMXButton(b.label)
-	if b.action != "" {
-		inner = inner.Post(b.action)
-	}
-	if b.target != "" {
-		inner = inner.Target(b.target)
-	}
-	return inner.Render()
-}
+func HTMXButton(label string) *mh.Button { return mh.HTMXButton(label) }
 
 func FlashAlerts(flashes []FlashMessage) Node { return mf.FlashAlerts(flashes) }
 
-func actionPath(action string) string {
-	trimmed := strings.TrimSpace(action)
-	if strings.HasPrefix(trimmed, "/") {
-		return trimmed
-	}
-	return "/" + strings.TrimLeft(trimmed, "/")
-}
+func actionPath(action string) string { return mh.ActionPath(action) }

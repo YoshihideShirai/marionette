@@ -1,12 +1,9 @@
 package frontend
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"html/template"
 	"io"
-	"strings"
 
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
 	shared "github.com/YoshihideShirai/marionette/frontend/shared"
@@ -42,151 +39,95 @@ type ElementProps = lowhtml.ElementProps
 type Raw = lowhtml.Raw
 
 func textNode(v string) Node {
-	return element{Tag: "span", Text: v}
+	return lowhtml.Text(v)
 }
 
 func htmlElement(tag string, props ElementProps, children ...Node) Node {
-	return element{Tag: tag, Attrs: elementAttrs(props), Children: children}
+	return lowhtml.Element(tag, props, children...)
 }
 
-func Text(v string) Node {
-	return textNode(v)
-}
+func Text(v string) Node { return lowhtml.Text(v) }
 
 func Element(tag string, props ElementProps, children ...Node) Node {
-	return htmlElement(tag, props, children...)
+	return lowhtml.Element(tag, props, children...)
 }
 
-func Div(children ...Node) Node {
-	return DivProps(ElementProps{}, children...)
-}
+func Div(children ...Node) Node { return lowhtml.Div(children...) }
 
 func DivProps(props ElementProps, children ...Node) Node {
-	return htmlElement("div", props, children...)
+	return lowhtml.DivProps(props, children...)
 }
 
-func Span(children ...Node) Node {
-	return SpanProps(ElementProps{}, children...)
-}
+func Span(children ...Node) Node { return lowhtml.Span(children...) }
 
 func SpanProps(props ElementProps, children ...Node) Node {
-	return htmlElement("span", props, children...)
+	return lowhtml.SpanProps(props, children...)
 }
 
-func P(children ...Node) Node {
-	return PProps(ElementProps{}, children...)
-}
+func P(children ...Node) Node { return lowhtml.P(children...) }
+
 func AnchorProps(props ElementProps, children ...Node) Node {
-	return htmlElement("a", props, children...)
+	return lowhtml.AnchorProps(props, children...)
 }
 
 func AsideProps(props ElementProps, children ...Node) Node {
-	return htmlElement("aside", props, children...)
+	return lowhtml.AsideProps(props, children...)
 }
 
 func DescriptionListProps(props ElementProps, children ...Node) Node {
-	return htmlElement("dl", props, children...)
+	return lowhtml.DescriptionListProps(props, children...)
 }
 
 func DescriptionTermProps(props ElementProps, children ...Node) Node {
-	return htmlElement("dt", props, children...)
+	return lowhtml.DescriptionTermProps(props, children...)
 }
 
 func DescriptionDetailsProps(props ElementProps, children ...Node) Node {
-	return htmlElement("dd", props, children...)
+	return lowhtml.DescriptionDetailsProps(props, children...)
 }
 
-func PProps(props ElementProps, children ...Node) Node {
-	return htmlElement("p", props, children...)
-}
+func PProps(props ElementProps, children ...Node) Node { return lowhtml.PProps(props, children...) }
 
-func LabelElement(children ...Node) Node {
-	return LabelElementProps(ElementProps{}, children...)
-}
+func LabelElement(children ...Node) Node { return lowhtml.LabelElement(children...) }
 
 func LabelElementProps(props ElementProps, children ...Node) Node {
-	return htmlElement("label", props, children...)
+	return lowhtml.LabelElementProps(props, children...)
 }
 
-func InputElement(props ElementProps) Node {
-	return htmlElement("input", props)
-}
+func InputElement(props ElementProps) Node { return lowhtml.InputElement(props) }
 
-func Ul(children ...Node) Node {
-	return UlProps(ElementProps{}, children...)
-}
+func Ul(children ...Node) Node { return lowhtml.Ul(children...) }
 
-func UlProps(props ElementProps, children ...Node) Node {
-	return htmlElement("ul", props, children...)
-}
+func UlProps(props ElementProps, children ...Node) Node { return lowhtml.UlProps(props, children...) }
 
-func Li(children ...Node) Node {
-	return LiProps(ElementProps{}, children...)
-}
+func Li(children ...Node) Node { return lowhtml.Li(children...) }
 
-func LiProps(props ElementProps, children ...Node) Node {
-	return htmlElement("li", props, children...)
-}
+func LiProps(props ElementProps, children ...Node) Node { return lowhtml.LiProps(props, children...) }
 
-func H1(children ...Node) Node {
-	return H1Props(ElementProps{}, children...)
-}
+func H1(children ...Node) Node { return lowhtml.H1(children...) }
 
-func H1Props(props ElementProps, children ...Node) Node {
-	return htmlElement("h1", props, children...)
-}
+func H1Props(props ElementProps, children ...Node) Node { return lowhtml.H1Props(props, children...) }
 
-func H2(children ...Node) Node {
-	return H2Props(ElementProps{}, children...)
-}
+func H2(children ...Node) Node { return lowhtml.H2(children...) }
 
-func H2Props(props ElementProps, children ...Node) Node {
-	return htmlElement("h2", props, children...)
-}
+func H2Props(props ElementProps, children ...Node) Node { return lowhtml.H2Props(props, children...) }
 
-func H3(children ...Node) Node {
-	return H3Props(ElementProps{}, children...)
-}
+func H3(children ...Node) Node { return lowhtml.H3(children...) }
 
-func H3Props(props ElementProps, children ...Node) Node {
-	return htmlElement("h3", props, children...)
-}
+func H3Props(props ElementProps, children ...Node) Node { return lowhtml.H3Props(props, children...) }
 
-func H4(children ...Node) Node {
-	return H4Props(ElementProps{}, children...)
-}
+func H4(children ...Node) Node { return lowhtml.H4(children...) }
 
-func H4Props(props ElementProps, children ...Node) Node {
-	return htmlElement("h4", props, children...)
-}
-
-func elementAttrs(props ElementProps) map[string]string {
-	attrs := make(map[string]string, len(props.Attrs)+2)
-	for key, value := range props.Attrs {
-		attrs[key] = value
-	}
-	if props.ID != "" {
-		attrs["id"] = props.ID
-	}
-	if props.Class != "" {
-		attrs["class"] = joinClass(attrs["class"], props.Class)
-	}
-	return attrs
-}
-
-type table struct {
-	Headers []string
-	Rows    []TableRowData
-}
+func H4Props(props ElementProps, children ...Node) Node { return lowhtml.H4Props(props, children...) }
 
 type TableRowData = shared.TableRowData
 
 func HTMXTable(headers []string, rows ...TableRowData) Node {
-	return table{Headers: headers, Rows: rows}
+	return lowhtml.HTMXTable(headers, rows...)
 }
 
 func TableRow(cells ...Node) TableRowData {
-	return TableRowData{Cells: cells}
+	return lowhtml.TableRow(cells...)
 }
 
 func DataFrameFromCSV(r io.ReadSeeker, props TableProps, opts ...dataframeimports.CSVLoadOptions) (Node, error) {
@@ -211,258 +152,39 @@ func DataFrameFromTSV(r io.ReadSeeker, props TableProps, opts ...dataframeimport
 	return DataFrameFromCSV(r, props, tsvOpts...)
 }
 
-func (t table) Render() (template.HTML, error) {
-	headerCells := make([]Node, 0, len(t.Headers))
-	for _, header := range t.Headers {
-		headerCells = append(headerCells, element{Tag: "th", Text: header})
-	}
-
-	bodyRows := make([]Node, 0, len(t.Rows))
-	for _, row := range t.Rows {
-		cells := make([]Node, 0, len(row.Cells))
-		for _, cell := range row.Cells {
-			cells = append(cells, element{Tag: "td", Children: []Node{cell}})
-		}
-		bodyRows = append(bodyRows, element{Tag: "tr", Children: cells})
-	}
-
-	return element{
-		Tag:   "table",
-		Attrs: map[string]string{"class": "table"},
-		Children: []Node{
-			element{
-				Tag: "thead",
-				Children: []Node{
-					element{Tag: "tr", Children: headerCells},
-				},
-			},
-			element{Tag: "tbody", Children: bodyRows},
-		},
-	}.Render()
-}
-
-type sidebar struct {
-	Brand     string
-	Title     string
-	Items     []SidebarItem
-	NoteTitle string
-	NoteText  string
-}
-
 type SidebarItem = shared.SidebarItem
 
-func Sidebar(brand, title string, items ...SidebarItem) *sidebar {
-	return &sidebar{Brand: brand, Title: title, Items: items}
+func Sidebar(brand, title string, items ...SidebarItem) *lowhtml.Sidebar {
+	return lowhtml.NewSidebar(brand, title, items...)
 }
 
 func SidebarLink(label, href string) SidebarItem {
-	return SidebarItem{Label: label, Href: href}
+	return lowhtml.SidebarLink(label, href)
 }
 
-func (s *sidebar) Note(title, text string) *sidebar {
-	s.NoteTitle = title
-	s.NoteText = text
-	return s
-}
-
-func (s *sidebar) Render() (template.HTML, error) {
-	children := []Node{
-		element{
-			Tag: "div",
-			Attrs: map[string]string{
-				"class": "mb-6",
-			},
-			Children: []Node{
-				element{
-					Tag:   "div",
-					Attrs: map[string]string{"class": "text-sm font-semibold uppercase tracking-wide text-base-content/50"},
-					Text:  s.Brand,
-				},
-				element{
-					Tag:   "div",
-					Attrs: map[string]string{"class": "text-lg font-bold"},
-					Text:  s.Title,
-				},
-			},
-		},
-		s.renderNav(),
-	}
-	if s.NoteTitle != "" || s.NoteText != "" {
-		children = append(children, element{
-			Tag:   "div",
-			Attrs: map[string]string{"class": "mt-6 rounded-box bg-base-200 p-3 text-sm text-base-content/70"},
-			Children: []Node{
-				element{Tag: "div", Attrs: map[string]string{"class": "font-medium text-base-content"}, Text: s.NoteTitle},
-				element{Tag: "div", Text: s.NoteText},
-			},
-		})
-	}
-
-	return element{
-		Tag:      "aside",
-		Attrs:    map[string]string{"class": "rounded-box border border-base-300 bg-base-100 p-4 shadow-sm lg:min-h-[calc(100vh-3rem)]"},
-		Children: children,
-	}.Render()
-}
-
-func (s *sidebar) renderNav() Node {
-	items := make([]Node, 0, len(s.Items))
-	for _, item := range s.Items {
-		href := item.Href
-		if href == "" {
-			href = "#"
-		}
-		className := "btn btn-ghost justify-start text-base-content/70"
-		if item.Current {
-			className = "btn btn-primary justify-start"
-		}
-		items = append(items, element{
-			Tag:   "a",
-			Attrs: map[string]string{"class": className, "href": href},
-			Text:  item.Label,
-		})
-	}
-	return element{
-		Tag:      "nav",
-		Attrs:    map[string]string{"class": "flex flex-col gap-1"},
-		Children: items,
-	}
-}
-
-type form struct {
-	Action   string
-	TargetQ  string
-	Children []Node
-}
-
-func Form(action string, children ...Node) *form {
-	return &form{Action: action, TargetQ: "#app", Children: children}
-}
-
-func (f *form) Target(selector string) *form {
-	f.TargetQ = selector
-	return f
-}
-
-func (f *form) Render() (template.HTML, error) {
-	return element{
-		Tag: "form",
-		Attrs: map[string]string{
-			"class":     "flex flex-col gap-3",
-			"hx-post":   actionPath(f.Action),
-			"hx-target": f.TargetQ,
-			"hx-swap":   "outerHTML",
-		},
-		Children: f.Children,
-	}.Render()
-}
+func Form(action string, children ...Node) *lowhtml.Form { return lowhtml.NewForm(action, children...) }
 
 func Input(name, value string, props ...ComponentProps) Node {
 	if len(props) > 0 {
-		return element{
-			Tag: "input",
-			Attrs: map[string]string{
-				"class": joinClass("input input-bordered w-full", props[0].Class),
-				"name":  name,
-				"type":  "text",
-				"value": value,
-			},
-		}
+		return lowhtml.Input(name, value, props[0].Class)
 	}
-	return element{
-		Tag: "input",
-		Attrs: map[string]string{
-			"class": "input input-bordered w-full",
-			"name":  name,
-			"type":  "text",
-			"value": value,
-		},
-	}
+	return lowhtml.Input(name, value)
 }
 
 func FileUpload(name string, required bool, props ...ComponentProps) Node {
-	componentProps := ComponentProps{}
 	if len(props) > 0 {
-		componentProps = props[0]
+		return lowhtml.FileUpload(name, required, props[0].Class)
 	}
-	attrs := map[string]string{
-		"class": joinClass("input input-bordered w-full", componentProps.Class),
-		"name":  name,
-		"type":  "file",
-		"value": "",
-	}
-	if required {
-		attrs["required"] = "required"
-	}
-	return element{Tag: "input", Attrs: attrs}
+	return lowhtml.FileUpload(name, required)
 }
 
-func HiddenInput(name, value string) Node {
-	return element{
-		Tag: "input",
-		Attrs: map[string]string{
-			"name":  name,
-			"type":  "hidden",
-			"value": value,
-		},
-	}
-}
+func HiddenInput(name, value string) Node { return lowhtml.HiddenInput(name, value) }
 
-func Submit(label string) Node {
-	return element{
-		Tag: "button",
-		Attrs: map[string]string{
-			"class": "btn btn-primary w-fit",
-			"type":  "submit",
-		},
-		Text: label,
-	}
-}
+func Submit(label string) Node { return lowhtml.Submit(label) }
 
-type button struct {
-	Label   string
-	Action  string
-	TargetQ string
-}
+func HTMXButton(label string) *lowhtml.Button { return lowhtml.HTMXButton(label) }
 
-var buttonTmpl = template.Must(template.New("button").Parse(`<button class="btn btn-primary w-fit" hx-post="/{{.Action}}" hx-target="{{.TargetQ}}" hx-swap="outerHTML">{{.Label}}</button>`))
-
-func HTMXButton(label string) *button {
-	return &button{Label: label, TargetQ: "#app"}
-}
-
-func (b *button) OnClick(action string) *button {
-	return b.Post(action)
-}
-
-func (b *button) Post(action string) *button {
-	b.Action = strings.TrimPrefix(action, "/")
-	return b
-}
-
-func (b *button) TargetSelector(selector string) *button {
-	b.TargetQ = selector
-	return b
-}
-
-func (b *button) Target(selector string) *button {
-	return b.TargetSelector(selector)
-}
-
-func (b *button) Render() (template.HTML, error) {
-	var out bytes.Buffer
-	if err := buttonTmpl.Execute(&out, b); err != nil {
-		return "", err
-	}
-	return template.HTML(out.String()), nil
-}
-
-func actionPath(action string) string {
-	if strings.HasPrefix(action, "/") {
-		return action
-	}
-	return "/" + action
-}
+func actionPath(action string) string { return lowhtml.ActionPath(action) }
 
 func FlashAlerts(flashes []FlashMessage) Node {
 	if len(flashes) == 0 {

@@ -60,3 +60,48 @@ func TestSemanticElementHelpersRenderExpectedTags(t *testing.T) {
 		t.Fatalf("unexpected list markup: %q", got)
 	}
 }
+
+func TestHTMXPrimitivesRenderExpectedMarkup(t *testing.T) {
+	buttonHTML, err := HTMXButton("Save <now>").Post("/items/save").Target("#items").Render()
+	if err != nil {
+		t.Fatalf("button Render() error = %v", err)
+	}
+	button := string(buttonHTML)
+	for _, want := range []string{`hx-post="/items/save"`, `hx-target="#items"`, `hx-swap="outerHTML"`, `Save &lt;now&gt;`} {
+		if !strings.Contains(button, want) {
+			t.Fatalf("expected %q in %q", want, button)
+		}
+	}
+
+	formHTML, err := NewForm("items/create", Input("name", `<Aiko>`), Submit("Create")).Target("#items").Render()
+	if err != nil {
+		t.Fatalf("form Render() error = %v", err)
+	}
+	form := string(formHTML)
+	for _, want := range []string{`hx-post="/items/create"`, `hx-target="#items"`, `name="name"`, `value="&lt;Aiko&gt;"`, `type="submit"`} {
+		if !strings.Contains(form, want) {
+			t.Fatalf("expected %q in %q", want, form)
+		}
+	}
+}
+
+func TestNavigationAndTablePrimitivesRenderExpectedMarkup(t *testing.T) {
+	sidebarHTML, err := NewSidebar("Marionette", "Admin <Console>", SidebarLink("Home", "/").Active()).Note("Demo", `<unsafe>`).Render()
+	if err != nil {
+		t.Fatalf("sidebar Render() error = %v", err)
+	}
+	sidebar := string(sidebarHTML)
+	for _, want := range []string{`<aside`, `href="/"`, `btn btn-primary justify-start`, `Admin &lt;Console&gt;`, `&lt;unsafe&gt;`} {
+		if !strings.Contains(sidebar, want) {
+			t.Fatalf("expected %q in %q", want, sidebar)
+		}
+	}
+
+	tableHTML, err := HTMXTable([]string{"Name"}, TableRow(Text(`<Aiko>`))).Render()
+	if err != nil {
+		t.Fatalf("table Render() error = %v", err)
+	}
+	if got := string(tableHTML); !strings.Contains(got, `<td><span>&lt;Aiko&gt;</span></td>`) {
+		t.Fatalf("expected escaped table cell in %q", got)
+	}
+}

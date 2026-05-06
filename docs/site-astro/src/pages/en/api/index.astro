@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getApiDocs } from '../../../lib/api-docs';
+import { getApiDocs } from '../../../lib/api-docs.mjs';
 
 const apiDocs = await getApiDocs('en');
 ---

@@ -1,20 +1,20 @@
 ---
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import MarkdownIt from 'markdown-it';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getApiDocs } from '../../../lib/api-docs';
 
-const apiDocsDir = path.resolve(process.cwd(), '..', '..', 'docs', 'api');
-const sectionFiles = (await fs.readdir(apiDocsDir))
-  .filter((name) => name.endsWith('.md'))
-  .sort();
-
-const markdownSections = await Promise.all(
-  sectionFiles.map((name) => fs.readFile(path.join(apiDocsDir, name), 'utf-8')),
-);
-const markdown = markdownSections.join('\n\n');
-const html = new MarkdownIt({ html: false, linkify: true, typographer: true }).render(markdown);
+const apiDocs = await getApiDocs('en');
 ---
 <BaseLayout title="API Documentation - Marionette" lang="en" languageSwitcherPath="/marionette/ja/api/">
-  <article class="api-docs" set:html={html} />
+  <article class="api-docs api-index">
+    <h1>API Documentation</h1>
+    <p>The API reference is split into one page per Markdown source file. Choose a section below or use the sidebar API navigation.</p>
+    <div class="doc-card-grid">
+      {apiDocs.map((doc) => (
+        <a class="doc-card" href={`/marionette/en/api/${doc.slug}/`}>
+          <strong>{doc.title}</strong>
+          <span>{doc.fileName}</span>
+        </a>
+      ))}
+    </div>
+  </article>
 </BaseLayout>

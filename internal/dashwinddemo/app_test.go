@@ -94,7 +94,7 @@ func TestTemplateRouteGroupsRenderDashWindPages(t *testing.T) {
 		{path: "/integration", want: []string{"Slack", "Salesforce", "toggle toggle-success toggle-lg"}},
 		{path: "/settings-billing", want: []string{"Billing History", "#4567", "Product usage invoices"}},
 		{path: "/login", want: []string{"Login", "Email Id", "Password", "DashWind user page preview"}},
-		{path: "/components", want: []string{"Components", "DrawerWithProps", "ActionFormWithOptions"}},
+		{path: "/components", want: []string{"Components", "dashwind.Shell", "ActionFormWithOptions"}},
 	}
 	for _, tt := range cases {
 		t.Run(tt.path, func(t *testing.T) {

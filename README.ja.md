@@ -32,6 +32,18 @@ go run ./cmd/admin-sample
 
 ソース: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go), [`internal/adminsample/app.go`](internal/adminsample/app.go)
 
+[`robbins23/daisyui-admin-dashboard-template`](https://github.com/robbins23/daisyui-admin-dashboard-template) を参考にした DashWind 風 DaisyUI ダッシュボードデモを起動します:
+
+```bash
+go run ./cmd/dashwind-demo
+```
+
+その後、http://127.0.0.1:8083 を開きます。
+
+![DashWind デモダッシュボード](docs/assets/dashwind-demo.png)
+
+ソース: [`cmd/dashwind-demo/main.go`](cmd/dashwind-demo/main.go), [`internal/dashwinddemo/app.go`](internal/dashwinddemo/app.go)
+
 フルデモを起動します:
 
 ```bash

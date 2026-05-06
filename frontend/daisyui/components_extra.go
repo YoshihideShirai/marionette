@@ -157,9 +157,9 @@ func Collapse(title string, content shared.Node, open bool) shared.Node {
 }
 
 func MockupWindow(title string, content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-window border border-base-300"}, Children: []shared.Node{
+	_ = title
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-window"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "px-4 py-16 bg-base-200"}, Children: []shared.Node{content}},
-		lowhtml.ElementNode{Tag: "span", Attrs: map[string]string{"class": "sr-only"}, Text: title},
 	}}
 }
 
@@ -189,7 +189,7 @@ func Link(label, href string, props shared.ComponentProps) shared.Node {
 func Dropdown(trigger, menu shared.Node) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "dropdown"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "class": "dropdown-content z-1 card card-sm bg-base-100 shadow-md"}, Children: []shared.Node{menu}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "-1", "class": "dropdown-content"}, Children: []shared.Node{menu}},
 	}}
 }
 
@@ -338,14 +338,14 @@ func Validator(message string) shared.Node {
 }
 
 func BrowserMockup(content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-browser border border-base-300"}, Children: []shared.Node{
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-browser"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-browser-toolbar"}, Children: []shared.Node{lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "input"}, Text: "https://example.com"}}},
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "grid place-content-center h-80"}, Children: []shared.Node{content}},
 	}}
 }
 
 func PhoneMockup(content shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone border-primary"}, Children: []shared.Node{
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone-camera"}},
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-phone-display"}, Children: []shared.Node{content}},
 	}}
@@ -354,7 +354,7 @@ func PhoneMockup(content shared.Node) shared.Node {
 func CodeMockup(lines ...string) shared.Node {
 	children := make([]shared.Node, 0, len(lines))
 	for _, line := range lines {
-		children = append(children, lowhtml.ElementNode{Tag: "pre", Children: []shared.Node{lowhtml.ElementNode{Tag: "code", Text: line}}})
+		children = append(children, lowhtml.ElementNode{Tag: "pre", Attrs: map[string]string{"data-prefix": "$"}, Children: []shared.Node{lowhtml.ElementNode{Tag: "code", Text: line}}})
 	}
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "mockup-code"}, Children: children}
 }
@@ -915,6 +915,6 @@ func DropdownWithPlacement(trigger, menu shared.Node, placement string) shared.N
 	}
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "class": "dropdown-content z-1 card card-sm bg-base-100 shadow-md"}, Children: []shared.Node{menu}},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "-1", "class": "dropdown-content"}, Children: []shared.Node{menu}},
 	}}
 }

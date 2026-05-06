@@ -26,7 +26,7 @@ func Button(label string, props shared.ComponentProps) shared.Node {
 }
 
 func Alert(title, description string, props shared.ComponentProps) shared.Node {
-	return node("div", map[string]string{"class": strings.TrimSpace("alert " + props.Class)},
+	return node("div", map[string]string{"class": strings.TrimSpace("alert " + props.Class), "role": "alert"},
 		textNode("span", nil, strings.TrimSpace(title+" "+description)),
 	)
 }
@@ -64,7 +64,7 @@ func Input(name, value string, props shared.ComponentProps) shared.Node {
 
 func Toast(title, description string, props shared.ComponentProps) shared.Node {
 	return node("div", map[string]string{"class": strings.TrimSpace("toast " + props.Class)},
-		node("div", map[string]string{"class": "alert"}, textNode("span", nil, strings.TrimSpace(title+" "+description))),
+		node("div", map[string]string{"class": "alert", "role": "alert"}, textNode("span", nil, strings.TrimSpace(title+" "+description))),
 	)
 }
 
@@ -320,10 +320,21 @@ func Divider(props shared.DividerProps) shared.Node {
 	if props.Props.Class != "" {
 		className += " " + props.Props.Class
 	}
-	if props.Spacing != "" {
-		className += " " + props.Spacing
+	if modifier := dividerModifierClass(props.Spacing); modifier != "" {
+		className += " " + modifier
 	}
 	return node("div", map[string]string{"class": className})
+}
+
+func dividerModifierClass(value string) string {
+	switch strings.TrimSpace(value) {
+	case "neutral", "primary", "secondary", "accent", "success", "warning", "info", "error":
+		return "divider-" + strings.TrimSpace(value)
+	case "vertical", "horizontal", "start", "end":
+		return "divider-" + strings.TrimSpace(value)
+	default:
+		return ""
+	}
 }
 
 func Actions(props shared.ActionsProps, children ...shared.Node) shared.Node {
@@ -539,10 +550,14 @@ func SubmitButton(label string, props shared.ComponentProps) shared.Node {
 }
 
 func InputWithOptions(name, value string, options shared.InputOptions) shared.Node {
+	inputType := strings.TrimSpace(options.Type)
+	if inputType == "" {
+		inputType = "text"
+	}
 	attrs := map[string]string{
 		"name":  name,
 		"value": value,
-		"type":  options.Type,
+		"type":  inputType,
 		"class": strings.TrimSpace("input w-full " + options.Props.Class),
 	}
 	if options.Placeholder != "" {

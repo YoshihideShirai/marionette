@@ -570,7 +570,7 @@ func Container(props shared.ContainerProps, children ...shared.Node) shared.Node
 
 func ThemeToggleButton(props shared.ComponentProps) shared.Node {
 	className := strings.TrimSpace("btn btn-ghost " + props.Class)
-	return node("button", map[string]string{"class": className, "type": "button", "aria-label": "Toggle theme", "onclick": "window.mrnToggleTheme()"},
+	return node("button", map[string]string{"class": className, "type": "button", "aria-label": "Toggle theme", "onclick": "globalThis.mrnToggleTheme()"},
 		textNode("span", nil, "🌓 Theme"),
 	)
 }

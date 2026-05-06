@@ -10,6 +10,7 @@ import (
 	"time"
 
 	frontend "github.com/YoshihideShirai/marionette/frontend"
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 func TestPageIncludesCustomStyles(t *testing.T) {
@@ -86,7 +87,7 @@ func TestPageCanSwitchStyleTemplateImports(t *testing.T) {
 	if !strings.Contains(body, `src="https://cdn.example.com/tailwind.js"`) {
 		t.Fatalf("expected template script import, got %q", body)
 	}
-	if strings.Contains(body, `cdn.jsdelivr.net/npm/daisyui@5`) {
+	if strings.Contains(body, assets.DaisyUICSSURL) {
 		t.Fatalf("expected default framework import to be replaced, got %q", body)
 	}
 }
@@ -103,10 +104,10 @@ func TestPageCanUseTailwindTemplatePreset(t *testing.T) {
 	app.Handler().ServeHTTP(rr, req)
 
 	body := rr.Body.String()
-	if !strings.Contains(body, `src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"`) {
+	if !strings.Contains(body, `src="`+assets.TailwindBrowserURL+`"`) {
 		t.Fatalf("expected tailwind framework script import, got %q", body)
 	}
-	if strings.Contains(body, `cdn.jsdelivr.net/npm/daisyui@5`) {
+	if strings.Contains(body, assets.DaisyUICSSURL) {
 		t.Fatalf("did not expect daisyui import for tailwind template, got %q", body)
 	}
 }

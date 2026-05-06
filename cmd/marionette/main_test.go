@@ -151,7 +151,7 @@ func TestUsersPageIncludesThemeToggleButton(t *testing.T) {
 	if !strings.Contains(body, "🌓 Theme") {
 		t.Fatalf("expected theme toggle button label, got %q", body)
 	}
-	if !strings.Contains(body, "window.mrnToggleTheme") {
+	if !strings.Contains(body, "mrnToggleTheme") {
 		t.Fatalf("expected theme toggle button onclick handler, got %q", body)
 	}
 }

@@ -3,6 +3,7 @@ package frontend
 import "html/template"
 
 type ShellAssets struct {
+	StyleTemplate        StyleTemplate
 	FrameworkStylesheets []string
 	FrameworkScripts     []string
 	Stylesheets          []string
@@ -12,8 +13,13 @@ type ShellAssets struct {
 }
 
 func (a *ShellAssets) UseStyleTemplate(tpl StyleTemplate) {
-	a.FrameworkStylesheets = append([]string(nil), tpl.FrameworkStylesheets...)
-	a.FrameworkScripts = append([]string(nil), tpl.FrameworkScripts...)
+	a.StyleTemplate = StyleTemplate{
+		Name:                 tpl.Name,
+		FrameworkStylesheets: append([]string(nil), tpl.FrameworkStylesheets...),
+		FrameworkScripts:     append([]string(nil), tpl.FrameworkScripts...),
+	}
+	a.FrameworkStylesheets = nil
+	a.FrameworkScripts = nil
 }
 
 func (a *ShellAssets) AddStylesheet(href string) { a.Stylesheets = append(a.Stylesheets, href) }

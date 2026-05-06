@@ -460,6 +460,7 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 	defer a.mu.RUnlock()
 	return shellOptions{
 		Title:                pageOptions.Title,
+		StyleTemplate:        a.shellAssets.StyleTemplate,
 		FrameworkStylesheets: append([]string(nil), a.shellAssets.FrameworkStylesheets...),
 		FrameworkScripts:     append([]string(nil), a.shellAssets.FrameworkScripts...),
 		Stylesheets:          append([]string(nil), a.shellAssets.Stylesheets...),

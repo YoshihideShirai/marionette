@@ -24,11 +24,51 @@ func TestShellIncludesThemeBootstrapScript(t *testing.T) {
 	if err != nil {
 		t.Fatalf("shell render failed: %v", err)
 	}
-	if !strings.Contains(out, "window.mrnToggleTheme") {
+	if !strings.Contains(out, "mrnToggleTheme") {
 		t.Fatalf("expected theme toggle helper in shell output, got %q", out)
 	}
 	if !strings.Contains(out, "marionette-theme") {
 		t.Fatalf("expected localStorage theme key in shell output, got %q", out)
+	}
+}
+
+func TestShellAppliesDefaultStyleTemplate(t *testing.T) {
+	out, err := shell(template.HTML(`<div id="app"></div>`))
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	defaults := DefaultStyleTemplate()
+	for _, href := range defaults.FrameworkStylesheets {
+		if !strings.Contains(out, `href="`+href+`"`) {
+			t.Fatalf("expected default stylesheet %q in shell output", href)
+		}
+	}
+	for _, src := range defaults.FrameworkScripts {
+		if !strings.Contains(out, `src="`+src+`"`) {
+			t.Fatalf("expected default script %q in shell output", src)
+		}
+	}
+}
+
+func TestShellOptionsStyleTemplateOverridesDefault(t *testing.T) {
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{
+		StyleTemplate: StyleTemplate{
+			Name:                 "custom",
+			FrameworkStylesheets: []string{"https://cdn.example.com/custom.css"},
+			FrameworkScripts:     []string{"https://cdn.example.com/custom.js"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	if !strings.Contains(out, `href="https://cdn.example.com/custom.css"`) {
+		t.Fatalf("expected custom style template stylesheet in shell output")
+	}
+	if !strings.Contains(out, `src="https://cdn.example.com/custom.js"`) {
+		t.Fatalf("expected custom style template script in shell output")
+	}
+	if strings.Contains(out, DefaultStyleTemplate().FrameworkStylesheets[0]) {
+		t.Fatalf("did not expect default style template stylesheet after override")
 	}
 }
 

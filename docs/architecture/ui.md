@@ -6,16 +6,18 @@ UI implementation in this project must follow the policies below.
 
 - UI components must be implemented with **Go templates (`html/template`)**.
 - Do not rely on client-framework-first implementations.
+- Keep application logic on the Go side. The goal is not to eliminate all client JavaScript, but to avoid moving product workflow logic into a browser build chain.
 
 ## 2) New TypeScript files
 
 - Adding new **`.ts` / `.tsx` files is prohibited**.
+- The core app must not require a TypeScript build chain.
 - If an exception is necessary, prior agreement with maintainers is required before implementation.
 
 ## 3) State transitions and validation
 
 - Implement UI state transitions and input validation primarily in **Go handlers**.
-- Keep client-side logic minimal (presentation-only support).
+- Keep client-side logic minimal (presentation-only support), such as existing overlay helpers that manage focus, portals, and scroll lock.
 
 ## Acceptance criteria
 

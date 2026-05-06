@@ -76,6 +76,25 @@ func SpanProps(props ElementProps, children ...Node) Node {
 func P(children ...Node) Node {
 	return PProps(ElementProps{}, children...)
 }
+func AnchorProps(props ElementProps, children ...Node) Node {
+	return htmlElement("a", props, children...)
+}
+
+func AsideProps(props ElementProps, children ...Node) Node {
+	return htmlElement("aside", props, children...)
+}
+
+func DescriptionListProps(props ElementProps, children ...Node) Node {
+	return htmlElement("dl", props, children...)
+}
+
+func DescriptionTermProps(props ElementProps, children ...Node) Node {
+	return htmlElement("dt", props, children...)
+}
+
+func DescriptionDetailsProps(props ElementProps, children ...Node) Node {
+	return htmlElement("dd", props, children...)
+}
 
 func PProps(props ElementProps, children ...Node) Node {
 	return htmlElement("p", props, children...)

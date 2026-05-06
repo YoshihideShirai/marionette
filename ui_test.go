@@ -1213,3 +1213,101 @@ func TestComponentDataFrameFromTSVDefaultsToTabDelimiter(t *testing.T) {
 		}
 	}
 }
+
+func TestRootAndFrontendPriorityComponentsMatchOutput(t *testing.T) {
+	t.Run("Button", func(t *testing.T) {
+		rootHTML, err := Button("Save", ComponentProps{Variant: "primary", Size: "sm", Class: "tracking-wide"}).Render()
+		if err != nil {
+			t.Fatalf("root button render failed: %v", err)
+		}
+		frontendHTML, err := mf.Button("Save", mf.ComponentProps{Variant: "primary", Size: "sm", Class: "tracking-wide"}).Render()
+		if err != nil {
+			t.Fatalf("frontend button render failed: %v", err)
+		}
+		if rootHTML != frontendHTML {
+			t.Fatalf("expected frontend button output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+		}
+	})
+
+	t.Run("Form", func(t *testing.T) {
+		rootHTML, err := Form("users/create", Input("name", "Aiko"), Submit("Create")).Target("#users").Render()
+		if err != nil {
+			t.Fatalf("root form render failed: %v", err)
+		}
+		frontendHTML, err := mf.Form("users/create", mf.Input("name", "Aiko"), mf.Submit("Create")).Target("#users").Render()
+		if err != nil {
+			t.Fatalf("frontend form render failed: %v", err)
+		}
+		if rootHTML != frontendHTML {
+			t.Fatalf("expected frontend form output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+		}
+	})
+
+	t.Run("Table", func(t *testing.T) {
+		rootHTML, err := Table(TableProps{
+			Columns: []TableColumn{{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true}, {Label: "Role"}},
+			Rows:    []TableComponentRow{TableRowValues("Aiko", "Admin")},
+		}).Render()
+		if err != nil {
+			t.Fatalf("root table render failed: %v", err)
+		}
+		frontendHTML, err := mf.Table(mf.TableProps{
+			Columns: []mf.TableColumn{{Label: "Name", SortKey: "name", SortHref: "/?sort=name", SortActive: true}, {Label: "Role"}},
+			Rows:    []mf.TableComponentRow{mf.TableRowValues("Aiko", "Admin")},
+		}).Render()
+		if err != nil {
+			t.Fatalf("frontend table render failed: %v", err)
+		}
+		if rootHTML != frontendHTML {
+			t.Fatalf("expected frontend table output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+		}
+	})
+
+	t.Run("Chart", func(t *testing.T) {
+		props := ChartProps{Type: ChartTypeBar, Title: "Orders", Labels: []string{"Open", "Closed"}, Datasets: []ChartDataset{{Label: "Count", Data: []float64{4, 9}}}}
+		rootHTML, err := Chart(props).Render()
+		if err != nil {
+			t.Fatalf("root chart render failed: %v", err)
+		}
+		frontendHTML, err := mf.Chart(mf.ChartProps(props)).Render()
+		if err != nil {
+			t.Fatalf("frontend chart render failed: %v", err)
+		}
+		if rootHTML != frontendHTML {
+			t.Fatalf("expected frontend chart output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+		}
+	})
+
+	t.Run("DataFrame", func(t *testing.T) {
+		df := rdf.NewDataFrame(
+			rdf.NewSeriesString("Name", nil, "Aiko", "Ken"),
+			rdf.NewSeriesInt64("Score", nil, int64(7), int64(9)),
+		)
+		props := TableProps{View: DataFrameViewProps{Sort: []DataFrameSort{{Column: "Score", Desc: true}}}}
+		rootHTML, err := DataFrame(df, props).Render()
+		if err != nil {
+			t.Fatalf("root dataframe render failed: %v", err)
+		}
+		frontendHTML, err := mf.DataFrame(df, mf.TableProps(props)).Render()
+		if err != nil {
+			t.Fatalf("frontend dataframe render failed: %v", err)
+		}
+		if rootHTML != frontendHTML {
+			t.Fatalf("expected frontend dataframe output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+		}
+	})
+
+	t.Run("Shell", func(t *testing.T) {
+		rootHTML, err := shell(template.HTML(`<main>Root</main>`))
+		if err != nil {
+			t.Fatalf("root shell render failed: %v", err)
+		}
+		frontendHTML, err := mf.Shell(template.HTML(`<main>Root</main>`))
+		if err != nil {
+			t.Fatalf("frontend shell render failed: %v", err)
+		}
+		if rootHTML != frontendHTML {
+			t.Fatalf("expected frontend shell output to match root\nroot:\n%s\nfrontend:\n%s", rootHTML, frontendHTML)
+		}
+	})
+}

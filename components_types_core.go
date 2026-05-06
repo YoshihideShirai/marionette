@@ -1,67 +1,67 @@
 package marionette
 
-import mf "github.com/YoshihideShirai/marionette/frontend"
+import shared "github.com/YoshihideShirai/marionette/frontend/shared"
 
 // このファイルは基本的なコンポーネントProps/DTO型を定義する。
-// 新しい汎用UIコンポーネントの型はfrontendを正として公開する。
+// 新しい汎用UIコンポーネントの型はfrontend/sharedを正として公開する。
 
-type ComponentProps = mf.ComponentProps
-type LinkProps = mf.LinkProps
-type IconButtonProps = mf.IconButtonProps
-type LoginButtonProps = mf.LoginButtonProps
-type SelectOption = mf.SelectOption
-type ModalProps = mf.ModalProps
-type FormFieldProps = mf.FormFieldProps
-type FormProps = mf.FormProps
-type ActionFormProps = mf.ActionFormProps
-type InputOptions = mf.InputOptions
-type TextareaOptions = mf.TextareaOptions
-type EmptyStateProps = mf.EmptyStateProps
-type AlertProps = mf.AlertProps
-type ToastProps = mf.ToastProps
-type SkeletonProps = mf.SkeletonProps
-type ProgressProps = mf.ProgressProps
-type VariantToken = mf.VariantToken
-
-const (
-	VariantDefault   = mf.VariantDefault
-	VariantPrimary   = mf.VariantPrimary
-	VariantSecondary = mf.VariantSecondary
-	VariantAccent    = mf.VariantAccent
-	VariantNeutral   = mf.VariantNeutral
-	VariantInfo      = mf.VariantInfo
-	VariantSuccess   = mf.VariantSuccess
-	VariantWarning   = mf.VariantWarning
-	VariantError     = mf.VariantError
-	VariantGhost     = mf.VariantGhost
-	VariantOutline   = mf.VariantOutline
-	VariantDash      = mf.VariantDash
-	VariantSoft      = mf.VariantSoft
-	VariantLink      = mf.VariantLink
-)
-
-type SizeToken = mf.SizeToken
+type ComponentProps = shared.ComponentProps
+type LinkProps = shared.LinkProps
+type IconButtonProps = shared.IconButtonProps
+type LoginButtonProps = shared.LoginButtonProps
+type SelectOption = shared.SelectOption
+type ModalProps = shared.ModalProps
+type FormFieldProps = shared.FormFieldProps
+type FormProps = shared.FormProps
+type ActionFormProps = shared.ActionFormProps
+type InputOptions = shared.InputOptions
+type TextareaOptions = shared.TextareaOptions
+type EmptyStateProps = shared.EmptyStateProps
+type AlertProps = shared.AlertProps
+type ToastProps = shared.ToastProps
+type SkeletonProps = shared.SkeletonProps
+type ProgressProps = shared.ProgressProps
+type VariantToken = shared.VariantToken
 
 const (
-	SizeXS = mf.SizeXS
-	SizeSM = mf.SizeSM
-	SizeMD = mf.SizeMD
-	SizeLG = mf.SizeLG
-	SizeXL = mf.SizeXL
+	VariantDefault   = shared.VariantDefault
+	VariantPrimary   = shared.VariantPrimary
+	VariantSecondary = shared.VariantSecondary
+	VariantAccent    = shared.VariantAccent
+	VariantNeutral   = shared.VariantNeutral
+	VariantInfo      = shared.VariantInfo
+	VariantSuccess   = shared.VariantSuccess
+	VariantWarning   = shared.VariantWarning
+	VariantError     = shared.VariantError
+	VariantGhost     = shared.VariantGhost
+	VariantOutline   = shared.VariantOutline
+	VariantDash      = shared.VariantDash
+	VariantSoft      = shared.VariantSoft
+	VariantLink      = shared.VariantLink
 )
 
-type ButtonVariantProps = mf.ButtonVariantProps
-type InputVariantProps = mf.InputVariantProps
-type SelectVariantProps = mf.SelectVariantProps
-type BadgeVariantProps = mf.BadgeVariantProps
-type AlertVariantProps = mf.AlertVariantProps
-type TextareaVariantProps = mf.TextareaVariantProps
-type CheckboxVariantProps = mf.CheckboxVariantProps
-type RadioVariantProps = mf.RadioVariantProps
-type SwitchVariantProps = mf.SwitchVariantProps
-type ProgressVariantProps = mf.ProgressVariantProps
-type TabsVariantProps = mf.TabsVariantProps
-type CardVariantProps = mf.CardVariantProps
-type ModalVariantProps = mf.ModalVariantProps
-type DrawerVariantProps = mf.DrawerVariantProps
-type PaginationVariantProps = mf.PaginationVariantProps
+type SizeToken = shared.SizeToken
+
+const (
+	SizeXS = shared.SizeXS
+	SizeSM = shared.SizeSM
+	SizeMD = shared.SizeMD
+	SizeLG = shared.SizeLG
+	SizeXL = shared.SizeXL
+)
+
+type ButtonVariantProps = shared.ButtonVariantProps
+type InputVariantProps = shared.InputVariantProps
+type SelectVariantProps = shared.InputVariantProps
+type BadgeVariantProps = shared.InputVariantProps
+type AlertVariantProps = shared.InputVariantProps
+type TextareaVariantProps = shared.InputVariantProps
+type CheckboxVariantProps = shared.InputVariantProps
+type RadioVariantProps = shared.InputVariantProps
+type SwitchVariantProps = shared.InputVariantProps
+type ProgressVariantProps = shared.InputVariantProps
+type TabsVariantProps = shared.InputVariantProps
+type CardVariantProps = shared.InputVariantProps
+type ModalVariantProps = shared.InputVariantProps
+type DrawerVariantProps = shared.InputVariantProps
+type PaginationVariantProps = shared.InputVariantProps

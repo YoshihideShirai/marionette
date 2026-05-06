@@ -1,15 +1,47 @@
 package shared
 
-import lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
+import (
+	"html/template"
+
+	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
+)
 
 type Node = lowhtml.Node
-type Attrs map[string]string
+type Attrs = lowhtml.Attrs
 
 type ComponentProps struct {
 	Class    string
 	Variant  string
 	Size     string
 	Disabled bool
+}
+
+type LinkProps struct {
+	Label     string
+	Icon      string
+	Href      string
+	Target    string
+	Rel       string
+	External  bool
+	Download  bool
+	Filename  string
+	AriaLabel string
+	Props     ComponentProps
+}
+
+type IconButtonProps struct {
+	Label        string
+	IconSVG      template.HTML
+	IconPosition string
+	Type         string
+	Props        ComponentProps
+}
+
+type LoginButtonProps struct {
+	Label   string
+	IconSVG template.HTML
+	Type    string
+	Props   ComponentProps
 }
 
 type ProgressProps struct {
@@ -50,6 +82,13 @@ const (
 	SizeLG SizeToken = "lg"
 	SizeXL SizeToken = "xl"
 )
+
+type ButtonVariantProps struct {
+	Class    string
+	Variants []VariantToken
+	Size     SizeToken
+	Disabled bool
+}
 
 type InputVariantProps struct {
 	Class    string
@@ -220,6 +259,12 @@ type SectionProps struct {
 	Actions            Node
 	Props              ComponentProps
 }
+
+type MarkdownProps struct {
+	Content string
+	Props   ComponentProps
+}
+
 type BoxProps struct {
 	Padding string
 	Border  bool
@@ -235,6 +280,26 @@ type ContainerProps struct {
 	MaxWidth, Padding string
 	Centered          bool
 	Props             ComponentProps
+}
+
+type AlertProps struct {
+	Title       string
+	Description string
+	Icon        string
+	Props       ComponentProps
+}
+
+type ToastProps struct {
+	Title       string
+	Description string
+	Icon        string
+	Props       ComponentProps
+	Live        string
+}
+
+type SkeletonProps struct {
+	Rows  int
+	Props ComponentProps
 }
 
 type EmptyStateProps struct {
@@ -263,6 +328,11 @@ type SidebarItem struct {
 	Label   string
 	Href    string
 	Current bool
+}
+
+func (i SidebarItem) Active() SidebarItem {
+	i.Current = true
+	return i
 }
 
 type TableRowData struct {

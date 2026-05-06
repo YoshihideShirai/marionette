@@ -36,5 +36,8 @@ type RegionProps = shared.RegionProps
 type CardProps = shared.CardProps
 
 type SectionProps = shared.SectionProps
+
+type MarkdownProps = shared.MarkdownProps
+
 type BoxProps = shared.BoxProps
 type AppShellProps = shared.AppShellProps

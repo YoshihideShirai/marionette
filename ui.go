@@ -7,20 +7,21 @@ import (
 
 	mf "github.com/YoshihideShirai/marionette/frontend"
 	mh "github.com/YoshihideShirai/marionette/frontend/html"
+	shared "github.com/YoshihideShirai/marionette/frontend/shared"
 	dataframeimports "github.com/rocketlaunchr/dataframe-go/imports"
 )
 
 // Node is a declarative UI element that can render itself as safe HTML.
-type Node = mf.Node
+type Node = shared.Node
 type element = mh.ElementNode
 
-type Attrs = mf.Attrs
+type Attrs = shared.Attrs
 type ElementProps = mf.ElementProps
 type Raw = mf.Raw
 
-type TableRowData = mf.TableRowData
+type TableRowData = shared.TableRowData
 
-type SidebarItem = mf.SidebarItem
+type SidebarItem = shared.SidebarItem
 
 func Text(v string) Node { return mf.Text(v) }
 func Element(tag string, props ElementProps, children ...Node) Node {

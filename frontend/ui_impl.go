@@ -249,11 +249,7 @@ type sidebar struct {
 	NoteText  string
 }
 
-type SidebarItem struct {
-	Label   string
-	Href    string
-	Current bool
-}
+type SidebarItem = shared.SidebarItem
 
 func Sidebar(brand, title string, items ...SidebarItem) *sidebar {
 	return &sidebar{Brand: brand, Title: title, Items: items}
@@ -261,11 +257,6 @@ func Sidebar(brand, title string, items ...SidebarItem) *sidebar {
 
 func SidebarLink(label, href string) SidebarItem {
 	return SidebarItem{Label: label, Href: href}
-}
-
-func (i SidebarItem) Active() SidebarItem {
-	i.Current = true
-	return i
 }
 
 func (s *sidebar) Note(title, text string) *sidebar {

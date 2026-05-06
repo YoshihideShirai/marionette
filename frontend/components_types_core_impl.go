@@ -1,44 +1,18 @@
 package frontend
 
-import (
-	"html/template"
-
-	shared "github.com/YoshihideShirai/marionette/frontend/shared"
-)
+import shared "github.com/YoshihideShirai/marionette/frontend/shared"
 
 // このファイルは基本的なコンポーネントProps/DTO型を定義する。
-// 新しい汎用UIコンポーネントの型はここに追加する。
+// 新しい汎用UIコンポーネントの型はfrontend/sharedを正として公開する。
 
 // ComponentProps defines shared style knobs for template components.
 type ComponentProps = shared.ComponentProps
 
-type LinkProps struct {
-	Label     string
-	Icon      string
-	Href      string
-	Target    string
-	Rel       string
-	External  bool
-	Download  bool
-	Filename  string
-	AriaLabel string
-	Props     ComponentProps
-}
+type LinkProps = shared.LinkProps
 
-type IconButtonProps struct {
-	Label        string
-	IconSVG      template.HTML
-	IconPosition string
-	Type         string
-	Props        ComponentProps
-}
+type IconButtonProps = shared.IconButtonProps
 
-type LoginButtonProps struct {
-	Label   string
-	IconSVG template.HTML
-	Type    string
-	Props   ComponentProps
-}
+type LoginButtonProps = shared.LoginButtonProps
 
 type SelectOption = shared.SelectOption
 
@@ -56,25 +30,11 @@ type TextareaOptions = shared.TextareaOptions
 
 type EmptyStateProps = shared.EmptyStateProps
 
-type AlertProps struct {
-	Title       string
-	Description string
-	Icon        string
-	Props       ComponentProps
-}
+type AlertProps = shared.AlertProps
 
-type ToastProps struct {
-	Title       string
-	Description string
-	Icon        string
-	Props       ComponentProps
-	Live        string
-}
+type ToastProps = shared.ToastProps
 
-type SkeletonProps struct {
-	Rows  int
-	Props ComponentProps
-}
+type SkeletonProps = shared.SkeletonProps
 
 type ProgressProps = shared.ProgressProps
 
@@ -107,25 +67,20 @@ const (
 	SizeXL = shared.SizeXL
 )
 
-type ButtonVariantProps struct {
-	Class    string
-	Variants []VariantToken
-	Size     SizeToken
-	Disabled bool
-}
+type ButtonVariantProps = shared.ButtonVariantProps
 
 type InputVariantProps = shared.InputVariantProps
 
-type SelectVariantProps = InputVariantProps
-type BadgeVariantProps = InputVariantProps
-type AlertVariantProps = InputVariantProps
-type TextareaVariantProps = InputVariantProps
-type CheckboxVariantProps = InputVariantProps
-type RadioVariantProps = InputVariantProps
-type SwitchVariantProps = InputVariantProps
-type ProgressVariantProps = InputVariantProps
-type TabsVariantProps = InputVariantProps
-type CardVariantProps = InputVariantProps
-type ModalVariantProps = InputVariantProps
-type DrawerVariantProps = InputVariantProps
-type PaginationVariantProps = InputVariantProps
+type SelectVariantProps = shared.InputVariantProps
+type BadgeVariantProps = shared.InputVariantProps
+type AlertVariantProps = shared.InputVariantProps
+type TextareaVariantProps = shared.InputVariantProps
+type CheckboxVariantProps = shared.InputVariantProps
+type RadioVariantProps = shared.InputVariantProps
+type SwitchVariantProps = shared.InputVariantProps
+type ProgressVariantProps = shared.InputVariantProps
+type TabsVariantProps = shared.InputVariantProps
+type CardVariantProps = shared.InputVariantProps
+type ModalVariantProps = shared.InputVariantProps
+type DrawerVariantProps = shared.InputVariantProps
+type PaginationVariantProps = shared.InputVariantProps

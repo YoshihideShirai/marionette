@@ -1,8 +1,8 @@
 package frontend
 
 import (
-	"github.com/YoshihideShirai/marionette/frontend/assets"
 	daisyuipresets "github.com/YoshihideShirai/marionette/frontend/daisyui/presets"
+	"github.com/YoshihideShirai/marionette/frontend/twailwindcss"
 )
 
 type StyleTemplate struct {
@@ -18,10 +18,9 @@ var DaisyUITemplate = StyleTemplate{
 }
 
 var TailwindCSSTemplate = StyleTemplate{
-	Name: "tailwindcss",
-	FrameworkScripts: []string{
-		assets.TailwindBrowserURL,
-	},
+	Name:                 twailwindcss.TemplateName,
+	FrameworkStylesheets: twailwindcss.FrameworkStylesheets(),
+	FrameworkScripts:     twailwindcss.FrameworkScripts(),
 }
 
 func DefaultStyleTemplate() StyleTemplate {
@@ -32,7 +31,7 @@ func StyleTemplateByName(name string) (StyleTemplate, bool) {
 	switch name {
 	case "daisyui", "tailadmin":
 		return DaisyUITemplate, true
-	case "tailwindcss":
+	case twailwindcss.TemplateName:
 		return TailwindCSSTemplate, true
 	default:
 		return StyleTemplate{}, false

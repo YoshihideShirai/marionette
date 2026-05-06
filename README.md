@@ -25,6 +25,8 @@ a **practical, operations-friendly UI architecture** built for real product team
 
 Marionette is designed around context compression rather than unverified token metrics. Keeping screens, state transitions, and action handlers in Go means fewer boundaries between backend and frontend work, less schema handoff, and less context switching when you describe changes to AI tools. As a result, teams can often keep prompts and reviews focused on the product flow instead of re-explaining how multiple stacks coordinate, which can make it easier to keep token consumption under control.
 
+- **No TypeScript build chain required for the core app**: Marionette keeps application logic on the Go side and uses htmx for browser partial updates, so the core app does not need a TypeScript toolchain. This is not a promise to eliminate all client JavaScript; shared browser helpers such as overlays may still exist for presentation behavior. New `.ts` / `.tsx` files remain prohibited by the [UI architecture policy](docs/architecture/ui.md#2-new-typescript-files).
+
 ## Great fit for teams that
 
 - Want to stay backend-first in Go and reduce frontend maintenance overhead.

@@ -27,6 +27,19 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     </p>
   </section>
 
+  <section class="top-section" aria-labelledby="no-typescript-en">
+    <h2 id="no-typescript-en">No TypeScript build chain required for the core app</h2>
+    <p>
+      Marionette keeps application logic on the Go side, with htmx handling partial updates in the browser. The core app therefore does not need a TypeScript build chain or a SPA-oriented frontend toolchain to deliver typical admin and operations workflows.
+    </p>
+    <p>
+      This is a Go-first policy, not a claim that Marionette eliminates every byte of client JavaScript. Existing shared helpers such as overlay behavior can still provide presentation support, while product workflow, state transitions, and validation stay primarily in Go handlers.
+    </p>
+    <p>
+      See the <a href="https://github.com/yoshihideshirai/marionette/blob/main/docs/architecture/ui.md#2-new-typescript-files">UI architecture policy for new <code>.ts</code> / <code>.tsx</code> files</a>.
+    </p>
+  </section>
+
   <section class="top-section" aria-labelledby="ui-action-state-en">
     <h2 id="ui-action-state-en">UI / Action / State in Go</h2>
     <p>

@@ -27,6 +27,19 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     </p>
   </section>
 
+  <section class="top-section" aria-labelledby="no-typescript-ja">
+    <h2 id="no-typescript-ja">コアアプリに TypeScript ビルドチェーンは不要</h2>
+    <p>
+      Marionette はアプリケーションロジックを Go 側に寄せ、ブラウザ側の部分更新は htmx が担います。そのため、典型的な管理画面や業務画面のコアアプリに TypeScript ビルドチェーンや SPA 前提のフロントエンドツールチェーンは必要ありません。
+    </p>
+    <p>
+      これは Go-first の方針であり、クライアント JS を完全排除するという意味ではありません。overlay など既存の共有ヘルパーは表示上の振る舞いを支えるために残る場合があります。一方で、プロダクトのワークフロー、状態遷移、バリデーションは主に Go ハンドラ側に寄せます。
+    </p>
+    <p>
+      新規 <code>.ts</code> / <code>.tsx</code> ファイルの扱いは <a href="https://github.com/yoshihideshirai/marionette/blob/main/docs/architecture/ui.md#2-new-typescript-files">UI architecture policy</a> を参照してください。
+    </p>
+  </section>
+
   <section class="top-section" aria-labelledby="ui-action-state-ja">
     <h2 id="ui-action-state-ja">UI / Action / State in Go</h2>
     <p>

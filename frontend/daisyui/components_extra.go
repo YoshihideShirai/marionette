@@ -189,8 +189,18 @@ func Link(label, href string, props shared.ComponentProps) shared.Node {
 func Dropdown(trigger, menu shared.Node) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "dropdown"}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "-1", "class": "dropdown-content"}, Children: []shared.Node{menu}},
+		dropdownContent(menu),
 	}}
+}
+
+func dropdownContent(content shared.Node) shared.Node {
+	if n, ok := content.(lowhtml.ElementNode); ok {
+		n.Attrs = cloneAttrs(n.Attrs)
+		n.Attrs["class"] = appendClass(n.Attrs["class"], "dropdown-content")
+		n.Attrs["tabindex"] = "-1"
+		return n
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "-1", "class": "dropdown-content"}, Children: []shared.Node{content}}
 }
 
 func Tooltip(text string, child shared.Node) shared.Node {
@@ -489,15 +499,16 @@ func ThemeController(options ...shared.Node) shared.Node {
 // See: https://daisyui.com/components/theme-controller/
 func ThemeControllerOption(theme string, checked bool, className string) shared.Node {
 	attrs := map[string]string{
-		"type":  "radio",
-		"name":  "theme-buttons",
-		"class": strings.TrimSpace("theme-controller " + className),
-		"value": theme,
+		"type":       "radio",
+		"name":       "theme-buttons",
+		"class":      strings.TrimSpace("theme-controller " + className),
+		"value":      theme,
+		"aria-label": theme,
 	}
 	if checked {
 		attrs["checked"] = "checked"
 	}
-	return lowhtml.ElementNode{Tag: "input", Attrs: attrs, Text: theme}
+	return lowhtml.ElementNode{Tag: "input", Attrs: attrs}
 }
 
 func DockItem(child shared.Node, active bool) shared.Node {
@@ -935,6 +946,6 @@ func DropdownWithPlacement(trigger, menu shared.Node, placement string) shared.N
 	}
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": className}, Children: []shared.Node{
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button"}, Children: []shared.Node{trigger}},
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "-1", "class": "dropdown-content"}, Children: []shared.Node{menu}},
+		dropdownContent(menu),
 	}}
 }

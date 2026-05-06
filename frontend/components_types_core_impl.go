@@ -76,43 +76,35 @@ type SkeletonProps struct {
 	Props ComponentProps
 }
 
-type ProgressProps struct {
-	Value         float64
-	Max           float64
-	Label         string
-	AriaLabel     string
-	ShowValue     bool
-	Indeterminate bool
-	Props         ComponentProps
-}
+type ProgressProps = shared.ProgressProps
 
-type VariantToken string
+type VariantToken = shared.VariantToken
 
 const (
-	VariantDefault   VariantToken = "default"
-	VariantPrimary   VariantToken = "primary"
-	VariantSecondary VariantToken = "secondary"
-	VariantAccent    VariantToken = "accent"
-	VariantNeutral   VariantToken = "neutral"
-	VariantInfo      VariantToken = "info"
-	VariantSuccess   VariantToken = "success"
-	VariantWarning   VariantToken = "warning"
-	VariantError     VariantToken = "error"
-	VariantGhost     VariantToken = "ghost"
-	VariantOutline   VariantToken = "outline"
-	VariantDash      VariantToken = "dash"
-	VariantSoft      VariantToken = "soft"
-	VariantLink      VariantToken = "link"
+	VariantDefault   = shared.VariantDefault
+	VariantPrimary   = shared.VariantPrimary
+	VariantSecondary = shared.VariantSecondary
+	VariantAccent    = shared.VariantAccent
+	VariantNeutral   = shared.VariantNeutral
+	VariantInfo      = shared.VariantInfo
+	VariantSuccess   = shared.VariantSuccess
+	VariantWarning   = shared.VariantWarning
+	VariantError     = shared.VariantError
+	VariantGhost     = shared.VariantGhost
+	VariantOutline   = shared.VariantOutline
+	VariantDash      = shared.VariantDash
+	VariantSoft      = shared.VariantSoft
+	VariantLink      = shared.VariantLink
 )
 
-type SizeToken string
+type SizeToken = shared.SizeToken
 
 const (
-	SizeXS SizeToken = "xs"
-	SizeSM SizeToken = "sm"
-	SizeMD SizeToken = "md"
-	SizeLG SizeToken = "lg"
-	SizeXL SizeToken = "xl"
+	SizeXS = shared.SizeXS
+	SizeSM = shared.SizeSM
+	SizeMD = shared.SizeMD
+	SizeLG = shared.SizeLG
+	SizeXL = shared.SizeXL
 )
 
 type ButtonVariantProps struct {
@@ -122,12 +114,7 @@ type ButtonVariantProps struct {
 	Disabled bool
 }
 
-type InputVariantProps struct {
-	Class    string
-	Variant  VariantToken
-	Size     SizeToken
-	Disabled bool
-}
+type InputVariantProps = shared.InputVariantProps
 
 type SelectVariantProps = InputVariantProps
 type BadgeVariantProps = InputVariantProps

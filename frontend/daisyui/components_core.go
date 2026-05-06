@@ -134,9 +134,73 @@ func Skeleton(rows int, props shared.ComponentProps) shared.Node {
 	return node("div", map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Class)}, items...)
 }
 
-func Progress(value, max float64, label string, props shared.ComponentProps) shared.Node {
-	_ = label
-	return node("progress", map[string]string{"class": strings.TrimSpace("progress w-full " + props.Class), "value": strconv.FormatFloat(value, 'f', -1, 64), "max": strconv.FormatFloat(max, 'f', -1, 64)})
+func Progress(props shared.ProgressProps) shared.Node {
+	max := props.Max
+	if max <= 0 {
+		max = 100
+	}
+	attrs := map[string]string{"class": progressClass(props.Props), "max": strconv.FormatFloat(max, 'f', -1, 64)}
+	if !props.Indeterminate {
+		attrs["value"] = strconv.FormatFloat(props.Value, 'f', -1, 64)
+	}
+	return node("progress", attrs, textNode("span", nil, props.Label))
+}
+
+func CardWithVariants(props shared.CardProps, variant shared.InputVariantProps, children ...shared.Node) shared.Node {
+	props.Props.Class = strings.TrimSpace(strings.Join([]string{props.Props.Class, variant.Class}, " "))
+	props.Props.Variant = strings.TrimSpace(strings.Join([]string{props.Props.Variant, string(variant.Variant)}, " "))
+	if props.Props.Size == "" {
+		props.Props.Size = string(variant.Size)
+	}
+	if variant.Disabled {
+		props.Props.Disabled = true
+	}
+	return Card(props.Title, props.Description, props.Actions, children, props.Props)
+}
+
+func ModalWithVariants(props shared.ModalProps, variant shared.InputVariantProps) shared.Node {
+	return node("div", map[string]string{"class": strings.TrimSpace(strings.Join([]string{variant.Class, "modal-variant", string(variant.Variant), string(variant.Size)}, " "))}, Modal(props))
+}
+
+func progressClass(props shared.ComponentProps) string {
+	classes := []string{"progress", "w-full", progressVariantClass(props.Variant), progressSizeClass(props.Size), props.Class}
+	return strings.TrimSpace(strings.Join(classes, " "))
+}
+
+func progressVariantClass(variant string) string {
+	switch strings.TrimSpace(variant) {
+	case "primary":
+		return "progress-primary"
+	case "secondary":
+		return "progress-secondary"
+	case "accent":
+		return "progress-accent"
+	case "success":
+		return "progress-success"
+	case "info":
+		return "progress-info"
+	case "warning":
+		return "progress-warning"
+	case "error":
+		return "progress-error"
+	default:
+		return ""
+	}
+}
+
+func progressSizeClass(size string) string {
+	switch strings.TrimSpace(size) {
+	case "xs":
+		return "h-0.5"
+	case "sm":
+		return "h-1"
+	case "lg":
+		return "h-4"
+	case "xl":
+		return "h-5"
+	default:
+		return "h-2"
+	}
 }
 
 func Checkbox(props shared.CheckboxComponentProps) shared.Node {
@@ -176,6 +240,17 @@ func Pagination(props shared.PaginationProps) shared.Node {
 }
 
 func EmptyState(props shared.EmptyStateProps) shared.Node {
+	if props.Skeleton {
+		rows := props.Rows
+		if rows <= 0 {
+			rows = 3
+		}
+		children := make([]shared.Node, 0, rows)
+		for i := 0; i < rows; i++ {
+			children = append(children, node("div", map[string]string{"class": "skeleton h-4 w-full"}))
+		}
+		return node("div", map[string]string{"class": "space-y-2", "aria-busy": "true", "aria-live": "polite"}, children...)
+	}
 	return node("div", map[string]string{"class": strings.TrimSpace("hero bg-base-200 rounded-box " + props.Props.Class)},
 		node("div", map[string]string{"class": "hero-content text-center"},
 			node("div", nil, textNode("h2", map[string]string{"class": "text-2xl font-bold"}, props.Title), textNode("p", nil, props.Description)),
@@ -495,8 +570,8 @@ func Container(props shared.ContainerProps, children ...shared.Node) shared.Node
 
 func ThemeToggleButton(props shared.ComponentProps) shared.Node {
 	className := strings.TrimSpace("btn btn-ghost " + props.Class)
-	return node("button", map[string]string{"class": className, "type": "button", "aria-label": "Toggle theme"},
-		textNode("span", nil, "🌓"),
+	return node("button", map[string]string{"class": className, "type": "button", "aria-label": "Toggle theme", "onclick": "window.mrnToggleTheme()"},
+		textNode("span", nil, "🌓 Theme"),
 	)
 }
 

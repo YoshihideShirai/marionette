@@ -27,3 +27,7 @@ Clarify responsibilities within `frontend` and preserve clear boundaries between
 - daisyUI-specific implementations should remain encapsulated in `frontend/daisyui` and not leak into other layers.
 - Keep root-level alias files (e.g. `component_aliases_impl.go`) free of rendering logic.
 - Exception: compatibility-critical aliases may keep thin markup adapters when test-verified legacy HTML output (ARIA attributes, pagination labels, or theme toggle hooks) must remain stable during migration.
+
+## Compatibility Exceptions in Current Migration
+- `ThemeToggleButton`: the daisyUI implementation keeps the legacy `onclick="window.mrnToggleTheme()"` hook and visible `🌓 Theme` label so existing shell JavaScript and tests keep working while the root API remains a thin alias.
+- `EmptyState`: the daisyUI implementation keeps the legacy skeleton branch (`aria-busy`, `aria-live`, and skeleton row markup) because callers use the same public `EmptyStateProps` for both empty copy and loading placeholders.

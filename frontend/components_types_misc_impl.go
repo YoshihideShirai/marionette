@@ -33,12 +33,7 @@ type PageHeaderProps = shared.PageHeaderProps
 type ContainerProps = shared.ContainerProps
 type RegionProps = shared.RegionProps
 
-type CardProps struct {
-	Title, Description string
-	Actions            Node
-	Gap                string
-	Props              ComponentProps
-}
+type CardProps = shared.CardProps
 
 type SectionProps = shared.SectionProps
 type BoxProps = shared.BoxProps

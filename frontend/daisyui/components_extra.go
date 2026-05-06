@@ -595,7 +595,7 @@ func ProgressWithVariant(value, max float64, label, color string, props shared.C
 	if color != "" {
 		props.Class = strings.TrimSpace("progress-" + color + " " + props.Class)
 	}
-	return Progress(value, max, label, props)
+	return Progress(shared.ProgressProps{Value: value, Max: max, Label: label, Props: props})
 }
 
 func BadgeWithVariant(label, color, size, style string, props shared.ComponentProps) shared.Node {

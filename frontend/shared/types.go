@@ -12,6 +12,59 @@ type ComponentProps struct {
 	Disabled bool
 }
 
+type ProgressProps struct {
+	Value         float64
+	Max           float64
+	Label         string
+	AriaLabel     string
+	ShowValue     bool
+	Indeterminate bool
+	Props         ComponentProps
+}
+
+type VariantToken string
+
+const (
+	VariantDefault   VariantToken = "default"
+	VariantPrimary   VariantToken = "primary"
+	VariantSecondary VariantToken = "secondary"
+	VariantAccent    VariantToken = "accent"
+	VariantNeutral   VariantToken = "neutral"
+	VariantInfo      VariantToken = "info"
+	VariantSuccess   VariantToken = "success"
+	VariantWarning   VariantToken = "warning"
+	VariantError     VariantToken = "error"
+	VariantGhost     VariantToken = "ghost"
+	VariantOutline   VariantToken = "outline"
+	VariantDash      VariantToken = "dash"
+	VariantSoft      VariantToken = "soft"
+	VariantLink      VariantToken = "link"
+)
+
+type SizeToken string
+
+const (
+	SizeXS SizeToken = "xs"
+	SizeSM SizeToken = "sm"
+	SizeMD SizeToken = "md"
+	SizeLG SizeToken = "lg"
+	SizeXL SizeToken = "xl"
+)
+
+type InputVariantProps struct {
+	Class    string
+	Variant  VariantToken
+	Size     SizeToken
+	Disabled bool
+}
+
+type CardProps struct {
+	Title, Description string
+	Actions            Node
+	Gap                string
+	Props              ComponentProps
+}
+
 type SelectOption struct {
 	Label    string
 	Value    string

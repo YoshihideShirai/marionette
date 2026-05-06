@@ -7,7 +7,7 @@
 Marionette is a **Go-first framework that makes admin UI and internal tool development dramatically simpler**.
 It lets you describe screens, state, and actions end-to-end in Go, while htmx handles
 fast partial updates in the browser.
-It is also AI-friendly: by keeping that workflow in one place, Marionette helps you switch contexts less, explain less coding context to AI, and work with less frontend complexity.
+It is also AI-friendly: by keeping that workflow in one place, Marionette reduces cross-stack context, creates fewer boundaries, and helps you work with less frontend complexity.
 
 If your team is tired of maintaining frontend and backend separately, Marionette gives you
 a **practical, operations-friendly UI architecture** built for real product teams.
@@ -20,6 +20,10 @@ a **practical, operations-friendly UI architecture** built for real product team
 - Compose admin screens from pages, forms, actions, tables, charts, and layout components.
 - Share a single `DataQueryState` between charts and tables so clicking a region filters all widgets together.
 - Run the same app as a web UI or inside a desktop WebView shell.
+
+## AI-friendly context compression
+
+Marionette is designed around context compression rather than unverified token metrics. Keeping screens, state transitions, and action handlers in Go means fewer boundaries between backend and frontend work, less schema handoff, and less context switching when you describe changes to AI tools. As a result, teams can often keep prompts and reviews focused on the product flow instead of re-explaining how multiple stacks coordinate, which can make it easier to keep token consumption under control.
 
 ## Great fit for teams that
 
@@ -88,6 +92,7 @@ API details, and component examples:
 - Docs site: https://yoshihideshirai.github.io/marionette/
 - Tutorial: https://yoshihideshirai.github.io/marionette/en/tutorial/
 - API docs: https://yoshihideshirai.github.io/marionette/en/api/
+- AI-friendly guide: https://yoshihideshirai.github.io/marionette/en/ai-friendly/
 - Components gallery: https://yoshihideshirai.github.io/marionette/en/components/
 
 Japanese docs are available from the language switcher on the site.

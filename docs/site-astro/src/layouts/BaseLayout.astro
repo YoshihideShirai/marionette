@@ -16,10 +16,12 @@ const introItems = isJa
   ? [
       { label: 'ホーム', href: `${langRoot}/` },
       { label: 'AI-friendly', href: `${langRoot}/ai-friendly/` },
+      { label: 'ベンチマーク', href: `${langRoot}/ai-friendly/benchmark/` },
     ]
   : [
       { label: 'Home', href: `${langRoot}/` },
       { label: 'AI-friendly', href: `${langRoot}/ai-friendly/` },
+      { label: 'Benchmark', href: `${langRoot}/ai-friendly/benchmark/` },
     ];
 
 const referenceItems = isJa
@@ -153,7 +155,7 @@ if (uncategorizedComponents.length > 0) {
           <ul class="sidebar-section-list">
             {introItems.map((item) => {
               const active =
-                item.href === `${langRoot}/`
+                item.href === `${langRoot}/` || item.href === `${langRoot}/ai-friendly/`
                   ? currentPath === item.href
                   : currentPath === item.href || currentPath.startsWith(item.href);
               return (

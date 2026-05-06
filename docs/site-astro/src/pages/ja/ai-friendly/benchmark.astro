@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="AI-friendly benchmark - Marionette" lang="ja" languageSwitcherPath="/marionette/en/ai-friendly/benchmark/">
+  <h1>AI-friendly benchmark: CRUD 管理画面</h1>
+  <p class="lead">
+    このページは、同じ CRUD 管理画面要件を SPA 構成と Marionette 構成で比較するための、小さく繰り返し可能なベンチマーク定義です。
+  </p>
+
+  <section class="top-section" aria-labelledby="scenario-ja">
+    <h2 id="scenario-ja">題材</h2>
+    <p>
+      ベンチマーク対象は、顧客注文を管理する業務管理画面です。レコードのテーブル表示、ステータスによるテーブルフィルタ、ワークフロー操作のフォーム送信、操作後に影響範囲だけを更新する振る舞いを含めます。
+    </p>
+    <ul>
+      <li>CRUD 形式のレコード一覧と詳細画面への遷移。</li>
+      <li><code>Active</code>、<code>Review</code>、<code>Blocked</code> などのステータスによるテーブルフィルタ。</li>
+      <li>ログインや行単位のワークフロー操作を行うフォーム送信。</li>
+      <li>SPA の状態ツリー全体を組み直すのではなく、対象領域だけを差し替える部分更新。</li>
+    </ul>
+  </section>
+
+  <section class="top-section" aria-labelledby="comparison-ja">
+    <h2 id="comparison-ja">比較軸</h2>
+    <p>
+      実測 token 数がない段階では、token 削減率は記載しません。まずは、AI が揃えて理解する必要のある文脈量に影響する構造的な差分を比較します。
+    </p>
+    <div class="table-scroll">
+      <table class="benchmark-table">
+        <thead>
+          <tr>
+            <th scope="col">比較軸</th>
+            <th scope="col">典型的な SPA 実装</th>
+            <th scope="col">Marionette 実装</th>
+            <th scope="col">将来の実測項目</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">変更ファイル数</th>
+            <td>クライアントルート / コンポーネント、クライアント状態、API クライアント、サーバールート、バリデーション、テストに分かれやすい。</td>
+            <td>UI 描画、Action 処理、状態更新を Marionette アプリに近い Go ファイルへ集約しやすい。</td>
+            <td>同じ要件を各サンプルブランチで実装し、touch したファイル数を数える。</td>
+          </tr>
+          <tr>
+            <th scope="row">使用言語数</th>
+            <td>UI は TypeScript/JSX、API とバリデーションはバックエンド言語、という組み合わせになりやすい。</td>
+            <td>UI、Action、State は主に Go。ブラウザ側の部分更新は htmx 属性で表す。</td>
+            <td>実装とレビューに必要な言語を列挙する。</td>
+          </tr>
+          <tr>
+            <th scope="row">API schema の有無</th>
+            <td>フロントエンド / バックエンド間で、明示的な API schema や重複した request/response 型が必要になりやすい。</td>
+            <td>サーバー描画 fragment のワークフローでは、プロダクトとして追加しない限り、別個の JSON API schema は必須ではない。</td>
+            <td>OpenAPI、生成クライアント、重複 DTO がサンプルに含まれるかを記録する。</td>
+          </tr>
+          <tr>
+            <th scope="row">AI に説明する概念数</th>
+            <td>ルートコンポーネント、クライアント状態、API 契約、loading/error 状態、楽観的更新または cache invalidation、サーバーハンドラ、バリデーション、レスポンス変換。</td>
+            <td>Page / component rendering、ActionForm、server action、共有 Go state、htmx target/swap、返却する fragment。</td>
+            <td>AI が安全に変更できる最小の prompt/context bundle を作り、含まれる概念を数える。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="top-section" aria-labelledby="procedure-ja">
+    <h2 id="procedure-ja">比較手順</h2>
+    <ol>
+      <li>Marionette 側は既存の admin sample、<a href="https://github.com/yoshihideshirai/marionette/tree/main/cmd/admin-sample"><code>cmd/admin-sample</code></a> と <a href="https://github.com/yoshihideshirai/marionette/tree/main/internal/adminsample"><code>internal/adminsample</code></a> から始める。</li>
+      <li>同じ見た目と要件を持つ SPA サンプルを作る。テーブルフィルタ、行アクションフォーム、詳細ルート、バリデーション / エラー表示、部分的な UI 更新に相当する振る舞いを揃える。</li>
+      <li>両方のサンプルへ同一の変更依頼を適用する。例: 新しい <code>Paused</code> ステータスを追加し、フィルタ可能にし、ステータス変更後に confirmation flash を表示する。</li>
+      <li>各実装について、変更ファイル数、実装言語、API schema に関わる成果物、AI prompt に含めた概念リストを記録する。</li>
+      <li>両方の実行で prompt / completion token 数を取得した後にだけ、実測 token 数を追加する。実測なしに token 削減率は公開しない。</li>
+    </ol>
+  </section>
+
+  <section class="top-section" aria-labelledby="sample-ja">
+    <h2 id="sample-ja">現在の Marionette サンプルとの対応</h2>
+    <p>
+      既存の admin sample は、Marionette 側の比較対象をすでに含んでいます。<code>orders/filter</code> は選択ステータスを更新して main content fragment を返し、<code>orders/toggle-status</code> はワークフロー状態を変更して同じ対象領域を返します。
+    </p>
+    <p>
+      行アクションフォームは <code>#main-content</code> を <code>outerHTML</code> で差し替え、テーブルは Go の状態から描画されます。この構造を、同等の SPA の state / update 経路と比較します。
+    </p>
+  </section>
+</BaseLayout>

@@ -810,3 +810,39 @@ iframe {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.benchmark-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.benchmark-table th,
+.benchmark-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.benchmark-table thead th {
+  background: var(--surface-muted);
+  font-size: 0.9rem;
+}
+
+.benchmark-table tbody tr:last-child th,
+.benchmark-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.benchmark-table tbody th {
+  width: 12rem;
+}

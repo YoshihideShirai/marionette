@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="AI-friendly benchmark - Marionette" lang="en" languageSwitcherPath="/marionette/ja/ai-friendly/benchmark/">
+  <h1>AI-friendly benchmark: CRUD admin screen</h1>
+  <p class="lead">
+    This page defines a small, repeatable benchmark for comparing the same CRUD-oriented admin requirement in a SPA architecture and a Marionette architecture.
+  </p>
+
+  <section class="top-section" aria-labelledby="scenario-en">
+    <h2 id="scenario-en">Scenario</h2>
+    <p>
+      The benchmark target is an operations admin screen for managing customer orders. The screen must show a table of records, filter that table by status, submit forms for workflow actions, and update only the affected region after each action.
+    </p>
+    <ul>
+      <li>CRUD-style record list with detail navigation.</li>
+      <li>Table filtering by status such as <code>Active</code>, <code>Review</code>, and <code>Blocked</code>.</li>
+      <li>Form submissions for login and row-level workflow actions.</li>
+      <li>Partial updates that refresh the main content instead of rebuilding a full SPA state tree.</li>
+    </ul>
+  </section>
+
+  <section class="top-section" aria-labelledby="comparison-en">
+    <h2 id="comparison-en">Comparison axes</h2>
+    <p>
+      The comparison intentionally avoids token-reduction percentages until measured token counts exist. The first version focuses on structural factors that change how much context an AI assistant must keep aligned.
+    </p>
+    <div class="table-scroll">
+      <table class="benchmark-table">
+        <thead>
+          <tr>
+            <th scope="col">Axis</th>
+            <th scope="col">Typical SPA implementation</th>
+            <th scope="col">Marionette implementation</th>
+            <th scope="col">What to measure later</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Changed files</th>
+            <td>Usually split across client routes/components, client state, API client, server route, validation, and tests.</td>
+            <td>Expected to concentrate UI rendering, action handling, and state updates in Go files close to the Marionette app.</td>
+            <td>Count files touched by the same requirement in each sample branch.</td>
+          </tr>
+          <tr>
+            <th scope="row">Languages used</th>
+            <td>Usually TypeScript/JSX for UI plus backend language for API and validation.</td>
+            <td>Primarily Go for UI, actions, and state; htmx attributes express browser-side partial updates.</td>
+            <td>List implementation languages needed to explain and review the change.</td>
+          </tr>
+          <tr>
+            <th scope="row">API schema</th>
+            <td>Often requires an explicit API schema or duplicated request/response types between frontend and backend.</td>
+            <td>No separate JSON API schema is required for this server-rendered fragment workflow unless the product adds one intentionally.</td>
+            <td>Record whether OpenAPI, generated clients, or duplicated DTOs are part of the sample.</td>
+          </tr>
+          <tr>
+            <th scope="row">Concepts to explain to AI</th>
+            <td>Route component, client state, API contract, loading/error state, optimistic update or cache invalidation, server handler, validation, and response mapping.</td>
+            <td>Page/component rendering, ActionForm, server action, shared Go state, htmx target/swap, and the fragment being returned.</td>
+            <td>Write the minimal prompt/context bundle needed for an AI assistant to safely implement the change.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="top-section" aria-labelledby="procedure-en">
+    <h2 id="procedure-en">Repeatable procedure</h2>
+    <ol>
+      <li>Start from the Marionette admin sample: <a href="https://github.com/yoshihideshirai/marionette/tree/main/cmd/admin-sample"><code>cmd/admin-sample</code></a> and <a href="https://github.com/yoshihideshirai/marionette/tree/main/internal/adminsample"><code>internal/adminsample</code></a>.</li>
+      <li>Create an equivalent SPA sample with the same visible requirement: table filter, row action form, detail route, validation/error display, and partial UI refresh behavior.</li>
+      <li>Apply one identical change request to both samples, for example: add a new <code>Paused</code> order status, allow filtering by it, and show a confirmation flash after the status changes.</li>
+      <li>For each implementation, record changed file count, implementation languages, API schema artifacts, and the list of concepts included in the AI prompt.</li>
+      <li>Only after collecting prompt and completion token counts for both runs, add measured token counts. Do not publish a token reduction rate without those measurements.</li>
+    </ol>
+  </section>
+
+  <section class="top-section" aria-labelledby="sample-en">
+    <h2 id="sample-en">Current Marionette sample mapping</h2>
+    <p>
+      The current admin sample already covers the Marionette side of the benchmark: <code>orders/filter</code> updates the selected status and returns the main content fragment, while <code>orders/toggle-status</code> mutates workflow state and returns the same target region.
+    </p>
+    <p>
+      The row action form targets <code>#main-content</code> with <code>outerHTML</code>, and the table is rendered from Go state. These are the key Marionette constructs to compare against an equivalent SPA state/update path.
+    </p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getApiDocs, renderApiMarkdown } from '../../../lib/api-docs';
+
+export async function getStaticPaths() {
+  const docs = await getApiDocs('en');
+  return docs.map((doc) => ({ params: { slug: doc.slug }, props: { doc } }));
+}
+
+const { doc } = Astro.props;
+const html = renderApiMarkdown(doc.markdown);
+---
+<BaseLayout title={`${doc.title} - Marionette API`} lang="en" languageSwitcherPath={`/marionette/ja/api/${doc.slug}/`}>
+  <article class="api-docs" set:html={html} />
+</BaseLayout>

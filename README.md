@@ -37,6 +37,14 @@ go run ./cmd/admin-sample
 
 Then open http://127.0.0.1:8082.
 
+Run the DashWind-style DaisyUI dashboard demo inspired by [`robbins23/daisyui-admin-dashboard-template`](https://github.com/robbins23/daisyui-admin-dashboard-template):
+
+```bash
+go run ./cmd/dashwind-demo
+```
+
+Then open http://127.0.0.1:8083.
+
 ![Admin sample dashboard](docs/assets/admin-sample.png)
 
 Source: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go), [`internal/adminsample/app.go`](internal/adminsample/app.go)

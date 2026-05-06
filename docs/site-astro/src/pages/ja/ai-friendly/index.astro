@@ -1,31 +1,61 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="AI-friendly なコンテキスト圧縮 - Marionette" lang="ja" languageSwitcherPath="/marionette/en/ai-friendly/">
-  <h1>AI-friendly なコンテキスト圧縮</h1>
+<BaseLayout title="AI-friendly architecture - Marionette" lang="ja" languageSwitcherPath="/marionette/en/ai-friendly/">
+  <h1>AI-friendly architecture</h1>
   <p class="lead">
-    Marionette が AI-friendly なのは、クロススタックなコンテキスト圧縮を進め、AI がまたぐべき境界を減らせるためです。
+    Marionette が AI-friendly なのは、AI が再構築すべき設計文脈を減らせるためです。UI、Action、State を Go-first なひとつの文脈に寄せ、ブラウザ側の部分更新は htmx が担います。
   </p>
 
   <section class="top-section" aria-labelledby="context-compression-ja">
-    <h2 id="context-compression-ja">未検証のトークン主張ではなく、コンテキスト圧縮</h2>
+    <h2 id="context-compression-ja">誇張したトークン削減率ではなく、文脈の圧縮</h2>
     <p>
-      Marionette は「トークン削減」を単独の断定として打ち出すのではなく、コンテキスト圧縮を中心に説明します。画面、状態遷移、アクションハンドラを Go に近づけ、ブラウザ側の部分更新は htmx に任せます。
+      Marionette は、根拠の薄い「トークンを何％削減」といった表現ではなく、構造的な説明量の削減を重視します。UI、サーバー側の振る舞い、状態遷移が Go-oriented な流れにまとまるため、AI に説明すべき部品が少なくなります。
     </p>
     <p>
-      これにより、バックエンドとフロントエンドをまたぐ説明量の削減、境界の削減、スキーマ受け渡しの削減につながります。
+      SPA クライアント、API 契約、サーバーハンドラ、重複する状態モデルをそれぞれ説明する代わりに、プロダクト上の振る舞いと、それを描画・処理する Go コードを中心に会話できます。
     </p>
   </section>
 
-  <section class="top-section" aria-labelledby="ai-workflow-ja">
-    <h2 id="ai-workflow-ja">AI コーディングで変わること</h2>
-    <ul>
-      <li><strong>コンテキスト切替を減らす:</strong> ルーティング、状態更新、UI 構築を Go-first な流れで説明できます。</li>
-      <li><strong>境界を減らす:</strong> 同じ管理画面について、クライアント状態、API 契約、バックエンドハンドラを何度も分けて説明しなくて済みます。</li>
-      <li><strong>スキーマ受け渡しを減らす:</strong> コンポーネント定義とアクション定義を、それが起動するサーバー側の振る舞いに近づけられます。</li>
-    </ul>
+  <section class="top-section" aria-labelledby="one-language-ja">
+    <h2 id="one-language-ja">One language, one context</h2>
     <p>
-      補助的な効果として、プロンプトをクロススタック連携の再説明ではなくプロダクトの振る舞いに集中させやすくなり、結果としてトークン消費を抑えやすくなります。
+      管理画面や社内ツールでは、アクションを追加する、テーブルを更新する、チャートをフィルタする、権限に応じて操作を制御する、といった具体的なワークフロー変更が頻繁に起きます。Marionette はそれらを Go に近づけ、関連する文脈をまとめます。
+    </p>
+    <p>
+      AI と一緒に実装するときも、複数のフロントエンド / バックエンドプロジェクトの連携を毎回説明するのではなく、ひとつの実装言語とサーバー側の実行モデルを前提にできます。
+    </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="ui-action-state-ja">
+    <h2 id="ui-action-state-ja">UI / Action / State in Go</h2>
+    <p>
+      Marionette は、業務 UI で AI が理解すべき要素を Go の近くに集めます。ユーザーに何が見えるのか、どの操作を実行できるのか、その結果として状態がどう変わるのかを、同じ流れで追いやすくします。
+    </p>
+    <ul>
+      <li><strong>UI:</strong> ページとコンポーネントが、画面上の業務フローを表します。</li>
+      <li><strong>Action:</strong> サーバー側ハンドラが、クリックや送信後の処理を定義します。</li>
+      <li><strong>State:</strong> 共有された Go の状態で、テーブル、フィルタ、チャートなどの連動を扱えます。</li>
+    </ul>
+  </section>
+
+  <section class="top-section" aria-labelledby="boundaries-ja">
+    <h2 id="boundaries-ja">Fewer frontend/backend boundaries</h2>
+    <p>
+      フロントエンドとバックエンドの境界が増えるほど、チームと AI が理解すべき契約も増えます。リクエスト、レスポンス、クライアント状態、楽観的更新、バリデーション、エラー表示などを別々に追う必要が出ます。
+    </p>
+    <p>
+      Marionette はすべての境界をなくすわけではありませんが、典型的な管理画面や業務画面で必要な境界を減らします。その結果、レビューや AI への依頼をクロススタックな配管ではなく、業務フローに集中させやすくなります。
+    </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="htmx-ja">
+    <h2 id="htmx-ja">htmx partial updates</h2>
+    <p>
+      htmx により、Marionette は小さなブラウザ側インタラクションモデルを持てます。サーバーは変更された部分の HTML を返し、ブラウザはその部分だけを差し替えます。
+    </p>
+    <p>
+      これにより、フル SPA 構成を強制せずにインタラクティブな体験を作れます。AI 支援開発で重要なのは、保証されたトークン削減率ではありません。サーバーで描画されるコンポーネントと、それを生み出すアクションを同じ文脈で推論しやすいことです。
     </p>
   </section>
 </BaseLayout>

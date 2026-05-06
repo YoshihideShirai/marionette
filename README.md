@@ -7,6 +7,7 @@
 Marionette is a **Go-first framework that makes admin UI and internal tool development dramatically simpler**.
 It lets you describe screens, state, and actions end-to-end in Go, while htmx handles
 fast partial updates in the browser.
+It is also AI-friendly: by keeping that workflow in one place, Marionette helps you switch contexts less, explain less coding context to AI, and work with less frontend complexity.
 
 If your team is tired of maintaining frontend and backend separately, Marionette gives you
 a **practical, operations-friendly UI architecture** built for real product teams.

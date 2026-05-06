@@ -54,7 +54,7 @@ func Input(name, value string, props shared.ComponentProps) shared.Node {
 	attrs := map[string]string{
 		"name":  name,
 		"value": value,
-		"class": strings.TrimSpace("input input-bordered w-full " + props.Class),
+		"class": strings.TrimSpace("input w-full " + props.Class),
 	}
 	if props.Disabled {
 		attrs["disabled"] = "disabled"
@@ -93,7 +93,7 @@ func Select(name string, options []shared.SelectOption, props shared.ComponentPr
 	}
 	return node("select", map[string]string{
 		"name":  name,
-		"class": strings.TrimSpace("select select-bordered " + props.Class),
+		"class": strings.TrimSpace("select " + props.Class),
 	}, children...)
 }
 
@@ -125,7 +125,8 @@ func Skeleton(rows int, props shared.ComponentProps) shared.Node {
 }
 
 func Progress(value, max float64, label string, props shared.ComponentProps) shared.Node {
-	return node("progress", map[string]string{"class": strings.TrimSpace("progress w-full " + props.Class), "value": strconv.FormatFloat(value, 'f', -1, 64), "max": strconv.FormatFloat(max, 'f', -1, 64)}, textNode("span", nil, label))
+	_ = label
+	return node("progress", map[string]string{"class": strings.TrimSpace("progress w-full " + props.Class), "value": strconv.FormatFloat(value, 'f', -1, 64), "max": strconv.FormatFloat(max, 'f', -1, 64)})
 }
 
 func Checkbox(props shared.CheckboxComponentProps) shared.Node {
@@ -410,7 +411,7 @@ func FormField(control shared.Node, props shared.FormFieldProps) shared.Node {
 func Textarea(name, value string, options shared.TextareaOptions) shared.Node {
 	attrs := map[string]string{
 		"name":  name,
-		"class": strings.TrimSpace("textarea textarea-bordered w-full " + options.Props.Class),
+		"class": strings.TrimSpace("textarea w-full " + options.Props.Class),
 	}
 	if options.Rows > 0 {
 		attrs["rows"] = strconv.Itoa(options.Rows)
@@ -528,7 +529,7 @@ func InputWithOptions(name, value string, options shared.InputOptions) shared.No
 		"name":  name,
 		"value": value,
 		"type":  options.Type,
-		"class": strings.TrimSpace("input input-bordered w-full " + options.Props.Class),
+		"class": strings.TrimSpace("input w-full " + options.Props.Class),
 	}
 	if options.Placeholder != "" {
 		attrs["placeholder"] = options.Placeholder
@@ -541,7 +542,7 @@ func FileUpload(name string, required bool, props ...shared.ComponentProps) shar
 	if len(props) > 0 {
 		p = props[0]
 	}
-	attrs := map[string]string{"type": "file", "name": name, "class": strings.TrimSpace("file-input file-input-bordered w-full " + p.Class)}
+	attrs := map[string]string{"type": "file", "name": name, "class": strings.TrimSpace("file-input w-full " + p.Class)}
 	if required {
 		attrs["required"] = "required"
 	}

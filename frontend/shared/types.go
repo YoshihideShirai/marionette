@@ -324,20 +324,9 @@ type ImageProps struct {
 	Props       ComponentProps
 }
 
-type SidebarItem struct {
-	Label   string
-	Href    string
-	Current bool
-}
+type SidebarItem = lowhtml.SidebarItem
 
-func (i SidebarItem) Active() SidebarItem {
-	i.Current = true
-	return i
-}
-
-type TableRowData struct {
-	Cells []Node
-}
+type TableRowData = lowhtml.TableRowData
 
 type ChartType string
 

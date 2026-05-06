@@ -54,6 +54,68 @@ func TestDashboardUsesOverlayDrawerNavigation(t *testing.T) {
 	}
 }
 
+func TestDashboardLinksDealsToDetailPages(t *testing.T) {
+	app := BuildApp()
+	app.Set("loggedIn", true)
+	handler := app.Handler()
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	for _, want := range []string{`href="/orders/detail?id=ORD-1042"`, `ORD-1042`} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected dashboard to contain %q, got %q", want, body)
+		}
+	}
+}
+
+func TestOrderDetailPageShowsSelectedDeal(t *testing.T) {
+	app := BuildApp()
+	app.Set("loggedIn", true)
+	handler := app.Handler()
+
+	req := httptest.NewRequest(http.MethodGet, "/orders/detail?id=ORD-1043", nil)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	body := rr.Body.String()
+	for _, want := range []string{`Deal detail`, `ORD-1043 - Northwind Health`, `Workflow action`, `Projected ARR`, `$64,000`} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected detail page to contain %q, got %q", want, body)
+		}
+	}
+}
+
+func TestLoginReplacesNarrowLoginContainerWithDashboard(t *testing.T) {
+	app := BuildApp()
+	handler := app.Handler()
+
+	form := url.Values{"provider": {"demo-sso"}}
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+
+	body := rr.Body.String()
+	for _, want := range []string{`id="app-body"`, `drawer min-h-screen bg-base-200`, `max-w-none`} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected login response to contain %q, got %q", want, body)
+		}
+	}
+	if strings.Contains(body, `max-w-5xl`) {
+		t.Fatalf("expected login response to replace the narrow login container, got %q", body)
+	}
+}
+
 func postFilter(t *testing.T, handler http.Handler, status string) string {
 	t.Helper()
 	form := url.Values{"status": {status}}

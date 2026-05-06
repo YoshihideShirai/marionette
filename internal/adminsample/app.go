@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
+	"net/url"
 	"strings"
 
 	mb "github.com/YoshihideShirai/marionette/backend"
@@ -42,6 +43,7 @@ func BuildApp() *mb.App {
 	app.Set("authError", "")
 	app.Set("flash", "")
 	app.Set("currentPage", "overview")
+	app.Set("currentOrderID", "")
 
 	assetsFS, err := fs.Sub(embeddedAssets, "assets")
 	if err == nil {
@@ -57,6 +59,7 @@ func BuildApp() *mb.App {
 			return loginPage(ctx.Get("authError").(string))
 		}
 		ctx.Set("currentPage", "overview")
+		ctx.Set("currentOrderID", "")
 		return dashboardFromState(ctx, "overview")
 	}, mb.WithTitle("Admin Sample"))
 
@@ -65,6 +68,7 @@ func BuildApp() *mb.App {
 			return loginPage(ctx.Get("authError").(string))
 		}
 		ctx.Set("currentPage", "pipeline")
+		ctx.Set("currentOrderID", "")
 		return dashboardFromState(ctx, "pipeline")
 	}, mb.WithTitle("Pipeline - Admin Sample"))
 
@@ -73,8 +77,18 @@ func BuildApp() *mb.App {
 			return loginPage(ctx.Get("authError").(string))
 		}
 		ctx.Set("currentPage", "playbooks")
+		ctx.Set("currentOrderID", "")
 		return dashboardFromState(ctx, "playbooks")
 	}, mb.WithTitle("Playbooks - Admin Sample"))
+
+	app.Page("/orders/detail", func(ctx *mb.Context) mf.Node {
+		if !ctx.Get("loggedIn").(bool) {
+			return loginPage(ctx.Get("authError").(string))
+		}
+		ctx.Set("currentPage", "order-detail")
+		ctx.Set("currentOrderID", strings.TrimSpace(ctx.Query("id")))
+		return dashboardFromState(ctx, "order-detail")
+	}, mb.WithTitle("Deal detail - Admin Sample"))
 
 	app.Action("auth/login", func(ctx *mb.Context) mf.Node {
 		provider := strings.TrimSpace(ctx.FormValue("provider"))
@@ -138,7 +152,7 @@ func BuildApp() *mb.App {
 }
 
 func dashboardFromState(ctx *mb.Context, currentPage string) mf.Node {
-	content := mf.Container(mf.ContainerProps{MaxWidth: "7xl", Centered: true, Props: mf.ComponentProps{Class: "py-6 px-4 lg:px-6"}},
+	content := mf.Container(mf.ContainerProps{MaxWidth: "full", Props: mf.ComponentProps{Class: "py-6 px-4 lg:px-6"}},
 		dashboardMainContent(dashboardBody(ctx, currentPage)),
 	)
 	return mf.Region(mf.RegionProps{ID: "app-body"}, drawerLayout(topbar(currentPage), content, drawerMenu(currentPage)))
@@ -220,8 +234,10 @@ func sessionExpiredAlert() mf.Node {
 
 func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 	selectedStatus := ctx.Get("selectedStatus").(string)
-	orders := filteredOrders(ctx.Get("orders").([]order), selectedStatus)
+	allOrders := ctx.Get("orders").([]order)
+	orders := filteredOrders(allOrders, selectedStatus)
 	flash := ctx.Get("flash").(string)
+	currentOrderID := stateString(ctx, "currentOrderID")
 	children := []mf.Node{
 		mf.PageHeader(mf.PageHeaderProps{
 			Title:       pageTitle(currentPage),
@@ -233,7 +249,7 @@ func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 	if flash != "" {
 		children = append(children, mf.Toast(mf.ToastProps{Title: "Updated", Description: flash, Props: mf.ComponentProps{Variant: "info"}}))
 	}
-	children = append(children, filterPanel(selectedStatus), pageContent(currentPage, orders))
+	children = append(children, pageContent(currentPage, selectedStatus, orders, allOrders, currentOrderID))
 	return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)
 }
 
@@ -243,6 +259,8 @@ func pageTitle(currentPage string) string {
 		return "Pipeline"
 	case "playbooks":
 		return "Playbooks"
+	case "order-detail":
+		return "Deal detail"
 	default:
 		return "Dashboard"
 	}
@@ -254,6 +272,8 @@ func pageDescription(currentPage string) string {
 		return "Review deal movement, risk, and the accounts that need attention."
 	case "playbooks":
 		return "Turn account signals into repeatable next actions for the sales team."
+	case "order-detail":
+		return "Inspect one deal, review account context, and update its workflow status."
 	default:
 		return "A compact admin workspace using daisyUI components and an overlay drawer."
 	}
@@ -265,9 +285,9 @@ func filterPanel(selectedStatus string) mf.Node {
 		Description: "Narrow the deal list without leaving the current view.",
 		Props:       mf.ComponentProps{Class: "border border-base-300 shadow-none"},
 	},
-		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "grid gap-3 md:grid-cols-[1fr_auto] md:items-end"}},
+		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "mx-auto grid w-full max-w-sm gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"}},
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
-			mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Apply", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>`), Props: mf.ComponentProps{Variant: "primary", Class: "w-full md:w-fit"}}),
+			mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Apply", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>`), Props: mf.ComponentProps{Variant: "primary", Class: "w-fit"}}),
 		),
 	)
 }
@@ -288,7 +308,11 @@ func loginPage(authError string) mf.Node {
 			),
 		)),
 	)
-	return mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "py-12 px-4"}}, mf.Region(mf.RegionProps{ID: "app-body"}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...)))
+	return mf.Region(mf.RegionProps{ID: "app-body"},
+		mf.Container(mf.ContainerProps{MaxWidth: "lg", Centered: true, Props: mf.ComponentProps{Class: "py-12 px-4"}},
+			mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, children...),
+		),
+	)
 }
 
 func summaryCards(orders []order) mf.Node {
@@ -316,14 +340,115 @@ func highRiskCount(orders []order) int {
 	return c
 }
 
-func pageContent(currentPage string, orders []order) mf.Node {
+func pageContent(currentPage, selectedStatus string, orders, allOrders []order, currentOrderID string) mf.Node {
+	if currentPage == "order-detail" {
+		return orderDetailPage(currentOrderID, allOrders)
+	}
+	sideRail := dashboardSideRail(selectedStatus, orders)
 	switch currentPage {
 	case "pipeline":
-		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, pipelineHealth(orders), pipelineChart(orders), riskChart(orders), ordersTable(orders))
+		return wideDashboardGrid(
+			mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, pipelineChart(orders), ordersTable(orders)),
+			sideRail,
+		)
 	case "playbooks":
-		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, playbookSteps(), playbookNotes(), ordersTable(orders))
+		return wideDashboardGrid(
+			mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, playbookSteps(), playbookNotes(), ordersTable(orders)),
+			sideRail,
+		)
 	default:
-		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineHealth(orders), mf.Split(mf.SplitProps{Main: pipelineChart(orders), Aside: riskChart(orders), AsideWidth: "md", Gap: "4"}), ordersTable(orders))
+		return wideDashboardGrid(
+			mf.Stack(mf.StackProps{Direction: "column", Gap: "4"}, summaryCards(orders), pipelineChart(orders), ordersTable(orders)),
+			sideRail,
+		)
+	}
+}
+
+func wideDashboardGrid(main, aside mf.Node) mf.Node {
+	return mf.Element("div", mf.ElementProps{Class: "grid gap-4 xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:grid-cols-[minmax(0,1fr)_28rem] xl:items-start"}, main, aside)
+}
+
+func dashboardSideRail(selectedStatus string, orders []order) mf.Node {
+	return mf.Element("aside", mf.ElementProps{Class: "grid gap-4 xl:sticky xl:top-24"},
+		filterPanel(selectedStatus),
+		pipelineHealth(orders),
+		riskChart(orders),
+	)
+}
+
+func orderDetailPage(id string, orders []order) mf.Node {
+	o, ok := findOrder(orders, id)
+	if !ok {
+		return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+			mf.Alert(mf.AlertProps{Title: "Deal not found", Description: "The selected order is no longer available.", Props: mf.ComponentProps{Variant: "warning"}}),
+			mf.Link(mf.LinkProps{Label: "Back to dashboard", Href: "/", Props: mf.ComponentProps{Variant: "outline", Size: "sm"}}),
+		)
+	}
+
+	return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+		mf.Link(mf.LinkProps{Label: "Back to dashboard", Href: "/", Props: mf.ComponentProps{Variant: "ghost", Size: "sm"}}),
+		mf.Grid(mf.GridProps{Columns: "cards", Gap: "4"},
+			mf.Stat("ARR", "$"+formatNumber(o.Amount), o.Plan+" plan"),
+			mf.Stat("Risk", o.Risk, "Current account signal"),
+			mf.Stat("Status", o.Status, "Workflow state"),
+		),
+		mf.Element("div", mf.ElementProps{Class: "grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"},
+			orderOverviewCard(o),
+			orderActionPanel(o),
+		),
+	)
+}
+
+func orderOverviewCard(o order) mf.Node {
+	return mf.Section(mf.SectionProps{Title: o.ID + " - " + o.Customer, Description: "Account and commercial details for the selected deal."},
+		mf.Element("dl", mf.ElementProps{Class: "grid gap-4 md:grid-cols-2 xl:grid-cols-3"},
+			detailField("Customer", o.Customer),
+			detailField("Plan", o.Plan),
+			detailField("Projected ARR", "$"+formatNumber(o.Amount)),
+			detailField("Risk", o.Risk),
+			detailField("Status", o.Status),
+			detailField("Next step", nextStep(o)),
+		),
+	)
+}
+
+func orderActionPanel(o order) mf.Node {
+	label := "Block deal"
+	variant := "secondary"
+	description := "Move this deal into the blocked workflow for review."
+	if o.Status == "Blocked" {
+		label = "Re-open deal"
+		variant = "success"
+		description = "Return this deal to the active workflow."
+	}
+	return mf.Card(mf.CardProps{
+		Title:       "Workflow action",
+		Description: description,
+		Props:       mf.ComponentProps{Class: "border border-base-300 shadow-none"},
+	},
+		mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "grid gap-3"}},
+			mf.TextField(mf.TextFieldProps{ID: "detail-id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}),
+			mf.SubmitButton(label, mf.ComponentProps{Variant: variant, Class: "w-full"}),
+		),
+		mf.Element("p", mf.ElementProps{Class: "text-sm text-base-content/60"}, mf.Text("Inline updates keep you on this detail view.")),
+	)
+}
+
+func detailField(label, value string) mf.Node {
+	return mf.Element("div", mf.ElementProps{Class: "rounded-box border border-base-300 bg-base-100 p-4"},
+		mf.Element("dt", mf.ElementProps{Class: "text-xs font-semibold uppercase tracking-wide text-base-content/50"}, mf.Text(label)),
+		mf.Element("dd", mf.ElementProps{Class: "mt-1 font-semibold text-base-content"}, mf.Text(value)),
+	)
+}
+
+func nextStep(o order) string {
+	switch o.Status {
+	case "Blocked":
+		return "Escalate owner and confirm resolution path."
+	case "Review":
+		return "Schedule follow-up and validate risk signals."
+	default:
+		return "Keep momentum and confirm close plan."
 	}
 }
 
@@ -398,13 +523,35 @@ func ordersTable(orders []order) mf.Node {
 			label = "Re-open"
 			variant = "success"
 		}
+		dealLink := mf.Link(mf.LinkProps{Label: o.ID, Href: orderDetailHref(o.ID), Props: mf.ComponentProps{Class: "font-semibold"}})
 		action := mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML"}, mf.TextField(mf.TextFieldProps{ID: "id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}), mf.SubmitButton(label, mf.ComponentProps{Variant: variant, Size: "sm"}))
 		risk := mf.Badge(mf.BadgeProps{Label: o.Risk, Props: mf.ComponentProps{Class: badgeClass(o.Risk)}})
-		rows = append(rows, mf.TableRowValues(o.ID, o.Customer, o.Plan, "$"+formatNumber(o.Amount), risk, o.Status, action))
+		rows = append(rows, mf.TableRowValues(dealLink, o.Customer, o.Plan, "$"+formatNumber(o.Amount), risk, o.Status, action))
 	}
 	return mf.Section(mf.SectionProps{Title: "Deals", Description: "Inline actions update the visible fragment."},
 		mf.Table(mf.TableProps{Columns: []mf.TableColumn{{Label: "Deal"}, {Label: "Customer"}, {Label: "Plan"}, {Label: "ARR"}, {Label: "Risk"}, {Label: "Status"}, {Label: "Action"}}, Rows: rows, EmptyTitle: "No deals", EmptyDescription: "Try another status filter."}),
 	)
+}
+
+func findOrder(orders []order, id string) (order, bool) {
+	for _, o := range orders {
+		if o.ID == id {
+			return o, true
+		}
+	}
+	return order{}, false
+}
+
+func orderDetailHref(id string) string {
+	return "/orders/detail?id=" + url.QueryEscape(id)
+}
+
+func stateString(ctx *mb.Context, key string) string {
+	v, ok := ctx.Get(key).(string)
+	if !ok {
+		return ""
+	}
+	return strings.TrimSpace(v)
 }
 
 func statusOptions(selected string) []mf.SelectOption {

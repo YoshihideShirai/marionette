@@ -1,18 +1,15 @@
 package marionette
 
 import (
-	"bytes"
-	"fmt"
 	"html/template"
-	"path/filepath"
-	"runtime"
 	"sync"
 
 	"github.com/YoshihideShirai/marionette/internal/componenttmpl"
 )
 
-// このファイルはコンポーネントテンプレートの読み込みとキャッシュを管理する。
-// テンプレート実行ノードの共通処理もここに置く。
+// This file keeps the public marionette package wired to the shared component
+// template renderer. Template parsing, execution, and cache ownership live in
+// internal/componenttmpl; this package only resolves its template root.
 
 type templateNode struct {
 	name string
@@ -20,32 +17,26 @@ type templateNode struct {
 }
 
 var (
-	cachedTemplates        *template.Template
-	cachedTemplatesErr     error
-	componentTemplatesOnce sync.Once
+	componentTemplateSource     *componenttmpl.Source
+	componentTemplateSourceErr  error
+	componentTemplateSourceOnce sync.Once
 )
 
 func (n templateNode) Render() (template.HTML, error) {
-	tmpl, err := loadComponentTemplates()
-	if err != nil {
-		return "", err
+	source := componentTemplateSourceForPackage()
+	if componentTemplateSourceErr != nil {
+		return "", componentTemplateSourceErr
 	}
-	var out bytes.Buffer
-	if err := tmpl.ExecuteTemplate(&out, n.name, n.data); err != nil {
-		return "", err
-	}
-	return template.HTML(out.String()), nil
+	return componenttmpl.Node{
+		Source: source,
+		Name:   n.name,
+		Data:   n.data,
+	}.Render()
 }
 
-func loadComponentTemplates() (*template.Template, error) {
-	componentTemplatesOnce.Do(func() {
-		_, currentFile, _, ok := runtime.Caller(0)
-		if !ok {
-			cachedTemplatesErr = fmt.Errorf("failed to resolve component template path for %s", "templates/components")
-			return
-		}
-		componentsDir := filepath.Join(filepath.Dir(currentFile), "templates", "components")
-		cachedTemplates, cachedTemplatesErr = componenttmpl.Load(componentsDir)
+func componentTemplateSourceForPackage() *componenttmpl.Source {
+	componentTemplateSourceOnce.Do(func() {
+		componentTemplateSource, componentTemplateSourceErr = componenttmpl.NewSourceFromCaller(1, "templates", "components")
 	})
-	return cachedTemplates, cachedTemplatesErr
+	return componentTemplateSource
 }

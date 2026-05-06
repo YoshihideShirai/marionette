@@ -1,0 +1,3 @@
+
+# Generated documentation examples contain rendered CDN imports; source URLs live in frontend/assets.
+docs/site-astro/public/examples/*.html

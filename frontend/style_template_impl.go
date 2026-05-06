@@ -1,6 +1,9 @@
 package frontend
 
-import daisyuipresets "github.com/YoshihideShirai/marionette/frontend/daisyui/presets"
+import (
+	"github.com/YoshihideShirai/marionette/frontend/assets"
+	daisyuipresets "github.com/YoshihideShirai/marionette/frontend/daisyui/presets"
+)
 
 type StyleTemplate struct {
 	Name                 string
@@ -17,7 +20,7 @@ var DaisyUITemplate = StyleTemplate{
 var TailwindCSSTemplate = StyleTemplate{
 	Name: "tailwindcss",
 	FrameworkScripts: []string{
-		"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4",
+		assets.TailwindBrowserURL,
 	},
 }
 

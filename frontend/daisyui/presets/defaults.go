@@ -1,9 +1,11 @@
 package presets
 
+import "github.com/YoshihideShirai/marionette/frontend/assets"
+
 func FrameworkStylesheets() []string {
-	return []string{"https://cdn.jsdelivr.net/npm/daisyui@5"}
+	return []string{assets.DaisyUICSSURL}
 }
 
 func FrameworkScripts() []string {
-	return []string{"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"}
+	return []string{assets.TailwindBrowserURL}
 }

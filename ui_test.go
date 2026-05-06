@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 	mh "github.com/YoshihideShirai/marionette/frontend/html"
 	rdf "github.com/rocketlaunchr/dataframe-go"
 )
@@ -1061,7 +1062,7 @@ func TestShellIncludesChartRuntime(t *testing.T) {
 	}
 	got := string(html)
 	for _, want := range []string{
-		`cdn.jsdelivr.net/npm/chart.js@4`,
+		assets.ChartJSURL,
 		`window.mrnInitCharts`,
 		`htmx:afterSwap`,
 	} {

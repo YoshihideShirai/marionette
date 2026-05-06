@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
@@ -13,8 +15,9 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{.Title}}</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    {{range .FrameworkStylesheets}}<link href="{{.}}" rel="stylesheet" type="text/css" />
+    {{end}}{{range .FrameworkScripts}}<script src="{{.}}"></script>
+    {{end}}
     <style>
       :root {
         --mrn-page-max-width: 80rem;
@@ -79,88 +82,6 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
     {{range .Stylesheets}}<link href="{{.}}" rel="stylesheet" type="text/css" />
     {{end}}{{range .Styles}}<style>{{.}}</style>
     {{end}}
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-    <script>
-      (function() {
-        var root = document.documentElement;
-        var key = "marionette-theme";
-        var storedTheme = null;
-        try {
-          storedTheme = localStorage.getItem(key);
-        } catch (e) {}
-        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        var theme = storedTheme || (prefersDark ? "dark" : "corporate");
-        root.setAttribute("data-theme", theme);
-        window.mrnToggleTheme = function() {
-          var next = root.getAttribute("data-theme") === "dark" ? "corporate" : "dark";
-          root.setAttribute("data-theme", next);
-          try {
-            localStorage.setItem(key, next);
-          } catch (e) {}
-        };
-      })();
-    </script>
-    <script>
-      (function() {
-        var charts = new WeakMap();
-
-        function initCharts(root) {
-          if (!window.Chart) return;
-          var scope = root || document;
-          var canvases = scope.querySelectorAll ? scope.querySelectorAll("[data-mrn-chart]") : [];
-          canvases.forEach(function(canvas) {
-            var container = canvas.closest("[data-mrn-chart-root]");
-            if (!container) return;
-            var configEl = container.querySelector("[data-mrn-chart-config]");
-            if (!configEl) return;
-
-            var config;
-            try {
-              config = JSON.parse(configEl.textContent || "{}");
-            } catch (e) {
-              return;
-            }
-
-            var existing = charts.get(canvas);
-            if (existing) existing.destroy();
-            var chart = new window.Chart(canvas, config);
-            chart.options = chart.options || {};
-            chart.options.onClick = function(_, elements) {
-              if (!elements || !elements.length) return;
-              var first = elements[0];
-              var label = (chart.data && chart.data.labels && chart.data.labels[first.index]) || "";
-              var stateName = container.getAttribute("data-mrn-query-state");
-              var column = container.getAttribute("data-mrn-filter-column");
-              if (!stateName || !column) return;
-              var payload = {state: stateName, filters: [{column: column, op: "eq", value: String(label)}]};
-              document.dispatchEvent(new CustomEvent("mrn:data-query-change", {detail: payload}));
-              if (window.htmx) {
-                window.htmx.trigger(document.body, "mrn:data-query-change", payload);
-              }
-            };
-            chart.update();
-            charts.set(canvas, chart);
-          });
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-          initCharts(document);
-        });
-        document.addEventListener("htmx:afterSwap", function(event) {
-          initCharts(event.detail && event.detail.elt ? event.detail.elt : document);
-        });
-        document.addEventListener("mrn:data-query-change", function(event) {
-          var detail = event.detail || {};
-          var tables = document.querySelectorAll("[data-mrn-query-state]");
-          tables.forEach(function(node) {
-            if (node.getAttribute("data-mrn-query-state") !== detail.state) return;
-            node.setAttribute("data-mrn-selected-filter", JSON.stringify(detail.filters || []));
-          });
-        });
-        window.mrnInitCharts = initCharts;
-      })();
-    </script>
     {{range .Scripts}}<script src="{{.}}"></script>
     {{end}}{{range .JavaScripts}}<script>{{.}}</script>
     {{end}}
@@ -171,11 +92,14 @@ var shellTmpl = template.Must(template.New("shell").Parse(`<!doctype html>
 </html>`))
 
 type shellOptions struct {
-	Title       string
-	Stylesheets []string
-	Styles      []template.CSS
-	Scripts     []string
-	JavaScripts []template.JS
+	Title                string
+	StyleTemplate        StyleTemplate
+	FrameworkStylesheets []string
+	FrameworkScripts     []string
+	Stylesheets          []string
+	Styles               []template.CSS
+	Scripts              []string
+	JavaScripts          []template.JS
 }
 
 // ShellOptions configures the HTML document shell rendered by ShellWithOptions.
@@ -200,20 +124,31 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 	if title == "" {
 		title = "Marionette"
 	}
+	frameworkStylesheets, frameworkScripts := resolveFrameworkAssets(options)
+	scripts := append([]string{assets.HTMXURL, assets.ChartJSURL}, options.Scripts...)
+	javaScripts := append([]template.JS{
+		template.JS(assets.ThemeBootstrapJS),
+		template.JS(assets.ChartBootstrapJS),
+	}, options.JavaScripts...)
+
 	view := struct {
-		Title       string
-		Content     template.HTML
-		Stylesheets []string
-		Styles      []template.CSS
-		Scripts     []string
-		JavaScripts []template.JS
+		Title                string
+		Content              template.HTML
+		FrameworkStylesheets []string
+		FrameworkScripts     []string
+		Stylesheets          []string
+		Styles               []template.CSS
+		Scripts              []string
+		JavaScripts          []template.JS
 	}{
-		Title:       title,
-		Content:     content,
-		Stylesheets: options.Stylesheets,
-		Styles:      options.Styles,
-		Scripts:     options.Scripts,
-		JavaScripts: options.JavaScripts,
+		Title:                title,
+		Content:              content,
+		FrameworkStylesheets: frameworkStylesheets,
+		FrameworkScripts:     frameworkScripts,
+		Stylesheets:          options.Stylesheets,
+		Styles:               options.Styles,
+		Scripts:              scripts,
+		JavaScripts:          javaScripts,
 	}
 
 	var out bytes.Buffer
@@ -221,6 +156,17 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 		return "", err
 	}
 	return out.String(), nil
+}
+
+func resolveFrameworkAssets(options shellOptions) ([]string, []string) {
+	if len(options.FrameworkStylesheets) > 0 || len(options.FrameworkScripts) > 0 {
+		return append([]string(nil), options.FrameworkStylesheets...), append([]string(nil), options.FrameworkScripts...)
+	}
+	styleTemplate := options.StyleTemplate
+	if styleTemplate.Name == "" && len(styleTemplate.FrameworkStylesheets) == 0 && len(styleTemplate.FrameworkScripts) == 0 {
+		styleTemplate = DefaultStyleTemplate()
+	}
+	return append([]string(nil), styleTemplate.FrameworkStylesheets...), append([]string(nil), styleTemplate.FrameworkScripts...)
 }
 
 // WriteHTML writes an HTML response with Marionette's standard content type.

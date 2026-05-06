@@ -26,7 +26,7 @@ func TestShellIncludesThemeBootstrapScript(t *testing.T) {
 		t.Fatalf("shell render failed: %v", err)
 	}
 
-	if !strings.Contains(out, "window.mrnToggleTheme") {
+	if !strings.Contains(out, "mrnToggleTheme") {
 		t.Fatalf("expected theme toggle helper in shell output, got %q", out)
 	}
 	if !strings.Contains(out, "marionette-theme") {

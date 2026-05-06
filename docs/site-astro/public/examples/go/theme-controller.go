@@ -9,10 +9,10 @@ func RegisterThemeControllerExample(app *mb.App) {
 	app.Page("/theme-controller", func(ctx *mb.Context) mf.Node {
 		return mf.DivProps(mf.ElementProps{Class: "space-y-8"},
 			mf.ThemeController(
-				mf.ThemeControllerOption("light", false, "btn join-item"),
-				mf.ThemeControllerOption("dark", false, "btn join-item"),
-				mf.ThemeControllerOption("cupcake", true, "btn join-item"),
-				mf.ThemeControllerOption("dracula", false, "btn join-item"),
+				mf.ThemeControllerOption("light", false, "btn"),
+				mf.ThemeControllerOption("dark", false, "btn"),
+				mf.ThemeControllerOption("cupcake", true, "btn"),
+				mf.ThemeControllerOption("dracula", false, "btn"),
 			),
 			mf.ThemeController(
 				mf.ThemeControllerOption("corporate", true, "radio radio-xs"),
@@ -38,7 +38,7 @@ func RegisterThemeControllerExample(app *mb.App) {
 
 func themeToggle(label, inputClass, value string) mf.Node {
 	return mf.Element("label", mf.ElementProps{Class: "label cursor-pointer gap-2 w-fit"},
-		mf.SpanProps(mf.ElementProps{Class: "label-text"}, mf.Text(label)),
+		mf.SpanProps(mf.ElementProps{Class: "label"}, mf.Text(label)),
 		mf.Element("input", mf.ElementProps{Attrs: mf.Attrs{
 			"type":  "checkbox",
 			"class": inputClass + " theme-controller",
@@ -72,9 +72,9 @@ func colorDot(className string) mf.Node {
 }
 
 func themeSelect() mf.Node {
-	return mf.Element("label", mf.ElementProps{Class: "form-control w-full max-w-xs"},
-		mf.SpanProps(mf.ElementProps{Class: "label-text mb-1"}, mf.Text("Choose a theme")),
-		mf.Element("select", mf.ElementProps{Class: "select select-bordered theme-controller", Attrs: mf.Attrs{"name": "theme-picker"}},
+	return mf.Element("fieldset", mf.ElementProps{Class: "fieldset w-full max-w-xs"},
+		mf.Element("legend", mf.ElementProps{Class: "fieldset-legend"}, mf.Text("Choose a theme")),
+		mf.Element("select", mf.ElementProps{Class: "select theme-controller", Attrs: mf.Attrs{"name": "theme-picker"}},
 			themeOption("light", "Light"),
 			themeOption("cupcake", "Cupcake"),
 			themeOption("bumblebee", "Bumblebee"),

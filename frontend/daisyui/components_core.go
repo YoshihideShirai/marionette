@@ -69,16 +69,17 @@ func Toast(title, description string, props shared.ComponentProps) shared.Node {
 }
 
 func Modal(props shared.ModalProps) shared.Node {
-	className := "modal"
+	attrs := map[string]string{"class": "modal"}
 	if props.Open {
-		className += " modal-open"
+		attrs["open"] = "open"
 	}
-	return node("div", map[string]string{"class": className},
+	return node("dialog", attrs,
 		node("div", map[string]string{"class": "modal-box"},
 			textNode("h3", map[string]string{"class": "font-bold text-lg"}, props.Title),
 			props.Body,
 			node("div", map[string]string{"class": "modal-action"}, props.Actions),
 		),
+		node("form", map[string]string{"method": "dialog", "class": "modal-backdrop"}, textNode("button", nil, "close")),
 	)
 }
 
@@ -100,13 +101,22 @@ func Select(name string, options []shared.SelectOption, props shared.ComponentPr
 func Tabs(props shared.TabsProps) shared.Node {
 	tabNodes := make([]shared.Node, 0, len(props.Items))
 	for _, item := range props.Items {
-		className := "tab"
+		attrs := map[string]string{"class": "tab", "role": "tab", "type": "button", "aria-selected": "false"}
 		if item.Active {
-			className += " tab-active"
+			attrs["class"] += " tab-active"
+			attrs["aria-selected"] = "true"
 		}
-		tabNodes = append(tabNodes, textNode("a", map[string]string{"class": className, "href": item.Href}, item.Label))
+		if item.Disabled {
+			attrs["class"] += " tab-disabled"
+			attrs["disabled"] = "disabled"
+		}
+		tabNodes = append(tabNodes, textNode("button", attrs, item.Label))
 	}
-	return node("div", map[string]string{"class": strings.TrimSpace("tabs " + props.Props.Class)}, tabNodes...)
+	attrs := map[string]string{"class": strings.TrimSpace("tabs " + props.Props.Class), "role": "tablist"}
+	if props.AriaLabel != "" {
+		attrs["aria-label"] = props.AriaLabel
+	}
+	return node("div", attrs, tabNodes...)
 }
 
 func Badge(props shared.BadgeProps) shared.Node {
@@ -134,7 +144,7 @@ func Checkbox(props shared.CheckboxComponentProps) shared.Node {
 	if props.Checked {
 		inputAttrs["checked"] = "checked"
 	}
-	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", inputAttrs), textNode("span", map[string]string{"class": "label-text"}, props.Label))
+	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", inputAttrs), textNode("span", map[string]string{"class": "label"}, props.Label))
 }
 
 func RadioGroup(props shared.RadioGroupComponentProps) shared.Node {
@@ -144,7 +154,7 @@ func RadioGroup(props shared.RadioGroupComponentProps) shared.Node {
 		if item.Checked {
 			attrs["checked"] = "checked"
 		}
-		items = append(items, node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label-text"}, item.Label)))
+		items = append(items, node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label"}, item.Label)))
 	}
 	return node("div", map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Props.Class)}, items...)
 }
@@ -154,7 +164,7 @@ func Switch(props shared.SwitchComponentProps) shared.Node {
 	if props.Checked {
 		attrs["checked"] = "checked"
 	}
-	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label-text"}, props.Label))
+	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label"}, props.Label))
 }
 
 func Pagination(props shared.PaginationProps) shared.Node {
@@ -398,14 +408,18 @@ func ActionForm(props shared.ActionFormProps, children ...shared.Node) shared.No
 }
 
 func FormField(control shared.Node, props shared.FormFieldProps) shared.Node {
-	children := []shared.Node{textNode("span", map[string]string{"class": "label-text"}, props.Label), control}
+	legend := props.Label
+	if props.Required {
+		legend += " *"
+	}
+	children := []shared.Node{textNode("legend", map[string]string{"class": "fieldset-legend"}, legend), control}
 	if props.Hint != "" {
-		children = append(children, textNode("span", map[string]string{"class": "label-text-alt"}, props.Hint))
+		children = append(children, textNode("p", map[string]string{"class": "label"}, props.Hint))
 	}
 	if props.Error != "" {
-		children = append(children, textNode("span", map[string]string{"class": "label-text-alt text-error"}, props.Error))
+		children = append(children, textNode("p", map[string]string{"class": "label text-error"}, props.Error))
 	}
-	return node("label", map[string]string{"class": "form-control w-full gap-1"}, children...)
+	return node("fieldset", map[string]string{"class": "fieldset w-full"}, children...)
 }
 
 func Textarea(name, value string, options shared.TextareaOptions) shared.Node {

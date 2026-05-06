@@ -145,13 +145,13 @@ func TimelineItem(startLabel, endLabel string, content shared.Node) shared.Node 
 }
 
 func Collapse(title string, content shared.Node, open bool) shared.Node {
-	className := "collapse collapse-arrow bg-base-100 border border-base-300"
-	attrs := map[string]string{"class": className}
+	inputAttrs := map[string]string{"type": "checkbox"}
 	if open {
-		attrs["open"] = "open"
+		inputAttrs["checked"] = "checked"
 	}
-	return lowhtml.ElementNode{Tag: "details", Attrs: attrs, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "summary", Attrs: map[string]string{"class": "collapse-title font-semibold"}, Text: title},
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse collapse-arrow bg-base-100 border border-base-300"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: inputAttrs},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-title font-semibold"}, Text: title},
 		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-content text-sm"}, Children: []shared.Node{content}},
 	}}
 }
@@ -421,16 +421,24 @@ func Hover3DCard(content shared.Node) shared.Node {
 }
 
 func HoverGallery(items ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "hover-gallery"}, Children: items}
+	return lowhtml.ElementNode{Tag: "figure", Attrs: map[string]string{"class": "hover-gallery"}, Children: items}
 }
 
 func Accordion(title string, content shared.Node, open bool) shared.Node {
-	return Collapse(title, content, open)
+	inputAttrs := map[string]string{"type": "radio", "name": "accordion"}
+	if open {
+		inputAttrs["checked"] = "checked"
+	}
+	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse collapse-arrow bg-base-100 border border-base-300"}, Children: []shared.Node{
+		lowhtml.ElementNode{Tag: "input", Attrs: inputAttrs},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-title font-semibold"}, Text: title},
+		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "collapse-content text-sm"}, Children: []shared.Node{content}},
+	}}
 }
 
 func FAB(icon shared.Node, label string) shared.Node {
 	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "fab"}, Children: []shared.Node{
-		lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"tabindex": "0", "role": "button", "class": "btn btn-lg btn-circle btn-primary", "aria-label": label}, Children: []shared.Node{icon}},
+		lowhtml.ElementNode{Tag: "button", Attrs: map[string]string{"class": "btn btn-lg btn-circle btn-primary", "aria-label": label}, Children: []shared.Node{icon}},
 	}}
 }
 
@@ -454,7 +462,7 @@ func Swap(onNode, offNode shared.Node, active bool) shared.Node {
 }
 
 func ThemeController(options ...shared.Node) shared.Node {
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": "join"}, Children: options}
+	return lowhtml.ElementNode{Tag: "div", Children: options}
 }
 
 // ThemeControllerOption renders a daisyUI theme-controller radio input.
@@ -606,7 +614,7 @@ func RadioGroupWithVariants(name, color, size string, items []shared.RadioItem, 
 		children = append(children,
 			lowhtml.ElementNode{Tag: "label", Attrs: map[string]string{"class": "label cursor-pointer gap-2"}, Children: []shared.Node{
 				lowhtml.ElementNode{Tag: "input", Attrs: attrs},
-				textNode("span", map[string]string{"class": "label-text"}, item.Label),
+				textNode("span", map[string]string{"class": "label"}, item.Label),
 			}},
 		)
 	}
@@ -709,19 +717,20 @@ func TableWithVariants(headers []string, rows [][]shared.Node, zebra bool, pinRo
 }
 
 func ModalWithPlacement(props shared.ModalProps, placement string) shared.Node {
-	className := "modal"
+	attrs := map[string]string{"class": "modal"}
 	if props.Open {
-		className += " modal-open"
+		attrs["open"] = "open"
 	}
 	if placement != "" {
-		className += " modal-" + placement
+		attrs["class"] += " modal-" + placement
 	}
-	return node("div", map[string]string{"class": className},
+	return node("dialog", attrs,
 		node("div", map[string]string{"class": "modal-box"},
 			textNode("h3", map[string]string{"class": "font-bold text-lg"}, props.Title),
 			props.Body,
 			node("div", map[string]string{"class": "modal-action"}, props.Actions),
 		),
+		node("form", map[string]string{"method": "dialog", "class": "modal-backdrop"}, textNode("button", nil, "close")),
 	)
 }
 
@@ -741,16 +750,18 @@ func TabsWithVariants(items []shared.TabsItem, style string, placement string, s
 	}
 	tabNodes := make([]shared.Node, 0, len(items))
 	for _, item := range items {
-		tabClass := "tab"
+		attrs := map[string]string{"class": "tab", "role": "tab", "type": "button", "aria-selected": "false"}
 		if item.Active {
-			tabClass += " tab-active"
+			attrs["class"] += " tab-active"
+			attrs["aria-selected"] = "true"
 		}
 		if item.Disabled {
-			tabClass += " tab-disabled"
+			attrs["class"] += " tab-disabled"
+			attrs["disabled"] = "disabled"
 		}
-		tabNodes = append(tabNodes, textNode("a", map[string]string{"class": tabClass, "href": item.Href}, item.Label))
+		tabNodes = append(tabNodes, textNode("button", attrs, item.Label))
 	}
-	return node("div", map[string]string{"class": strings.Join(classes, " ")}, tabNodes...)
+	return node("div", map[string]string{"class": strings.Join(classes, " "), "role": "tablist"}, tabNodes...)
 }
 
 func StepsWithVariants(items []shared.Node, direction string, color string, className string) shared.Node {
@@ -758,13 +769,62 @@ func StepsWithVariants(items []shared.Node, direction string, color string, clas
 	if direction != "" {
 		classes = append(classes, "steps-"+direction)
 	}
-	if color != "" {
-		classes = append(classes, "step-"+color)
-	}
 	if className != "" {
 		classes = append(classes, className)
 	}
+	if color != "" {
+		items = withStepColor(items, "step-"+color)
+	}
 	return lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: items}
+}
+
+func withStepColor(items []shared.Node, colorClass string) []shared.Node {
+	colored := make([]shared.Node, 0, len(items))
+	for _, item := range items {
+		switch n := item.(type) {
+		case lowhtml.ElementNode:
+			if n.Tag == "li" && hasClass(n.Attrs["class"], "step") {
+				n.Attrs = cloneAttrs(n.Attrs)
+				n.Attrs["class"] = appendClass(n.Attrs["class"], colorClass)
+			}
+			colored = append(colored, n)
+		default:
+			colored = append(colored, item)
+		}
+	}
+	return colored
+}
+
+func hasClass(className, target string) bool {
+	for _, class := range strings.Fields(className) {
+		if class == target {
+			return true
+		}
+	}
+	return false
+}
+
+func cloneAttrs(attrs map[string]string) map[string]string {
+	cloned := make(map[string]string, len(attrs)+1)
+	for key, value := range attrs {
+		cloned[key] = value
+	}
+	return cloned
+}
+
+func appendClass(className string, parts ...string) string {
+	classes := strings.Fields(className)
+	seen := make(map[string]bool, len(classes)+len(parts))
+	for _, class := range classes {
+		seen[class] = true
+	}
+	for _, part := range parts {
+		if part != "" && !seen[part] {
+			classes = append(classes, part)
+			seen[part] = true
+		}
+	}
+	return strings.Join(classes, " ")
 }
 
 func TimelineWithDirection(items []shared.Node, direction string, compact bool, snapIcon bool, className string) shared.Node {

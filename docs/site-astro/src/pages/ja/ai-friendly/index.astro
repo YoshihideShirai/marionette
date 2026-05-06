@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="AI-friendly なコンテキスト圧縮 - Marionette" lang="ja" languageSwitcherPath="/marionette/en/ai-friendly/">
+  <h1>AI-friendly なコンテキスト圧縮</h1>
+  <p class="lead">
+    Marionette が AI-friendly なのは、クロススタックなコンテキスト圧縮を進め、AI がまたぐべき境界を減らせるためです。
+  </p>
+
+  <section class="top-section" aria-labelledby="context-compression-ja">
+    <h2 id="context-compression-ja">未検証のトークン主張ではなく、コンテキスト圧縮</h2>
+    <p>
+      Marionette は「トークン削減」を単独の断定として打ち出すのではなく、コンテキスト圧縮を中心に説明します。画面、状態遷移、アクションハンドラを Go に近づけ、ブラウザ側の部分更新は htmx に任せます。
+    </p>
+    <p>
+      これにより、バックエンドとフロントエンドをまたぐ説明量の削減、境界の削減、スキーマ受け渡しの削減につながります。
+    </p>
+  </section>
+
+  <section class="top-section" aria-labelledby="ai-workflow-ja">
+    <h2 id="ai-workflow-ja">AI コーディングで変わること</h2>
+    <ul>
+      <li><strong>コンテキスト切替を減らす:</strong> ルーティング、状態更新、UI 構築を Go-first な流れで説明できます。</li>
+      <li><strong>境界を減らす:</strong> 同じ管理画面について、クライアント状態、API 契約、バックエンドハンドラを何度も分けて説明しなくて済みます。</li>
+      <li><strong>スキーマ受け渡しを減らす:</strong> コンポーネント定義とアクション定義を、それが起動するサーバー側の振る舞いに近づけられます。</li>
+    </ul>
+    <p>
+      補助的な効果として、プロンプトをクロススタック連携の再説明ではなくプロダクトの振る舞いに集中させやすくなり、結果としてトークン消費を抑えやすくなります。
+    </p>
+  </section>
+</BaseLayout>

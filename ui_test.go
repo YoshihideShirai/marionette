@@ -1059,6 +1059,34 @@ func TestComponentChartRendersConfigAndFallback(t *testing.T) {
 	}
 }
 
+func TestComponentChartRendersPerDataPointColors(t *testing.T) {
+	html, err := Chart(ChartProps{
+		Type:   ChartTypeDoughnut,
+		Title:  "Sources",
+		Labels: []string{"Search", "Direct", "Referral"},
+		Datasets: []ChartDataset{
+			{
+				Label:            "Sessions",
+				Data:             []float64{48, 32, 20},
+				BackgroundColors: []string{"#2563eb", "#14b8a6", "#f59e0b"},
+				BorderColors:     []string{"#ffffff", "#f8fafc", "#e2e8f0"},
+			},
+		},
+	}).Render()
+	if err != nil {
+		t.Fatalf("chart render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`"backgroundColor":["#2563eb","#14b8a6","#f59e0b"]`,
+		`"borderColor":["#ffffff","#f8fafc","#e2e8f0"]`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}
+
 func TestShellIncludesChartRuntime(t *testing.T) {
 	html, err := shell(`<div></div>`)
 	if err != nil {

@@ -12,7 +12,7 @@ func RegisterChartBarExample(app *mb.App) {
 			Title:  "Role distribution",
 			Labels: []string{"Admin", "Editor", "Viewer"},
 			Datasets: []mf.ChartDataset{
-				{Label: "Users", Data: []float64{3, 7, 12}, BackgroundColor: "#2563eb"},
+				{Label: "Users", Data: []float64{3, 7, 12}, BackgroundColors: []string{"#2563eb", "#14b8a6", "#f59e0b"}},
 			},
 			Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true},
 		})

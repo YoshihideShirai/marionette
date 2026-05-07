@@ -718,6 +718,70 @@
       "description": "Tooltip helper with placement, color, and forced-open variants.",
       "template": "frontend/daisyui/components_extra.go",
       "example": "/marionette/examples/tooltip-with-variants.html"
+    },
+    {
+      "id": "dashwind-shell",
+      "name": "DashWind Shell",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-shell.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "Responsive DashWind admin shell with drawer navigation, topbar search, actions, and user menu."
+    },
+    {
+      "id": "dashwind-page-header",
+      "name": "DashWind PageHeader",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-page-header.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "Dashboard page title row with description text and optional action area."
+    },
+    {
+      "id": "dashwind-card-panel",
+      "name": "DashWind CardPanel",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-card-panel.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "Admin card surface that wraps DaisyUI cards with DashWind spacing, shadow, and actions."
+    },
+    {
+      "id": "dashwind-auth-card",
+      "name": "DashWind AuthCard",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-auth-card.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "Two-column authentication preset with labeled fields, submit button, and footer content."
+    },
+    {
+      "id": "dashwind-settings-section",
+      "name": "DashWind SettingsSection",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-settings-section.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "Card-backed settings form section with help text, validation states, and submit actions."
+    },
+    {
+      "id": "dashwind-metric-grid",
+      "name": "DashWind MetricGrid",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-metric-grid.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "Responsive KPI metric grid with values, descriptions, trend tones, icons, and links."
+    },
+    {
+      "id": "dashwind-data-table",
+      "name": "DashWind DataTable",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-data-table.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "Typed resource table with sortable headers, cell classes, zebra rows, and empty content support."
+    },
+    {
+      "id": "dashwind-resource-page",
+      "name": "DashWind ResourcePage",
+      "group": "DashWind",
+      "example": "/marionette/examples/dashwind-resource-page.html",
+      "template": "frontend/dashwind/dashwind.go",
+      "description": "High-level list page preset combining page header, primary action, filters, table, empty state, and row actions."
     }
   ]
 }

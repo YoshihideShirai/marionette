@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DashWind AuthCard example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>#marionette-root { width: 100%; max-width: none; padding: 0; }
+#marionette-root > * { animation: none; }
+.dashwind-shell .drawer-side .menu a.active { background: var(--color-primary); color: var(--color-primary-content); font-weight: 700; }
+.dashwind-shell .card, .dashwind-shell .stats { border: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent); }
+.dashwind-shell .stat-value { font-size: clamp(1.75rem, 2vw, 2.25rem); }</style>
+  </head>
+  <body class="bg-base-200 p-6 text-base-content">
+    <div class="card mx-auto w-full max-w-5xl shadow-xl bg-base-100"><div class="grid grid-cols-1 rounded-xl md:grid-cols-2"><div class="rounded-l-xl bg-primary p-10 text-primary-content"><h2 class="text-3xl font-bold"><span>DashWind</span></h2><p class="mt-4 opacity-80"><span>Build admin dashboards with DaisyUI, htmx fragments, and Go state.</span></p></div><div class="py-16 px-10"><h2 class="mb-2 text-center text-2xl font-semibold"><span>Sign in</span></h2><p class="mb-6 text-center text-sm text-base-content/60"><span>Use the preset for split-screen authentication flows.</span></p><form class="space-y-4"><div class="form-control w-full"><label class="label pb-1" for="dashwind-field-email"><span class="label-text"><span>Email</span></span></label><input aria-required="true" class="input input-bordered w-full" id="dashwind-field-email" name="email" required="required" type="email" value="ada@example.com"></input></div><div class="form-control w-full"><label class="label pb-1" for="dashwind-field-password"><span class="label-text"><span>Password</span></span></label><input aria-required="true" class="input input-bordered w-full" id="dashwind-field-password" name="password" required="required" type="password" value=""></input><p class="mt-1 text-xs text-base-content/60"><span>At least 12 characters.</span></p></div><button class="btn mt-2 w-full btn-primary" type="submit">Continue</button><div class="text-center mt-4 text-sm"><a class="link link-hover w-fit" href="#"><span>Forgot password?</span></a></div></form></div></div></div>
+  </body>
+</html>

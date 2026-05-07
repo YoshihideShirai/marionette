@@ -1,0 +1,224 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const projectCommands = `mkdir marionette-dashwind-admin
+cd marionette-dashwind-admin
+go mod init example.com/marionette-dashwind-admin
+go get github.com/YoshihideShirai/marionette@latest`;
+
+const mainCode = `package main
+
+import (
+    "fmt"
+
+    mb "github.com/YoshihideShirai/marionette/backend"
+    mf "github.com/YoshihideShirai/marionette/frontend"
+    dw "github.com/YoshihideShirai/marionette/frontend/dashwind"
+)
+
+type customer struct {
+    ID, Name, Plan, Status string
+    MRR                    int
+}
+
+var seedCustomers = []customer{
+    {"cus_1001", "Acme Robotics", "Enterprise", "Active", 12800},
+    {"cus_1002", "Northwind Health", "Growth", "Review", 6400},
+    {"cus_1003", "Sora Logistics", "Starter", "Active", 2200},
+}
+
+var navigation = dw.Navigation{{Label: "Workspace", Items: []dw.NavItem{
+    {Path: "/", Label: "Dashboard", Icon: "▦"},
+    {Path: "/customers", Label: "Customers", Icon: "☷", Badge: "3"},
+    {Path: "/settings", Label: "Settings", Icon: "⚙"},
+}}}
+
+func main() {
+    app := mb.New()
+    app.SetGlobal("customers", append([]customer(nil), seedCustomers...))
+
+    // DashWind registers the DaisyUI/Tailwind template and shell CSS.
+    dw.Use(app, dw.Options{Theme: "corporate"})
+
+    app.Page("/", func(ctx *mb.Context) mf.Node {
+        return shell("/", dashboard(ctx))
+    }, mb.WithTitle("Admin Dashboard"))
+
+    app.Page("/customers", func(ctx *mb.Context) mf.Node {
+        return shell("/customers", customersPage(ctx))
+    }, mb.WithTitle("Customers - Admin Dashboard"))
+
+    app.Page("/settings", func(ctx *mb.Context) mf.Node {
+        return shell("/settings", settingsPage())
+    }, mb.WithTitle("Settings - Admin Dashboard"))
+
+    app.Action("customers/toggle", func(ctx *mb.Context) mf.Node {
+        id := ctx.FormValue("id")
+        ctx.UpdateGlobal("customers", func(old any) any {
+            customers := append([]customer(nil), old.([]customer)...)
+            for i := range customers {
+                if customers[i].ID == id {
+                    if customers[i].Status == "Active" {
+                        customers[i].Status = "Review"
+                    } else {
+                        customers[i].Status = "Active"
+                    }
+                }
+            }
+            return customers
+        })
+        return dw.ShellContent(dw.DefaultMainTargetID, customersPage(ctx))
+    })
+
+    if err := app.Run("127.0.0.1:8080"); err != nil {
+        panic(err)
+    }
+}
+
+func shell(currentPath string, body mf.Node) mf.Node {
+    return dw.Shell(dw.ShellProps{
+        CurrentPath:       currentPath,
+        Brand:             dw.Brand{Title: "Revenue Ops", Subtitle: "DashWind admin", Mark: "R", Href: "/"},
+        Navigation:        navigation,
+        SearchPlaceholder: "Search customers",
+        User:              dw.UserMenu{Name: "Admin User", Email: "admin@example.com", Initials: "AU"},
+    }, body)
+}
+
+func dashboard(ctx *mb.Context) mf.Node {
+    customers := ctx.GetGlobal("customers").([]customer)
+    return mf.DivProps(mf.ElementProps{Class: "space-y-6"},
+        dw.PageHeader(dw.PageHeaderProps{Title: "Dashboard", Description: "Monitor subscription health and revenue."}),
+        dw.MetricGrid(dw.MetricGridProps{Items: []dw.Metric{
+            {Title: "Customers", Value: fmt.Sprint(len(customers)), Description: "Total accounts", Trend: "+2 this week", TrendTone: dw.ToneSuccess},
+            {Title: "MRR", Value: fmt.Sprintf("$%d", totalMRR(customers)), Description: "Monthly recurring revenue", Trend: "12% growth", TrendTone: dw.ToneSuccess},
+            {Title: "Needs review", Value: fmt.Sprint(countByStatus(customers, "Review")), Description: "Accounts to follow up", Trend: "Prioritize today", TrendTone: dw.ToneWarning},
+        }}),
+        dw.CardPanel(dw.CardPanelProps{Title: "Next actions", Description: "Use Actions to update only the main region."}, mf.Text("Open Customers and toggle a status.")),
+    )
+}
+
+func customersPage(ctx *mb.Context) mf.Node {
+    customers := ctx.GetGlobal("customers").([]customer)
+    return dw.ResourcePage(dw.ResourcePageProps[customer]{
+        Title:       "Customers",
+        Description: "List, inspect, and update customer status.",
+        Rows:        customers,
+        Columns: []dw.Column[customer]{
+            {Header: "Name", Sortable: true, Cell: func(c customer) mf.Node { return mf.Text(c.Name) }},
+            {Header: "Plan", Cell: func(c customer) mf.Node { return mf.Text(c.Plan) }},
+            {Header: "MRR", Class: "text-right", Cell: func(c customer) mf.Node { return mf.Text(fmt.Sprintf("$%d", c.MRR)) }},
+            {Header: "Status", Cell: func(c customer) mf.Node { return mf.Badge(mf.BadgeProps{Label: c.Status, Props: mf.ComponentProps{Variant: "primary"}}) }},
+        },
+        RowActions: func(c customer) []dw.Action {
+            return []dw.Action{{
+                Label:  "Toggle",
+                Action: "/customers/toggle",
+                Target: "#" + dw.DefaultMainTargetID,
+                Swap:   "outerHTML",
+                Class:  "btn-sm btn-outline",
+                Fields: map[string]string{"id": c.ID},
+            }}
+        },
+    })
+}
+
+func settingsPage() mf.Node {
+    return dw.SettingsSection(dw.SettingsSectionProps{
+        Title:       "Workspace settings",
+        Description: "Start with preset fields, then replace them with your own handlers.",
+        Fields: []dw.Field{
+            {Name: "workspace", Label: "Workspace name", Value: "Revenue Ops", Required: true},
+            {Name: "timezone", Label: "Timezone", Value: "UTC"},
+        },
+        SubmitLabel: "Save settings",
+    })
+}
+
+func totalMRR(customers []customer) int {
+    total := 0
+    for _, c := range customers {
+        total += c.MRR
+    }
+    return total
+}
+
+func countByStatus(customers []customer, status string) int {
+    count := 0
+    for _, c := range customers {
+        if c.Status == status {
+            count++
+        }
+    }
+    return count
+}`;
+
+const runCommands = `go run .
+# open http://127.0.0.1:8080`;
+const customCSSOption = `dw.Options{CustomCSS: "..."}`;
+---
+<BaseLayout title="DashWind管理画面アプリ開発手順 - Marionette" lang="ja" languageSwitcherPath="/marionette/en/tutorial/dashwind-admin/">
+  <article class="training-doc">
+    <header>
+      <p class="eyebrow">Tutorial</p>
+      <h1>DashWindで管理画面アプリを作る</h1>
+      <p class="lead">
+        Marionette の <code>frontend/dashwind</code> パッケージを使い、サイドバー、KPI、一覧テーブル、行アクション、設定フォームを備えた管理画面を作ります。
+      </p>
+    </header>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 1</p>
+      <h2>プロジェクトを準備する</h2>
+      <p>空の Go module を作成し、Marionette を追加します。</p>
+      <pre><code>{projectCommands}</code></pre>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 2</p>
+      <h2>DashWindの役割を決める</h2>
+      <p>
+        DashWind は管理画面向けの高レベル部品です。<code>dw.Use</code> で DaisyUI/Tailwind と既定CSSを登録し、
+        <code>dw.Shell</code> で共通レイアウト、<code>dw.MetricGrid</code> でKPI、<code>dw.ResourcePage</code> で一覧画面を組み立てます。
+      </p>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 3</p>
+      <h2><code>main.go</code> を作成する</h2>
+      <p>次のコードを <code>main.go</code> に貼り付けます。1ファイルで状態、ルーティング、DashWindシェル、Action更新まで確認できます。</p>
+      <pre><code>{mainCode}</code></pre>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 4</p>
+      <h2>起動して画面を確認する</h2>
+      <p>ローカルサーバーを起動し、ブラウザでダッシュボードを開きます。</p>
+      <pre><code>{runCommands}</code></pre>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 5</p>
+      <h2>実装を読む順番</h2>
+      <ol>
+        <li><code>dw.Use</code> で DashWind 用のスタイルをアプリに登録する</li>
+        <li><code>navigation</code> と <code>shell</code> で全ページ共通のサイドバーとトップバーを定義する</li>
+        <li><code>dashboard</code> でKPIカードと補助カードを配置する</li>
+        <li><code>customersPage</code> で <code>ResourcePage</code>、列定義、行アクションをまとめる</li>
+        <li><code>app.Action</code> で状態を更新し、<code>dw.ShellContent</code> だけを <code>outerHTML</code> で差し替える</li>
+      </ol>
+    </section>
+
+    <section class="lesson-step">
+      <p class="step-label">Step 6</p>
+      <h2>拡張ポイント</h2>
+      <ul>
+        <li>外部DBを使う場合は <code>SetGlobal</code> の seed データをリポジトリ層に置き換える</li>
+        <li>認証を追加する場合は <code>app.Page</code> の先頭でセッションを確認し、未ログイン時にログインページを返す</li>
+        <li>一覧が大きくなる場合は <code>ResourcePage</code> の <code>Filters</code> と <code>Search</code> にフォームを渡し、Actionで条件を再計算する</li>
+        <li>自社ブランドに合わせる場合は <code>{customCSSOption}</code> や DaisyUI テーマを変更する</li>
+      </ul>
+      <p>次は <a href="/marionette/ja/tutorial/desktop/">デスクトップアプリとして実行する（任意）</a> に進み、同じ管理画面をデスクトップWebViewで起動できます。</p>
+    </section>
+  </article>
+</BaseLayout>

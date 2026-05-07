@@ -1,6 +1,8 @@
 package dashwind
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -9,16 +11,14 @@ import (
 
 func TestShellRendersPublicNavigationAndMainRegion(t *testing.T) {
 	node := Shell(ShellProps{
-		CurrentTitle:      "Dashboard",
-		BrandTitle:        "Acme Admin",
-		BrandSubtitle:     "Operations",
+		Brand:             Brand{Title: "Acme Admin", Subtitle: "Operations"},
+		CurrentPath:       "/",
 		SearchPlaceholder: "Search accounts",
-		NavGroups: []NavGroup{{Label: "Menu", Items: []NavItem{
+		Navigation: []NavGroup{{Label: "Menu", Items: []NavItem{
 			{Label: "Dashboard", Href: "/", Icon: "▦"},
 			{Label: "Leads", Href: "/leads", Icon: "▣"},
 		}}},
-		Content: mf.Text("Hello DashWind"),
-	})
+	}, mf.Text("Hello DashWind"))
 	html, err := node.Render()
 	if err != nil {
 		t.Fatalf("render shell: %v", err)
@@ -27,6 +27,44 @@ func TestShellRendersPublicNavigationAndMainRegion(t *testing.T) {
 	for _, want := range []string{"dashwind-shell", `id="dashwind-main"`, "Acme Admin", "Search accounts", `class="active" href="/"`, "Hello DashWind"} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected shell to contain %q, got %q", want, body)
+		}
+	}
+}
+
+func TestShellGolden(t *testing.T) {
+	node := Shell(ShellProps{
+		DrawerID:          "account-drawer",
+		MainTargetID:      "account-main",
+		Brand:             Brand{Title: "Acme Admin", Subtitle: "Operations", Mark: "A", Href: "/"},
+		CurrentPath:       "/reports",
+		SearchPlaceholder: "Search reports",
+		Navigation: []NavGroup{{Label: "Menu", Items: []NavItem{
+			{Label: "Dashboard", Href: "/", Icon: "▦"},
+			{Label: "Reports", Href: "/reports", Icon: "▣"},
+		}}},
+		User: UserMenu{
+			Name:     "Ada Lovelace",
+			Email:    "ada@example.com",
+			Initials: "AL",
+			Items:    []NavItem{{Label: "Profile", Href: "/profile"}},
+		},
+	}, mf.Text("Report body"))
+	rendered, err := node.Render()
+	if err != nil {
+		t.Fatalf("render shell: %v", err)
+	}
+	got := strings.TrimSpace(string(rendered)) + "\n"
+	goldenPath := filepath.Join("testdata", "golden", "shell.golden.html")
+	want, err := os.ReadFile(goldenPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if got != string(want) {
+		t.Fatalf("golden mismatch\nwant:\n%s\ngot:\n%s", want, got)
+	}
+	for _, want := range []string{"drawer", "navbar", "menu", `class="active" href="/reports"`} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected golden shell to contain %q, got %q", want, got)
 		}
 	}
 }

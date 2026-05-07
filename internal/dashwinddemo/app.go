@@ -135,17 +135,25 @@ func BuildApp() *mb.App {
 func shell(current string, body mf.Node) mf.Node {
 	return dw.Shell(dw.ShellProps{
 		CurrentTitle:      current,
-		BrandTitle:        "DashWind",
-		BrandSubtitle:     "DaisyUI admin template demo",
+		CurrentPath:       currentPath(current),
+		Brand:             dw.Brand{Title: "DashWind", Subtitle: "DaisyUI admin template demo"},
 		SearchPlaceholder: "Search DashWind demo",
-		NavGroups:         navGroups(),
-		Content:           body,
+		Navigation:        navGroups(),
 		SidebarFooter:     div("mt-6 rounded-box bg-primary/10 p-4 text-sm", paragraph("font-semibold", "Marionette port"), paragraph("mt-1 opacity-70", "React/Redux template patterns rebuilt as Go handlers and htmx fragments.")),
-	})
+	}, body)
 }
 
 func mainContent(body mf.Node) mf.Node {
 	return dw.ShellContent(mainTargetID, body)
+}
+
+func currentPath(current string) string {
+	for _, route := range routes {
+		if route.Name == current {
+			return route.Path
+		}
+	}
+	return "/"
 }
 
 func navGroups() []dw.NavGroup {

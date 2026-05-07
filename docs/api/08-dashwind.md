@@ -20,18 +20,17 @@ app.AddStyle(dw.DefaultCSS)
 
 ```go
 page := dw.Shell(dw.ShellProps{
-    CurrentTitle:      "Dashboard",
-    BrandTitle:        "DashWind",
-    BrandSubtitle:     "Admin workspace",
+    Brand:             dw.Brand{Title: "DashWind", Subtitle: "Admin workspace"},
+    CurrentPath:       "/",
     SearchPlaceholder: "Search workspace",
-    NavGroups: []dw.NavGroup{
+    Navigation: []dw.NavGroup{
         {Label: "Menu", Items: []dw.NavItem{
             {Label: "Dashboard", Href: "/", Icon: "▦"},
             {Label: "Leads", Href: "/leads", Icon: "▣"},
         }},
     },
-    Content: dashboardBody,
-})
+    User: dw.UserMenu{Name: "Ada Lovelace", Email: "ada@example.com", Initials: "AL"},
+}, dashboardBody)
 ```
 
 For htmx actions that replace only the main content area, return `dw.ShellContent(dw.DefaultMainTargetID, body)` from the action handler.

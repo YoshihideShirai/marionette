@@ -259,8 +259,8 @@ func TestUnregisteredPageReturnsNotFound(t *testing.T) {
 func TestActionRendersFragmentAndParsesForm(t *testing.T) {
 	app := New()
 	app.Action("users/create", func(ctx *Context) Node {
-		ctx.Set("name", ctx.FormValue("name"))
-		return DivProps(ElementProps{ID: "users", Class: "card"}, Text(ctx.Get("name").(string)))
+		ctx.SetGlobal("name", ctx.FormValue("name"))
+		return DivProps(ElementProps{ID: "users", Class: "card"}, Text(ctx.GetGlobal("name").(string)))
 	})
 
 	form := url.Values{"name": {"Aiko"}}
@@ -299,8 +299,8 @@ func TestActionRejectsGet(t *testing.T) {
 func TestContextQueryAndStateHelpers(t *testing.T) {
 	app := New()
 	app.Page("/", func(ctx *Context) Node {
-		ctx.Set("count", 2)
-		return DivID("app", Text(ctx.Query("filter")+":"+ctx.Param("id")+":"+strings.Repeat("x", ctx.GetInt("count"))))
+		ctx.SetGlobal("count", 2)
+		return DivID("app", Text(ctx.Query("filter")+":"+ctx.Param("id")+":"+strings.Repeat("x", ctx.GetGlobalInt("count"))))
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/?filter=active", nil)
@@ -312,15 +312,31 @@ func TestContextQueryAndStateHelpers(t *testing.T) {
 	}
 }
 
+func TestAppGlobalStateHelpers(t *testing.T) {
+	app := New()
+	app.SetGlobal("count", 3)
+	app.SetGlobal("name", "Aiko")
+
+	if got := app.GetGlobalInt("count"); got != 3 {
+		t.Fatalf("expected global int helper to return 3, got %d", got)
+	}
+	if got := app.GetGlobal("name"); got != "Aiko" {
+		t.Fatalf("expected global value %q, got %v", "Aiko", got)
+	}
+	if got := app.GetGlobalInt("name"); got != 0 {
+		t.Fatalf("expected non-int global value to return 0, got %d", got)
+	}
+}
+
 func TestContextLocalIsRequestScopedAndSharedStateUsesHelpers(t *testing.T) {
 	app := New()
-	app.Set("shared", "app")
+	app.SetGlobal("shared", "app")
 	app.Page("/", func(ctx *Context) Node {
 		if ctx.Local == nil {
 			t.Fatalf("expected Context.Local to be initialized")
 		}
 		ctx.Local["request"] = "local"
-		return DivID("app", Text(ctx.Local["request"].(string)+":"+ctx.Get("shared").(string)))
+		return DivID("app", Text(ctx.Local["request"].(string)+":"+ctx.GetGlobal("shared").(string)))
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -385,7 +401,7 @@ func TestFlashPersistsForNextRequestAndAutoClears(t *testing.T) {
 func TestAppStateConcurrentSetViaContext(t *testing.T) {
 	app := New()
 	app.Action("set", func(ctx *Context) Node {
-		ctx.Set("name", ctx.FormValue("name"))
+		ctx.SetGlobal("name", ctx.FormValue("name"))
 		return DivID("ok")
 	})
 
@@ -414,7 +430,7 @@ func TestAppStateConcurrentSetViaContext(t *testing.T) {
 func TestContextSetIsVisibleFromAppGetInt(t *testing.T) {
 	app := New()
 	app.Page("/", func(ctx *Context) Node {
-		ctx.Set("count", 7)
+		ctx.SetGlobal("count", 7)
 		return DivID("app")
 	})
 
@@ -422,7 +438,7 @@ func TestContextSetIsVisibleFromAppGetInt(t *testing.T) {
 	rr := httptest.NewRecorder()
 	app.Handler().ServeHTTP(rr, req)
 
-	if got := app.GetInt("count"); got != 7 {
+	if got := app.GetGlobalInt("count"); got != 7 {
 		t.Fatalf("expected shared app/context state to be 7, got %d", got)
 	}
 }

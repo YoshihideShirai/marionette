@@ -41,6 +41,8 @@
 - 登録済みアセットプレフィックスに基づく URL を返します。
 
 ### App state helpers
-- `Set(key string, value any)`
-- `Get(key string) any`
-- `GetInt(key string) int`
+- `Global` が名前に付く App state helper は、アプリの全ユーザー・全リクエストで共有される state を読み書きします。
+- `SetGlobal(key string, value any)`: mutex で保護しながらアプリ共有 state に書き込みます。
+- `GetGlobal(key string) any`: mutex で保護しながらアプリ共有 state を読み取ります。
+- `GetGlobalInt(key string) int`: `GetGlobal` の結果を `int` に type assertion し、値がない/`int` でない場合は `0` を返します。
+- Deprecated: `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int` は互換エイリアスです。アプリ全体の state へアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` を使ってください。

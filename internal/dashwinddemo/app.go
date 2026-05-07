@@ -101,9 +101,9 @@ const mainTargetID = "dashwind-main"
 
 func BuildApp() *mb.App {
 	app := mb.New()
-	app.Set("period", "Last 30 days")
-	app.Set("notice", "")
-	app.Set("leads", append([]lead(nil), seedLeads...))
+	app.SetGlobal("period", "Last 30 days")
+	app.SetGlobal("notice", "")
+	app.SetGlobal("leads", append([]lead(nil), seedLeads...))
 	dw.Use(app, dw.Options{})
 	pageBodies := map[string]func(*mb.Context) mf.Node{
 		"/": dashboardPage, "/leads": leadsPage, "/transactions": transactionsPage, "/analytics": analyticsPage, "/integration": integrationPage, "/calendar": calendarPage,
@@ -126,28 +126,28 @@ func BuildApp() *mb.App {
 
 	app.Action("dashboard/period", func(ctx *mb.Context) mf.Node {
 		period := normalizePeriod(ctx.FormValue("period"))
-		ctx.Set("period", period)
-		ctx.Set("notice", fmt.Sprintf("Period updated to %s", period))
+		ctx.SetGlobal("period", period)
+		ctx.SetGlobal("notice", fmt.Sprintf("Period updated to %s", period))
 		return mainContent(dashboardPage(ctx))
 	})
 	app.Action("leads/add", func(ctx *mb.Context) mf.Node {
-		leads := append([]lead(nil), ctx.Get("leads").([]lead)...)
+		leads := append([]lead(nil), ctx.GetGlobal("leads").([]lead)...)
 		n := len(leads) + 1
 		leads = append([]lead{{fmt.Sprintf("Demo Lead %d", n), "New opportunity", fmt.Sprintf("demo%d@example.com", n), "Today", "Open", "Demo", "DL"}}, leads...)
-		ctx.Set("leads", leads)
-		ctx.Set("notice", "Added a demo lead")
+		ctx.SetGlobal("leads", leads)
+		ctx.SetGlobal("notice", "Added a demo lead")
 		return mainContent(leadsPage(ctx))
 	})
 	app.Action("leads/delete", func(ctx *mb.Context) mf.Node {
 		email := strings.TrimSpace(ctx.FormValue("email"))
 		filtered := make([]lead, 0)
-		for _, l := range ctx.Get("leads").([]lead) {
+		for _, l := range ctx.GetGlobal("leads").([]lead) {
 			if l.Email != email {
 				filtered = append(filtered, l)
 			}
 		}
-		ctx.Set("leads", filtered)
-		ctx.Set("notice", "Lead removed")
+		ctx.SetGlobal("leads", filtered)
+		ctx.SetGlobal("notice", "Lead removed")
 		return mainContent(leadsPage(ctx))
 	})
 	return app
@@ -190,7 +190,7 @@ func dashboardPage(ctx *mb.Context) mf.Node {
 		metrics = append(metrics, statCardNode(s))
 	}
 	return div("space-y-6",
-		pageTitle("Dashboard", "Marionette rebuild of DashWind DashboardTopBar, Stats, Chart, and UserChannels sections.", periodForm(ctx.Get("period").(string))),
+		pageTitle("Dashboard", "Marionette rebuild of DashWind DashboardTopBar, Stats, Chart, and UserChannels sections.", periodForm(ctx.GetGlobal("period").(string))),
 		notice,
 		dw.MetricGrid(dw.MetricGridProps{Items: metrics}),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-2",
@@ -260,7 +260,7 @@ func chartCard(title, desc string, chart mf.Node) mf.Node {
 }
 
 func leadsPage(ctx *mb.Context) mf.Node {
-	rows := ctx.Get("leads").([]lead)
+	rows := ctx.GetGlobal("leads").([]lead)
 	columns := []dw.Column[lead]{
 		{Header: "Name", Cell: leadIdentity, Sortable: true},
 		{Header: "Email Id", Cell: func(l lead) mf.Node { return mf.Text(l.Email) }},
@@ -512,11 +512,11 @@ func pageTitle(title, desc string, actions mf.Node) mf.Node {
 }
 
 func noticeNode(ctx *mb.Context) mf.Node {
-	notice, _ := ctx.Get("notice").(string)
+	notice, _ := ctx.GetGlobal("notice").(string)
 	if strings.TrimSpace(notice) == "" {
 		return mf.Raw("")
 	}
-	ctx.Set("notice", "")
+	ctx.SetGlobal("notice", "")
 	return daisy.Alert(notice, "", mf.ComponentProps{Class: "alert-success shadow"})
 }
 

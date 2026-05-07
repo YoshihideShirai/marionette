@@ -18,7 +18,7 @@ type Context struct {
 	Request *http.Request
 	Local   map[string]any
 
-	// Deprecated: use Context.Get/Set or Context.Local instead.
+	// Deprecated: use Context.GetGlobal/SetGlobal or Context.Local instead.
 	State   map[string]any
 	app     *App
 	flashes []FlashMessage
@@ -60,7 +60,8 @@ func (c *Context) Query(name string) string {
 	return c.Request.URL.Query().Get(name)
 }
 
-func (c *Context) Set(key string, value any) {
+// SetGlobal writes a value into app-wide state shared by all users.
+func (c *Context) SetGlobal(key string, value any) {
 	if c.app == nil {
 		if c.State == nil {
 			c.State = map[string]any{}
@@ -73,7 +74,8 @@ func (c *Context) Set(key string, value any) {
 	c.app.state[key] = value
 }
 
-func (c *Context) Get(key string) any {
+// GetGlobal reads a value from app-wide state shared by all users.
+func (c *Context) GetGlobal(key string) any {
 	if c.app == nil {
 		return c.State[key]
 	}
@@ -82,12 +84,34 @@ func (c *Context) Get(key string) any {
 	return c.app.state[key]
 }
 
-func (c *Context) GetInt(key string) int {
-	v, ok := c.Get(key).(int)
+// GetGlobalInt reads app-wide state and type-asserts it to int.
+func (c *Context) GetGlobalInt(key string) int {
+	v, ok := c.GetGlobal(key).(int)
 	if !ok {
 		return 0
 	}
 	return v
+}
+
+// Set writes a value into app-wide state shared by all users.
+//
+// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
+func (c *Context) Set(key string, value any) {
+	c.SetGlobal(key, value)
+}
+
+// Get reads a value from app-wide state shared by all users.
+//
+// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
+func (c *Context) Get(key string) any {
+	return c.GetGlobal(key)
+}
+
+// GetInt reads app-wide state and type-asserts it to int.
+//
+// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
+func (c *Context) GetInt(key string) int {
+	return c.GetGlobalInt(key)
 }
 
 func (c *Context) AddFlash(level FlashLevel, message string) {
@@ -280,20 +304,48 @@ func (a *App) AddJavaScript(js string) {
 	a.javascripts = append(a.javascripts, template.JS(js))
 }
 
-func (a *App) Set(key string, value any) {
+// SetGlobal writes a value into app-wide state shared by all users.
+func (a *App) SetGlobal(key string, value any) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.state[key] = value
 }
 
-func (a *App) GetInt(key string) int {
+// GetGlobal reads a value from app-wide state shared by all users.
+func (a *App) GetGlobal(key string) any {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	v, ok := a.state[key].(int)
+	return a.state[key]
+}
+
+// GetGlobalInt reads app-wide state and type-asserts it to int.
+func (a *App) GetGlobalInt(key string) int {
+	v, ok := a.GetGlobal(key).(int)
 	if !ok {
 		return 0
 	}
 	return v
+}
+
+// Set writes a value into app-wide state shared by all users.
+//
+// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
+func (a *App) Set(key string, value any) {
+	a.SetGlobal(key, value)
+}
+
+// Get reads a value from app-wide state shared by all users.
+//
+// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
+func (a *App) Get(key string) any {
+	return a.GetGlobal(key)
+}
+
+// GetInt reads app-wide state and type-asserts it to int.
+//
+// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
+func (a *App) GetInt(key string) int {
+	return a.GetGlobalInt(key)
 }
 
 // Page registers a full-page GET view.

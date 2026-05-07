@@ -104,12 +104,12 @@ func main() {
 func buildApp() *mb.App {
 	app := mb.New()
 	app.AddStyle(customCSSDemoStyles())
-	app.Set("nextUserID", 4)
-	app.Set("users", demoUsers())
-	app.Set("deleteModalOpen", false)
-	app.Set("deleteTargetID", 0)
-	app.Set("loading", false)
-	app.Set("jobStore", newJobStore())
+	app.SetGlobal("nextUserID", 4)
+	app.SetGlobal("users", demoUsers())
+	app.SetGlobal("deleteModalOpen", false)
+	app.SetGlobal("deleteTargetID", 0)
+	app.SetGlobal("loading", false)
+	app.SetGlobal("jobStore", newJobStore())
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return renderDashboardPage(ctx)
@@ -125,7 +125,7 @@ func buildApp() *mb.App {
 	})
 
 	app.Action("users/create", func(ctx *mb.Context) mf.Node {
-		ctx.Set("loading", false)
+		ctx.SetGlobal("loading", false)
 		form := createUserFormState{
 			Name:      strings.TrimSpace(ctx.FormValue("name")),
 			Email:     strings.TrimSpace(ctx.FormValue("email")),
@@ -149,10 +149,10 @@ func buildApp() *mb.App {
 
 		if len(form.Errors) == 0 {
 			users := getUsers(ctx)
-			nextID := ctx.GetInt("nextUserID")
+			nextID := ctx.GetGlobalInt("nextUserID")
 			users = append(users, user{ID: nextID, Name: form.Name, Email: form.Email, Role: form.Role, StartDate: form.StartDate})
-			ctx.Set("users", users)
-			ctx.Set("nextUserID", nextID+1)
+			ctx.SetGlobal("users", users)
+			ctx.SetGlobal("nextUserID", nextID+1)
 			ctx.FlashSuccess("User was saved successfully.")
 			return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 		}
@@ -162,22 +162,22 @@ func buildApp() *mb.App {
 	})
 
 	app.Action("users/delete/prompt", func(ctx *mb.Context) mf.Node {
-		ctx.Set("loading", false)
+		ctx.SetGlobal("loading", false)
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
-		ctx.Set("deleteTargetID", id)
-		ctx.Set("deleteModalOpen", true)
+		ctx.SetGlobal("deleteTargetID", id)
+		ctx.SetGlobal("deleteModalOpen", true)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/delete/cancel", func(ctx *mb.Context) mf.Node {
-		ctx.Set("loading", false)
-		ctx.Set("deleteModalOpen", false)
-		ctx.Set("deleteTargetID", 0)
+		ctx.SetGlobal("loading", false)
+		ctx.SetGlobal("deleteModalOpen", false)
+		ctx.SetGlobal("deleteTargetID", 0)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/delete/confirm", func(ctx *mb.Context) mf.Node {
-		ctx.Set("loading", false)
+		ctx.SetGlobal("loading", false)
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
 		users := getUsers(ctx)
 		next := users[:0]
@@ -186,35 +186,35 @@ func buildApp() *mb.App {
 				next = append(next, u)
 			}
 		}
-		ctx.Set("users", next)
-		ctx.Set("deleteModalOpen", false)
-		ctx.Set("deleteTargetID", 0)
+		ctx.SetGlobal("users", next)
+		ctx.SetGlobal("deleteModalOpen", false)
+		ctx.SetGlobal("deleteTargetID", 0)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/loading/start", func(ctx *mb.Context) mf.Node {
-		ctx.Set("loading", true)
+		ctx.SetGlobal("loading", true)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/loading/stop", func(ctx *mb.Context) mf.Node {
-		ctx.Set("loading", false)
+		ctx.SetGlobal("loading", false)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("users/reset", func(ctx *mb.Context) mf.Node {
-		ctx.Set("users", demoUsers())
-		ctx.Set("nextUserID", 4)
-		ctx.Set("deleteModalOpen", false)
-		ctx.Set("deleteTargetID", 0)
-		ctx.Set("loading", false)
+		ctx.SetGlobal("users", demoUsers())
+		ctx.SetGlobal("nextUserID", 4)
+		ctx.SetGlobal("deleteModalOpen", false)
+		ctx.SetGlobal("deleteTargetID", 0)
+		ctx.SetGlobal("loading", false)
 		ctx.FlashInfo("Demo data was reset.")
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 	})
 
 	app.Action("analytics/aggregate/start", func(ctx *mb.Context) mf.Node {
 		params := aggregateParams{FromMonth: strings.TrimSpace(ctx.FormValue("from_month")), Role: strings.TrimSpace(ctx.FormValue("role"))}
-		store := ctx.Get("jobStore").(*jobStore)
+		store := ctx.GetGlobal("jobStore").(*jobStore)
 		jobID := store.startAggregateJob(getUsers(ctx), params)
 		return renderAggregateWorkspace(ctx, jobID)
 	})
@@ -242,7 +242,7 @@ func validateStartDate(raw string) string {
 }
 
 func getUsers(ctx *mb.Context) []user {
-	users, ok := ctx.Get("users").([]user)
+	users, ok := ctx.GetGlobal("users").([]user)
 	if !ok {
 		return nil
 	}
@@ -436,7 +436,7 @@ func renderAggregateWorkspace(ctx *mb.Context, jobID string) mf.Node {
 		children = append(children, mf.EmptyState(mf.EmptyStateProps{Title: "No job started", Description: "Run aggregation to generate table/chart updates."}))
 		return mf.Region(mf.RegionProps{ID: "aggregate-workspace", Props: mf.ComponentProps{Class: "space-y-3"}}, children...)
 	}
-	store := ctx.Get("jobStore").(*jobStore)
+	store := ctx.GetGlobal("jobStore").(*jobStore)
 	j, ok := store.getJob(jobID)
 	if !ok {
 		children = append(children, mf.Toast(mf.ToastProps{Title: "Job not found", Description: "The execution ID is unknown.", Props: mf.ComponentProps{Variant: "warning"}}))
@@ -674,7 +674,7 @@ func pageLink(page, perPage int, sortKey string, totalPages int) string {
 }
 
 func isLoading(ctx *mb.Context) bool {
-	v, _ := ctx.Get("loading").(bool)
+	v, _ := ctx.GetGlobal("loading").(bool)
 	return v
 }
 
@@ -1006,7 +1006,7 @@ func roleMixRow(role string, count int) mf.Node {
 }
 
 func renderDeleteModal(ctx *mb.Context) mf.Node {
-	targetID, _ := ctx.Get("deleteTargetID").(int)
+	targetID, _ := ctx.GetGlobal("deleteTargetID").(int)
 	targetName := ""
 	for _, u := range getUsers(ctx) {
 		if u.ID == targetID {
@@ -1030,7 +1030,7 @@ func renderDeleteModal(ctx *mb.Context) mf.Node {
 				mf.SubmitButton("Delete", mf.ComponentProps{Variant: "danger", Size: "sm"}),
 			),
 		),
-		Open: ctx.Get("deleteModalOpen") == true,
+		Open: ctx.GetGlobal("deleteModalOpen") == true,
 	})
 }
 

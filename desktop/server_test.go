@@ -16,16 +16,16 @@ import (
 
 func TestStartLocalServerServesPagesActionsAndAssets(t *testing.T) {
 	app := backend.New()
-	app.Set("name", "Aiko")
+	app.SetGlobal("name", "Aiko")
 	app.Assets("/assets", fstest.MapFS{
 		"app.css": {Data: []byte("body { color: red; }")},
 	})
 	app.Page("/", func(ctx *backend.Context) frontend.Node {
-		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Hello "+ctx.Get("name").(string)))
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Hello "+ctx.GetGlobal("name").(string)))
 	})
 	app.Action("rename", func(ctx *backend.Context) frontend.Node {
-		ctx.Set("name", ctx.FormValue("name"))
-		return frontend.Text("Hello " + ctx.Get("name").(string))
+		ctx.SetGlobal("name", ctx.FormValue("name"))
+		return frontend.Text("Hello " + ctx.GetGlobal("name").(string))
 	})
 
 	server, err := startLocalServer(app.Handler())

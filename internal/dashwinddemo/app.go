@@ -267,12 +267,33 @@ func leadsPage(ctx *mb.Context) mf.Node {
 		{Header: "Created At", Cell: func(l lead) mf.Node { return mf.Text(l.CreatedAt) }, Sortable: true},
 		{Header: "Status", Cell: func(l lead) mf.Node { return statusBadge(l.Status) }},
 		{Header: "Assigned To", Cell: func(l lead) mf.Node { return mf.Text(l.Owner) }},
-		{HeaderClass: "w-12", Class: "text-right", Cell: func(l lead) mf.Node { return deleteLeadForm(l.Email) }},
 	}
 	return div("space-y-6",
-		pageTitle("Current Leads", "DashWind leads table with htmx-powered Add New and delete actions.", daisy.ButtonWithAttrs("Add New", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button", "hx-post": "/leads/add", "hx-target": "#" + mainTargetID, "hx-swap": "outerHTML"})),
 		noticeNode(ctx),
-		cardPanel("Leads List", "Rendered from Marionette server state instead of a Redux slice/API call.", dw.DataTable(dw.DataTableProps[lead]{Columns: columns, Rows: rows, Empty: mf.Text("No leads found")})),
+		dw.ResourcePage(dw.ResourcePageProps[lead]{
+			Title:       "Current Leads",
+			Description: "DashWind leads table with htmx-powered Add New and delete actions.",
+			Rows:        rows,
+			Columns:     columns,
+			PrimaryAction: dw.Action{
+				Label:  "Add New",
+				Action: "/leads/add",
+				Target: "#" + mainTargetID,
+				Swap:   "outerHTML",
+				Class:  "btn-primary btn-sm",
+			},
+			EmptyState: mf.EmptyStateProps{Title: "No leads found", Description: "Add a demo lead to repopulate this table."},
+			RowActions: func(l lead) []dw.Action {
+				return []dw.Action{{
+					Label:  "✕",
+					Action: "/leads/delete",
+					Target: "#" + mainTargetID,
+					Swap:   "outerHTML",
+					Class:  "btn-square btn-ghost btn-sm",
+					Fields: map[string]string{"email": l.Email},
+				}}
+			},
+		}),
 	)
 }
 
@@ -280,13 +301,6 @@ func leadIdentity(l lead) mf.Node {
 	return div("flex items-center gap-3",
 		daisy.AvatarPlaceholder(l.Avatar, "", "mask mask-squircle w-12 bg-neutral text-neutral-content"),
 		div("", div("font-bold", mf.Text(l.Name)), div("text-sm opacity-60", mf.Text(l.Role))),
-	)
-}
-
-func deleteLeadForm(email string) mf.Node {
-	return daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/leads/delete", Target: "#" + mainTargetID, Swap: "outerHTML"},
-		daisy.HiddenField("email", email),
-		daisy.ButtonWithAttrs("✕", mf.ComponentProps{Class: "btn-square btn-ghost btn-sm"}, map[string]string{"type": "submit"}),
 	)
 }
 
@@ -303,10 +317,14 @@ func transactionsPage(ctx *mb.Context) mf.Node {
 		{Header: "Status", Cell: func(t transaction) mf.Node { return statusBadge(t.Status) }},
 		{Header: "Amount", HeaderClass: "text-right", Class: "text-right", Cell: func(t transaction) mf.Node { return div("font-semibold", mf.Text("$"+strconv.Itoa(t.Amount))) }},
 	}
-	return div("space-y-6",
-		pageTitle("Transactions", "DashWind-style billing and transactions list.", daisy.StatsWithProps(daisy.StatsProps{Class: "shadow"}, daisy.StatItem(daisy.StatProps{Title: "Total", Value: "$" + strconv.Itoa(total), ValueClass: "text-primary"}))),
-		cardPanel("Recent Transactions", "", dw.DataTable(dw.DataTableProps[transaction]{Columns: columns, Rows: seedTransactions, Zebra: true})),
-	)
+	return dw.ResourcePage(dw.ResourcePageProps[transaction]{
+		Title:       "Transactions",
+		Description: "DashWind-style billing and transactions list.",
+		Rows:        seedTransactions,
+		Columns:     columns,
+		Filters:     []mf.Node{daisy.StatsWithProps(daisy.StatsProps{Class: "shadow"}, daisy.StatItem(daisy.StatProps{Title: "Total", Value: "$" + strconv.Itoa(total), ValueClass: "text-primary"}))},
+		EmptyState:  mf.EmptyStateProps{Title: "No transactions found", Description: "Transactions will appear here after invoices are created."},
+	})
 }
 
 func analyticsPage(ctx *mb.Context) mf.Node {

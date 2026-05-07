@@ -2,6 +2,7 @@
 package dashwind
 
 import (
+	"sort"
 	"strings"
 
 	mf "github.com/YoshihideShirai/marionette/frontend"
@@ -262,6 +263,157 @@ func StatsGrid(props StatsGridProps) mf.Node {
 		})))
 	}
 	return div(defaultString(props.Class, "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4"), cards...)
+}
+
+// Action describes a reusable button, link, or htmx form action for DashWind resource pages.
+type Action struct {
+	Label    string
+	Href     string
+	Action   string
+	Method   string
+	Target   string
+	Swap     string
+	Class    string
+	Attrs    mf.Attrs
+	Fields   map[string]string
+	Confirm  string
+	Disabled bool
+	Content  mf.Node
+}
+
+// ResourcePageProps configures a conventional list/resource page with a title, toolbar, table, and empty state.
+type ResourcePageProps[T any] struct {
+	Title         string
+	Description   string
+	Rows          []T
+	Columns       []Column[T]
+	PrimaryAction Action
+	Filters       []mf.Node
+	Search        mf.Node
+	EmptyState    mf.EmptyStateProps
+	RowActions    func(T) []Action
+}
+
+// ResourcePage renders a high-level DashWind resource page from reusable page, table, empty-state, and action primitives.
+func ResourcePage[T any](props ResourcePageProps[T]) mf.Node {
+	columns := append([]Column[T](nil), props.Columns...)
+	if props.RowActions != nil {
+		columns = append(columns, Column[T]{
+			HeaderClass: "w-0",
+			Class:       "text-right",
+			Cell: func(row T) mf.Node {
+				return renderActions(props.RowActions(row), "justify-end")
+			},
+		})
+	}
+
+	children := []mf.Node{PageHeader(PageHeaderProps{Title: props.Title, Description: props.Description, Actions: renderPrimaryAction(props.PrimaryAction)})}
+	if toolbar := resourceToolbar(props.Search, props.Filters); toolbar != nil {
+		children = append(children, toolbar)
+	}
+	if len(props.Rows) == 0 {
+		children = append(children, resourceEmptyState(props.EmptyState))
+	} else {
+		children = append(children, DataTable(DataTableProps[T]{Columns: columns, Rows: props.Rows}))
+	}
+	return div("space-y-6", children...)
+}
+
+func renderPrimaryAction(action Action) mf.Node {
+	if actionIsZero(action) {
+		return nil
+	}
+	return renderAction(action)
+}
+
+func renderActions(actions []Action, className string) mf.Node {
+	nodes := make([]mf.Node, 0, len(actions))
+	for _, action := range actions {
+		if actionIsZero(action) {
+			continue
+		}
+		nodes = append(nodes, renderAction(action))
+	}
+	if len(nodes) == 0 {
+		return mf.Raw("")
+	}
+	return daisy.Actions(mf.ActionsProps{Props: mf.ComponentProps{Class: className}}, nodes...)
+}
+
+func renderAction(action Action) mf.Node {
+	content := action.Content
+	if content == nil {
+		content = mf.Text(action.Label)
+	}
+	attrs := copyAttrs(action.Attrs)
+	if action.Confirm != "" {
+		attrs["hx-confirm"] = action.Confirm
+	}
+	if action.Href != "" {
+		attrs["href"] = action.Href
+		return mf.AnchorProps(mf.ElementProps{Class: actionClass(action), Attrs: attrs}, content)
+	}
+	if action.Action != "" {
+		fields := make([]mf.Node, 0, len(action.Fields)+1)
+		fieldNames := make([]string, 0, len(action.Fields))
+		for name := range action.Fields {
+			fieldNames = append(fieldNames, name)
+		}
+		sort.Strings(fieldNames)
+		for _, name := range fieldNames {
+			fields = append(fields, daisy.HiddenField(name, action.Fields[name]))
+		}
+		buttonAttrs := copyAttrs(attrs)
+		buttonAttrs["type"] = "submit"
+		fields = append(fields, daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: actionClassWithoutButtonPrefix(action), Disabled: action.Disabled}, buttonAttrs, content))
+		return daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: action.Action, Method: action.Method, Target: action.Target, Swap: action.Swap, Class: "inline-flex"}, fields...)
+	}
+	attrs["type"] = defaultString(attrs["type"], "button")
+	return daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: actionClassWithoutButtonPrefix(action), Disabled: action.Disabled}, attrs, content)
+}
+
+func resourceToolbar(search mf.Node, filters []mf.Node) mf.Node {
+	if search == nil && len(filters) == 0 {
+		return nil
+	}
+	children := []mf.Node{}
+	if search != nil {
+		children = append(children, div("w-full md:max-w-sm", search))
+	}
+	if len(filters) > 0 {
+		children = append(children, div("flex flex-wrap items-center gap-2", filters...))
+	}
+	return div("flex flex-col gap-3 md:flex-row md:items-center md:justify-between", children...)
+}
+
+func resourceEmptyState(props mf.EmptyStateProps) mf.Node {
+	if props.Title == "" {
+		props.Title = "No records found"
+	}
+	if props.Description == "" {
+		props.Description = "Create a record or adjust your filters to see data here."
+	}
+	return daisy.EmptyState(props)
+}
+
+func actionClass(action Action) string {
+	return strings.TrimSpace("btn " + actionClassWithoutButtonPrefix(action))
+}
+
+func actionClassWithoutButtonPrefix(action Action) string {
+	return strings.TrimSpace(defaultString(action.Class, "btn-sm"))
+}
+
+func actionIsZero(action Action) bool {
+	return action.Label == "" && action.Href == "" && action.Action == "" && action.Content == nil
+}
+
+func copyAttrs(attrs mf.Attrs) mf.Attrs {
+	copied := mf.Attrs{}
+	for key, value := range attrs {
+		copied[key] = value
+	}
+	return copied
 }
 
 // Column describes a high-level DashWind data table column for a row of type T.

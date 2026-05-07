@@ -44,5 +44,7 @@
 - `Global` が名前に付く App state helper は、アプリの全ユーザー・全リクエストで共有される state を読み書きします。
 - `SetGlobal(key string, value any)`: mutex で保護しながらアプリ共有 state に書き込みます。
 - `GetGlobal(key string) any`: mutex で保護しながらアプリ共有 state を読み取ります。
+- `UpdateGlobal(key string, fn func(old any) any) any`: mutex を取得したままアプリ共有 state を読み取り、変換し、書き戻します。カウンター、進捗 tick、append 形式の更新など、新しい値が古い値に依存する場合に使います。
 - `GetGlobalInt(key string) int`: `GetGlobal` の結果を `int` に type assertion し、値がない/`int` でない場合は `0` を返します。
-- Deprecated: `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int` は互換エイリアスです。アプリ全体の state へアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` を使ってください。
+- `IncrementGlobalInt(key string, delta int) int`: integer のカウンターや進捗値向けの `UpdateGlobal` 便利ラッパーです。値がない/`int` でない場合は `0` として扱い、`old + delta` を保存して新しい `int` を返します。
+- Deprecated: `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int` は互換エイリアスです。アプリ全体の state へアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` を使ってください。

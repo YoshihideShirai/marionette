@@ -148,11 +148,11 @@ func buildApp() *mb.App {
 		}
 
 		if len(form.Errors) == 0 {
-			users := getUsers(ctx)
-			nextID := ctx.GetGlobalInt("nextUserID")
-			users = append(users, user{ID: nextID, Name: form.Name, Email: form.Email, Role: form.Role, StartDate: form.StartDate})
-			ctx.SetGlobal("users", users)
-			ctx.SetGlobal("nextUserID", nextID+1)
+			nextID := ctx.IncrementGlobalInt("nextUserID", 1) - 1
+			ctx.UpdateGlobal("users", func(old any) any {
+				users := append([]user(nil), old.([]user)...)
+				return append(users, user{ID: nextID, Name: form.Name, Email: form.Email, Role: form.Role, StartDate: form.StartDate})
+			})
 			ctx.FlashSuccess("User was saved successfully.")
 			return renderUsersWorkspace(ctx, defaultCreateUserFormState())
 		}

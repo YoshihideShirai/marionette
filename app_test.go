@@ -312,6 +312,29 @@ func TestContextQueryAndStateHelpers(t *testing.T) {
 	}
 }
 
+func TestContextLocalIsRequestScopedAndSharedStateUsesHelpers(t *testing.T) {
+	app := New()
+	app.Set("shared", "app")
+	app.Page("/", func(ctx *Context) Node {
+		if ctx.Local == nil {
+			t.Fatalf("expected Context.Local to be initialized")
+		}
+		ctx.Local["request"] = "local"
+		return DivID("app", Text(ctx.Local["request"].(string)+":"+ctx.Get("shared").(string)))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if !strings.Contains(rr.Body.String(), "local:app") {
+		t.Fatalf("expected local and shared state output, got %q", rr.Body.String())
+	}
+	if got := app.state["request"]; got != nil {
+		t.Fatalf("expected Context.Local writes to stay request-local, got %v", got)
+	}
+}
+
 func TestFlashPersistsForNextRequestAndAutoClears(t *testing.T) {
 	app := New()
 	app.Action("save", func(ctx *Context) Node {

@@ -16,6 +16,9 @@ import (
 type Context struct {
 	Writer  http.ResponseWriter
 	Request *http.Request
+	Local   map[string]any
+
+	// Deprecated: use Context.Get/Set or Context.Local instead.
 	State   map[string]any
 	app     *App
 	flashes []FlashMessage
@@ -59,6 +62,9 @@ func (c *Context) Query(name string) string {
 
 func (c *Context) Set(key string, value any) {
 	if c.app == nil {
+		if c.State == nil {
+			c.State = map[string]any{}
+		}
 		c.State[key] = value
 		return
 	}
@@ -359,7 +365,8 @@ func (a *App) newContext(w http.ResponseWriter, r *http.Request) *Context {
 		a.mu.RUnlock()
 		clearFlashCookie(w, secure)
 	}
-	return &Context{Writer: w, Request: r, State: a.state, app: a, flashes: flashes, session: session}
+	local := map[string]any{}
+	return &Context{Writer: w, Request: r, Local: local, State: local, app: a, flashes: flashes, session: session}
 }
 
 func clearFlashCookie(w http.ResponseWriter, secure bool) {

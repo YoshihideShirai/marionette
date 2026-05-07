@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DashWind PageHeader example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>#marionette-root { width: 100%; max-width: none; padding: 0; }
+#marionette-root > * { animation: none; }
+.dashwind-shell .drawer-side .menu a.active { background: var(--color-primary); color: var(--color-primary-content); font-weight: 700; }
+.dashwind-shell .card, .dashwind-shell .stats { border: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent); }
+.dashwind-shell .stat-value { font-size: clamp(1.75rem, 2vw, 2.25rem); }</style>
+  </head>
+  <body class="bg-base-200 p-6 text-base-content">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><h1 class="text-3xl font-bold"><span>Customers</span></h1><p class="mt-1 text-base-content/60"><span>Track accounts, lifecycle stage, and owner activity.</span></p></div><button class="btn w-fit btn-primary btn-sm" type="button">New customer</button></div>
+  </body>
+</html>

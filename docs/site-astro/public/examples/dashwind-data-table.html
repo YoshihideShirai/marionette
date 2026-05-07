@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DashWind DataTable example</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>#marionette-root { width: 100%; max-width: none; padding: 0; }
+#marionette-root > * { animation: none; }
+.dashwind-shell .drawer-side .menu a.active { background: var(--color-primary); color: var(--color-primary-content); font-weight: 700; }
+.dashwind-shell .card, .dashwind-shell .stats { border: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent); }
+.dashwind-shell .stat-value { font-size: clamp(1.75rem, 2vw, 2.25rem); }</style>
+  </head>
+  <body class="bg-base-200 p-6 text-base-content">
+    <div class="overflow-x-auto"><table class="table table-zebra"><thead><tr><th aria-sort="none"><span class="inline-flex items-center gap-1"><span>Name</span><span aria-hidden="true" class="text-base-content/40">↕</span></span></th><th>Company</th><th>Stage</th></tr></thead><tbody><tr><td><span>Ada Lovelace</span></td><td><span>Analytical Engines</span></td><td class="text-right"><span class="badge">Qualified</span></td></tr><tr><td><span>Grace Hopper</span></td><td><span>Compiler Labs</span></td><td class="text-right"><span class="badge">Proposal</span></td></tr></tbody></table></div>
+  </body>
+</html>

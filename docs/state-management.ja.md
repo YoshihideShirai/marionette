@@ -33,6 +33,78 @@ Marionette では request/response モデルを明示的に扱います。ペー
 
 新しい値が古い値に依存する場合は、process 内で read/modify/write を atomic に行うため、`UpdateGlobal` または `IncrementGlobalInt` のような専用 helper を優先してください。
 
+### mutable な値: slice、map、pointer
+
+state の mutex が保護するのは `GetGlobal` や `SetGlobal` の操作そのものです。
+`GetGlobal` が返した slice、map、pointer をその後に変更しても、その変更は lock
+の外で行われます。返ってきた値は、その値自身が同期機構を持っている場合を除き、
+読み取り専用の reference として扱ってください。ルールは次のとおりです。
+
+- `GetGlobal` で取り出した map/slice を直接変更しない。
+- 変更は必ず `UpdateGlobal` の closure 内で行い、read/modify/write を app lock の内側に収める。
+- render や後続処理に mutable collection を渡す必要がある場合は、clone してから返す。state lock を保持したまま clone するには `GetGlobalSnapshot(key, clone)` を使う。
+- global state に mutable object への pointer を置く場合、その object 自身が lock または immutable/snapshot method を持つ必要がある。そうでない場合は immutable な値を保存し、`UpdateGlobal` で値ごと差し替える。
+
+安全な `App.UpdateGlobal` の例:
+
+```go
+app.UpdateGlobal("messages", func(old any) any {
+    messages, _ := old.([]string)
+    next := append([]string(nil), messages...)
+    return append(next, "new message")
+})
+
+app.UpdateGlobal("labels", func(old any) any {
+    labels, _ := old.(map[string]string)
+    next := make(map[string]string, len(labels)+1)
+    for key, value := range labels {
+        next[key] = value
+    }
+    next["status"] = "ready"
+    return next
+})
+
+count := app.IncrementGlobalInt("count", 1)
+// 独自の counter logic が必要な場合:
+count = app.UpdateGlobal("count", func(old any) any {
+    current, _ := old.(int)
+    return current + 1
+}).(int)
+```
+
+handler 内での安全な `Context.UpdateGlobal` の例:
+
+```go
+ctx.UpdateGlobal("messages", func(old any) any {
+    messages, _ := old.([]string)
+    next := append([]string(nil), messages...)
+    return append(next, ctx.FormValue("message"))
+})
+
+ctx.UpdateGlobal("labels", func(old any) any {
+    labels, _ := old.(map[string]string)
+    next := make(map[string]string, len(labels)+1)
+    for key, value := range labels {
+        next[key] = value
+    }
+    next["last_user"] = ctx.FormValue("name")
+    return next
+})
+
+count := ctx.IncrementGlobalInt("count", 1)
+```
+
+collection の snapshot を読む path では `GetGlobalSnapshot` を使います。
+
+```go
+func cloneStrings(old any) any {
+    values, _ := old.([]string)
+    return append([]string(nil), values...)
+}
+
+messages := ctx.GetGlobalSnapshot("messages", cloneStrings).([]string)
+```
+
 ## Decision tree
 
 値をどこに置くべきか迷ったら、次の順に判断します。

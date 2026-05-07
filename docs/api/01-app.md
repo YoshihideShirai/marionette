@@ -137,6 +137,11 @@ App state helpers whose names include `Global` read or write app-wide state shar
 #### `GetGlobal(key string) any`
 - Reads from the app shared state map with lock.
 - Because this API is named `Global`, the value is shared by all users of the app.
+- If the value is a mutable slice, map, or pointer, do not mutate it directly after `GetGlobal` returns; mutate under `UpdateGlobal` or read via `GetGlobalSnapshot` with a clone function.
+
+#### `GetGlobalSnapshot(key string, clone func(any) any) any`
+- Reads from app shared state and returns `clone(value)` while holding the app read lock.
+- Use this for read-only snapshots of slices, maps, or other mutable values before rendering or handing them to code that might mutate them.
 
 #### `UpdateGlobal(key string, fn func(old any) any) any`
 - Atomically reads, transforms, and writes app shared state while holding the app mutex.

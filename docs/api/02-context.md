@@ -52,6 +52,12 @@ app.Page("/", func(ctx *mb.Context) mf.Node {
 - Because this API is named `Global`, the value is shared by all users and all requests for the app.
 - If context has a parent app, read is synchronized via the app mutex.
 - If no app is attached, reads from the deprecated `Context.State` map for compatibility.
+- If the value is a mutable slice, map, or pointer, do not mutate it directly after `GetGlobal` returns; mutate under `UpdateGlobal` or read via `GetGlobalSnapshot` with a clone function.
+
+### `GetGlobalSnapshot(key string, clone func(any) any) any`
+- Reads application-shared state and returns `clone(value)` while the app read lock is held.
+- Use this for read-only snapshots of slices, maps, or other mutable values before rendering or handing them to code that might mutate them.
+- If no app is attached, it clones from the deprecated `Context.State` map for compatibility.
 
 ### `UpdateGlobal(key string, fn func(old any) any) any`
 - Atomically reads, transforms, and writes application-shared state.

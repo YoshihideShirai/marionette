@@ -45,6 +45,83 @@ When the next value depends on the previous value, prefer `UpdateGlobal` or a
 specific helper such as `IncrementGlobalInt` so the read/modify/write sequence is
 atomic within the process.
 
+### Mutable values: slices, maps, and pointers
+
+The state mutex protects the `GetGlobal` or `SetGlobal` operation itself, but it
+does not make a returned slice, map, or pointer safe to mutate after `GetGlobal`
+returns. Treat values returned by `GetGlobal` as read-only references unless the
+value has its own synchronization. Follow these rules:
+
+- Do **not** directly modify maps or slices returned by `GetGlobal`.
+- Perform every mutation in an `UpdateGlobal` closure so the read/modify/write
+  sequence stays under the app lock.
+- When rendering or returning a mutable collection to code that might modify it,
+  return a clone. Use `GetGlobalSnapshot(key, clone)` to clone while the state
+  lock is still held.
+- If global state stores a pointer to a mutable object, that object must provide
+  its own locking or immutable/snapshot methods. Otherwise store immutable values
+  and replace them with `UpdateGlobal`.
+
+Safe `App.UpdateGlobal` examples:
+
+```go
+app.UpdateGlobal("messages", func(old any) any {
+    messages, _ := old.([]string)
+    next := append([]string(nil), messages...)
+    return append(next, "new message")
+})
+
+app.UpdateGlobal("labels", func(old any) any {
+    labels, _ := old.(map[string]string)
+    next := make(map[string]string, len(labels)+1)
+    for key, value := range labels {
+        next[key] = value
+    }
+    next["status"] = "ready"
+    return next
+})
+
+count := app.IncrementGlobalInt("count", 1)
+// or, for custom counter logic:
+count = app.UpdateGlobal("count", func(old any) any {
+    current, _ := old.(int)
+    return current + 1
+}).(int)
+```
+
+Safe `Context.UpdateGlobal` examples inside handlers:
+
+```go
+ctx.UpdateGlobal("messages", func(old any) any {
+    messages, _ := old.([]string)
+    next := append([]string(nil), messages...)
+    return append(next, ctx.FormValue("message"))
+})
+
+ctx.UpdateGlobal("labels", func(old any) any {
+    labels, _ := old.(map[string]string)
+    next := make(map[string]string, len(labels)+1)
+    for key, value := range labels {
+        next[key] = value
+    }
+    next["last_user"] = ctx.FormValue("name")
+    return next
+})
+
+count := ctx.IncrementGlobalInt("count", 1)
+```
+
+Use `GetGlobalSnapshot` for read paths that need a collection snapshot:
+
+```go
+func cloneStrings(old any) any {
+    values, _ := old.([]string)
+    return append([]string(nil), values...)
+}
+
+messages := ctx.GetGlobalSnapshot("messages", cloneStrings).([]string)
+```
+
 ## Decision tree
 
 Use this checklist when deciding where a value belongs.

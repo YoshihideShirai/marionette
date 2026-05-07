@@ -51,6 +51,12 @@ app.Page("/", func(ctx *mb.Context) mf.Node {
 - API 名に `Global` が付くため、この値はアプリの全ユーザー・全リクエストで共有されます。
 - 親アプリを持つ context では app mutex 経由で同期されます。
 - 親アプリがない場合は互換性のため deprecated な `Context.State` map から読み取ります。
+- 返ってきた slice、map、pointer は直接変更せず、変更は `UpdateGlobal` 内で行うか、`GetGlobalSnapshot` と clone 関数で snapshot を読んでください。
+
+### `GetGlobalSnapshot(key string, clone func(any) any) any`
+- app の read lock を保持したままアプリ共有 state を読み取り、`clone(value)` を返します。
+- render や後続処理に slice、map などの mutable value を渡す前の snapshot 作成に使います。
+- 親アプリがない場合は互換性のため deprecated な `Context.State` map から clone します。
 
 ### `UpdateGlobal(key string, fn func(old any) any) any`
 - アプリ共有 state を atomically に読み取り、変換し、書き戻します。

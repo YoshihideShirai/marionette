@@ -84,6 +84,19 @@ func (c *Context) GetGlobal(key string) any {
 	return c.app.state[key]
 }
 
+// GetGlobalSnapshot reads app-wide state and returns clone(value) while the state lock is held.
+func (c *Context) GetGlobalSnapshot(key string, clone func(any) any) any {
+	if clone == nil {
+		return c.GetGlobal(key)
+	}
+	if c.app == nil {
+		return clone(c.State[key])
+	}
+	c.app.mu.RLock()
+	defer c.app.mu.RUnlock()
+	return clone(c.app.state[key])
+}
+
 // UpdateGlobal atomically reads, transforms, and writes app-wide state.
 func (c *Context) UpdateGlobal(key string, fn func(old any) any) any {
 	if c.app == nil {
@@ -339,6 +352,16 @@ func (a *App) GetGlobal(key string) any {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	return a.state[key]
+}
+
+// GetGlobalSnapshot reads app-wide state and returns clone(value) while the state lock is held.
+func (a *App) GetGlobalSnapshot(key string, clone func(any) any) any {
+	if clone == nil {
+		return a.GetGlobal(key)
+	}
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return clone(a.state[key])
 }
 
 // UpdateGlobal atomically reads, transforms, and writes app-wide state.

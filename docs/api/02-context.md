@@ -2,6 +2,20 @@
 
 `Context` is passed to each handler as `func(*Context) Node` and provides request/state access.
 
+### Request-local vs shared state
+
+- Do not read or write `Context.State` directly in handlers. It remains for source compatibility only and is deprecated.
+- Use `Context.Local` for temporary values that should live only for the current request.
+- Use `Context.Set` / `Context.Get` for application-shared values. These helpers go through the parent app mutex when the context belongs to an app.
+
+```go
+app.Page("/", func(ctx *mb.Context) mf.Node {
+    ctx.Local["trace_id"] = ctx.Query("trace_id") // request-local scratch value
+    ctx.Set("last_trace_id", ctx.Local["trace_id"]) // shared app state
+    return mf.Text(ctx.Get("last_trace_id").(string))
+})
+```
+
 ### `Param(name string) string`
 - Returns path parameter from `Request.PathValue(name)`.
 - Returns `""` when `Request` is `nil`.
@@ -19,15 +33,23 @@
 - Use inside handlers when images, stylesheets, or links should follow the
   registered app asset prefix.
 
+### `Local map[string]any`
+- Request-local scratch map initialized for contexts created by an app.
+- Values stored here are not shared with other requests and are not protected by the app mutex.
+
+### `State map[string]any`
+- Deprecated: use `Context.Get` / `Context.Set` or `Context.Local` instead.
+- Do not use direct `Context.State[...]` access in new code.
+
 ### `Set(key string, value any)`
-- Writes shared state.
-- If context has parent app, write is synchronized via app mutex.
-- If no app is attached, writes directly to `Context.State`.
+- Writes application-shared state.
+- If context has a parent app, write is synchronized via the app mutex.
+- If no app is attached, writes to the deprecated `Context.State` map for compatibility.
 
 ### `Get(key string) any`
-- Reads shared state.
-- If context has parent app, read is synchronized via app mutex.
-- If no app is attached, reads directly from `Context.State`.
+- Reads application-shared state.
+- If context has a parent app, read is synchronized via the app mutex.
+- If no app is attached, reads from the deprecated `Context.State` map for compatibility.
 
 ### `GetInt(key string) int`
 - `Get` + `int` assertion.
@@ -102,5 +124,3 @@ app.Action("session/logout", func(ctx *mb.Context) mf.Node {
 ```
 
 Full example: `docs/site-astro/public/examples/go/session.go`.
-
----

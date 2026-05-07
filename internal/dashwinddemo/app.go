@@ -23,7 +23,6 @@ type integrationItem struct {
 }
 type bill struct{ InvoiceNo, Amount, Description, Status, GeneratedOn, PaidOn string }
 type teamMember struct{ Name, Email, Role, Joined, Avatar string }
-type routeItem struct{ Path, Icon, Name, Group string }
 
 var statsData = []statCard{
 	{"New Users", "34.7k", "U", "↗︎ 2300 (22%)", "text-success"},
@@ -67,11 +66,32 @@ var teamMembers = []teamMember{
 	{"Emma Brown", "emma@example.com", "Support", "02 Feb 2026", "EB"},
 	{"Liam Johnson", "liam@example.com", "Developer", "20 Feb 2026", "LJ"},
 }
-var routes = []routeItem{
-	{"/", "▦", "Dashboard", "main"}, {"/leads", "▣", "Leads", "main"}, {"/transactions", "$", "Transactions", "main"}, {"/analytics", "◒", "Analytics", "main"}, {"/integration", "⚡", "Integration", "main"}, {"/calendar", "◷", "Calendar", "main"},
-	{"/login", "↪", "Login", "pages"}, {"/register", "U", "Register", "pages"}, {"/forgot-password", "K", "Forgot Password", "pages"}, {"/blank", "□", "Blank Page", "pages"}, {"/404", "!", "404", "pages"},
-	{"/settings-profile", "⚙", "Profile", "settings"}, {"/settings-billing", "W", "Billing", "settings"}, {"/settings-team", "◎", "Team Members", "settings"},
-	{"/getting-started", "D", "Getting Started", "documentation"}, {"/features", "▤", "Features", "documentation"}, {"/components", "<> ", "Components", "documentation"},
+var routes = dw.Navigation{
+	{Label: "Menu", Items: []dw.NavItem{
+		{Path: "/", Icon: "▦", Label: "Dashboard"},
+		{Path: "/leads", Icon: "▣", Label: "Leads"},
+		{Path: "/transactions", Icon: "$", Label: "Transactions"},
+		{Path: "/analytics", Icon: "◒", Label: "Analytics"},
+		{Path: "/integration", Icon: "⚡", Label: "Integration"},
+		{Path: "/calendar", Icon: "◷", Label: "Calendar"},
+	}},
+	{Label: "Pages", Items: []dw.NavItem{
+		{Path: "/login", Icon: "↪", Label: "Login"},
+		{Path: "/register", Icon: "U", Label: "Register"},
+		{Path: "/forgot-password", Icon: "K", Label: "Forgot Password"},
+		{Path: "/blank", Icon: "□", Label: "Blank Page"},
+		{Path: "/404", Icon: "!", Label: "404"},
+	}},
+	{Label: "Settings", Items: []dw.NavItem{
+		{Path: "/settings-profile", Icon: "⚙", Label: "Profile"},
+		{Path: "/settings-billing", Icon: "W", Label: "Billing"},
+		{Path: "/settings-team", Icon: "◎", Label: "Team Members"},
+	}},
+	{Label: "Documentation", Items: []dw.NavItem{
+		{Path: "/getting-started", Icon: "D", Label: "Getting Started"},
+		{Path: "/features", Icon: "▤", Label: "Features"},
+		{Path: "/components", Icon: "<> ", Label: "Components"},
+	}},
 }
 
 const mainTargetID = "dashwind-main"
@@ -82,26 +102,24 @@ func BuildApp() *mb.App {
 	app.Set("notice", "")
 	app.Set("leads", append([]lead(nil), seedLeads...))
 	app.AddStyle(dw.DefaultCSS)
-	registerPage := func(path, current, title string, body func(*mb.Context) mf.Node) {
-		app.Page(path, func(ctx *mb.Context) mf.Node { return shell(current, body(ctx)) }, mb.WithTitle(title))
+	pageBodies := map[string]func(*mb.Context) mf.Node{
+		"/": dashboardPage, "/leads": leadsPage, "/transactions": transactionsPage, "/analytics": analyticsPage, "/integration": integrationPage, "/calendar": calendarPage,
+		"/login": loginPage, "/register": registerPreviewPage, "/forgot-password": forgotPasswordPage, "/blank": blankPage, "/404": notFoundPage,
+		"/settings-profile": profilePage, "/settings-billing": billingPage, "/settings-team": teamPage,
+		"/getting-started": gettingStartedPage, "/features": featuresPage, "/components": componentsPage,
 	}
-	registerPage("/", "Dashboard", "DashWind Demo", dashboardPage)
-	registerPage("/leads", "Leads", "Leads - DashWind Demo", leadsPage)
-	registerPage("/transactions", "Transactions", "Transactions - DashWind Demo", transactionsPage)
-	registerPage("/analytics", "Analytics", "Analytics - DashWind Demo", analyticsPage)
-	registerPage("/integration", "Integration", "Integration - DashWind Demo", integrationPage)
-	registerPage("/calendar", "Calendar", "Calendar - DashWind Demo", calendarPage)
-	registerPage("/login", "Login", "Login - DashWind Demo", loginPage)
-	registerPage("/register", "Register", "Register - DashWind Demo", registerPreviewPage)
-	registerPage("/forgot-password", "Forgot Password", "Forgot Password - DashWind Demo", forgotPasswordPage)
-	registerPage("/blank", "Blank Page", "Blank Page - DashWind Demo", blankPage)
-	registerPage("/404", "404", "404 - DashWind Demo", notFoundPage)
-	registerPage("/settings-profile", "Profile", "Profile - DashWind Demo", profilePage)
-	registerPage("/settings-billing", "Billing", "Billing - DashWind Demo", billingPage)
-	registerPage("/settings-team", "Team Members", "Team - DashWind Demo", teamPage)
-	registerPage("/getting-started", "Getting Started", "Getting Started - DashWind Demo", gettingStartedPage)
-	registerPage("/features", "Features", "Features - DashWind Demo", featuresPage)
-	registerPage("/components", "Components", "Components - DashWind Demo", componentsPage)
+	for _, item := range routeItems(routes) {
+		item := item
+		body := pageBodies[item.Path]
+		if body == nil {
+			continue
+		}
+		title := item.Label + " - DashWind Demo"
+		if item.Path == "/" {
+			title = "DashWind Demo"
+		}
+		app.Page(item.Path, func(ctx *mb.Context) mf.Node { return shell(item.Path, body(ctx)) }, mb.WithTitle(title))
+	}
 
 	app.Action("dashboard/period", func(ctx *mb.Context) mf.Node {
 		period := normalizePeriod(ctx.FormValue("period"))
@@ -132,51 +150,34 @@ func BuildApp() *mb.App {
 	return app
 }
 
-func shell(current string, body mf.Node) mf.Node {
+func routeItems(nav dw.Navigation) []dw.NavItem {
+	items := []dw.NavItem{}
+	for _, group := range nav {
+		items = appendRouteItems(items, group.Items)
+	}
+	return items
+}
+
+func appendRouteItems(dst []dw.NavItem, items []dw.NavItem) []dw.NavItem {
+	for _, item := range items {
+		dst = append(dst, item)
+		dst = appendRouteItems(dst, item.Children)
+	}
+	return dst
+}
+
+func shell(currentPath string, body mf.Node) mf.Node {
 	return dw.Shell(dw.ShellProps{
-		CurrentTitle:      current,
-		CurrentPath:       currentPath(current),
+		CurrentPath:       currentPath,
 		Brand:             dw.Brand{Title: "DashWind", Subtitle: "DaisyUI admin template demo"},
 		SearchPlaceholder: "Search DashWind demo",
-		Navigation:        navGroups(),
+		Navigation:        routes,
 		SidebarFooter:     div("mt-6 rounded-box bg-primary/10 p-4 text-sm", paragraph("font-semibold", "Marionette port"), paragraph("mt-1 opacity-70", "React/Redux template patterns rebuilt as Go handlers and htmx fragments.")),
 	}, body)
 }
 
 func mainContent(body mf.Node) mf.Node {
 	return dw.ShellContent(mainTargetID, body)
-}
-
-func currentPath(current string) string {
-	for _, route := range routes {
-		if route.Name == current {
-			return route.Path
-		}
-	}
-	return "/"
-}
-
-func navGroups() []dw.NavGroup {
-	labels := []struct {
-		Title string
-		Group string
-	}{
-		{"Menu", "main"},
-		{"Pages", "pages"},
-		{"Settings", "settings"},
-		{"Documentation", "documentation"},
-	}
-	groups := make([]dw.NavGroup, 0, len(labels))
-	for _, label := range labels {
-		group := dw.NavGroup{Label: label.Title}
-		for _, route := range routes {
-			if route.Group == label.Group {
-				group.Items = append(group.Items, dw.NavItem{Label: route.Name, Href: route.Path, Icon: route.Icon})
-			}
-		}
-		groups = append(groups, group)
-	}
-	return groups
 }
 
 func dashboardPage(ctx *mb.Context) mf.Node {

@@ -58,21 +58,39 @@ panel := dw.CardPanel(dw.CardPanelProps{
 }, table)
 ```
 
-## StatsGrid
+## MetricGrid
 
-`StatsGrid` renders a responsive grid of metric cards. Each `Stat` can provide an icon or any Marionette node as `Figure`.
+`MetricGrid` renders a responsive grid of KPI cards. Use `MetricCard` when you need a single card, and set `TrendTone` with `ToneSuccess`, `ToneWarning`, `ToneError`, or `ToneNeutral`.
 
 ```go
-stats := dw.StatsGrid(dw.StatsGridProps{Items: []dw.Stat{
+metrics := dw.MetricGrid(dw.MetricGridProps{Items: []dw.Metric{
     {
-        Title:            "New Users",
-        Value:            "34.7k",
-        Description:      "↗︎ 2300 (22%)",
-        Figure:           mf.Text("U"),
-        DescriptionClass: "font-medium text-success",
+        Title:       "New Users",
+        Value:       "34.7k",
+        Description: "Acquired this period",
+        Trend:       "↗︎ 2300 (22%)",
+        TrendTone:   dw.ToneSuccess,
+        Icon:        mf.Text("U"),
+        Href:        "/analytics",
     },
 }})
 ```
+
+Short KPI dashboard sample:
+
+```go
+body := mf.DivProps(mf.ElementProps{Class: "space-y-6"},
+    dw.PageHeader(dw.PageHeaderProps{Title: "KPI Dashboard", Description: "Today at a glance"}),
+    dw.MetricGrid(dw.MetricGridProps{Items: []dw.Metric{
+        {Title: "Revenue", Value: "$128K", Trend: "12% up", TrendTone: dw.ToneSuccess, Icon: mf.Text("$"), Href: "/revenue"},
+        {Title: "Open Alerts", Value: "7", Trend: "3 urgent", TrendTone: dw.ToneWarning, Icon: mf.Text("!"), Href: "/alerts"},
+        {Title: "Failed Jobs", Value: "2", Trend: "Needs review", TrendTone: dw.ToneError, Icon: mf.Text("×")},
+        {Title: "NPS", Value: "61", Trend: "Stable", TrendTone: dw.ToneNeutral, Icon: mf.Text("★")},
+    }}),
+)
+```
+
+`StatsGrid` and `Stat` remain available for older code, but new dashboards should use `MetricGrid` and `Metric`.
 
 ## DataTable
 

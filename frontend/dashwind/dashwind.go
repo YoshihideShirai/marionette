@@ -169,6 +169,69 @@ func CardPanel(props CardPanelProps, children ...mf.Node) mf.Node {
 	return daisy.CardPanel(daisy.CardPanelProps{Title: props.Title, Description: props.Description, Class: className, BodyClass: props.BodyClass, Actions: props.Actions}, children...)
 }
 
+// Tone describes the semantic color applied to dashboard metric trends.
+type Tone string
+
+const (
+	// ToneSuccess marks positive KPI movement.
+	ToneSuccess Tone = "success"
+	// ToneWarning marks KPI movement that needs attention.
+	ToneWarning Tone = "warning"
+	// ToneError marks negative KPI movement.
+	ToneError Tone = "error"
+	// ToneNeutral marks informational or unchanged KPI movement.
+	ToneNeutral Tone = "neutral"
+)
+
+// Metric describes a KPI tile rendered by MetricGrid or MetricCard.
+type Metric struct {
+	Title       string
+	Value       string
+	Description string
+	Trend       string
+	TrendTone   Tone
+	Icon        mf.Node
+	Href        string
+}
+
+// MetricGridProps configures a responsive grid of metric cards.
+type MetricGridProps struct {
+	Items []Metric
+	Class string
+}
+
+// MetricGrid renders KPI metric cards in a responsive grid.
+func MetricGrid(props MetricGridProps) mf.Node {
+	cards := make([]mf.Node, 0, len(props.Items))
+	for _, item := range props.Items {
+		cards = append(cards, MetricCard(item))
+	}
+	return div(defaultString(props.Class, "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4"), cards...)
+}
+
+// MetricCard renders a single DashWind KPI card.
+func MetricCard(metric Metric) mf.Node {
+	children := []mf.Node{
+		div("flex items-start justify-between gap-4",
+			div("space-y-1", paragraph("text-sm font-medium text-base-content/60", metric.Title), div("text-3xl font-bold tracking-tight text-primary", mf.Text(metric.Value))),
+			metricIcon(metric.Icon),
+		),
+	}
+	if strings.TrimSpace(metric.Description) != "" {
+		children = append(children, paragraph("text-sm text-base-content/60", metric.Description))
+	}
+	if strings.TrimSpace(metric.Trend) != "" {
+		children = append(children, paragraph(strings.TrimSpace("text-sm font-medium "+toneTextClass(metric.TrendTone)), metric.Trend))
+	}
+
+	className := "card bg-base-100 shadow transition hover:-translate-y-0.5 hover:shadow-md"
+	body := mf.DivProps(mf.ElementProps{Class: "card-body gap-3"}, children...)
+	if strings.TrimSpace(metric.Href) == "" {
+		return mf.DivProps(mf.ElementProps{Class: className}, body)
+	}
+	return mf.AnchorProps(mf.ElementProps{Class: strings.TrimSpace(className + " block no-underline text-base-content"), Attrs: mf.Attrs{"href": metric.Href}}, body)
+}
+
 // Stat describes a single metric item inside StatsGrid.
 type Stat struct {
 	Title            string
@@ -189,6 +252,7 @@ type StatsGridProps struct {
 }
 
 // StatsGrid renders each stat as an individual card, matching DashWind dashboard tiles.
+// Deprecated: use MetricGrid with Metric items.
 func StatsGrid(props StatsGridProps) mf.Node {
 	cards := make([]mf.Node, 0, len(props.Items))
 	for _, item := range props.Items {
@@ -488,6 +552,28 @@ func searchInput(placeholder string) mf.Node {
 		span("opacity-60", "⌕"),
 		mf.InputElement(mf.ElementProps{Class: "grow", Attrs: mf.Attrs{"type": "search", "placeholder": placeholder}}),
 	)
+}
+
+func metricIcon(icon mf.Node) mf.Node {
+	if icon == nil {
+		return mf.Raw("")
+	}
+	return div("grid h-12 w-12 shrink-0 place-items-center rounded-box bg-primary/10 text-2xl font-bold text-primary", icon)
+}
+
+func toneTextClass(tone Tone) string {
+	switch tone {
+	case ToneSuccess:
+		return "text-success"
+	case ToneWarning:
+		return "text-warning"
+	case ToneError:
+		return "text-error"
+	case ToneNeutral, "":
+		return "text-base-content/60"
+	default:
+		return "text-" + string(tone)
+	}
 }
 
 func div(className string, children ...mf.Node) mf.Node {

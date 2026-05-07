@@ -11,7 +11,10 @@ import (
 	dw "github.com/YoshihideShirai/marionette/frontend/dashwind"
 )
 
-type statCard struct{ Title, Value, Icon, Description, TrendClass string }
+type statCard struct {
+	Title, Value, Icon, Description, Trend string
+	TrendTone                              dw.Tone
+}
 type lead struct{ Name, Role, Email, CreatedAt, Status, Owner, Avatar string }
 type transaction struct {
 	Invoice, Customer, Plan, Date, Status string
@@ -25,10 +28,10 @@ type bill struct{ InvoiceNo, Amount, Description, Status, GeneratedOn, PaidOn st
 type teamMember struct{ Name, Email, Role, Joined, Avatar string }
 
 var statsData = []statCard{
-	{"New Users", "34.7k", "U", "↗︎ 2300 (22%)", "text-success"},
-	{"Total Sales", "$34,545", "$", "Current month", "text-base-content/60"},
-	{"Pending Leads", "450", "L", "50 in hot leads", "text-warning"},
-	{"Active Users", "5.6k", "↯", "↙ 300 (18%)", "text-error"},
+	{Title: "New Users", Value: "34.7k", Icon: "U", Description: "Acquired this period", Trend: "↗︎ 2300 (22%)", TrendTone: dw.ToneSuccess},
+	{Title: "Total Sales", Value: "$34,545", Icon: "$", Description: "Current month", Trend: "On track", TrendTone: dw.ToneNeutral},
+	{Title: "Pending Leads", Value: "450", Icon: "L", Description: "50 in hot leads", Trend: "Needs follow-up", TrendTone: dw.ToneWarning},
+	{Title: "Active Users", Value: "5.6k", Icon: "↯", Description: "Weekly active accounts", Trend: "↙ 300 (18%)", TrendTone: dw.ToneError},
 }
 var seedLeads = []lead{
 	{"Alex Morgan", "Product buyer", "alex@example.com", "02 May 26", "In Progress", "Olivia", "AM"},
@@ -182,14 +185,14 @@ func mainContent(body mf.Node) mf.Node {
 
 func dashboardPage(ctx *mb.Context) mf.Node {
 	notice := noticeNode(ctx)
-	stats := make([]dw.Stat, 0, len(statsData))
+	metrics := make([]dw.Metric, 0, len(statsData))
 	for _, s := range statsData {
-		stats = append(stats, dashwindStat(s))
+		metrics = append(metrics, statCardNode(s))
 	}
 	return div("space-y-6",
 		pageTitle("Dashboard", "Marionette rebuild of DashWind DashboardTopBar, Stats, Chart, and UserChannels sections.", periodForm(ctx.Get("period").(string))),
 		notice,
-		dw.StatsGrid(dw.StatsGridProps{Items: stats}),
+		dw.MetricGrid(dw.MetricGridProps{Items: metrics}),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-2",
 			chartCard("Revenue", "Monthly recurring revenue", mf.Chart(mf.ChartProps{Type: mf.ChartTypeLine, Labels: []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "MRR", Data: []float64{18, 24, 28, 32, 38, 45}, BorderColor: "#3b82f6", BackgroundColor: "rgba(59,130,246,.18)", Fill: true, Tension: .35}}})),
 			chartCard("Pipeline", "Qualified leads by stage", mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: []string{"Open", "Progress", "Sold", "Followup"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "Leads", Data: []float64{92, 128, 54, 76}, BackgroundColor: "#6366f1"}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}})),
@@ -198,13 +201,14 @@ func dashboardPage(ctx *mb.Context) mf.Node {
 	)
 }
 
-func dashwindStat(s statCard) dw.Stat {
-	return dw.Stat{
-		Title:            s.Title,
-		Value:            s.Value,
-		Description:      s.Description,
-		Figure:           mf.Text(s.Icon),
-		DescriptionClass: "font-medium " + s.TrendClass,
+func statCardNode(s statCard) dw.Metric {
+	return dw.Metric{
+		Title:       s.Title,
+		Value:       s.Value,
+		Description: s.Description,
+		Trend:       s.Trend,
+		TrendTone:   s.TrendTone,
+		Icon:        mf.Text(s.Icon),
 	}
 }
 
@@ -232,33 +236,23 @@ func normalizePeriod(period string) string {
 }
 
 func amountStats() mf.Node {
-	return daisy.StatsWithProps(daisy.StatsProps{Class: "stats-vertical lg:stats-horizontal bg-base-100 shadow"},
-		daisy.StatItem(daisy.StatProps{Title: "Total Likes", Value: "25.6K", Description: "21% more than last month"}),
-		daisy.StatItem(daisy.StatProps{Title: "Page Views", Value: "2.6M", Description: "14% more than last month"}),
-	)
+	return dw.MetricGrid(dw.MetricGridProps{
+		Class: "grid grid-cols-1 gap-6 md:grid-cols-2",
+		Items: []dw.Metric{
+			{Title: "Total Likes", Value: "25.6K", Description: "Audience engagement", Trend: "21% more than last month", TrendTone: dw.ToneSuccess, Icon: mf.Text("♥")},
+			{Title: "Page Views", Value: "2.6M", Description: "Traffic across channels", Trend: "14% more than last month", TrendTone: dw.ToneSuccess, Icon: mf.Text("◉")},
+		},
+	})
 }
 
 func userChannels() mf.Node {
-	type channelRow struct {
-		Source  string
-		Users   string
-		Percent int
+	channels := []dw.Metric{
+		{Title: "Organic search", Value: "12,432", Description: "Users", Trend: "46% share", TrendTone: dw.ToneSuccess, Icon: mf.Text("⌕"), Href: "/analytics"},
+		{Title: "Twitter", Value: "8,120", Description: "Users", Trend: "24% share", TrendTone: dw.ToneNeutral, Icon: mf.Text("T"), Href: "/analytics"},
+		{Title: "Newsletter", Value: "5,420", Description: "Users", Trend: "18% share", TrendTone: dw.ToneWarning, Icon: mf.Text("✉")},
+		{Title: "Partners", Value: "2,804", Description: "Users", Trend: "12% share", TrendTone: dw.ToneNeutral, Icon: mf.Text("P")},
 	}
-	rows := []channelRow{}
-	for _, row := range []string{"Organic search|12,432|46%", "Twitter|8,120|24%", "Newsletter|5,420|18%", "Partners|2,804|12%"} {
-		parts := strings.Split(row, "|")
-		percent, _ := strconv.Atoi(strings.TrimSuffix(parts[2], "%"))
-		rows = append(rows, channelRow{Source: parts[0], Users: parts[1], Percent: percent})
-	}
-	columns := []dw.Column[channelRow]{
-		{Header: "Source", Cell: func(row channelRow) mf.Node { return mf.Text(row.Source) }},
-		{Header: "Users", Cell: func(row channelRow) mf.Node { return mf.Text(row.Users) }},
-		{Header: "Progress", Cell: func(row channelRow) mf.Node {
-			return daisy.ProgressWithClass(float64(row.Percent), 100, "progress-primary w-32")
-		}},
-		{Header: "Share", Cell: func(row channelRow) mf.Node { return mf.Text(strconv.Itoa(row.Percent) + "%") }},
-	}
-	return cardPanel("User Channels", "Traffic source breakdown", dw.DataTable(dw.DataTableProps[channelRow]{Columns: columns, Rows: rows, Compact: true}))
+	return cardPanel("User Channels", "Traffic source KPI cards", dw.MetricGrid(dw.MetricGridProps{Class: "grid grid-cols-1 gap-4 sm:grid-cols-2", Items: channels}))
 }
 
 func chartCard(title, desc string, chart mf.Node) mf.Node {
@@ -458,7 +452,7 @@ func featuresPage(ctx *mb.Context) mf.Node {
 }
 
 func componentsPage(ctx *mb.Context) mf.Node {
-	return documentationPage("Components", "DaisyUI primitives used by the sample.", []string{"dashwind.Shell, NavGroup, and NavItem", "dashwind.StatsGrid, CardPanel, PageHeader", "dashwind.DataTable plus DaisyUI ActionFormWithOptions"})
+	return documentationPage("Components", "DaisyUI primitives used by the sample.", []string{"dashwind.Shell, NavGroup, and NavItem", "dashwind.MetricGrid, MetricCard, CardPanel, PageHeader", "dashwind.DataTable plus DaisyUI ActionFormWithOptions"})
 }
 
 func documentationPage(title, desc string, items []string) mf.Node {

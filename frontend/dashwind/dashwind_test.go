@@ -87,6 +87,28 @@ func TestRenderNavigationMarksCurrentPathActive(t *testing.T) {
 	}
 }
 
+func TestMetricGridRendersToneAndLinks(t *testing.T) {
+	node := MetricGrid(MetricGridProps{Items: []Metric{{
+		Title:       "Revenue",
+		Value:       "$42K",
+		Description: "MRR",
+		Trend:       "12% up",
+		TrendTone:   ToneSuccess,
+		Icon:        mf.Text("$"),
+		Href:        "/analytics",
+	}}})
+	html, err := node.Render()
+	if err != nil {
+		t.Fatalf("render metric grid: %v", err)
+	}
+	body := string(html)
+	for _, want := range []string{`href="/analytics"`, "Revenue", "$42K", "MRR", "12% up", "text-success"} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected metric grid to contain %q, got %q", want, body)
+		}
+	}
+}
+
 func TestStatsGridAndDataTableRenderReusableWidgets(t *testing.T) {
 	type person struct {
 		Name string

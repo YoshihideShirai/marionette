@@ -138,6 +138,10 @@ const actionHandlerCode = `app.Action("messages/create", func(ctx *mb.Context) m
       <p class="step-label">Step 2</p>
       <h2 id="state-en">Store State on the Backend</h2>
       <p>Use <code>app.SetGlobal</code> to initialize app-wide state shared by all users. Inside handlers, use <code>ctx.GetGlobal</code> and <code>ctx.SetGlobal</code> for that shared state.</p>
+      <p>
+        This is useful for tiny shared demos, but a business application with multiple users should usually keep domain data behind a repository instead of storing it in app global state.
+        See the <a href="/marionette/examples/go/multi-user-tasks.go">multi-user task sample</a> for the basic shape of a business app that does <strong>not</strong> use global state.
+      </p>
       <pre><code>{initialStateCode}</code></pre>
     </section>
 

@@ -138,6 +138,10 @@ const actionHandlerCode = `app.Action("messages/create", func(ctx *mb.Context) m
       <p class="step-label">Step 2</p>
       <h2 id="state-ja">バックエンドに状態を持たせる</h2>
       <p><code>app.SetGlobal</code> で全ユーザー共有のアプリケーション状態を初期化し、ハンドラ内では <code>ctx.GetGlobal</code> と <code>ctx.SetGlobal</code> でその共有 state を読み書きします。</p>
+      <p>
+        これは小さな共有デモには便利ですが、複数ユーザー前提の業務アプリでは、業務データを App global state に置かず repository の背後に置くのが基本形です。
+        <a href="/marionette/examples/go/multi-user-tasks.go">複数ユーザーのタスク管理サンプル</a> は、「global state を使わない業務アプリの基本形」として参照できます。
+      </p>
       <pre><code>{initialStateCode}</code></pre>
     </section>
 

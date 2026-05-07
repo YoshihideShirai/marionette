@@ -170,6 +170,119 @@ func CardPanel(props CardPanelProps, children ...mf.Node) mf.Node {
 	return daisy.CardPanel(daisy.CardPanelProps{Title: props.Title, Description: props.Description, Class: className, BodyClass: props.BodyClass, Actions: props.Actions}, children...)
 }
 
+// Field describes a single input row inside DashWind form presets such as AuthCard and SettingsSection.
+type Field struct {
+	Name     string
+	Label    string
+	Type     string
+	Value    string
+	Required bool
+	Help     string
+	Error    string
+}
+
+// AuthCardProps configures a DashWind authentication card preset.
+type AuthCardProps struct {
+	Title       string
+	Description string
+	Action      string
+	Fields      []Field
+	SubmitLabel string
+	Footer      mf.Node
+	Class       string
+	FormClass   string
+}
+
+// AuthCard renders a ready-made two-column authentication surface with labeled fields and a submit button.
+func AuthCard(props AuthCardProps) mf.Node {
+	fieldNodes := make([]mf.Node, 0, len(props.Fields)+2)
+	for _, field := range props.Fields {
+		fieldNodes = append(fieldNodes, renderPresetField(field))
+	}
+	fieldNodes = append(fieldNodes, daisy.ButtonWithAttrs(defaultString(props.SubmitLabel, props.Title), mf.ComponentProps{Class: "mt-2 w-full btn-primary"}, map[string]string{"type": "submit"}))
+	if props.Footer != nil {
+		fieldNodes = append(fieldNodes, div("text-center mt-4 text-sm", props.Footer))
+	}
+
+	formAttrs := mf.Attrs{"class": strings.TrimSpace("space-y-4 " + props.FormClass)}
+	if strings.TrimSpace(props.Action) != "" {
+		formAttrs["action"] = props.Action
+		formAttrs["method"] = "post"
+	}
+	return div(strings.TrimSpace("card mx-auto w-full max-w-5xl shadow-xl bg-base-100 "+props.Class),
+		div("grid grid-cols-1 rounded-xl md:grid-cols-2",
+			div("rounded-l-xl bg-primary p-10 text-primary-content", mf.H2Props(mf.ElementProps{Class: "text-3xl font-bold"}, mf.Text("DashWind")), paragraph("mt-4 opacity-80", "Build admin dashboards with DaisyUI, htmx fragments, and Go state.")),
+			div("py-16 px-10", mf.H2Props(mf.ElementProps{Class: "mb-2 text-center text-2xl font-semibold"}, mf.Text(props.Title)), paragraph("mb-6 text-center text-sm text-base-content/60", props.Description), mf.Element("form", mf.ElementProps{Attrs: formAttrs}, fieldNodes...)),
+		),
+	)
+}
+
+// SettingsSectionProps configures a DashWind settings form section preset.
+type SettingsSectionProps struct {
+	Title       string
+	Description string
+	Action      string
+	Fields      []Field
+	SubmitLabel string
+	Footer      mf.Node
+	Actions     mf.Node
+	Class       string
+	BodyClass   string
+	FormClass   string
+}
+
+// SettingsSection renders a card-style settings form with a header, fields, and optional submit/footer content.
+func SettingsSection(props SettingsSectionProps) mf.Node {
+	fieldNodes := make([]mf.Node, 0, len(props.Fields)+2)
+	for _, field := range props.Fields {
+		fieldNodes = append(fieldNodes, renderPresetField(field))
+	}
+	if strings.TrimSpace(props.SubmitLabel) != "" {
+		fieldNodes = append(fieldNodes, div("pt-2 text-right", daisy.ButtonWithAttrs(props.SubmitLabel, mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "submit"})))
+	}
+	if props.Footer != nil {
+		fieldNodes = append(fieldNodes, div("pt-2 text-sm text-base-content/60", props.Footer))
+	}
+
+	formAttrs := mf.Attrs{"class": strings.TrimSpace("space-y-4 " + props.FormClass)}
+	if strings.TrimSpace(props.Action) != "" {
+		formAttrs["action"] = props.Action
+		formAttrs["method"] = "post"
+	}
+	return CardPanel(CardPanelProps{Title: props.Title, Description: props.Description, Class: props.Class, BodyClass: props.BodyClass, Actions: props.Actions}, mf.Element("form", mf.ElementProps{Attrs: formAttrs}, fieldNodes...))
+}
+
+func renderPresetField(field Field) mf.Node {
+	name := strings.TrimSpace(field.Name)
+	if name == "" {
+		name = slugifyFieldName(field.Label)
+	}
+	id := "dashwind-field-" + name
+	inputType := defaultString(field.Type, "text")
+	inputClass := "input input-bordered w-full"
+	if strings.TrimSpace(field.Error) != "" {
+		inputClass += " input-error"
+	}
+	attrs := mf.Attrs{"id": id, "name": name, "type": inputType, "value": field.Value, "class": inputClass}
+	if field.Required {
+		attrs["required"] = "required"
+		attrs["aria-required"] = "true"
+	}
+	children := []mf.Node{mf.LabelElementProps(mf.ElementProps{Class: "label pb-1", Attrs: mf.Attrs{"for": id}}, span("label-text", field.Label))}
+	children = append(children, mf.InputElement(mf.ElementProps{Attrs: attrs}))
+	if strings.TrimSpace(field.Help) != "" {
+		children = append(children, paragraph("mt-1 text-xs text-base-content/60", field.Help))
+	}
+	if strings.TrimSpace(field.Error) != "" {
+		children = append(children, paragraph("mt-1 text-xs font-medium text-error", field.Error))
+	}
+	return div("form-control w-full", children...)
+}
+
+func slugifyFieldName(label string) string {
+	return strings.Trim(strings.ToLower(strings.ReplaceAll(strings.TrimSpace(label), " ", "-")), "-")
+}
+
 // Tone describes the semantic color applied to dashboard metric trends.
 type Tone string
 

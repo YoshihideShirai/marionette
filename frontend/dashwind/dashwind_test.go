@@ -132,6 +132,38 @@ func TestStatsGridAndDataTableRenderReusableWidgets(t *testing.T) {
 	}
 }
 
+func TestAuthCardAndSettingsSectionRenderPresetFields(t *testing.T) {
+	node := mf.DivProps(mf.ElementProps{},
+		AuthCard(AuthCardProps{
+			Title:       "Login",
+			Description: "Access your workspace",
+			Action:      "/login",
+			Fields: []Field{
+				{Name: "email", Label: "Email Id", Type: "email", Required: true, Help: "Use your work email."},
+				{Name: "password", Label: "Password", Type: "password", Error: "Required"},
+			},
+			SubmitLabel: "Sign in",
+			Footer:      mf.Text("Forgot Password?"),
+		}),
+		SettingsSection(SettingsSectionProps{
+			Title:       "Account",
+			Description: "Editable account fields",
+			Fields:      []Field{{Label: "Role", Value: "Revenue Ops"}},
+			SubmitLabel: "Save",
+		}),
+	)
+	html, err := node.Render()
+	if err != nil {
+		t.Fatalf("render form presets: %v", err)
+	}
+	body := string(html)
+	for _, want := range []string{"Login", "Access your workspace", `action="/login"`, `name="email"`, `type="email"`, `required="required"`, "Use your work email.", "input-error", "Forgot Password?", "Account", "Editable account fields", `name="role"`, `value="Revenue Ops"`, "Save"} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected form presets to contain %q, got %q", want, body)
+		}
+	}
+}
+
 func TestResourcePageRendersActionsAndRowActions(t *testing.T) {
 	type person struct {
 		Email string

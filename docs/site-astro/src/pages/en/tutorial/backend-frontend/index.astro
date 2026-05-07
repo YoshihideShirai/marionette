@@ -21,11 +21,13 @@ func main() {
     app.Action("messages/create", func(ctx *mb.Context) mf.Node {
         text := strings.TrimSpace(ctx.FormValue("message"))
         if text != "" {
-            messages := ctx.GetGlobal("messages").([]string)
-            messages = append([]string{text}, messages...)
-            ctx.SetGlobal("messages", messages)
+            ctx.UpdateGlobal("messages", func(old any) any {
+                messages := cloneMessages(old)
+                return append([]string{text}, messages...)
+            })
         }
-        return messageList(ctx.GetGlobal("messages").([]string))
+        messages := ctx.GetGlobalSnapshot("messages", cloneMessages).([]string)
+        return messageList(messages)
     })
 
     if err := app.Run("127.0.0.1:8080"); err != nil {
@@ -34,7 +36,7 @@ func main() {
 }
 
 func page(ctx *mb.Context) mf.Node {
-    messages := ctx.GetGlobal("messages").([]string)
+    messages := ctx.GetGlobalSnapshot("messages", cloneMessages).([]string)
 
     return mf.Container(mf.ContainerProps{
         MaxWidth: "2xl",
@@ -67,6 +69,11 @@ func page(ctx *mb.Context) mf.Node {
             mf.Region(mf.RegionProps{ID: "messages"}, messageList(messages)),
         ),
     )
+}
+
+func cloneMessages(old any) any {
+    messages, _ := old.([]string)
+    return append([]string(nil), messages...)
 }
 
 func messageList(messages []string) mf.Node {
@@ -104,11 +111,13 @@ const actionFormCode = `mf.ActionForm(mf.ActionFormProps{
 const actionHandlerCode = `app.Action("messages/create", func(ctx *mb.Context) mf.Node {
     text := strings.TrimSpace(ctx.FormValue("message"))
     if text != "" {
-        messages := ctx.GetGlobal("messages").([]string)
-        messages = append([]string{text}, messages...)
-        ctx.SetGlobal("messages", messages)
+        ctx.UpdateGlobal("messages", func(old any) any {
+            messages := cloneMessages(old)
+            return append([]string{text}, messages...)
+        })
     }
-    return messageList(ctx.GetGlobal("messages").([]string))
+    messages := ctx.GetGlobalSnapshot("messages", cloneMessages).([]string)
+    return messageList(messages)
 })`;
 ---
 <BaseLayout title="Backend and Frontend Communication - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/backend-frontend/">

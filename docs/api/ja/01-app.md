@@ -43,7 +43,8 @@
 ### App state helpers
 - `Global` が名前に付く App state helper は、アプリの全ユーザー・全リクエストで共有される state を読み書きします。
 - `SetGlobal(key string, value any)`: mutex で保護しながらアプリ共有 state に書き込みます。
-- `GetGlobal(key string) any`: mutex で保護しながらアプリ共有 state を読み取ります。
+- `GetGlobal(key string) any`: mutex で保護しながらアプリ共有 state を読み取ります。返ってきた slice、map、pointer は直接変更せず、変更は `UpdateGlobal` 内で行ってください。
+- `GetGlobalSnapshot(key string, clone func(any) any) any`: app の read lock を保持したまま `clone(value)` を返します。render や後続処理に mutable collection を渡す前の snapshot 作成に使います。
 - `UpdateGlobal(key string, fn func(old any) any) any`: mutex を取得したままアプリ共有 state を読み取り、変換し、書き戻します。カウンター、進捗 tick、append 形式の更新など、新しい値が古い値に依存する場合に使います。
 - `GetGlobalInt(key string) int`: `GetGlobal` の結果を `int` に type assertion し、値がない/`int` でない場合は `0` を返します。
 - `IncrementGlobalInt(key string, delta int) int`: integer のカウンターや進捗値向けの `UpdateGlobal` 便利ラッパーです。値がない/`int` でない場合は `0` として扱い、`old + delta` を保存して新しい `int` を返します。

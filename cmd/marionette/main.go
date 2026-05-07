@@ -150,7 +150,7 @@ func buildApp() *mb.App {
 		if len(form.Errors) == 0 {
 			nextID := ctx.IncrementGlobalInt("nextUserID", 1) - 1
 			ctx.UpdateGlobal("users", func(old any) any {
-				users := append([]user(nil), old.([]user)...)
+				users := cloneUsers(old)
 				return append(users, user{ID: nextID, Name: form.Name, Email: form.Email, Role: form.Role, StartDate: form.StartDate})
 			})
 			ctx.FlashSuccess("User was saved successfully.")
@@ -179,14 +179,16 @@ func buildApp() *mb.App {
 	app.Action("users/delete/confirm", func(ctx *mb.Context) mf.Node {
 		ctx.SetGlobal("loading", false)
 		id, _ := strconv.Atoi(ctx.FormValue("id"))
-		users := getUsers(ctx)
-		next := users[:0]
-		for _, u := range users {
-			if u.ID != id {
-				next = append(next, u)
+		ctx.UpdateGlobal("users", func(old any) any {
+			users, _ := old.([]user)
+			next := make([]user, 0, len(users))
+			for _, u := range users {
+				if u.ID != id {
+					next = append(next, u)
+				}
 			}
-		}
-		ctx.SetGlobal("users", next)
+			return next
+		})
 		ctx.SetGlobal("deleteModalOpen", false)
 		ctx.SetGlobal("deleteTargetID", 0)
 		return renderUsersWorkspace(ctx, defaultCreateUserFormState())
@@ -242,11 +244,15 @@ func validateStartDate(raw string) string {
 }
 
 func getUsers(ctx *mb.Context) []user {
-	users, ok := ctx.GetGlobal("users").([]user)
-	if !ok {
-		return nil
-	}
+	users, _ := ctx.GetGlobalSnapshot("users", func(old any) any {
+		return cloneUsers(old)
+	}).([]user)
 	return users
+}
+
+func cloneUsers(old any) []user {
+	users, _ := old.([]user)
+	return append([]user(nil), users...)
 }
 
 func renderUsersPage(ctx *mb.Context, formState createUserFormState) mf.Node {

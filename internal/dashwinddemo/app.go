@@ -388,26 +388,30 @@ func forgotPasswordPage(ctx *mb.Context) mf.Node {
 }
 
 func authPreviewPage(title string, fields []string, helper string, footer string) mf.Node {
-	controls := []mf.Node{}
+	authFields := make([]dw.Field, 0, len(fields))
 	for _, field := range fields {
 		inputType := "text"
 		if strings.Contains(strings.ToLower(field), "password") {
 			inputType = "password"
 		}
-		controls = append(controls, inputField(field, inputType, ""))
+		authFields = append(authFields, inputField(dw.Field{Label: field, Type: inputType, Required: true}))
 	}
+	footerNodes := []mf.Node{}
 	if helper != "" {
-		controls = append(controls, div("text-right text-primary text-sm", mf.Text(helper)))
+		footerNodes = append(footerNodes, div("mb-2 text-primary", mf.Text(helper)))
 	}
-	controls = append(controls, daisy.ButtonWithAttrs(title, mf.ComponentProps{Class: "mt-2 w-full btn-primary"}, map[string]string{"type": "button"}), div("text-center mt-4", mf.Text(footer)))
+	if footer != "" {
+		footerNodes = append(footerNodes, mf.Text(footer))
+	}
 	return div("space-y-6",
 		pageTitle(title, "DashWind user page preview rendered inside the Marionette demo shell.", nil),
-		div("card mx-auto w-full max-w-5xl shadow-xl bg-base-100",
-			div("grid grid-cols-1 rounded-xl md:grid-cols-2",
-				div("rounded-l-xl bg-primary p-10 text-primary-content", mf.H2Props(mf.ElementProps{Class: "text-3xl font-bold"}, mf.Text("DashWind")), paragraph("mt-4 opacity-80", "Build admin dashboards with DaisyUI, htmx fragments, and Go state.")),
-				div("py-16 px-10", mf.H2Props(mf.ElementProps{Class: "mb-4 text-center text-2xl font-semibold"}, mf.Text(title)), formBlock(controls...)),
-			),
-		),
+		dw.AuthCard(dw.AuthCardProps{
+			Title:       title,
+			Description: "Preview account access flow",
+			Fields:      authFields,
+			SubmitLabel: title,
+			Footer:      div("", footerNodes...),
+		}),
 	)
 }
 
@@ -424,7 +428,15 @@ func profilePage(ctx *mb.Context) mf.Node {
 		pageTitle("Profile", "Profile settings page with DashWind-style input cards.", daisy.ButtonWithAttrs("Save", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-3",
 			cardPanel("Profile photo", "Avatar and account role", div("flex items-center gap-4", daisy.AvatarPlaceholder("DW", "", "w-20 rounded-full bg-primary text-primary-content text-xl"), div("", mf.H3Props(mf.ElementProps{Class: "font-semibold"}, mf.Text("DashWind Admin")), paragraph("text-sm opacity-70", "Revenue Ops")))),
-			cardPanel("Account", "Editable account fields", inputField("Name", "text", "DashWind Admin"), inputField("Email Id", "email", "admin@example.com"), inputField("Role", "text", "Revenue Ops")),
+			dw.SettingsSection(dw.SettingsSectionProps{
+				Title:       "Account",
+				Description: "Editable account fields",
+				Fields: []dw.Field{
+					inputField(dw.Field{Label: "Name", Type: "text", Value: "DashWind Admin", Required: true}),
+					inputField(dw.Field{Label: "Email Id", Type: "email", Value: "admin@example.com", Required: true, Help: "Used for notifications and login."}),
+					inputField(dw.Field{Label: "Role", Type: "text", Value: "Revenue Ops"}),
+				},
+			}),
 		),
 	)
 }
@@ -485,19 +497,14 @@ func bulletList(items ...string) mf.Node {
 	return mf.UlProps(mf.ElementProps{Class: "list-disc space-y-2 pl-5"}, children...)
 }
 
-func formBlock(children ...mf.Node) mf.Node {
-	return mf.DivProps(mf.ElementProps{Class: "space-y-4"}, children...)
-}
-
-func inputField(label string, inputType string, value string) mf.Node {
-	if strings.TrimSpace(inputType) == "" {
-		inputType = "text"
+func inputField(field dw.Field) dw.Field {
+	if strings.TrimSpace(field.Type) == "" {
+		field.Type = "text"
 	}
-	name := strings.ToLower(strings.ReplaceAll(label, " ", "-"))
-	return mf.LabelElementProps(mf.ElementProps{Class: "form-control w-full"},
-		span("label-text mb-1", label),
-		mf.InputElement(mf.ElementProps{Class: "input input-bordered w-full", Attrs: mf.Attrs{"type": inputType, "name": name, "value": value}}),
-	)
+	if strings.TrimSpace(field.Name) == "" {
+		field.Name = strings.ToLower(strings.ReplaceAll(field.Label, " ", "-"))
+	}
+	return field
 }
 
 func pageTitle(title, desc string, actions mf.Node) mf.Node {

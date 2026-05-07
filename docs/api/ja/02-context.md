@@ -6,13 +6,13 @@
 
 - ハンドラ内で `Context.State` を直接読み書きしないでください。後方互換のために残っていますが deprecated です。
 - そのリクエスト内だけで使う一時値は `Context.Local` に置きます。
-- アプリ全体で共有する値は `Context.Set` / `Context.Get` を使います。親アプリを持つ context では app mutex 経由で同期されます。
+- アプリ全体で共有する値は `Context.SetGlobal` / `Context.GetGlobal` を使います。名前に `Global` が付く API はアプリの全ユーザーで共有される state を読み書きします。親アプリを持つ context では app mutex 経由で同期されます。
 
 ```go
 app.Page("/", func(ctx *mb.Context) mf.Node {
     ctx.Local["trace_id"] = ctx.Query("trace_id") // リクエスト内だけの一時値
-    ctx.Set("last_trace_id", ctx.Local["trace_id"]) // アプリ共有 state
-    return mf.Text(ctx.Get("last_trace_id").(string))
+    ctx.SetGlobal("last_trace_id", ctx.Local["trace_id"]) // 全ユーザー共有のアプリ state
+    return mf.Text(ctx.GetGlobal("last_trace_id").(string))
 })
 ```
 
@@ -37,22 +37,28 @@ app.Page("/", func(ctx *mb.Context) mf.Node {
 - ここに入れた値は他のリクエストと共有されず、app mutex の保護対象でもありません。
 
 ### `State map[string]any`
-- Deprecated: `Context.Get` / `Context.Set` または `Context.Local` を使ってください。
+- Deprecated: アプリ全体の state には `Context.GetGlobal` / `Context.SetGlobal`、リクエスト内だけの state には `Context.Local` を使ってください。
 - 新しいコードでは `Context.State[...]` を直接触らないでください。
 
-### `Set(key string, value any)`
+### `SetGlobal(key string, value any)`
 - アプリ共有 state に書き込みます。
+- API 名に `Global` が付くため、この値はアプリの全ユーザー・全リクエストで共有されます。
 - 親アプリを持つ context では app mutex 経由で同期されます。
 - 親アプリがない場合は互換性のため deprecated な `Context.State` map に書き込みます。
 
-### `Get(key string) any`
+### `GetGlobal(key string) any`
 - アプリ共有 state を読み取ります。
+- API 名に `Global` が付くため、この値はアプリの全ユーザー・全リクエストで共有されます。
 - 親アプリを持つ context では app mutex 経由で同期されます。
 - 親アプリがない場合は互換性のため deprecated な `Context.State` map から読み取ります。
 
-### `GetInt(key string) int`
-- `Get` + `int` アサーションです。
+### `GetGlobalInt(key string) int`
+- `GetGlobal` + `int` アサーションです。
 - 値がない、または `int` でない場合は `0` を返します。
+
+### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
+- Deprecated: アプリ全体の state へアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` を使ってください。
+- 互換エイリアスとして、現在も同じ全ユーザー共有 state にアクセスします。
 
 ### Flash APIs
 

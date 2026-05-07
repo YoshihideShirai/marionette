@@ -12,7 +12,7 @@ import (
 
 func main() {
     app := mb.New()
-    app.Set("messages", []string{})
+    app.SetGlobal("messages", []string{})
 
     app.Page("/", func(ctx *mb.Context) mf.Node {
         return page(ctx)
@@ -21,11 +21,11 @@ func main() {
     app.Action("messages/create", func(ctx *mb.Context) mf.Node {
         text := strings.TrimSpace(ctx.FormValue("message"))
         if text != "" {
-            messages := ctx.Get("messages").([]string)
+            messages := ctx.GetGlobal("messages").([]string)
             messages = append([]string{text}, messages...)
-            ctx.Set("messages", messages)
+            ctx.SetGlobal("messages", messages)
         }
-        return messageList(ctx.Get("messages").([]string))
+        return messageList(ctx.GetGlobal("messages").([]string))
     })
 
     if err := app.Run("127.0.0.1:8080"); err != nil {
@@ -34,7 +34,7 @@ func main() {
 }
 
 func page(ctx *mb.Context) mf.Node {
-    messages := ctx.Get("messages").([]string)
+    messages := ctx.GetGlobal("messages").([]string)
 
     return mf.Container(mf.ContainerProps{
         MaxWidth: "2xl",
@@ -89,7 +89,7 @@ func messageList(messages []string) mf.Node {
 }`;
 
 const initialStateCode = `app := mb.New()
-app.Set("messages", []string{})`;
+app.SetGlobal("messages", []string{})`;
 
 const pageRouteCode = `app.Page("/", func(ctx *mb.Context) mf.Node {
     return page(ctx)
@@ -104,11 +104,11 @@ const actionFormCode = `mf.ActionForm(mf.ActionFormProps{
 const actionHandlerCode = `app.Action("messages/create", func(ctx *mb.Context) mf.Node {
     text := strings.TrimSpace(ctx.FormValue("message"))
     if text != "" {
-        messages := ctx.Get("messages").([]string)
+        messages := ctx.GetGlobal("messages").([]string)
         messages = append([]string{text}, messages...)
-        ctx.Set("messages", messages)
+        ctx.SetGlobal("messages", messages)
     }
-    return messageList(ctx.Get("messages").([]string))
+    return messageList(ctx.GetGlobal("messages").([]string))
 })`;
 ---
 <BaseLayout title="Backend and Frontend Communication - Marionette" lang="en" languageSwitcherPath="/marionette/ja/tutorial/backend-frontend/">
@@ -137,7 +137,7 @@ const actionHandlerCode = `app.Action("messages/create", func(ctx *mb.Context) m
     <section class="lesson-step" aria-labelledby="state-en">
       <p class="step-label">Step 2</p>
       <h2 id="state-en">Store State on the Backend</h2>
-      <p>Use <code>app.Set</code> to initialize application state. Inside handlers, use <code>ctx.Get</code> and <code>ctx.Set</code>.</p>
+      <p>Use <code>app.SetGlobal</code> to initialize app-wide state shared by all users. Inside handlers, use <code>ctx.GetGlobal</code> and <code>ctx.SetGlobal</code> for that shared state.</p>
       <pre><code>{initialStateCode}</code></pre>
     </section>
 

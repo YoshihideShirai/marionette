@@ -37,13 +37,13 @@ const drawerID = "admin-nav-drawer"
 
 func BuildApp() *mb.App {
 	app := mb.New()
-	app.Set("orders", seedOrders)
-	app.Set("selectedStatus", "all")
-	app.Set("loggedIn", false)
-	app.Set("authError", "")
-	app.Set("flash", "")
-	app.Set("currentPage", "overview")
-	app.Set("currentOrderID", "")
+	app.SetGlobal("orders", seedOrders)
+	app.SetGlobal("selectedStatus", "all")
+	app.SetGlobal("loggedIn", false)
+	app.SetGlobal("authError", "")
+	app.SetGlobal("flash", "")
+	app.SetGlobal("currentPage", "overview")
+	app.SetGlobal("currentOrderID", "")
 
 	assetsFS, err := fs.Sub(embeddedAssets, "assets")
 	if err == nil {
@@ -55,81 +55,81 @@ func BuildApp() *mb.App {
 	`)
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
-		if !ctx.Get("loggedIn").(bool) {
-			return loginPage(ctx.Get("authError").(string))
+		if !ctx.GetGlobal("loggedIn").(bool) {
+			return loginPage(ctx.GetGlobal("authError").(string))
 		}
-		ctx.Set("currentPage", "overview")
-		ctx.Set("currentOrderID", "")
+		ctx.SetGlobal("currentPage", "overview")
+		ctx.SetGlobal("currentOrderID", "")
 		return dashboardFromState(ctx, "overview")
 	}, mb.WithTitle("Admin Sample"))
 
 	app.Page("/pipeline", func(ctx *mb.Context) mf.Node {
-		if !ctx.Get("loggedIn").(bool) {
-			return loginPage(ctx.Get("authError").(string))
+		if !ctx.GetGlobal("loggedIn").(bool) {
+			return loginPage(ctx.GetGlobal("authError").(string))
 		}
-		ctx.Set("currentPage", "pipeline")
-		ctx.Set("currentOrderID", "")
+		ctx.SetGlobal("currentPage", "pipeline")
+		ctx.SetGlobal("currentOrderID", "")
 		return dashboardFromState(ctx, "pipeline")
 	}, mb.WithTitle("Pipeline - Admin Sample"))
 
 	app.Page("/playbooks", func(ctx *mb.Context) mf.Node {
-		if !ctx.Get("loggedIn").(bool) {
-			return loginPage(ctx.Get("authError").(string))
+		if !ctx.GetGlobal("loggedIn").(bool) {
+			return loginPage(ctx.GetGlobal("authError").(string))
 		}
-		ctx.Set("currentPage", "playbooks")
-		ctx.Set("currentOrderID", "")
+		ctx.SetGlobal("currentPage", "playbooks")
+		ctx.SetGlobal("currentOrderID", "")
 		return dashboardFromState(ctx, "playbooks")
 	}, mb.WithTitle("Playbooks - Admin Sample"))
 
 	app.Page("/orders/detail", func(ctx *mb.Context) mf.Node {
-		if !ctx.Get("loggedIn").(bool) {
-			return loginPage(ctx.Get("authError").(string))
+		if !ctx.GetGlobal("loggedIn").(bool) {
+			return loginPage(ctx.GetGlobal("authError").(string))
 		}
-		ctx.Set("currentPage", "order-detail")
-		ctx.Set("currentOrderID", strings.TrimSpace(ctx.Query("id")))
+		ctx.SetGlobal("currentPage", "order-detail")
+		ctx.SetGlobal("currentOrderID", strings.TrimSpace(ctx.Query("id")))
 		return dashboardFromState(ctx, "order-detail")
 	}, mb.WithTitle("Deal detail - Admin Sample"))
 
 	app.Action("auth/login", func(ctx *mb.Context) mf.Node {
 		provider := strings.TrimSpace(ctx.FormValue("provider"))
 		if provider == "demo-sso" {
-			ctx.Set("loggedIn", true)
-			ctx.Set("authError", "")
-			ctx.Set("flash", "Signed in with Demo SSO")
-			ctx.Set("currentPage", "overview")
+			ctx.SetGlobal("loggedIn", true)
+			ctx.SetGlobal("authError", "")
+			ctx.SetGlobal("flash", "Signed in with Demo SSO")
+			ctx.SetGlobal("currentPage", "overview")
 			return dashboardFromState(ctx, "overview")
 		}
-		ctx.Set("loggedIn", false)
-		ctx.Set("authError", "External authentication failed. Please try again.")
-		return loginPage(ctx.Get("authError").(string))
+		ctx.SetGlobal("loggedIn", false)
+		ctx.SetGlobal("authError", "External authentication failed. Please try again.")
+		return loginPage(ctx.GetGlobal("authError").(string))
 	})
 
 	app.Action("auth/logout", func(ctx *mb.Context) mf.Node {
-		ctx.Set("loggedIn", false)
-		ctx.Set("authError", "")
-		ctx.Set("flash", "")
+		ctx.SetGlobal("loggedIn", false)
+		ctx.SetGlobal("authError", "")
+		ctx.SetGlobal("flash", "")
 		return loginPage("")
 	})
 
 	app.Action("orders/filter", func(ctx *mb.Context) mf.Node {
-		if !ctx.Get("loggedIn").(bool) {
+		if !ctx.GetGlobal("loggedIn").(bool) {
 			return dashboardMainContent(sessionExpiredAlert())
 		}
 		status := strings.TrimSpace(ctx.FormValue("status"))
 		if status == "" {
 			status = "all"
 		}
-		ctx.Set("selectedStatus", status)
-		ctx.Set("flash", fmt.Sprintf("Filter applied: %s", status))
-		return dashboardMainContent(dashboardBody(ctx, ctx.Get("currentPage").(string)))
+		ctx.SetGlobal("selectedStatus", status)
+		ctx.SetGlobal("flash", fmt.Sprintf("Filter applied: %s", status))
+		return dashboardMainContent(dashboardBody(ctx, ctx.GetGlobal("currentPage").(string)))
 	})
 
 	app.Action("orders/toggle-status", func(ctx *mb.Context) mf.Node {
-		if !ctx.Get("loggedIn").(bool) {
+		if !ctx.GetGlobal("loggedIn").(bool) {
 			return dashboardMainContent(sessionExpiredAlert())
 		}
 		id := strings.TrimSpace(ctx.FormValue("id"))
-		orders := ctx.Get("orders").([]order)
+		orders := ctx.GetGlobal("orders").([]order)
 		for i := range orders {
 			if orders[i].ID != id {
 				continue
@@ -141,11 +141,11 @@ func BuildApp() *mb.App {
 				orders[i].Status = "Blocked"
 				orders[i].Risk = "High"
 			}
-			ctx.Set("flash", fmt.Sprintf("%s -> %s", id, orders[i].Status))
+			ctx.SetGlobal("flash", fmt.Sprintf("%s -> %s", id, orders[i].Status))
 			break
 		}
-		ctx.Set("orders", orders)
-		return dashboardMainContent(dashboardBody(ctx, ctx.Get("currentPage").(string)))
+		ctx.SetGlobal("orders", orders)
+		return dashboardMainContent(dashboardBody(ctx, ctx.GetGlobal("currentPage").(string)))
 	})
 
 	return app
@@ -233,10 +233,10 @@ func sessionExpiredAlert() mf.Node {
 }
 
 func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
-	selectedStatus := ctx.Get("selectedStatus").(string)
-	allOrders := ctx.Get("orders").([]order)
+	selectedStatus := ctx.GetGlobal("selectedStatus").(string)
+	allOrders := ctx.GetGlobal("orders").([]order)
 	orders := filteredOrders(allOrders, selectedStatus)
-	flash := ctx.Get("flash").(string)
+	flash := ctx.GetGlobal("flash").(string)
 	currentOrderID := stateString(ctx, "currentOrderID")
 	children := []mf.Node{
 		mf.PageHeader(mf.PageHeaderProps{
@@ -547,7 +547,7 @@ func orderDetailHref(id string) string {
 }
 
 func stateString(ctx *mb.Context, key string) string {
-	v, ok := ctx.Get(key).(string)
+	v, ok := ctx.GetGlobal(key).(string)
 	if !ok {
 		return ""
 	}

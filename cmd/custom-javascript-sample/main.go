@@ -38,15 +38,15 @@ func main() {
 	app.AddScript(assets.MathJaxCHTMLURL)
 	app.AddJavaScript(customJavaScript())
 	app.AddStyle(customStyles())
-	app.Set("formulaIndex", 0)
+	app.SetGlobal("formulaIndex", 0)
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return page(ctx)
 	})
 
 	app.Action("formula/next", func(ctx *mb.Context) mf.Node {
-		next := (ctx.GetInt("formulaIndex") + 1) % len(formulas)
-		ctx.Set("formulaIndex", next)
+		next := (ctx.GetGlobalInt("formulaIndex") + 1) % len(formulas)
+		ctx.SetGlobal("formulaIndex", next)
 		return formulaPanel(formulas[next])
 	})
 
@@ -56,7 +56,7 @@ func main() {
 }
 
 func page(ctx *mb.Context) mf.Node {
-	current := formulas[ctx.GetInt("formulaIndex")%len(formulas)]
+	current := formulas[ctx.GetGlobalInt("formulaIndex")%len(formulas)]
 	return mf.Container(mf.ContainerProps{MaxWidth: "3xl", Centered: true},
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "6"},
 			mf.PageHeader(mf.PageHeaderProps{

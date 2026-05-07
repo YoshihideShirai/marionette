@@ -248,15 +248,31 @@ func TestAssetBuildsURLFromFirstRegisteredAssetPrefix(t *testing.T) {
 	}
 }
 
+func TestAppGlobalStateHelpers(t *testing.T) {
+	app := New()
+	app.SetGlobal("count", 3)
+	app.SetGlobal("name", "Aiko")
+
+	if got := app.GetGlobalInt("count"); got != 3 {
+		t.Fatalf("expected global int helper to return 3, got %d", got)
+	}
+	if got := app.GetGlobal("name"); got != "Aiko" {
+		t.Fatalf("expected global value %q, got %v", "Aiko", got)
+	}
+	if got := app.GetGlobalInt("name"); got != 0 {
+		t.Fatalf("expected non-int global value to return 0, got %d", got)
+	}
+}
+
 func TestContextLocalIsRequestScopedAndSharedStateUsesHelpers(t *testing.T) {
 	app := New()
-	app.Set("shared", "app")
+	app.SetGlobal("shared", "app")
 	app.Page("/", func(ctx *Context) frontend.Node {
 		if ctx.Local == nil {
 			t.Fatalf("expected Context.Local to be initialized")
 		}
 		ctx.Local["request"] = "local"
-		return frontend.DivProps(frontend.ElementProps{ID: "app"}, frontend.Text(ctx.Local["request"].(string)+":"+ctx.Get("shared").(string)))
+		return frontend.DivProps(frontend.ElementProps{ID: "app"}, frontend.Text(ctx.Local["request"].(string)+":"+ctx.GetGlobal("shared").(string)))
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)

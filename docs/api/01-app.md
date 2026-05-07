@@ -128,14 +128,22 @@
 
 ### App state helpers
 
-#### `Set(key string, value any)`
-- Writes into app shared state map with lock.
+App state helpers whose names include `Global` read or write app-wide state shared by all users and all requests.
 
-#### `Get(key string) any`
-- Reads from app shared state map with lock.
+#### `SetGlobal(key string, value any)`
+- Writes into the app shared state map with lock.
+- Because this API is named `Global`, the value is shared by all users of the app.
 
-#### `GetInt(key string) int`
+#### `GetGlobal(key string) any`
+- Reads from the app shared state map with lock.
+- Because this API is named `Global`, the value is shared by all users of the app.
+
+#### `GetGlobalInt(key string) int`
 - Reads app shared state and type-asserts to `int`.
 - Returns `0` when value is missing or not `int`.
+
+#### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
+- Deprecated: use `SetGlobal` / `GetGlobal` / `GetGlobalInt` when accessing app-wide state.
+- These compatibility aliases still access the same app-wide state shared by all users.
 
 ---

@@ -10,8 +10,8 @@ import (
 
 func TestOrdersFilterFragmentKeepsMainContentTarget(t *testing.T) {
 	app := BuildApp()
-	app.Set("loggedIn", true)
-	app.Set("currentPage", "overview")
+	app.SetGlobal("loggedIn", true)
+	app.SetGlobal("currentPage", "overview")
 	handler := app.Handler()
 
 	first := postFilter(t, handler, "Active")
@@ -34,7 +34,7 @@ func TestOrdersFilterFragmentKeepsMainContentTarget(t *testing.T) {
 
 func TestDashboardUsesOverlayDrawerNavigation(t *testing.T) {
 	app := BuildApp()
-	app.Set("loggedIn", true)
+	app.SetGlobal("loggedIn", true)
 	handler := app.Handler()
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -56,7 +56,7 @@ func TestDashboardUsesOverlayDrawerNavigation(t *testing.T) {
 
 func TestDashboardLinksDealsToDetailPages(t *testing.T) {
 	app := BuildApp()
-	app.Set("loggedIn", true)
+	app.SetGlobal("loggedIn", true)
 	handler := app.Handler()
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -75,7 +75,7 @@ func TestDashboardLinksDealsToDetailPages(t *testing.T) {
 
 func TestOrderDetailPageShowsSelectedDeal(t *testing.T) {
 	app := BuildApp()
-	app.Set("loggedIn", true)
+	app.SetGlobal("loggedIn", true)
 	handler := app.Handler()
 
 	req := httptest.NewRequest(http.MethodGet, "/orders/detail?id=ORD-1043", nil)

@@ -15,8 +15,8 @@ type task struct {
 // BuildApp returns a small task app that can run on web or desktop runtimes.
 func BuildApp(title, description string) *mb.App {
 	app := mb.New()
-	app.Set("tasks", []task{})
-	app.Set("nextID", 1)
+	app.SetGlobal("tasks", []task{})
+	app.SetGlobal("nextID", 1)
 
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return page(ctx, title, description)
@@ -25,20 +25,20 @@ func BuildApp(title, description string) *mb.App {
 	app.Action("tasks/create", func(ctx *mb.Context) mf.Node {
 		name := strings.TrimSpace(ctx.FormValue("name"))
 		if name != "" {
-			tasks := ctx.Get("tasks").([]task)
-			nextID := ctx.Get("nextID").(int)
+			tasks := ctx.GetGlobal("tasks").([]task)
+			nextID := ctx.GetGlobal("nextID").(int)
 			tasks = append(tasks, task{ID: nextID, Name: name})
-			ctx.Set("tasks", tasks)
-			ctx.Set("nextID", nextID+1)
+			ctx.SetGlobal("tasks", tasks)
+			ctx.SetGlobal("nextID", nextID+1)
 		}
-		return taskList(ctx.Get("tasks").([]task))
+		return taskList(ctx.GetGlobal("tasks").([]task))
 	})
 
 	return app
 }
 
 func page(ctx *mb.Context, title, description string) mf.Node {
-	tasks := ctx.Get("tasks").([]task)
+	tasks := ctx.GetGlobal("tasks").([]task)
 	return mf.Container(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
 		mf.Stack(mf.StackProps{Direction: "column", Gap: "6"},
 			mf.PageHeader(mf.PageHeaderProps{

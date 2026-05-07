@@ -19,7 +19,7 @@ func TestDashboardRendersDashWindTemplateSections(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rr.Code)
 	}
 	body := rr.Body.String()
-	for _, want := range []string{"DashWind", "New Users", "Total Sales", "User Channels", "drawer lg:drawer-open dashwind-shell", "hx-post=\"/dashboard/period\""} {
+	for _, want := range []string{"DashWind", "fa-solid fa-house", "font-awesome/6.5.2/css/all.min.css", "New Users", "Total Sales", "User Signup Source", "Amount to be Collected", "Cash in hand", "Refresh Data", "Share", "Email Digests", "Download", "drawer lg:drawer-open dashwind-shell", "hx-post=\"/dashboard/period\""} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected dashboard to contain %q, got %q", want, body)
 		}
@@ -39,7 +39,7 @@ func TestPeriodActionReturnsDashboardFragment(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rr.Code)
 	}
 	body := rr.Body.String()
-	for _, want := range []string{`id="dashwind-main"`, "Period updated to This quarter", "btn btn-sm btn-primary"} {
+	for _, want := range []string{`id="dashwind-main"`, "Period updated to This quarter", "2026-04-01 ~ 2026-06-30"} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected period response to contain %q, got %q", want, body)
 		}
@@ -91,10 +91,10 @@ func TestTemplateRouteGroupsRenderDashWindPages(t *testing.T) {
 		path string
 		want []string
 	}{
-		{path: "/integration", want: []string{"Slack", "Salesforce", "toggle toggle-success toggle-lg"}},
+		{path: "/integration", want: []string{"Slack", "Salesforce", "toggle toggle-success toggle-lg", "Slack logo", `hx-post="/integration/toggle"`}},
 		{path: "/settings-billing", want: []string{"Billing History", "#4567", "Product usage invoices"}},
 		{path: "/login", want: []string{"Login", "Email Id", "Password", "DashWind user page preview"}},
-		{path: "/components", want: []string{"Components", "dashwind.Shell", "ActionFormWithOptions"}},
+		{path: "/components", want: []string{"Components", "dashwind.Shell", "ActionFormWithOptions", "Documentation", "Getting Started"}},
 	}
 	for _, tt := range cases {
 		t.Run(tt.path, func(t *testing.T) {
@@ -111,5 +111,43 @@ func TestTemplateRouteGroupsRenderDashWindPages(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestIntegrationToggleAndCalendarDayActionsUpdateFragments(t *testing.T) {
+	app := BuildApp()
+	handler := app.Handler()
+
+	integrationForm := url.Values{"integration": {"Slack"}}
+	integrationReq := httptest.NewRequest(http.MethodPost, "/integration/toggle", strings.NewReader(integrationForm.Encode()))
+	integrationReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	integrationRR := httptest.NewRecorder()
+	handler.ServeHTTP(integrationRR, integrationReq)
+	if integrationRR.Code != http.StatusOK {
+		t.Fatalf("expected integration toggle 200, got %d", integrationRR.Code)
+	}
+	integrationBody := integrationRR.Body.String()
+	for _, want := range []string{`id="dashwind-main"`, "Slack disabled", "Slack logo", "Disabled"} {
+		if !strings.Contains(integrationBody, want) {
+			t.Fatalf("expected integration response to contain %q, got %q", want, integrationBody)
+		}
+	}
+
+	calendarForm := url.Values{"day": {"20"}}
+	calendarReq := httptest.NewRequest(http.MethodPost, "/calendar/day", strings.NewReader(calendarForm.Encode()))
+	calendarReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	calendarRR := httptest.NewRecorder()
+	handler.ServeHTTP(calendarRR, calendarReq)
+	if calendarRR.Code != http.StatusOK {
+		t.Fatalf("expected calendar day 200, got %d", calendarRR.Code)
+	}
+	calendarBody := calendarRR.Body.String()
+	for _, want := range []string{`id="dashwind-main"`, "May 20 selected", "May 20 details", "Product webinar", "hx-post=\"/calendar/day\""} {
+		if !strings.Contains(calendarBody, want) {
+			t.Fatalf("expected calendar response to contain %q, got %q", want, calendarBody)
+		}
+	}
+	if strings.Contains(calendarBody, "<!doctype html>") {
+		t.Fatalf("expected fragment response, got full document")
 	}
 }

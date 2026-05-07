@@ -41,6 +41,7 @@ type NavItem struct {
 	Path     string
 	Label    string
 	Icon     string
+	IconNode mf.Node
 	Badge    string
 	Disabled bool
 	External bool
@@ -693,7 +694,7 @@ func NavMenu(group NavGroup, currentPath string) mf.Node {
 
 func renderNavItem(item NavItem, currentPath string) mf.Node {
 	path := navItemPath(item)
-	active := item.Active || (path != "" && path == currentPath)
+	active := item.Active || (path != "" && path == currentPath) || navItemHasActiveChild(item, currentPath)
 	className := strings.TrimSpace(item.Class)
 	if active {
 		className = strings.TrimSpace(className + " active")
@@ -715,11 +716,16 @@ func renderNavItem(item NavItem, currentPath string) mf.Node {
 			attrs["rel"] = "noopener noreferrer"
 		}
 	}
-	children := make([]mf.Node, 0, 3)
-	if item.Icon != "" {
+	children := make([]mf.Node, 0, 4)
+	if item.IconNode != nil {
+		children = append(children, item.IconNode)
+	} else if item.Icon != "" {
 		children = append(children, span("w-6 text-center", item.Icon))
 	}
 	children = append(children, span("flex-1", item.Label))
+	if len(item.Children) > 0 {
+		children = append(children, span("text-xs opacity-60", "▾"))
+	}
 	if item.Badge != "" {
 		children = append(children, span("badge badge-sm", item.Badge))
 	}
@@ -732,6 +738,19 @@ func renderNavItem(item NavItem, currentPath string) mf.Node {
 		liChildren = append(liChildren, mf.UlProps(mf.ElementProps{}, childItems...))
 	}
 	return mf.Li(liChildren...)
+}
+
+func navItemHasActiveChild(item NavItem, currentPath string) bool {
+	for _, child := range item.Children {
+		path := navItemPath(child)
+		if path != "" && path == currentPath {
+			return true
+		}
+		if navItemHasActiveChild(child, currentPath) {
+			return true
+		}
+	}
+	return false
 }
 
 func navItemPath(item NavItem) string {

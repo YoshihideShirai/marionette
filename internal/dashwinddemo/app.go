@@ -21,8 +21,8 @@ type transaction struct {
 	Amount                                int
 }
 type integrationItem struct {
-	Name, Icon, Description string
-	Active                  bool
+	Name, Icon, IconURL, Description string
+	Active                           bool
 }
 type bill struct{ InvoiceNo, Amount, Description, Status, GeneratedOn, PaidOn string }
 type teamMember struct{ Name, Email, Role, Joined, Avatar string }
@@ -47,13 +47,13 @@ var seedTransactions = []transaction{
 	{"INV-8845", "Sora Labs", "Enterprise", "Apr 30, 2026", "Paid", 15200},
 }
 var integrationList = []integrationItem{
-	{"Slack", "S", "Instant messaging and workflow notifications for customer operations.", true},
-	{"Facebook", "f", "Meta campaign audience sync and lead-form capture for growth teams.", false},
-	{"LinkedIn", "in", "Business network enrichment and account-based lead routing.", true},
-	{"Google Ads", "G", "Paid-search campaign spend and conversion import for dashboards.", false},
-	{"Gmail", "M", "Shared inbox import for support and success handoffs.", false},
-	{"Salesforce", "SF", "CRM account, opportunity, and forecast synchronization.", false},
-	{"HubSpot", "H", "Inbound marketing, sales, and customer service contact sync.", false},
+	{Name: "Slack", Icon: "S", IconURL: "https://cdn.simpleicons.org/slack", Description: "Instant messaging and workflow notifications for customer operations.", Active: true},
+	{Name: "Facebook", Icon: "f", IconURL: "https://cdn.simpleicons.org/facebook/1877F2", Description: "Meta campaign audience sync and lead-form capture for growth teams.", Active: false},
+	{Name: "LinkedIn", Icon: "in", IconURL: "https://cdn.simpleicons.org/linkedin/0A66C2", Description: "Business network enrichment and account-based lead routing.", Active: true},
+	{Name: "Google Ads", Icon: "G", IconURL: "https://cdn.simpleicons.org/googleads/4285F4", Description: "Paid-search campaign spend and conversion import for dashboards.", Active: false},
+	{Name: "Gmail", Icon: "M", IconURL: "https://cdn.simpleicons.org/gmail/EA4335", Description: "Shared inbox import for support and success handoffs.", Active: false},
+	{Name: "Salesforce", Icon: "SF", IconURL: "https://cdn.simpleicons.org/salesforce/00A1E0", Description: "CRM account, opportunity, and forecast synchronization.", Active: false},
+	{Name: "HubSpot", Icon: "H", IconURL: "https://cdn.simpleicons.org/hubspot/FF7A59", Description: "Inbound marketing, sales, and customer service contact sync.", Active: false},
 }
 var bills = []bill{
 	{"#4567", "23,989", "Product usages", "Pending", "06 Apr 2026", "-"},
@@ -71,30 +71,56 @@ var teamMembers = []teamMember{
 }
 var routes = dw.Navigation{
 	{Label: "Menu", Items: []dw.NavItem{
-		{Path: "/", Icon: "▦", Label: "Dashboard"},
-		{Path: "/leads", Icon: "▣", Label: "Leads"},
-		{Path: "/transactions", Icon: "$", Label: "Transactions"},
-		{Path: "/analytics", Icon: "◒", Label: "Analytics"},
-		{Path: "/integration", Icon: "⚡", Label: "Integration"},
-		{Path: "/calendar", Icon: "◷", Label: "Calendar"},
+		{Path: "/", IconNode: navFontIcon("fa-house"), Label: "Dashboard"},
+		{Path: "/leads", IconNode: navFontIcon("fa-users"), Label: "Leads"},
+		{Path: "/transactions", IconNode: navFontIcon("fa-money-bill-transfer"), Label: "Transactions"},
+		{Path: "/analytics", IconNode: navFontIcon("fa-chart-pie"), Label: "Analytics"},
+		{Path: "/integration", IconNode: navFontIcon("fa-bolt"), Label: "Integration"},
+		{Path: "/calendar", IconNode: navFontIcon("fa-calendar-days"), Label: "Calendar"},
+		{IconNode: navFontIcon("fa-file-lines"), Label: "Pages", Children: []dw.NavItem{
+			{Path: "/login", Icon: "↪", Label: "Login"},
+			{Path: "/register", Icon: "U", Label: "Register"},
+			{Path: "/forgot-password", Icon: "K", Label: "Forgot Password"},
+			{Path: "/blank", Icon: "□", Label: "Blank Page"},
+			{Path: "/404", Icon: "!", Label: "404"},
+		}},
+		{IconNode: navFontIcon("fa-gear"), Label: "Settings", Children: []dw.NavItem{
+			{Path: "/settings-profile", Icon: "⚙", Label: "Profile"},
+			{Path: "/settings-billing", Icon: "W", Label: "Billing"},
+			{Path: "/settings-team", Icon: "◎", Label: "Team Members"},
+		}},
+		{IconNode: navFontIcon("fa-book-open"), Label: "Documentation", Children: []dw.NavItem{
+			{Path: "/getting-started", Icon: "D", Label: "Getting Started"},
+			{Path: "/features", Icon: "▤", Label: "Features"},
+			{Path: "/components", Icon: "<> ", Label: "Components"},
+		}},
 	}},
-	{Label: "Pages", Items: []dw.NavItem{
-		{Path: "/login", Icon: "↪", Label: "Login"},
-		{Path: "/register", Icon: "U", Label: "Register"},
-		{Path: "/forgot-password", Icon: "K", Label: "Forgot Password"},
-		{Path: "/blank", Icon: "□", Label: "Blank Page"},
-		{Path: "/404", Icon: "!", Label: "404"},
-	}},
-	{Label: "Settings", Items: []dw.NavItem{
-		{Path: "/settings-profile", Icon: "⚙", Label: "Profile"},
-		{Path: "/settings-billing", Icon: "W", Label: "Billing"},
-		{Path: "/settings-team", Icon: "◎", Label: "Team Members"},
-	}},
-	{Label: "Documentation", Items: []dw.NavItem{
-		{Path: "/getting-started", Icon: "D", Label: "Getting Started"},
-		{Path: "/features", Icon: "▤", Label: "Features"},
-		{Path: "/components", Icon: "<> ", Label: "Components"},
-	}},
+}
+
+func navFontIcon(name string) mf.Node {
+	return mf.FontIcon(mf.FontIconProps{
+		Library:    "fa-solid",
+		Name:       name,
+		Decorative: true,
+		Props:      mf.ComponentProps{Class: "w-6 text-center text-base"},
+	})
+}
+
+func defaultIntegrationStates() map[string]bool {
+	states := map[string]bool{}
+	for _, item := range integrationList {
+		states[item.Name] = item.Active
+	}
+	return states
+}
+
+func copyIntegrationStates(value any) map[string]bool {
+	states, _ := value.(map[string]bool)
+	copied := defaultIntegrationStates()
+	for name, active := range states {
+		copied[name] = active
+	}
+	return copied
 }
 
 const mainTargetID = "dashwind-main"
@@ -103,8 +129,11 @@ func BuildApp() *mb.App {
 	app := mb.New()
 	app.SetGlobal("period", "Last 30 days")
 	app.SetGlobal("notice", "")
+	app.SetGlobal("integrationStates", defaultIntegrationStates())
+	app.SetGlobal("calendarSelectedDay", 8)
 	app.SetGlobal("leads", append([]lead(nil), seedLeads...))
 	dw.Use(app, dw.Options{})
+	app.AddStylesheet("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css")
 	pageBodies := map[string]func(*mb.Context) mf.Node{
 		"/": dashboardPage, "/leads": leadsPage, "/transactions": transactionsPage, "/analytics": analyticsPage, "/integration": integrationPage, "/calendar": calendarPage,
 		"/login": loginPage, "/register": registerPreviewPage, "/forgot-password": forgotPasswordPage, "/blank": blankPage, "/404": notFoundPage,
@@ -129,6 +158,28 @@ func BuildApp() *mb.App {
 		ctx.SetGlobal("period", period)
 		ctx.SetGlobal("notice", fmt.Sprintf("Period updated to %s", period))
 		return mainContent(dashboardPage(ctx))
+	})
+	app.Action("integration/toggle", func(ctx *mb.Context) mf.Node {
+		name := strings.TrimSpace(ctx.FormValue("integration"))
+		states := copyIntegrationStates(ctx.GetGlobal("integrationStates"))
+		active := !states[name]
+		states[name] = active
+		ctx.SetGlobal("integrationStates", states)
+		status := "disabled"
+		if active {
+			status = "enabled"
+		}
+		ctx.SetGlobal("notice", fmt.Sprintf("%s %s", name, status))
+		return mainContent(integrationPage(ctx))
+	})
+	app.Action("calendar/day", func(ctx *mb.Context) mf.Node {
+		day, err := strconv.Atoi(strings.TrimSpace(ctx.FormValue("day")))
+		if err != nil || day < 1 || day > 31 {
+			day = 8
+		}
+		ctx.SetGlobal("calendarSelectedDay", day)
+		ctx.SetGlobal("notice", fmt.Sprintf("May %02d selected", day))
+		return mainContent(calendarPage(ctx))
 	})
 	app.Action("leads/add", func(ctx *mb.Context) mf.Node {
 		leads := append([]lead(nil), ctx.GetGlobal("leads").([]lead)...)
@@ -214,15 +265,36 @@ func statCardNode(s statCard) dw.Metric {
 
 func periodForm(period string) mf.Node {
 	period = normalizePeriod(period)
-	buttons := []mf.Node{}
-	for _, option := range []string{"Last 7 days", "Last 30 days", "This quarter"} {
-		className := "btn-sm"
-		if option == period {
-			className += " btn-primary"
-		}
-		buttons = append(buttons, daisy.ButtonWithAttrs(option, mf.ComponentProps{Class: className}, map[string]string{"type": "submit", "name": "period", "value": option}))
+	dateRange := "2026-04-08 ~ 2026-05-07"
+	if period == "Last 7 days" {
+		dateRange = "2026-05-01 ~ 2026-05-07"
+	} else if period == "This quarter" {
+		dateRange = "2026-04-01 ~ 2026-06-30"
 	}
-	return daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/dashboard/period", Target: "#" + mainTargetID, Swap: "outerHTML", Class: "join"}, buttons...)
+	return daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/dashboard/period", Target: "#" + mainTargetID, Swap: "outerHTML", Class: "flex flex-col gap-2 sm:flex-row sm:items-center"},
+		mf.InputElement(mf.ElementProps{Attrs: mf.Attrs{"class": "input input-bordered input-sm w-full sm:w-72", "name": "dateRange", "readonly": "readonly", "aria-label": "Date range", "value": dateRange}}),
+		daisy.ButtonWithAttrs("Refresh Data", mf.ComponentProps{Class: activePeriodClass(period, "Last 30 days")}, map[string]string{"type": "submit", "name": "period", "value": "Last 30 days"}),
+		daisy.ButtonWithAttrs("Share", mf.ComponentProps{Class: "btn-sm btn-outline"}, map[string]string{"type": "submit", "name": "period", "value": period}),
+		dashboardMoreMenu(),
+	)
+}
+
+func dashboardMoreMenu() mf.Node {
+	return div("dropdown dropdown-end",
+		daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-sm btn-ghost btn-square"}, map[string]string{"type": "button", "tabindex": "0", "aria-label": "Dashboard options"}, mf.Text("⋮")),
+		mf.UlProps(mf.ElementProps{Class: "dropdown-content menu bg-base-100 rounded-box z-10 w-44 p-2 shadow", Attrs: mf.Attrs{"tabindex": "0"}},
+			mf.Li(daisy.ButtonWithAttrs("Email Digests", mf.ComponentProps{Class: "btn-ghost btn-sm justify-start"}, map[string]string{"type": "submit", "name": "period", "value": "Last 7 days"})),
+			mf.Li(daisy.ButtonWithAttrs("Download", mf.ComponentProps{Class: "btn-ghost btn-sm justify-start"}, map[string]string{"type": "submit", "name": "period", "value": "This quarter"})),
+		),
+	)
+}
+
+func activePeriodClass(period, option string) string {
+	className := "btn-sm"
+	if option == period {
+		className += " btn-primary"
+	}
+	return className
 }
 
 func normalizePeriod(period string) string {
@@ -236,23 +308,32 @@ func normalizePeriod(period string) string {
 }
 
 func amountStats() mf.Node {
-	return dw.MetricGrid(dw.MetricGridProps{
-		Class: "grid grid-cols-1 gap-6 md:grid-cols-2",
-		Items: []dw.Metric{
-			{Title: "Total Likes", Value: "25.6K", Description: "Audience engagement", Trend: "21% more than last month", TrendTone: dw.ToneSuccess, Icon: mf.Text("♥")},
-			{Title: "Page Views", Value: "2.6M", Description: "Traffic across channels", Trend: "14% more than last month", TrendTone: dw.ToneSuccess, Icon: mf.Text("◉")},
-		},
-	})
+	return daisy.StatsWithProps(daisy.StatsProps{Class: "w-full bg-base-100 shadow"},
+		daisy.StatItem(daisy.StatProps{Title: "Amount to be Collected", Value: "$25,600", Description: "↗︎ 21% more than last month", ValueClass: "text-primary", Figure: daisy.ButtonWithAttrs("View Users", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})}),
+		daisy.StatItem(daisy.StatProps{Title: "Cash in hand", Value: "$7,200", Description: "Current operating balance", ValueClass: "text-secondary", Figure: daisy.ButtonWithAttrs("View Members", mf.ComponentProps{Class: "btn-outline btn-sm"}, map[string]string{"type": "button"})}),
+	)
+}
+
+type signupSource struct {
+	Source, Users, Conversion string
 }
 
 func userChannels() mf.Node {
-	channels := []dw.Metric{
-		{Title: "Organic search", Value: "12,432", Description: "Users", Trend: "46% share", TrendTone: dw.ToneSuccess, Icon: mf.Text("⌕"), Href: "/analytics"},
-		{Title: "Twitter", Value: "8,120", Description: "Users", Trend: "24% share", TrendTone: dw.ToneNeutral, Icon: mf.Text("T"), Href: "/analytics"},
-		{Title: "Newsletter", Value: "5,420", Description: "Users", Trend: "18% share", TrendTone: dw.ToneWarning, Icon: mf.Text("✉")},
-		{Title: "Partners", Value: "2,804", Description: "Users", Trend: "12% share", TrendTone: dw.ToneNeutral, Icon: mf.Text("P")},
+	rows := []signupSource{
+		{Source: "Facebook Ads", Users: "26,345", Conversion: "10.2%"},
+		{Source: "Google Ads", Users: "21,341", Conversion: "11.7%"},
+		{Source: "Instagram Ads", Users: "34,379", Conversion: "12.4%"},
+		{Source: "Affiliates", Users: "12,359", Conversion: "8.9%"},
+		{Source: "Organic", Users: "10,345", Conversion: "7.4%"},
 	}
-	return cardPanel("User Channels", "Traffic source KPI cards", dw.MetricGrid(dw.MetricGridProps{Class: "grid grid-cols-1 gap-4 sm:grid-cols-2", Items: channels}))
+	columns := []dw.Column[signupSource]{
+		{Header: "Source", Cell: func(row signupSource) mf.Node { return mf.Text(row.Source) }},
+		{Header: "No of Users", HeaderClass: "text-right", Class: "text-right", Cell: func(row signupSource) mf.Node { return mf.Text(row.Users) }},
+		{Header: "Conversion", HeaderClass: "text-right", Class: "text-right", Cell: func(row signupSource) mf.Node {
+			return daisy.Badge(mf.BadgeProps{Label: row.Conversion, Props: mf.ComponentProps{Class: "badge-success"}})
+		}},
+	}
+	return cardPanel("User Signup Source", "Channel conversion table", dw.DataTable(dw.DataTableProps[signupSource]{Columns: columns, Rows: rows, Compact: true}))
 }
 
 func chartCard(title, desc string, chart mf.Node) mf.Node {
@@ -335,44 +416,115 @@ func analyticsPage(ctx *mb.Context) mf.Node {
 }
 
 func integrationPage(ctx *mb.Context) mf.Node {
+	states := copyIntegrationStates(ctx.GetGlobal("integrationStates"))
 	cards := make([]mf.Node, 0, len(integrationList))
 	for _, item := range integrationList {
+		item.Active = states[item.Name]
 		cards = append(cards, integrationCard(item))
 	}
 	return div("space-y-6",
-		pageTitle("Integration", "DashWind-style connected app cards with DaisyUI toggles.", nil),
+		pageTitle("Integration", "DashWind-style connected app cards with logo art, htmx toggles, and notification feedback.", nil),
+		noticeNode(ctx),
 		div("grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3", cards...),
 	)
 }
 
 func integrationCard(item integrationItem) mf.Node {
+	status := "Disabled"
+	buttonClass := "btn-outline"
+	if item.Active {
+		status = "Enabled"
+		buttonClass = "btn-success"
+	}
 	return cardPanel(item.Name, "",
-		div("flex gap-4", daisy.AvatarPlaceholder(item.Icon, "", "w-12 rounded-box bg-primary/10 text-primary font-bold"), paragraph("text-sm text-base-content/70", item.Description)),
-		div("mt-6 text-right", daisy.ToggleWithVariants(strings.ToLower(item.Name)+"-enabled", item.Active, "success", "lg")),
+		div("flex gap-4", integrationLogo(item), paragraph("text-sm text-base-content/70", item.Description)),
+		div("mt-6 flex items-center justify-between",
+			daisy.Badge(mf.BadgeProps{Label: status, Props: mf.ComponentProps{Class: "badge-ghost"}}),
+			daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/integration/toggle", Target: "#" + mainTargetID, Swap: "outerHTML", Class: "inline-flex items-center gap-3"},
+				daisy.HiddenField("integration", item.Name),
+				daisy.ToggleWithVariants(strings.ToLower(strings.ReplaceAll(item.Name, " ", "-"))+"-enabled", item.Active, "success", "lg"),
+				daisy.ButtonWithAttrs("Toggle", mf.ComponentProps{Class: "btn-sm " + buttonClass}, map[string]string{"type": "submit"}),
+			),
+		),
+	)
+}
+
+func integrationLogo(item integrationItem) mf.Node {
+	if strings.TrimSpace(item.IconURL) == "" {
+		return daisy.AvatarPlaceholder(item.Icon, "", "w-12 rounded-box bg-primary/10 text-primary font-bold")
+	}
+	return div("grid h-12 w-12 shrink-0 place-items-center rounded-box bg-base-200 p-2",
+		mf.Element("img", mf.ElementProps{Attrs: mf.Attrs{"src": item.IconURL, "alt": item.Name + " logo", "class": "h-8 w-8 object-contain"}}),
 	)
 }
 
 func calendarPage(ctx *mb.Context) mf.Node {
+	selectedDay, _ := ctx.GetGlobal("calendarSelectedDay").(int)
+	if selectedDay < 1 || selectedDay > 31 {
+		selectedDay = 8
+	}
 	days := []mf.Node{}
 	for day := 1; day <= 35; day++ {
-		className := "min-h-20 rounded-box border border-base-300 bg-base-100 p-2 text-sm"
+		className := "min-h-20 rounded-box border border-base-300 bg-base-100 p-2 text-left text-sm transition hover:border-primary hover:bg-primary/5"
 		label := strconv.Itoa(day)
+		actualDay := day
 		if day > 31 {
 			className += " opacity-30"
 			label = strconv.Itoa(day - 31)
+			actualDay = day - 31
 		}
-		if day == 8 || day == 13 || day == 20 {
+		if hasCalendarEvents(actualDay) {
 			className += " ring-2 ring-primary/30"
 		}
-		days = append(days, div(className, div("font-semibold", mf.Text(label))))
+		if actualDay == selectedDay && day <= 31 {
+			className += " bg-primary text-primary-content ring-primary"
+		}
+		days = append(days, daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
+			daisy.HiddenField("day", strconv.Itoa(actualDay)),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: className}, map[string]string{"type": "submit"}, div("font-semibold", mf.Text(label)), calendarDot(actualDay)),
+		))
 	}
 	return div("space-y-6",
-		pageTitle("Calendar", "Calendar view and customer-success events matching the DashWind sample area.", nil),
+		pageTitle("Calendar", "Calendar view and customer-success events with a right drawer style day detail panel.", nil),
+		noticeNode(ctx),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-3",
 			cardPanel("May 2026", "Monthly schedule", div("grid grid-cols-7 gap-2", days...)),
-			cardPanel("Upcoming events", "Right drawer event feed", bulletList("May 08 - Enterprise QBR", "May 13 - Renewal review", "May 20 - Product webinar", "May 28 - Campaign retrospective")),
+			calendarDayPanel(selectedDay),
 		),
 	)
+}
+
+func calendarDot(day int) mf.Node {
+	if !hasCalendarEvents(day) {
+		return mf.Raw("")
+	}
+	return div("mt-4 flex gap-1", span("h-2 w-2 rounded-full bg-current opacity-80", ""), span("text-xs", "events"))
+}
+
+func calendarDayPanel(day int) mf.Node {
+	return dw.CardPanel(dw.CardPanelProps{Title: fmt.Sprintf("May %02d details", day), Description: "Right drawer event feed", Class: "xl:sticky xl:top-24", BodyClass: "space-y-4"},
+		paragraph("text-sm text-base-content/70", "Click a calendar day to update this drawer-like panel without leaving the page."),
+		bulletList(calendarEvents(day)...),
+	)
+}
+
+func hasCalendarEvents(day int) bool {
+	return len(calendarEvents(day)) > 0
+}
+
+func calendarEvents(day int) []string {
+	switch day {
+	case 8:
+		return []string{"09:00 - Enterprise QBR", "14:30 - Customer health review"}
+	case 13:
+		return []string{"11:00 - Renewal review", "16:00 - Finance approval"}
+	case 20:
+		return []string{"10:00 - Product webinar", "15:00 - Campaign planning"}
+	case 28:
+		return []string{"13:00 - Campaign retrospective"}
+	default:
+		return []string{"No scheduled events"}
+	}
 }
 
 func loginPage(ctx *mb.Context) mf.Node {

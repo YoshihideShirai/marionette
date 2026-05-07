@@ -32,13 +32,25 @@ type Brand struct {
 	Class    string
 }
 
+// Navigation describes a set of sidebar menu groups.
+type Navigation []NavGroup
+
 // NavItem describes a single sidebar link.
 type NavItem struct {
-	Label  string
-	Href   string
-	Icon   string
+	Path     string
+	Label    string
+	Icon     string
+	Badge    string
+	Disabled bool
+	External bool
+	Children []NavItem
+
+	// Deprecated: use Path.
+	Href string
+	// Deprecated: active state is normally derived by RenderNavigation from the current path.
 	Active bool
-	Class  string
+	// Class appends classes to the rendered anchor.
+	Class string
 }
 
 // NavGroup describes a labeled sidebar menu section.
@@ -68,7 +80,7 @@ type ShellProps struct {
 	MainTargetID      string
 	Brand             Brand
 	CurrentPath       string
-	Navigation        []NavGroup
+	Navigation        Navigation
 	User              UserMenu
 	Actions           []mf.Node
 	SearchPlaceholder string
@@ -88,7 +100,7 @@ type ShellProps struct {
 	BrandTitle    string
 	BrandSubtitle string
 	BrandMark     string
-	NavGroups     []NavGroup
+	NavGroups     Navigation
 	Content       mf.Node
 	UserInitials  string
 	SidebarFooter mf.Node
@@ -221,13 +233,8 @@ func normalizeShellProps(props ShellProps) ShellProps {
 		props.Actions = props.TopbarActions
 	}
 	if strings.TrimSpace(props.CurrentPath) == "" && strings.TrimSpace(props.CurrentTitle) != "" {
-		for _, group := range props.Navigation {
-			for _, item := range group.Items {
-				if item.Label == props.CurrentTitle {
-					props.CurrentPath = item.Href
-					return props
-				}
-			}
+		if item, ok := findNavItemByLabel(props.Navigation, props.CurrentTitle); ok {
+			props.CurrentPath = navItemPath(item)
 		}
 	}
 	return props
@@ -259,9 +266,7 @@ func sidebar(props ShellProps) mf.Node {
 	brand.Title = defaultString(brand.Title, "DashWind")
 	brand.Mark = defaultString(brand.Mark, "D")
 	panelChildren := []mf.Node{brandBlock(brand)}
-	for _, group := range props.Navigation {
-		panelChildren = append(panelChildren, NavMenu(group, props.CurrentPath))
-	}
+	panelChildren = append(panelChildren, RenderNavigation(props.Navigation, props.CurrentPath))
 	panelChildren = append(panelChildren, footer)
 	return div(defaultString(props.SidebarClass, "min-h-full w-80 bg-base-100 text-base-content shadow-xl"), div("p-5", panelChildren...))
 }
@@ -277,14 +282,75 @@ func brandBlock(brand Brand) mf.Node {
 	return div(className, children...)
 }
 
+// RenderNavigation renders DashWind sidebar navigation and marks the item whose Path matches currentPath active.
+func RenderNavigation(nav Navigation, currentPath string) mf.Node {
+	menus := make([]mf.Node, 0, len(nav))
+	for _, group := range nav {
+		menus = append(menus, NavMenu(group, currentPath))
+	}
+	return mf.DivProps(mf.ElementProps{}, menus...)
+}
+
 // NavMenu renders a menu group and marks an item active by CurrentPath when Active is false.
 func NavMenu(group NavGroup, currentPath string) mf.Node {
-	items := []mf.Node{daisy.MenuTitle(group.Label)}
+	items := []mf.Node{}
+	if strings.TrimSpace(group.Label) != "" {
+		items = append(items, daisy.MenuTitle(group.Label))
+	}
 	for _, item := range group.Items {
-		active := item.Active || (item.Href != "" && item.Href == currentPath)
-		items = append(items, daisy.MenuLink(daisy.MenuLinkProps{Label: item.Label, Href: item.Href, Icon: item.Icon, Active: active, Class: item.Class}))
+		items = append(items, renderNavItem(item, currentPath))
 	}
 	return daisy.MenuWithProps(daisy.MenuProps{Class: strings.TrimSpace("rounded-box gap-1 p-0 " + group.Class)}, items...)
+}
+
+func renderNavItem(item NavItem, currentPath string) mf.Node {
+	path := navItemPath(item)
+	active := item.Active || (path != "" && path == currentPath)
+	className := strings.TrimSpace(item.Class)
+	if active {
+		className = strings.TrimSpace(className + " active")
+	}
+	if item.Disabled {
+		className = strings.TrimSpace(className + " disabled")
+	}
+	attrs := mf.Attrs{"class": className}
+	if item.Disabled {
+		attrs["aria-disabled"] = "true"
+		attrs["tabindex"] = "-1"
+	} else {
+		if path == "" {
+			path = "#"
+		}
+		attrs["href"] = path
+		if item.External {
+			attrs["target"] = "_blank"
+			attrs["rel"] = "noopener noreferrer"
+		}
+	}
+	children := make([]mf.Node, 0, 3)
+	if item.Icon != "" {
+		children = append(children, span("w-6 text-center", item.Icon))
+	}
+	children = append(children, span("flex-1", item.Label))
+	if item.Badge != "" {
+		children = append(children, span("badge badge-sm", item.Badge))
+	}
+	liChildren := []mf.Node{mf.Element("a", mf.ElementProps{Attrs: attrs}, children...)}
+	if len(item.Children) > 0 {
+		childItems := make([]mf.Node, 0, len(item.Children))
+		for _, child := range item.Children {
+			childItems = append(childItems, renderNavItem(child, currentPath))
+		}
+		liChildren = append(liChildren, mf.UlProps(mf.ElementProps{}, childItems...))
+	}
+	return mf.Li(liChildren...)
+}
+
+func navItemPath(item NavItem) string {
+	if strings.TrimSpace(item.Path) != "" {
+		return item.Path
+	}
+	return item.Href
 }
 
 func renderUserMenu(user UserMenu) mf.Node {
@@ -299,7 +365,7 @@ func renderUserMenu(user UserMenu) mf.Node {
 		menuItems = append(menuItems, mf.Li(mf.Element("div", mf.ElementProps{Class: "flex flex-col gap-0"}, span("font-semibold", user.Name), span("text-xs opacity-60", user.Email))))
 	}
 	for _, item := range user.Items {
-		menuItems = append(menuItems, daisy.MenuLink(daisy.MenuLinkProps{Label: item.Label, Href: item.Href, Icon: item.Icon, Active: item.Active, Class: item.Class}))
+		menuItems = append(menuItems, daisy.MenuLink(daisy.MenuLinkProps{Label: item.Label, Href: navItemPath(item), Icon: item.Icon, Active: item.Active, Class: item.Class}))
 	}
 	menuItems = append(menuItems, user.Actions...)
 	if len(menuItems) == 0 {
@@ -315,14 +381,43 @@ func currentTitle(props ShellProps) string {
 	if props.CurrentTitle != "" {
 		return props.CurrentTitle
 	}
-	for _, group := range props.Navigation {
-		for _, item := range group.Items {
-			if item.Active || (item.Href != "" && item.Href == props.CurrentPath) {
-				return item.Label
-			}
-		}
+	if item, ok := findActiveNavItem(props.Navigation, props.CurrentPath); ok {
+		return item.Label
 	}
 	return "Dashboard"
+}
+
+func findNavItemByLabel(nav Navigation, label string) (NavItem, bool) {
+	for _, group := range nav {
+		if item, ok := findNavItemInItems(group.Items, func(item NavItem) bool { return item.Label == label }); ok {
+			return item, true
+		}
+	}
+	return NavItem{}, false
+}
+
+func findActiveNavItem(nav Navigation, currentPath string) (NavItem, bool) {
+	for _, group := range nav {
+		if item, ok := findNavItemInItems(group.Items, func(item NavItem) bool {
+			path := navItemPath(item)
+			return item.Active || (path != "" && path == currentPath)
+		}); ok {
+			return item, true
+		}
+	}
+	return NavItem{}, false
+}
+
+func findNavItemInItems(items []NavItem, match func(NavItem) bool) (NavItem, bool) {
+	for _, item := range items {
+		if match(item) {
+			return item, true
+		}
+		if child, ok := findNavItemInItems(item.Children, match); ok {
+			return child, true
+		}
+	}
+	return NavItem{}, false
 }
 
 func shellContentClass(props ShellProps) string {

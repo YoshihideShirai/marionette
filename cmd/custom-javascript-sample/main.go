@@ -45,8 +45,10 @@ func main() {
 	})
 
 	app.Action("formula/next", func(ctx *mb.Context) mf.Node {
-		next := (ctx.GetGlobalInt("formulaIndex") + 1) % len(formulas)
-		ctx.SetGlobal("formulaIndex", next)
+		next := ctx.UpdateGlobal("formulaIndex", func(old any) any {
+			oldInt, _ := old.(int)
+			return (oldInt + 1) % len(formulas)
+		}).(int)
 		return formulaPanel(formulas[next])
 	})
 

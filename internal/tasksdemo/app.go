@@ -25,11 +25,11 @@ func BuildApp(title, description string) *mb.App {
 	app.Action("tasks/create", func(ctx *mb.Context) mf.Node {
 		name := strings.TrimSpace(ctx.FormValue("name"))
 		if name != "" {
-			tasks := ctx.GetGlobal("tasks").([]task)
-			nextID := ctx.GetGlobal("nextID").(int)
-			tasks = append(tasks, task{ID: nextID, Name: name})
-			ctx.SetGlobal("tasks", tasks)
-			ctx.SetGlobal("nextID", nextID+1)
+			nextID := ctx.IncrementGlobalInt("nextID", 1) - 1
+			ctx.UpdateGlobal("tasks", func(old any) any {
+				tasks := append([]task(nil), old.([]task)...)
+				return append(tasks, task{ID: nextID, Name: name})
+			})
 		}
 		return taskList(ctx.GetGlobal("tasks").([]task))
 	})

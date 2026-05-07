@@ -52,12 +52,39 @@ app.Page("/", func(ctx *mb.Context) mf.Node {
 - 親アプリを持つ context では app mutex 経由で同期されます。
 - 親アプリがない場合は互換性のため deprecated な `Context.State` map から読み取ります。
 
+### `UpdateGlobal(key string, fn func(old any) any) any`
+- アプリ共有 state を atomically に読み取り、変換し、書き戻します。
+- 親アプリを持つ context では、app mutex を取得したまま `old := state[key]`、`next := fn(old)`、`state[key] = next` を実行します。
+- 新しい値が古い値に依存する場合は、個別の `GetGlobal` → `SetGlobal` ではなくこちらを使ってください。
+- 親アプリがない場合は互換性のため deprecated な `Context.State` map を更新します。
+
+```go
+app.Action("counter/increment", func(ctx *mb.Context) mf.Node {
+    next := ctx.UpdateGlobal("count", func(old any) any {
+        oldInt, _ := old.(int)
+        return oldInt + 1
+    }).(int)
+    return mf.Text(strconv.Itoa(next))
+})
+```
+
+カウンター、進捗 tick、append 形式の更新では、読み取りと書き込みの間に別リクエストが値を変更する可能性があるため、次の形は避けてください。
+
+```go
+count := ctx.GetGlobalInt("count")
+ctx.SetGlobal("count", count+1) // UpdateGlobal または IncrementGlobalInt を使う
+```
+
 ### `GetGlobalInt(key string) int`
 - `GetGlobal` + `int` アサーションです。
 - 値がない、または `int` でない場合は `0` を返します。
 
+### `IncrementGlobalInt(key string, delta int) int`
+- integer のカウンターや進捗値向けの `UpdateGlobal` 便利ラッパーです。
+- 値がない、または `int` でない場合は `0` として扱い、`old + delta` を保存して新しい `int` を返します。
+
 ### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
-- Deprecated: アプリ全体の state へアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` を使ってください。
+- Deprecated: アプリ全体の state へアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` を使ってください。
 - 互換エイリアスとして、現在も同じ全ユーザー共有 state にアクセスします。
 
 ### Flash APIs

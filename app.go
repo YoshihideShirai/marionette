@@ -84,6 +84,20 @@ func (c *Context) GetGlobal(key string) any {
 	return c.app.state[key]
 }
 
+// UpdateGlobal atomically reads, transforms, and writes app-wide state.
+func (c *Context) UpdateGlobal(key string, fn func(old any) any) any {
+	if c.app == nil {
+		if c.State == nil {
+			c.State = map[string]any{}
+		}
+		old := c.State[key]
+		next := fn(old)
+		c.State[key] = next
+		return next
+	}
+	return c.app.UpdateGlobal(key, fn)
+}
+
 // GetGlobalInt reads app-wide state and type-asserts it to int.
 func (c *Context) GetGlobalInt(key string) int {
 	v, ok := c.GetGlobal(key).(int)
@@ -91,6 +105,15 @@ func (c *Context) GetGlobalInt(key string) int {
 		return 0
 	}
 	return v
+}
+
+// IncrementGlobalInt atomically adds delta to an int in app-wide state.
+func (c *Context) IncrementGlobalInt(key string, delta int) int {
+	next, _ := c.UpdateGlobal(key, func(old any) any {
+		oldInt, _ := old.(int)
+		return oldInt + delta
+	}).(int)
+	return next
 }
 
 // Set writes a value into app-wide state shared by all users.
@@ -318,6 +341,16 @@ func (a *App) GetGlobal(key string) any {
 	return a.state[key]
 }
 
+// UpdateGlobal atomically reads, transforms, and writes app-wide state.
+func (a *App) UpdateGlobal(key string, fn func(old any) any) any {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	old := a.state[key]
+	next := fn(old)
+	a.state[key] = next
+	return next
+}
+
 // GetGlobalInt reads app-wide state and type-asserts it to int.
 func (a *App) GetGlobalInt(key string) int {
 	v, ok := a.GetGlobal(key).(int)
@@ -325,6 +358,15 @@ func (a *App) GetGlobalInt(key string) int {
 		return 0
 	}
 	return v
+}
+
+// IncrementGlobalInt atomically adds delta to an int in app-wide state.
+func (a *App) IncrementGlobalInt(key string, delta int) int {
+	next, _ := a.UpdateGlobal(key, func(old any) any {
+		oldInt, _ := old.(int)
+		return oldInt + delta
+	}).(int)
+	return next
 }
 
 // Set writes a value into app-wide state shared by all users.

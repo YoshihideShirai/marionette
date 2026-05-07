@@ -138,12 +138,20 @@ App state helpers whose names include `Global` read or write app-wide state shar
 - Reads from the app shared state map with lock.
 - Because this API is named `Global`, the value is shared by all users of the app.
 
+#### `UpdateGlobal(key string, fn func(old any) any) any`
+- Atomically reads, transforms, and writes app shared state while holding the app mutex.
+- Use when the next value depends on the old value, such as counters, progress ticks, or append-style updates.
+
 #### `GetGlobalInt(key string) int`
 - Reads app shared state and type-asserts to `int`.
 - Returns `0` when value is missing or not `int`.
 
+#### `IncrementGlobalInt(key string, delta int) int`
+- Convenience wrapper around `UpdateGlobal` for integer counters/progress values.
+- Treats missing or non-`int` values as `0`, stores `old + delta`, and returns the new `int`.
+
 #### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
-- Deprecated: use `SetGlobal` / `GetGlobal` / `GetGlobalInt` when accessing app-wide state.
+- Deprecated: use `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` when accessing app-wide state.
 - These compatibility aliases still access the same app-wide state shared by all users.
 
 ---

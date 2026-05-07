@@ -53,12 +53,39 @@ app.Page("/", func(ctx *mb.Context) mf.Node {
 - If context has a parent app, read is synchronized via the app mutex.
 - If no app is attached, reads from the deprecated `Context.State` map for compatibility.
 
+### `UpdateGlobal(key string, fn func(old any) any) any`
+- Atomically reads, transforms, and writes application-shared state.
+- If context has a parent app, `old := state[key]`, `next := fn(old)`, and `state[key] = next` all happen while holding the app mutex.
+- Use this instead of a separate `GetGlobal` → `SetGlobal` sequence whenever the new value depends on the old value.
+- If no app is attached, it updates the deprecated `Context.State` map for compatibility.
+
+```go
+app.Action("counter/increment", func(ctx *mb.Context) mf.Node {
+    next := ctx.UpdateGlobal("count", func(old any) any {
+        oldInt, _ := old.(int)
+        return oldInt + 1
+    }).(int)
+    return mf.Text(strconv.Itoa(next))
+})
+```
+
+Avoid this pattern for counters, progress ticks, or append-style updates because another request can change the value between the read and write:
+
+```go
+count := ctx.GetGlobalInt("count")
+ctx.SetGlobal("count", count+1) // use UpdateGlobal or IncrementGlobalInt instead
+```
+
 ### `GetGlobalInt(key string) int`
 - `GetGlobal` + `int` assertion.
 - Returns `0` when value is missing/not `int`.
 
+### `IncrementGlobalInt(key string, delta int) int`
+- Convenience wrapper around `UpdateGlobal` for integer counters/progress values.
+- Treats missing or non-`int` values as `0`, stores `old + delta`, and returns the new `int`.
+
 ### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
-- Deprecated: use `SetGlobal` / `GetGlobal` / `GetGlobalInt` when accessing app-wide state.
+- Deprecated: use `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` when accessing app-wide state.
 - These compatibility aliases still access the same app-wide state shared by all users.
 
 ### Flash APIs

@@ -4,7 +4,9 @@ import (
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"testing/fstest"
 	"time"
@@ -261,6 +263,63 @@ func TestAppGlobalStateHelpers(t *testing.T) {
 	}
 	if got := app.GetGlobalInt("name"); got != 0 {
 		t.Fatalf("expected non-int global value to return 0, got %d", got)
+	}
+}
+
+func TestUpdateGlobalHoldsLockAcrossTransform(t *testing.T) {
+	app := New()
+	app.SetGlobal("count", 0)
+
+	var wg sync.WaitGroup
+	for range 100 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for range 100 {
+				app.UpdateGlobal("count", func(old any) any {
+					oldInt, _ := old.(int)
+					return oldInt + 1
+				})
+			}
+		}()
+	}
+	wg.Wait()
+
+	if got := app.GetGlobalInt("count"); got != 10000 {
+		t.Fatalf("expected atomic global update to reach 10000, got %d", got)
+	}
+	if got := app.IncrementGlobalInt("count", 5); got != 10005 {
+		t.Fatalf("expected increment helper to return 10005, got %d", got)
+	}
+}
+
+func TestContextUpdateGlobalDelegatesToAppAndSupportsFallbackState(t *testing.T) {
+	app := New()
+	app.SetGlobal("count", 1)
+	app.Page("/", func(ctx *Context) frontend.Node {
+		next := ctx.UpdateGlobal("count", func(old any) any {
+			return old.(int) + 2
+		})
+		return frontend.DivProps(frontend.ElementProps{ID: "app"}, frontend.Text(strconv.Itoa(next.(int))))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if !strings.Contains(rr.Body.String(), ">3<") {
+		t.Fatalf("expected delegated context update output, got %q", rr.Body.String())
+	}
+	if got := app.GetGlobalInt("count"); got != 3 {
+		t.Fatalf("expected app state to be updated, got %d", got)
+	}
+
+	ctx := &Context{}
+	if got := ctx.IncrementGlobalInt("count", 4); got != 4 {
+		t.Fatalf("expected fallback increment to return 4, got %d", got)
+	}
+	if got := ctx.State["count"]; got != 4 {
+		t.Fatalf("expected fallback state to be updated, got %v", got)
 	}
 }
 

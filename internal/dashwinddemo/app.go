@@ -104,7 +104,7 @@ func BuildApp() *mb.App {
 	app.Set("period", "Last 30 days")
 	app.Set("notice", "")
 	app.Set("leads", append([]lead(nil), seedLeads...))
-	app.AddStyle(dw.DefaultCSS)
+	dw.Use(app, dw.Options{})
 	pageBodies := map[string]func(*mb.Context) mf.Node{
 		"/": dashboardPage, "/leads": leadsPage, "/transactions": transactionsPage, "/analytics": analyticsPage, "/integration": integrationPage, "/calendar": calendarPage,
 		"/login": loginPage, "/register": registerPreviewPage, "/forgot-password": forgotPasswordPage, "/blank": blankPage, "/404": notFoundPage,

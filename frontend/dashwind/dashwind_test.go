@@ -1,12 +1,16 @@
 package dashwind
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 func TestShellRendersPublicNavigationAndMainRegion(t *testing.T) {
@@ -215,5 +219,53 @@ func TestResourcePageRendersEmptyState(t *testing.T) {
 	}
 	if strings.Contains(body, "<table") {
 		t.Fatalf("expected empty resource page to render empty state instead of table, got %q", body)
+	}
+}
+
+func TestUseRegistersDashWindAssets(t *testing.T) {
+	app := backend.New()
+	Use(app, Options{Theme: "night", CustomCSS: ".dashwind-custom { color: red; }"})
+	app.Page("/", func(ctx *backend.Context) mf.Node { return mf.Text("Dashboard") })
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	for _, want := range []string{
+		`href="` + assets.DaisyUICSSURL + `"`,
+		"dashwind-shell .drawer-side .menu a.active",
+		".dashwind-custom { color: red; }",
+		`document.documentElement.setAttribute("data-theme", "night");`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected Use output to contain %q, got %q", want, body)
+		}
+	}
+}
+
+func TestUseCanDisableDefaultCSSAndUseAssetBasePath(t *testing.T) {
+	app := backend.New()
+	Use(app, Options{DisableDefaultCSS: true, AssetsBasePath: "/assets/dashwind"})
+	app.Page("/", func(ctx *backend.Context) mf.Node { return mf.Text("Dashboard") })
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	for _, want := range []string{
+		`href="/assets/dashwind/daisyui.css"`,
+		`src="/assets/dashwind/tailwindcss-browser.js"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected Use output to contain %q, got %q", want, body)
+		}
+	}
+	if strings.Contains(body, "dashwind-shell .drawer-side .menu a.active") {
+		t.Fatalf("did not expect default DashWind CSS when disabled, got %q", body)
+	}
+	if strings.Contains(body, assets.DaisyUICSSURL) {
+		t.Fatalf("did not expect CDN DaisyUI URL when AssetsBasePath is set, got %q", body)
 	}
 }

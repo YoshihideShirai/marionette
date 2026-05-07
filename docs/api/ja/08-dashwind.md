@@ -8,11 +8,14 @@
 import dw "github.com/YoshihideShirai/marionette/frontend/dashwind"
 ```
 
-アプリ作成時にパッケージ CSS を 1 回追加します。
+アプリ作成時に DaisyUI style template と DashWind アセットを 1 回登録します。
 
 ```go
-app.AddStyle(dw.DefaultCSS)
+app := mb.New()
+dw.Use(app, dw.Options{})
 ```
+
+`Options` では `Theme`、`CustomCSS`、`DisableDefaultCSS`、`AssetsBasePath` を指定でき、テーマ初期値、追加の trusted CSS、標準 CSS の無効化、DaisyUI/Tailwind import のセルフホスト化を制御できます。
 
 ## Shell、NavGroup、NavItem
 

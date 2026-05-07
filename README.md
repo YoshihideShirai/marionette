@@ -61,6 +61,13 @@ Then open http://127.0.0.1:8083.
 
 Source: [`cmd/dashwind-demo/main.go`](cmd/dashwind-demo/main.go), [`internal/dashwinddemo/app.go`](internal/dashwinddemo/app.go)
 
+Minimal DashWind setup registers the DaisyUI template, DashWind CSS, and browser helpers with one call:
+
+```go
+app := mb.New()
+dw.Use(app, dw.Options{})
+```
+
 Run the full demo:
 
 ```bash

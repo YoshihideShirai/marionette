@@ -7,6 +7,8 @@
   - Defaults: blank `Type` -> `ChartTypeLine`, blank `Height` -> `"320"`
   - `ChartDataset.Data`: scalar values
   - `ChartDataset.Points`: `{x,y}` values
+  - `ChartDataset.BackgroundColor` / `BorderColor`: single color for a dataset
+  - `ChartDataset.BackgroundColors` / `BorderColors`: per-data-point colors (for example, bar/pie/doughnut segments)
   - `Type`: `ChartTypeLine`, `ChartTypeBar`, `ChartTypePie`, `ChartTypeDoughnut`, `ChartTypeRadar`, `ChartTypePolarArea`, `ChartTypeScatter`
 - `Image(props ImageProps) Node`
   - Required: `Src`

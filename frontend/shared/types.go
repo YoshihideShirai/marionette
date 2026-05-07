@@ -339,13 +339,15 @@ const (
 )
 
 type ChartDataset struct {
-	Label           string
-	Data            []float64
-	Points          []ChartPoint
-	BackgroundColor string
-	BorderColor     string
-	Fill            bool
-	Tension         float64
+	Label            string
+	Data             []float64
+	Points           []ChartPoint
+	BackgroundColor  string
+	BackgroundColors []string
+	BorderColor      string
+	BorderColors     []string
+	Fill             bool
+	Tension          float64
 }
 type ChartPoint struct {
 	X float64 `json:"x"`

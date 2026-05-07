@@ -42,11 +42,15 @@ func ConfigJSON(props ChartProps) (string, error) {
 		item := map[string]any{"label": strings.TrimSpace(dataset.Label), "data": data}
 		if color := strings.TrimSpace(dataset.BackgroundColor); color != "" {
 			item["backgroundColor"] = color
+		} else if colors := compactColors(dataset.BackgroundColors); len(colors) > 0 {
+			item["backgroundColor"] = colors
 		} else if colors := defaultColors(chartType, len(dataset.Data)); len(colors) > 0 {
 			item["backgroundColor"] = colors
 		}
 		if color := strings.TrimSpace(dataset.BorderColor); color != "" {
 			item["borderColor"] = color
+		} else if colors := compactColors(dataset.BorderColors); len(colors) > 0 {
+			item["borderColor"] = colors
 		} else if colors := defaultBorderColors(chartType, len(dataset.Data)); len(colors) > 0 {
 			item["borderColor"] = colors
 		}
@@ -76,6 +80,19 @@ func ConfigJSON(props ChartProps) (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+func compactColors(colors []string) []string {
+	if len(colors) == 0 {
+		return nil
+	}
+	compacted := make([]string, 0, len(colors))
+	for _, color := range colors {
+		if color = strings.TrimSpace(color); color != "" {
+			compacted = append(compacted, color)
+		}
+	}
+	return compacted
 }
 
 func defaultColors(chartType string, count int) []string {

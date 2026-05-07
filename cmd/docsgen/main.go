@@ -724,7 +724,9 @@ alert := mf.Alert(mf.AlertProps{
     Type:   mf.ChartTypeBar,
     Labels: []string{"Admin", "Editor", "Viewer"},
     Datasets: []mf.ChartDataset{{
-        Label: "Users", Data: []float64{4, 7, 13},
+        Label: "Users",
+        Data: []float64{4, 7, 13},
+        BackgroundColors: []string{"#2563eb", "#14b8a6", "#f59e0b"},
     }},
 })`,
 		"chart-pie": `share := mf.Chart(mf.ChartProps{
@@ -732,6 +734,7 @@ alert := mf.Alert(mf.AlertProps{
     Labels: []string{"Desktop", "Mobile", "Tablet"},
     Datasets: []mf.ChartDataset{{
         Data: []float64{62, 29, 9},
+        BackgroundColors: []string{"#2563eb", "#14b8a6", "#f59e0b"},
     }},
 })`,
 		"chart-doughnut": `conversion := mf.Chart(mf.ChartProps{
@@ -739,6 +742,7 @@ alert := mf.Alert(mf.AlertProps{
     Labels: []string{"Converted", "Dropped"},
     Datasets: []mf.ChartDataset{{
         Data: []float64{72, 28},
+        BackgroundColors: []string{"#2563eb", "#14b8a6"},
     }},
 })`,
 		"chart-scatter": `correlation := mf.Chart(mf.ChartProps{

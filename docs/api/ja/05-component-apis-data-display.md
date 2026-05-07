@@ -7,6 +7,8 @@
   - デフォルト: `Type` 空文字=`ChartTypeLine`, `Height` 空文字=`"320"`
   - `ChartDataset.Data`: 数値系列
   - `ChartDataset.Points`: `{x,y}` 系列
+  - `ChartDataset.BackgroundColor` / `BorderColor`: データセット全体の単色指定
+  - `ChartDataset.BackgroundColors` / `BorderColors`: データごとの色指定（棒・円・ドーナツの各要素など）
   - `Type`: `ChartTypeLine`, `ChartTypeBar`, `ChartTypePie`, `ChartTypeDoughnut`, `ChartTypeRadar`, `ChartTypePolarArea`, `ChartTypeScatter`
 - `Image(props ImageProps) Node`
   - 必須: `Src`

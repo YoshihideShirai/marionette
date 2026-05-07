@@ -131,3 +131,57 @@ func TestStatsGridAndDataTableRenderReusableWidgets(t *testing.T) {
 		}
 	}
 }
+
+func TestResourcePageRendersActionsAndRowActions(t *testing.T) {
+	type person struct {
+		Email string
+		Name  string
+	}
+	node := ResourcePage(ResourcePageProps[person]{
+		Title:       "People",
+		Description: "Manage people",
+		Rows:        []person{{Email: "ada@example.com", Name: "Ada"}},
+		Columns: []Column[person]{
+			{Header: "Name", Cell: func(row person) mf.Node { return mf.Text(row.Name) }},
+		},
+		PrimaryAction: Action{Label: "Add", Action: "/people/add", Target: "#dashwind-main", Swap: "outerHTML", Class: "btn-primary btn-sm"},
+		RowActions: func(row person) []Action {
+			return []Action{{Label: "Delete", Action: "/people/delete", Target: "#dashwind-main", Swap: "outerHTML", Class: "btn-error btn-sm", Fields: map[string]string{"email": row.Email}}}
+		},
+	})
+	html, err := node.Render()
+	if err != nil {
+		t.Fatalf("render resource page: %v", err)
+	}
+	body := string(html)
+	for _, want := range []string{"People", "Manage people", `hx-post="/people/add"`, `hx-post="/people/delete"`, `name="email"`, `value="ada@example.com"`, "Delete"} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected resource page to contain %q, got %q", want, body)
+		}
+	}
+}
+
+func TestResourcePageRendersEmptyState(t *testing.T) {
+	type person struct {
+		Name string
+	}
+	node := ResourcePage(ResourcePageProps[person]{
+		Title:       "People",
+		Description: "Manage people",
+		Columns:     []Column[person]{{Header: "Name", Cell: func(row person) mf.Node { return mf.Text(row.Name) }}},
+		EmptyState:  mf.EmptyStateProps{Title: "No people", Description: "Invite someone first."},
+	})
+	html, err := node.Render()
+	if err != nil {
+		t.Fatalf("render empty resource page: %v", err)
+	}
+	body := string(html)
+	for _, want := range []string{"No people", "Invite someone first.", "hero bg-base-200"} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected empty resource page to contain %q, got %q", want, body)
+		}
+	}
+	if strings.Contains(body, "<table") {
+		t.Fatalf("expected empty resource page to render empty state instead of table, got %q", body)
+	}
+}

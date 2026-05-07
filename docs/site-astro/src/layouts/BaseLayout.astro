@@ -387,10 +387,24 @@ if (uncategorizedComponents.length > 0) {
       const frames = Array.from(document.querySelectorAll('iframe'));
       const observers = [];
 
+      const hasViewportSizedContent = (doc) => Boolean(
+        doc.querySelector('.drawer.dashwind-shell, .min-h-screen, .h-screen'),
+      );
+
+      const setViewportFrameHeight = (frame) => {
+        frame.style.height = frame.closest('.component-card') ? '28rem' : 'min(42rem, 75vh)';
+        frame.setAttribute('scrolling', 'auto');
+      };
+
       const resizeFrame = (frame) => {
         try {
           const doc = frame.contentDocument;
           if (!doc) return;
+
+          if (hasViewportSizedContent(doc)) {
+            setViewportFrameHeight(frame);
+            return;
+          }
 
           const body = doc.body;
           const root = doc.documentElement;
@@ -417,7 +431,7 @@ if (uncategorizedComponents.length > 0) {
 
           try {
             const doc = frame.contentDocument;
-            if (!doc || !window.ResizeObserver) return;
+            if (!doc || !window.ResizeObserver || hasViewportSizedContent(doc)) return;
 
             const observer = new ResizeObserver(() => resizeFrame(frame));
             if (doc.body) observer.observe(doc.body);

@@ -104,6 +104,7 @@ API details, and component examples:
 - API docs: https://yoshihideshirai.github.io/marionette/en/api/
 - Components gallery: https://yoshihideshirai.github.io/marionette/en/components/
 - AI-friendly architecture: https://yoshihideshirai.github.io/marionette/en/ai-friendly/
+- State management guide: [docs/state-management.md](docs/state-management.md)
 
 Japanese docs are available from the language switcher on the site.
 

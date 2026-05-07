@@ -200,17 +200,76 @@ func StatsGrid(props StatsGridProps) mf.Node {
 	return div(defaultString(props.Class, "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4"), cards...)
 }
 
-// DataTableProps configures a responsive DaisyUI table.
-type DataTableProps struct {
-	Headers      []string
-	Rows         [][]mf.Node
-	Class        string
+// Column describes a high-level DashWind data table column for a row of type T.
+type Column[T any] struct {
+	Header      string
+	Cell        func(T) mf.Node
+	Class       string
+	HeaderClass string
+	Sortable    bool
+}
+
+// DataTableProps configures a responsive DashWind data table.
+type DataTableProps[T any] struct {
+	Columns      []Column[T]
+	Rows         []T
+	Empty        mf.Node
+	Zebra        bool
+	Compact      bool
+	Actions      mf.Node
 	WrapperClass string
 }
 
-// DataTable renders a responsive table for DashWind pages.
-func DataTable(props DataTableProps) mf.Node {
-	return daisy.TableWithProps(daisy.TableProps{Headers: props.Headers, Rows: props.Rows, Class: props.Class, WrapperClass: props.WrapperClass})
+// DataTable renders a responsive high-level DashWind table backed by DaisyUI's table primitive.
+func DataTable[T any](props DataTableProps[T]) mf.Node {
+	headers := make([]string, 0, len(props.Columns))
+	headerClasses := make([]string, 0, len(props.Columns))
+	headerSortables := make([]bool, 0, len(props.Columns))
+	for _, column := range props.Columns {
+		headers = append(headers, column.Header)
+		headerClasses = append(headerClasses, column.HeaderClass)
+		headerSortables = append(headerSortables, column.Sortable)
+	}
+
+	rows := make([][]mf.Node, 0, len(props.Rows))
+	cellClasses := make([][]string, 0, len(props.Rows))
+	for _, row := range props.Rows {
+		cells := make([]mf.Node, 0, len(props.Columns))
+		classes := make([]string, 0, len(props.Columns))
+		for _, column := range props.Columns {
+			cell := mf.Node(mf.Text(""))
+			if column.Cell != nil {
+				cell = column.Cell(row)
+			}
+			cells = append(cells, cell)
+			classes = append(classes, column.Class)
+		}
+		rows = append(rows, cells)
+		cellClasses = append(cellClasses, classes)
+	}
+
+	className := ""
+	if props.Zebra {
+		className = strings.TrimSpace(className + " table-zebra")
+	}
+	if props.Compact {
+		className = strings.TrimSpace(className + " table-sm")
+	}
+	table := daisy.TableWithProps(daisy.TableProps{
+		Headers:         headers,
+		Rows:            rows,
+		Class:           className,
+		WrapperClass:    props.WrapperClass,
+		HeaderClasses:   headerClasses,
+		HeaderSortables: headerSortables,
+		CellClasses:     cellClasses,
+		Empty:           props.Empty,
+		EmptyColSpan:    len(props.Columns),
+	})
+	if props.Actions == nil {
+		return table
+	}
+	return div("space-y-4", div("flex justify-end", props.Actions), table)
 }
 
 func normalizeShellProps(props ShellProps) ShellProps {

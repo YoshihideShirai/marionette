@@ -137,22 +137,52 @@ func CardPanel(props CardPanelProps, children ...shared.Node) shared.Node {
 }
 
 type TableProps struct {
-	Headers      []string
-	Rows         [][]shared.Node
-	Class        string
-	WrapperClass string
+	Headers         []string
+	Rows            [][]shared.Node
+	Class           string
+	WrapperClass    string
+	HeaderClasses   []string
+	HeaderSortables []bool
+	CellClasses     [][]string
+	Empty           shared.Node
+	EmptyColSpan    int
 }
 
 func TableWithProps(props TableProps) shared.Node {
 	headers := make([]shared.Node, 0, len(props.Headers))
-	for _, header := range props.Headers {
-		headers = append(headers, textNode("th", nil, header))
+	for index, header := range props.Headers {
+		attrs := map[string]string{}
+		if className := stringAt(props.HeaderClasses, index); className != "" {
+			attrs["class"] = className
+		}
+		if boolAt(props.HeaderSortables, index) {
+			attrs["aria-sort"] = "none"
+			headers = append(headers, node("th", attrs,
+				node("span", map[string]string{"class": "inline-flex items-center gap-1"},
+					textNode("span", nil, header),
+					textNode("span", map[string]string{"class": "text-base-content/40", "aria-hidden": "true"}, "↕"),
+				),
+			))
+			continue
+		}
+		headers = append(headers, textNode("th", attrs, header))
 	}
 	bodyRows := make([]shared.Node, 0, len(props.Rows))
-	for _, row := range props.Rows {
+	if len(props.Rows) == 0 && props.Empty != nil {
+		colSpan := props.EmptyColSpan
+		if colSpan < 1 {
+			colSpan = len(props.Headers)
+		}
+		bodyRows = append(bodyRows, node("tr", nil, node("td", map[string]string{"class": "py-8 text-center text-base-content/60", "colspan": strconv.Itoa(colSpan)}, props.Empty)))
+	}
+	for rowIndex, row := range props.Rows {
 		cells := make([]shared.Node, 0, len(row))
-		for _, cell := range row {
-			cells = append(cells, node("td", nil, cell))
+		for cellIndex, cell := range row {
+			attrs := map[string]string{}
+			if className := tableCellClass(props.CellClasses, rowIndex, cellIndex); className != "" {
+				attrs["class"] = className
+			}
+			cells = append(cells, node("td", attrs, cell))
 		}
 		bodyRows = append(bodyRows, node("tr", nil, cells...))
 	}
@@ -162,6 +192,24 @@ func TableWithProps(props TableProps) shared.Node {
 			node("tbody", nil, bodyRows...),
 		),
 	)
+}
+
+func stringAt(values []string, index int) string {
+	if index < 0 || index >= len(values) {
+		return ""
+	}
+	return strings.TrimSpace(values[index])
+}
+
+func boolAt(values []bool, index int) bool {
+	return index >= 0 && index < len(values) && values[index]
+}
+
+func tableCellClass(values [][]string, rowIndex, cellIndex int) string {
+	if rowIndex < 0 || rowIndex >= len(values) {
+		return ""
+	}
+	return stringAt(values[rowIndex], cellIndex)
 }
 
 func ProgressWithClass(value, max float64, className string) shared.Node {

@@ -88,9 +88,15 @@ func TestRenderNavigationMarksCurrentPathActive(t *testing.T) {
 }
 
 func TestStatsGridAndDataTableRenderReusableWidgets(t *testing.T) {
+	type person struct {
+		Name string
+	}
 	node := mf.DivProps(mf.ElementProps{},
 		StatsGrid(StatsGridProps{Items: []Stat{{Title: "Users", Value: "42", Description: "active", Figure: mf.Text("U")}}}),
-		CardPanel(CardPanelProps{Title: "Table"}, DataTable(DataTableProps{Headers: []string{"Name"}, Rows: [][]mf.Node{{mf.Text("Ada")}}})),
+		CardPanel(CardPanelProps{Title: "Table"}, DataTable(DataTableProps[person]{
+			Columns: []Column[person]{{Header: "Name", Cell: func(row person) mf.Node { return mf.Text(row.Name) }}},
+			Rows:    []person{{Name: "Ada"}},
+		})),
 	)
 	html, err := node.Render()
 	if err != nil {

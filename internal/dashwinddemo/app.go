@@ -239,18 +239,26 @@ func amountStats() mf.Node {
 }
 
 func userChannels() mf.Node {
-	rows := [][]mf.Node{}
+	type channelRow struct {
+		Source  string
+		Users   string
+		Percent int
+	}
+	rows := []channelRow{}
 	for _, row := range []string{"Organic search|12,432|46%", "Twitter|8,120|24%", "Newsletter|5,420|18%", "Partners|2,804|12%"} {
 		parts := strings.Split(row, "|")
 		percent, _ := strconv.Atoi(strings.TrimSuffix(parts[2], "%"))
-		rows = append(rows, []mf.Node{
-			mf.Text(parts[0]),
-			mf.Text(parts[1]),
-			daisy.ProgressWithClass(float64(percent), 100, "progress-primary w-32"),
-			mf.Text(parts[2]),
-		})
+		rows = append(rows, channelRow{Source: parts[0], Users: parts[1], Percent: percent})
 	}
-	return cardPanel("User Channels", "Traffic source breakdown", dw.DataTable(dw.DataTableProps{Rows: rows}))
+	columns := []dw.Column[channelRow]{
+		{Header: "Source", Cell: func(row channelRow) mf.Node { return mf.Text(row.Source) }},
+		{Header: "Users", Cell: func(row channelRow) mf.Node { return mf.Text(row.Users) }},
+		{Header: "Progress", Cell: func(row channelRow) mf.Node {
+			return daisy.ProgressWithClass(float64(row.Percent), 100, "progress-primary w-32")
+		}},
+		{Header: "Share", Cell: func(row channelRow) mf.Node { return mf.Text(strconv.Itoa(row.Percent) + "%") }},
+	}
+	return cardPanel("User Channels", "Traffic source breakdown", dw.DataTable(dw.DataTableProps[channelRow]{Columns: columns, Rows: rows, Compact: true}))
 }
 
 func chartCard(title, desc string, chart mf.Node) mf.Node {
@@ -258,14 +266,19 @@ func chartCard(title, desc string, chart mf.Node) mf.Node {
 }
 
 func leadsPage(ctx *mb.Context) mf.Node {
-	rows := [][]mf.Node{}
-	for _, l := range ctx.Get("leads").([]lead) {
-		rows = append(rows, []mf.Node{leadIdentity(l), mf.Text(l.Email), mf.Text(l.CreatedAt), statusBadge(l.Status), mf.Text(l.Owner), deleteLeadForm(l.Email)})
+	rows := ctx.Get("leads").([]lead)
+	columns := []dw.Column[lead]{
+		{Header: "Name", Cell: leadIdentity, Sortable: true},
+		{Header: "Email Id", Cell: func(l lead) mf.Node { return mf.Text(l.Email) }},
+		{Header: "Created At", Cell: func(l lead) mf.Node { return mf.Text(l.CreatedAt) }, Sortable: true},
+		{Header: "Status", Cell: func(l lead) mf.Node { return statusBadge(l.Status) }},
+		{Header: "Assigned To", Cell: func(l lead) mf.Node { return mf.Text(l.Owner) }},
+		{HeaderClass: "w-12", Class: "text-right", Cell: func(l lead) mf.Node { return deleteLeadForm(l.Email) }},
 	}
 	return div("space-y-6",
 		pageTitle("Current Leads", "DashWind leads table with htmx-powered Add New and delete actions.", daisy.ButtonWithAttrs("Add New", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button", "hx-post": "/leads/add", "hx-target": "#" + mainTargetID, "hx-swap": "outerHTML"})),
 		noticeNode(ctx),
-		cardPanel("Leads List", "Rendered from Marionette server state instead of a Redux slice/API call.", dw.DataTable(dw.DataTableProps{Headers: []string{"Name", "Email Id", "Created At", "Status", "Assigned To", ""}, Rows: rows})),
+		cardPanel("Leads List", "Rendered from Marionette server state instead of a Redux slice/API call.", dw.DataTable(dw.DataTableProps[lead]{Columns: columns, Rows: rows, Empty: mf.Text("No leads found")})),
 	)
 }
 
@@ -284,15 +297,21 @@ func deleteLeadForm(email string) mf.Node {
 }
 
 func transactionsPage(ctx *mb.Context) mf.Node {
-	rows := [][]mf.Node{}
 	total := 0
 	for _, t := range seedTransactions {
 		total += t.Amount
-		rows = append(rows, []mf.Node{mf.Text(t.Invoice), mf.Text(t.Customer), mf.Text(t.Plan), mf.Text(t.Date), statusBadge(t.Status), div("font-semibold", mf.Text("$"+strconv.Itoa(t.Amount)))})
+	}
+	columns := []dw.Column[transaction]{
+		{Header: "Invoice", Cell: func(t transaction) mf.Node { return mf.Text(t.Invoice) }, Sortable: true},
+		{Header: "Customer", Cell: func(t transaction) mf.Node { return mf.Text(t.Customer) }},
+		{Header: "Plan", Cell: func(t transaction) mf.Node { return mf.Text(t.Plan) }},
+		{Header: "Date", Cell: func(t transaction) mf.Node { return mf.Text(t.Date) }, Sortable: true},
+		{Header: "Status", Cell: func(t transaction) mf.Node { return statusBadge(t.Status) }},
+		{Header: "Amount", HeaderClass: "text-right", Class: "text-right", Cell: func(t transaction) mf.Node { return div("font-semibold", mf.Text("$"+strconv.Itoa(t.Amount))) }},
 	}
 	return div("space-y-6",
 		pageTitle("Transactions", "DashWind-style billing and transactions list.", daisy.StatsWithProps(daisy.StatsProps{Class: "shadow"}, daisy.StatItem(daisy.StatProps{Title: "Total", Value: "$" + strconv.Itoa(total), ValueClass: "text-primary"}))),
-		cardPanel("Recent Transactions", "", dw.DataTable(dw.DataTableProps{Headers: []string{"Invoice", "Customer", "Plan", "Date", "Status", "Amount"}, Rows: rows, Class: "table-zebra"})),
+		cardPanel("Recent Transactions", "", dw.DataTable(dw.DataTableProps[transaction]{Columns: columns, Rows: seedTransactions, Zebra: true})),
 	)
 }
 
@@ -399,24 +418,34 @@ func profilePage(ctx *mb.Context) mf.Node {
 }
 
 func billingPage(ctx *mb.Context) mf.Node {
-	rows := [][]mf.Node{}
-	for _, bill := range bills {
-		rows = append(rows, []mf.Node{mf.Text(bill.InvoiceNo), mf.Text("$" + bill.Amount), mf.Text(bill.Description), statusBadge(bill.Status), mf.Text(bill.GeneratedOn), mf.Text(bill.PaidOn)})
+	columns := []dw.Column[bill]{
+		{Header: "Invoice No", Cell: func(b bill) mf.Node { return mf.Text(b.InvoiceNo) }},
+		{Header: "Amount", Cell: func(b bill) mf.Node { return mf.Text("$" + b.Amount) }, HeaderClass: "text-right", Class: "text-right"},
+		{Header: "Description", Cell: func(b bill) mf.Node { return mf.Text(b.Description) }},
+		{Header: "Status", Cell: func(b bill) mf.Node { return statusBadge(b.Status) }},
+		{Header: "Generated On", Cell: func(b bill) mf.Node { return mf.Text(b.GeneratedOn) }, Sortable: true},
+		{Header: "Paid On", Cell: func(b bill) mf.Node { return mf.Text(b.PaidOn) }},
 	}
 	return div("space-y-6",
 		pageTitle("Billing", "Billing table following the DashWind settings page.", daisy.ButtonWithAttrs("Download All", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
-		cardPanel("Billing History", "Product usage invoices", dw.DataTable(dw.DataTableProps{Headers: []string{"Invoice No", "Amount", "Description", "Status", "Generated On", "Paid On"}, Rows: rows, Class: "table-zebra"})),
+		cardPanel("Billing History", "Product usage invoices", dw.DataTable(dw.DataTableProps[bill]{Columns: columns, Rows: bills, Zebra: true})),
 	)
 }
 
 func teamPage(ctx *mb.Context) mf.Node {
-	rows := [][]mf.Node{}
-	for _, member := range teamMembers {
-		rows = append(rows, []mf.Node{div("flex items-center gap-3", daisy.AvatarPlaceholder(member.Avatar, "", "w-10 rounded-full bg-neutral text-neutral-content"), div("", div("font-bold", mf.Text(member.Name)), div("text-sm opacity-60", mf.Text(member.Email)))), mf.Text(member.Role), mf.Text(member.Joined), daisy.Badge(mf.BadgeProps{Label: "Active", Props: mf.ComponentProps{Class: "badge-success"}})})
+	columns := []dw.Column[teamMember]{
+		{Header: "Name", Cell: func(member teamMember) mf.Node {
+			return div("flex items-center gap-3", daisy.AvatarPlaceholder(member.Avatar, "", "w-10 rounded-full bg-neutral text-neutral-content"), div("", div("font-bold", mf.Text(member.Name)), div("text-sm opacity-60", mf.Text(member.Email))))
+		}, Sortable: true},
+		{Header: "Role", Cell: func(member teamMember) mf.Node { return mf.Text(member.Role) }},
+		{Header: "Joined", Cell: func(member teamMember) mf.Node { return mf.Text(member.Joined) }, Sortable: true},
+		{Header: "Status", Cell: func(member teamMember) mf.Node {
+			return daisy.Badge(mf.BadgeProps{Label: "Active", Props: mf.ComponentProps{Class: "badge-success"}})
+		}},
 	}
 	return div("space-y-6",
 		pageTitle("Team Members", "Team settings list with member roles and status badges.", daisy.ButtonWithAttrs("Add New", mf.ComponentProps{Class: "btn-primary btn-sm"}, map[string]string{"type": "button"})),
-		cardPanel("Current Team", "DashWind team table", dw.DataTable(dw.DataTableProps{Headers: []string{"Name", "Role", "Joined", "Status"}, Rows: rows})),
+		cardPanel("Current Team", "DashWind team table", dw.DataTable(dw.DataTableProps[teamMember]{Columns: columns, Rows: teamMembers})),
 	)
 }
 

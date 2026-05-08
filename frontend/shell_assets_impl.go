@@ -1,6 +1,10 @@
 package frontend
 
-import "html/template"
+import (
+	"html/template"
+
+	"github.com/YoshihideShirai/marionette/frontend/assets"
+)
 
 type ShellAssets struct {
 	StyleTemplate        StyleTemplate
@@ -8,19 +12,24 @@ type ShellAssets struct {
 	FrameworkScripts     []string
 	Stylesheets          []string
 	Styles               []template.CSS
+	AssetProvider        assets.AssetProvider
 	Scripts              []string
 	JavaScripts          []template.JS
 }
 
 func (a *ShellAssets) UseStyleTemplate(tpl StyleTemplate) {
 	a.StyleTemplate = StyleTemplate{
-		Name:                 tpl.Name,
-		FrameworkStylesheets: append([]string(nil), tpl.FrameworkStylesheets...),
-		FrameworkScripts:     append([]string(nil), tpl.FrameworkScripts...),
+		Name:                      tpl.Name,
+		FrameworkStylesheets:      append([]string(nil), tpl.FrameworkStylesheets...),
+		FrameworkScripts:          append([]string(nil), tpl.FrameworkScripts...),
+		FrameworkStylesheetAssets: append([]assets.AssetName(nil), tpl.FrameworkStylesheetAssets...),
+		FrameworkScriptAssets:     append([]assets.AssetName(nil), tpl.FrameworkScriptAssets...),
 	}
 	a.FrameworkStylesheets = nil
 	a.FrameworkScripts = nil
 }
+
+func (a *ShellAssets) UseAssets(provider assets.AssetProvider) { a.AssetProvider = provider }
 
 func (a *ShellAssets) AddStylesheet(href string) { a.Stylesheets = append(a.Stylesheets, href) }
 func (a *ShellAssets) AddStyle(css template.CSS) { a.Styles = append(a.Styles, css) }

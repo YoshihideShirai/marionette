@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	frontend "github.com/YoshihideShirai/marionette/frontend"
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 // Context gives handlers controlled access to application state and request data.
@@ -282,6 +283,13 @@ func New() *App {
 		cookieSecure: false,
 		shellAssets:  frontend.ShellAssets{},
 	}
+}
+
+// UseAssets replaces the provider used to resolve built-in framework/library CSS and JS URLs.
+func (a *App) UseAssets(provider assets.AssetProvider) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.shellAssets.UseAssets(provider)
 }
 
 // UseStyleTemplate replaces framework stylesheet/script imports.
@@ -589,6 +597,7 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 		FrameworkScripts:     append([]string(nil), a.shellAssets.FrameworkScripts...),
 		Stylesheets:          append([]string(nil), a.shellAssets.Stylesheets...),
 		Styles:               append([]template.CSS(nil), a.shellAssets.Styles...),
+		AssetProvider:        a.shellAssets.AssetProvider,
 		Scripts:              append([]string(nil), a.shellAssets.Scripts...),
 		JavaScripts:          append([]template.JS(nil), a.shellAssets.JavaScripts...),
 	}

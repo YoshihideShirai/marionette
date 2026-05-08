@@ -98,6 +98,7 @@ type shellOptions struct {
 	FrameworkScripts     []string
 	Stylesheets          []string
 	Styles               []template.CSS
+	AssetProvider        assets.AssetProvider
 	Scripts              []string
 	JavaScripts          []template.JS
 }
@@ -124,8 +125,9 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 	if title == "" {
 		title = "Marionette"
 	}
-	frameworkStylesheets, frameworkScripts := resolveFrameworkAssets(options)
-	scripts := append([]string{assets.HTMXURL, assets.ChartJSURL}, options.Scripts...)
+	provider := assetProvider(options.AssetProvider)
+	frameworkStylesheets, frameworkScripts := resolveFrameworkAssets(options, provider)
+	scripts := append(resolveScriptAssets(provider, []assets.AssetName{assets.HTMX, assets.ChartJS}), options.Scripts...)
 	javaScripts := append([]template.JS{
 		template.JS(assets.ThemeBootstrapJS),
 		template.JS(assets.ChartBootstrapJS),
@@ -158,15 +160,50 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 	return out.String(), nil
 }
 
-func resolveFrameworkAssets(options shellOptions) ([]string, []string) {
+func resolveFrameworkAssets(options shellOptions, provider assets.AssetProvider) ([]string, []string) {
 	if len(options.FrameworkStylesheets) > 0 || len(options.FrameworkScripts) > 0 {
 		return append([]string(nil), options.FrameworkStylesheets...), append([]string(nil), options.FrameworkScripts...)
 	}
 	styleTemplate := options.StyleTemplate
-	if styleTemplate.Name == "" && len(styleTemplate.FrameworkStylesheets) == 0 && len(styleTemplate.FrameworkScripts) == 0 {
+	if styleTemplate.Name == "" && len(styleTemplate.FrameworkStylesheets) == 0 && len(styleTemplate.FrameworkScripts) == 0 && len(styleTemplate.FrameworkStylesheetAssets) == 0 && len(styleTemplate.FrameworkScriptAssets) == 0 {
 		styleTemplate = DefaultStyleTemplate()
 	}
-	return append([]string(nil), styleTemplate.FrameworkStylesheets...), append([]string(nil), styleTemplate.FrameworkScripts...)
+	stylesheets := resolveStylesheetAssets(provider, styleTemplate.FrameworkStylesheetAssets)
+	if len(styleTemplate.FrameworkStylesheetAssets) == 0 {
+		stylesheets = append(stylesheets, styleTemplate.FrameworkStylesheets...)
+	}
+	scripts := resolveScriptAssets(provider, styleTemplate.FrameworkScriptAssets)
+	if len(styleTemplate.FrameworkScriptAssets) == 0 {
+		scripts = append(scripts, styleTemplate.FrameworkScripts...)
+	}
+	return stylesheets, scripts
+}
+
+func assetProvider(provider assets.AssetProvider) assets.AssetProvider {
+	if provider != nil {
+		return provider
+	}
+	return assets.DefaultProvider
+}
+
+func resolveStylesheetAssets(provider assets.AssetProvider, names []assets.AssetName) []string {
+	out := make([]string, 0, len(names))
+	for _, name := range names {
+		if url, ok := provider.StylesheetURL(name); ok && url != "" {
+			out = append(out, url)
+		}
+	}
+	return out
+}
+
+func resolveScriptAssets(provider assets.AssetProvider, names []assets.AssetName) []string {
+	out := make([]string, 0, len(names))
+	for _, name := range names {
+		if url, ok := provider.ScriptURL(name); ok && url != "" {
+			out = append(out, url)
+		}
+	}
+	return out
 }
 
 // WriteHTML writes an HTML response with Marionette's standard content type.

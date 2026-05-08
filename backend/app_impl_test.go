@@ -483,3 +483,67 @@ func TestAssetsServeEscapedAssetPaths(t *testing.T) {
 		t.Fatalf("expected escaped asset body, got %q", got)
 	}
 }
+
+func TestAssetPolicyRejectsExternalAddScriptInOfflineMode(t *testing.T) {
+	app := New()
+	app.UseOfflineAssets("/vendor")
+	app.AddScript("https://cdn.example.com/widget.js")
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Offline"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusInternalServerError {
+		t.Fatalf("expected offline policy failure status 500, got %d with body %q", rr.Code, rr.Body.String())
+	}
+	if body := rr.Body.String(); !strings.Contains(body, "asset policy forbids external URL") || !strings.Contains(body, "https://cdn.example.com/widget.js") {
+		t.Fatalf("expected clear external URL policy error, got %q", body)
+	}
+}
+
+func TestAssetPolicyRejectsExternalStyleTemplateInOfflineMode(t *testing.T) {
+	app := New()
+	app.UseOfflineAssets("/vendor")
+	app.UseStyleTemplate(frontend.StyleTemplate{
+		Name:                 "external-template",
+		FrameworkStylesheets: []string{"https://cdn.example.com/template.css"},
+	})
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Offline"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusInternalServerError {
+		t.Fatalf("expected offline policy failure status 500, got %d with body %q", rr.Code, rr.Body.String())
+	}
+	if body := rr.Body.String(); !strings.Contains(body, "asset policy forbids external URL") || !strings.Contains(body, "https://cdn.example.com/template.css") {
+		t.Fatalf("expected clear external URL policy error, got %q", body)
+	}
+}
+
+func TestAssetModeOfflineRejectsDefaultCDNFrameworkAssets(t *testing.T) {
+	app := New()
+	if err := app.SetAssetMode(AssetModeOffline); err != nil {
+		t.Fatalf("SetAssetMode failed: %v", err)
+	}
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Offline"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusInternalServerError {
+		t.Fatalf("expected offline policy failure status 500, got %d with body %q", rr.Code, rr.Body.String())
+	}
+	if body := rr.Body.String(); !strings.Contains(body, "asset policy forbids external URL") {
+		t.Fatalf("expected clear external URL policy error, got %q", body)
+	}
+}

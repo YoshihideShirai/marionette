@@ -10,6 +10,8 @@ import (
 	"path"
 	"strings"
 	"time"
+
+	frontendassets "github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 type assetRoute struct {
@@ -249,9 +251,7 @@ func escapeAssetPath(name string) string {
 }
 
 func isAbsoluteAssetURL(name string) bool {
-	return strings.HasPrefix(name, "http://") ||
-		strings.HasPrefix(name, "https://") ||
-		strings.HasPrefix(name, "data:")
+	return frontendassets.IsExternalURL(name) || strings.HasPrefix(name, "data:")
 }
 
 func fsErrNotExist(err error) bool {

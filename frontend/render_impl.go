@@ -102,6 +102,7 @@ type shellOptions struct {
 	Scripts              []string
 	JavaScripts          []template.JS
 	DisableHTMX          bool
+	AssetPolicy          assets.AssetPolicy
 	// DisableCharts keeps Chart.js out of pages that do not need charts.
 	// TODO: replace this opt-out with render-context feature tracking when Chart nodes can mark Chart.js as required.
 	DisableCharts bool
@@ -132,6 +133,9 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 	provider := assetProvider(options.AssetProvider)
 	frameworkStylesheets, frameworkScripts := resolveFrameworkAssets(options, provider)
 	scripts := append(resolveFeatureScriptAssets(options, provider), options.Scripts...)
+	if err := validateShellAssetPolicy(options.AssetPolicy, frameworkStylesheets, frameworkScripts, options.Stylesheets, scripts); err != nil {
+		return "", err
+	}
 	javaScripts := []template.JS{template.JS(assets.ThemeBootstrapJS)}
 	if !options.DisableCharts {
 		javaScripts = append(javaScripts, template.JS(assets.ChartBootstrapJS))
@@ -163,6 +167,26 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 		return "", err
 	}
 	return out.String(), nil
+}
+
+func validateShellAssetPolicy(policy assets.AssetPolicy, frameworkStylesheets, frameworkScripts, stylesheets, scripts []string) error {
+	checks := []struct {
+		kind string
+		urls []string
+	}{
+		{kind: "framework stylesheet", urls: frameworkStylesheets},
+		{kind: "framework script", urls: frameworkScripts},
+		{kind: "stylesheet", urls: stylesheets},
+		{kind: "script", urls: scripts},
+	}
+	for _, check := range checks {
+		for _, url := range check.urls {
+			if err := assets.ValidateURL(policy, check.kind, url); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func resolveFeatureScriptAssets(options shellOptions, provider assets.AssetProvider) []string {

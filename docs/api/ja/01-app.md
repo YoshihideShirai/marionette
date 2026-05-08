@@ -47,7 +47,7 @@
 
 ### `UseAssetProvider(provider assets.AssetProvider)` / `UseAssets(provider assets.AssetProvider)`
 - 生成される shell 内で Marionette 組み込み framework/library の CSS と JavaScript URL を解決する provider を置き換えます。
-- DaisyUI、Tailwind browser、HTMX、Chart.js、MathJax の URL を完全に制御したい場合は custom provider を使ってください。
+- DaisyUI、Tailwind browser、HTMX、Chart.js の URL を完全に制御したい場合は custom provider を使ってください。
 - `UseAssets` は既存の shorthand です。`UseAssetProvider` は同じ挙動の説明的な alias です。
 
 ### `UseOfflineAssets(basePath string)`
@@ -56,7 +56,6 @@
   - `tailwindcss-browser.js`
   - `htmx.min.js`
   - `chart.umd.js`
-  - `mathjax-chtml.js`
 - local directory または embedded filesystem からファイルを配信するため、`Assets` と組み合わせて使います:
 
 ```go

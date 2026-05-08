@@ -182,6 +182,29 @@ func TestUseStyleTemplateByNameRejectsUnknown(t *testing.T) {
 	}
 }
 
+func TestPageCanDisableChartsWhenNoChartComponentsAreUsed(t *testing.T) {
+	app := New()
+	app.DisableCharts()
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	if strings.Contains(body, assets.ChartJSURL) || strings.Contains(body, "chart.umd.js") {
+		t.Fatalf("did not expect Chart.js asset on a page without charts, got %q", body)
+	}
+	if strings.Contains(body, "window.mrnInitCharts") {
+		t.Fatalf("did not expect chart bootstrap on a page without charts, got %q", body)
+	}
+	if !strings.Contains(body, assets.HTMXURL) {
+		t.Fatalf("expected HTMX to remain enabled by default, got %q", body)
+	}
+}
+
 func TestPageIncludesCustomScripts(t *testing.T) {
 	app := New()
 	app.AddScript("https://cdn.example.com/widget.js")

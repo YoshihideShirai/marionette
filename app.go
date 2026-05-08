@@ -275,6 +275,8 @@ type App struct {
 	styles        []template.CSS
 	scripts       []string
 	javascripts   []template.JS
+	disableHTMX   bool
+	disableCharts bool
 	assetProvider assets.AssetProvider
 }
 
@@ -309,6 +311,28 @@ func (a *App) UseAssetProvider(provider assets.AssetProvider) {
 func (a *App) UseOfflineAssets(basePath string) {
 	a.UseAssets(assets.NewLocalAssetProvider(basePath))
 }
+
+// EnableHTMX controls whether the default HTMX runtime is included in full-page shells.
+// It is enabled by default for compatibility.
+func (a *App) EnableHTMX(enable bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.disableHTMX = !enable
+}
+
+// DisableHTMX prevents the default HTMX runtime from being included in full-page shells.
+func (a *App) DisableHTMX() { a.EnableHTMX(false) }
+
+// EnableCharts controls whether the default Chart.js runtime and chart bootstrap are included in full-page shells.
+// It is enabled by default for compatibility.
+func (a *App) EnableCharts(enable bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.disableCharts = !enable
+}
+
+// DisableCharts prevents the default Chart.js runtime and chart bootstrap from being included in full-page shells.
+func (a *App) DisableCharts() { a.EnableCharts(false) }
 
 func (a *App) SetCookieSecure(secure bool) {
 	a.mu.Lock()
@@ -584,6 +608,8 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 		AssetProvider: a.assetProvider,
 		Scripts:       append([]string(nil), a.scripts...),
 		JavaScripts:   append([]template.JS(nil), a.javascripts...),
+		DisableHTMX:   a.disableHTMX,
+		DisableCharts: a.disableCharts,
 	}
 }
 

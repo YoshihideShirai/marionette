@@ -15,6 +15,8 @@ type ShellAssets struct {
 	AssetProvider        assets.AssetProvider
 	Scripts              []string
 	JavaScripts          []template.JS
+	DisableHTMX          bool
+	DisableCharts        bool
 }
 
 func (a *ShellAssets) UseStyleTemplate(tpl StyleTemplate) {
@@ -37,3 +39,9 @@ func (a *ShellAssets) AddScript(src string)      { a.Scripts = append(a.Scripts,
 func (a *ShellAssets) AddJavaScript(js template.JS) {
 	a.JavaScripts = append(a.JavaScripts, js)
 }
+
+// EnableHTMX controls whether the default HTMX runtime is included in full-page shells.
+func (a *ShellAssets) EnableHTMX(enable bool) { a.DisableHTMX = !enable }
+
+// EnableCharts controls whether the default Chart.js runtime and chart bootstrap are included in full-page shells.
+func (a *ShellAssets) EnableCharts(enable bool) { a.DisableCharts = !enable }

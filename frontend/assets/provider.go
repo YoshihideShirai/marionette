@@ -13,7 +13,6 @@ const (
 	TailwindCSSBrowser AssetName = "tailwindcss-browser"
 	ChartJS            AssetName = "chartjs"
 	HTMX               AssetName = "htmx"
-	MathJaxCHTML       AssetName = "mathjax-chtml"
 )
 
 const (
@@ -25,8 +24,6 @@ const (
 	HTMXJSFile = "htmx.min.js"
 	// ChartJSFile is the default self-hosted Chart.js UMD bundle file name.
 	ChartJSFile = "chart.umd.js"
-	// MathJaxCHTMLJSFile is the default self-hosted MathJax CHTML bundle file name.
-	MathJaxCHTMLJSFile = "mathjax-chtml.js"
 )
 
 // AssetProvider resolves known Marionette framework/library names to CSS and JS URLs.
@@ -61,8 +58,6 @@ func (CDNAssetProvider) ScriptURL(name AssetName) (string, bool) {
 		return ChartJSURL, true
 	case HTMX:
 		return HTMXURL, true
-	case MathJaxCHTML:
-		return MathJaxCHTMLURL, true
 	default:
 		return "", false
 	}
@@ -103,7 +98,6 @@ func DefaultLocalScripts() map[AssetName]string {
 		TailwindCSSBrowser: TailwindCSSBrowserJSFile,
 		ChartJS:            ChartJSFile,
 		HTMX:               HTMXJSFile,
-		MathJaxCHTML:       MathJaxCHTMLJSFile,
 	}
 }
 

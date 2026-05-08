@@ -303,6 +303,28 @@ func (a *App) UseOfflineAssets(basePath string) {
 	a.UseAssets(assets.NewLocalAssetProvider(basePath))
 }
 
+// EnableHTMX controls whether the default HTMX runtime is included in full-page shells.
+// It is enabled by default for compatibility.
+func (a *App) EnableHTMX(enable bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.shellAssets.EnableHTMX(enable)
+}
+
+// DisableHTMX prevents the default HTMX runtime from being included in full-page shells.
+func (a *App) DisableHTMX() { a.EnableHTMX(false) }
+
+// EnableCharts controls whether the default Chart.js runtime and chart bootstrap are included in full-page shells.
+// It is enabled by default for compatibility.
+func (a *App) EnableCharts(enable bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.shellAssets.EnableCharts(enable)
+}
+
+// DisableCharts prevents the default Chart.js runtime and chart bootstrap from being included in full-page shells.
+func (a *App) DisableCharts() { a.EnableCharts(false) }
+
 // UseStyleTemplate replaces framework stylesheet/script imports.
 // Call AddStylesheet/AddScript after this if you want extra imports.
 func (a *App) UseStyleTemplate(tpl frontend.StyleTemplate) {
@@ -611,6 +633,8 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 		AssetProvider:        a.shellAssets.AssetProvider,
 		Scripts:              append([]string(nil), a.shellAssets.Scripts...),
 		JavaScripts:          append([]template.JS(nil), a.shellAssets.JavaScripts...),
+		DisableHTMX:          a.shellAssets.DisableHTMX,
+		DisableCharts:        a.shellAssets.DisableCharts,
 	}
 }
 

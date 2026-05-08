@@ -52,7 +52,7 @@
 - Replaces the provider that resolves Marionette's built-in framework/library
   CSS and JavaScript URLs in generated shells.
 - Use a custom provider when you need full control over the URLs for DaisyUI,
-  Tailwind browser, HTMX, Chart.js, or MathJax.
+  Tailwind browser, HTMX, or Chart.js.
 - `UseAssets` is the existing shorthand; `UseAssetProvider` is a descriptive
   alias for the same behavior.
 
@@ -63,7 +63,6 @@
   - `tailwindcss-browser.js`
   - `htmx.min.js`
   - `chart.umd.js`
-  - `mathjax-chtml.js`
 - Pair it with `Assets` to serve the files from a local directory or embedded
   filesystem:
 

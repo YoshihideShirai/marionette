@@ -11,6 +11,8 @@ import (
 	"testing"
 	"testing/fstest"
 	"time"
+
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 func TestIndexRendersHTMLNotEscaped(t *testing.T) {
@@ -92,6 +94,29 @@ func TestPageIncludesCustomStyles(t *testing.T) {
 	}
 	if !strings.Contains(body, `<style>#marionette-root`) {
 		t.Fatalf("expected custom inline CSS, got %q", body)
+	}
+}
+
+func TestPageCanDisableChartsWhenNoChartComponentsAreUsed(t *testing.T) {
+	app := New()
+	app.DisableCharts()
+	app.Page("/", func(ctx *Context) Node {
+		return DivID("app", Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	if strings.Contains(body, assets.ChartJSURL) || strings.Contains(body, "chart.umd.js") {
+		t.Fatalf("did not expect Chart.js asset on a page without charts, got %q", body)
+	}
+	if strings.Contains(body, "window.mrnInitCharts") {
+		t.Fatalf("did not expect chart bootstrap on a page without charts, got %q", body)
+	}
+	if !strings.Contains(body, assets.HTMXURL) {
+		t.Fatalf("expected HTMX to remain enabled by default, got %q", body)
 	}
 }
 

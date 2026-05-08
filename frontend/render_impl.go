@@ -101,6 +101,10 @@ type shellOptions struct {
 	AssetProvider        assets.AssetProvider
 	Scripts              []string
 	JavaScripts          []template.JS
+	DisableHTMX          bool
+	// DisableCharts keeps Chart.js out of pages that do not need charts.
+	// TODO: replace this opt-out with render-context feature tracking when Chart nodes can mark Chart.js as required.
+	DisableCharts bool
 }
 
 // ShellOptions configures the HTML document shell rendered by ShellWithOptions.
@@ -127,11 +131,12 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 	}
 	provider := assetProvider(options.AssetProvider)
 	frameworkStylesheets, frameworkScripts := resolveFrameworkAssets(options, provider)
-	scripts := append(resolveScriptAssets(provider, []assets.AssetName{assets.HTMX, assets.ChartJS}), options.Scripts...)
-	javaScripts := append([]template.JS{
-		template.JS(assets.ThemeBootstrapJS),
-		template.JS(assets.ChartBootstrapJS),
-	}, options.JavaScripts...)
+	scripts := append(resolveFeatureScriptAssets(options, provider), options.Scripts...)
+	javaScripts := []template.JS{template.JS(assets.ThemeBootstrapJS)}
+	if !options.DisableCharts {
+		javaScripts = append(javaScripts, template.JS(assets.ChartBootstrapJS))
+	}
+	javaScripts = append(javaScripts, options.JavaScripts...)
 
 	view := struct {
 		Title                string
@@ -158,6 +163,17 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 		return "", err
 	}
 	return out.String(), nil
+}
+
+func resolveFeatureScriptAssets(options shellOptions, provider assets.AssetProvider) []string {
+	names := make([]assets.AssetName, 0, 2)
+	if !options.DisableHTMX {
+		names = append(names, assets.HTMX)
+	}
+	if !options.DisableCharts {
+		names = append(names, assets.ChartJS)
+	}
+	return resolveScriptAssets(provider, names)
 }
 
 func resolveFrameworkAssets(options shellOptions, provider assets.AssetProvider) ([]string, []string) {

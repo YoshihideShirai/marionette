@@ -129,8 +129,8 @@ func TestAppUseAssetsOverridesBuiltInAssetProvider(t *testing.T) {
 	for _, want := range []string{
 		`href="/vendor/daisyui.css"`,
 		`src="/vendor/tailwindcss-browser.js"`,
-		`src="/vendor/htmx.js"`,
-		`src="/vendor/chart.js"`,
+		`src="/vendor/htmx.min.js"`,
+		`src="/vendor/chart.umd.js"`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected provider-resolved asset %q, got %q", want, body)
@@ -138,6 +138,39 @@ func TestAppUseAssetsOverridesBuiltInAssetProvider(t *testing.T) {
 	}
 	if strings.Contains(body, assets.DaisyUICSSURL) || strings.Contains(body, assets.HTMXURL) {
 		t.Fatalf("did not expect CDN assets when provider is overridden, got %q", body)
+	}
+}
+
+func TestUseOfflineAssetsKeepsGeneratedHTMLLocal(t *testing.T) {
+	app := New()
+	app.Assets("/vendor", fstest.MapFS{
+		assets.DaisyUICSSFile:           {Data: []byte("/* daisyui */")},
+		assets.TailwindCSSBrowserJSFile: {Data: []byte("// tailwind")},
+		assets.HTMXJSFile:               {Data: []byte("// htmx")},
+		assets.ChartJSFile:              {Data: []byte("// chart")},
+	}, WithAssetCache(time.Hour))
+	app.UseOfflineAssets("/vendor")
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Offline"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	if strings.Contains(body, "http://") || strings.Contains(body, "https://") {
+		t.Fatalf("expected offline HTML without absolute network URLs, got %q", body)
+	}
+	for _, want := range []string{
+		`href="/vendor/daisyui.css"`,
+		`src="/vendor/tailwindcss-browser.js"`,
+		`src="/vendor/htmx.min.js"`,
+		`src="/vendor/chart.umd.js"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected offline asset %q, got %q", want, body)
+		}
 	}
 }
 

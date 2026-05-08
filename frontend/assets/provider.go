@@ -16,6 +16,19 @@ const (
 	MathJaxCHTML       AssetName = "mathjax-chtml"
 )
 
+const (
+	// DaisyUICSSFile is the default self-hosted DaisyUI stylesheet file name.
+	DaisyUICSSFile = "daisyui.css"
+	// TailwindCSSBrowserJSFile is the default self-hosted Tailwind browser runtime file name.
+	TailwindCSSBrowserJSFile = "tailwindcss-browser.js"
+	// HTMXJSFile is the default self-hosted HTMX runtime file name.
+	HTMXJSFile = "htmx.min.js"
+	// ChartJSFile is the default self-hosted Chart.js UMD bundle file name.
+	ChartJSFile = "chart.umd.js"
+	// MathJaxCHTMLJSFile is the default self-hosted MathJax CHTML bundle file name.
+	MathJaxCHTMLJSFile = "mathjax-chtml.js"
+)
+
 // AssetProvider resolves known Marionette framework/library names to CSS and JS URLs.
 type AssetProvider interface {
 	StylesheetURL(name AssetName) (string, bool)
@@ -81,16 +94,16 @@ func NewEmbeddedAssetProvider(basePath string) EmbeddedAssetProvider {
 
 func DefaultLocalStylesheets() map[AssetName]string {
 	return map[AssetName]string{
-		DaisyUI: "daisyui.css",
+		DaisyUI: DaisyUICSSFile,
 	}
 }
 
 func DefaultLocalScripts() map[AssetName]string {
 	return map[AssetName]string{
-		TailwindCSSBrowser: "tailwindcss-browser.js",
-		ChartJS:            "chart.js",
-		HTMX:               "htmx.js",
-		MathJaxCHTML:       "mathjax-chtml.js",
+		TailwindCSSBrowser: TailwindCSSBrowserJSFile,
+		ChartJS:            ChartJSFile,
+		HTMX:               HTMXJSFile,
+		MathJaxCHTML:       MathJaxCHTMLJSFile,
 	}
 }
 

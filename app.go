@@ -299,6 +299,17 @@ func (a *App) UseAssets(provider assets.AssetProvider) {
 	a.assetProvider = provider
 }
 
+// UseAssetProvider replaces the provider used to resolve built-in framework/library CSS and JS URLs.
+func (a *App) UseAssetProvider(provider assets.AssetProvider) {
+	a.UseAssets(provider)
+}
+
+// UseOfflineAssets resolves Marionette's built-in framework/library CSS and JS from basePath.
+// Pair this with App.Assets(basePath, fsys) to serve vendor assets from a local or embedded fs.FS.
+func (a *App) UseOfflineAssets(basePath string) {
+	a.UseAssets(assets.NewLocalAssetProvider(basePath))
+}
+
 func (a *App) SetCookieSecure(secure bool) {
 	a.mu.Lock()
 	defer a.mu.Unlock()

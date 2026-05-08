@@ -131,7 +131,7 @@ The GitHub Pages workflow publishes `docs/site-astro/` via GitHub Actions.
 ## Component template placement
 
 - The canonical component template directory is `templates/components/`.
-- `loadComponentTemplates` in both `components.go` and `frontend/components_impl.go` loads templates only from this directory.
+- `frontend/components_template_loader_impl.go` resolves component templates from this directory via `internal/componenttmpl`.
 - Name templates as `components/<basename>` (for example: `components/link`, `components/button`), where `<basename>` is the file name without `.tmpl`/`.html`.
 
 ## Heavy Job Template (data apps)

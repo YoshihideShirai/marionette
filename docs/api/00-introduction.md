@@ -1,7 +1,8 @@
 # API Documentation
 
-This document is a direct API reference for the current runtime surface in the
-module root package, reorganized by runtime layer.
+This document is a direct API reference for the current runtime surface,
+organized by runtime layer. The module root no longer exposes a Go package;
+import the layer-specific packages below.
 
 ## Import Path
 

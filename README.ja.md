@@ -120,5 +120,5 @@ GitHub Pages workflow は `docs/site-astro/` を GitHub Actions 経由で公開�
 ## コンポーネントテンプレートの配置規約
 
 - 正式なコンポーネントテンプレート配置先は `templates/components/` です。
-- `components.go` と `frontend/components_impl.go` の `loadComponentTemplates` はこのディレクトリのみを読み込みます。
+- `frontend/components_template_loader_impl.go` は `internal/componenttmpl` 経由でこのディレクトリからコンポーネントテンプレートを解決します。
 - テンプレート名は `components/<basename>`（例: `components/link`, `components/button`）とし、`<basename>` は `.tmpl` / `.html` を除いたファイル名にします。

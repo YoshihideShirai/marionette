@@ -1,12 +1,14 @@
 package frontend
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"strings"
 
 	chartjs "github.com/YoshihideShirai/marionette/frontend/chartjs"
 	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
+	"github.com/yuin/goldmark"
 )
 
 // このファイルはNode生成ロジックを定義する。
@@ -572,6 +574,23 @@ func SwitchWithVariants(name, value, label string, checked bool, props SwitchVar
 
 func Container(props ContainerProps, children ...Node) Node {
 	return layoutChildrenNode("components/container", containerClass(props), children)
+}
+
+func Markdown(props MarkdownProps) Node {
+	var out bytes.Buffer
+	if err := goldmark.Convert([]byte(strings.TrimSpace(props.Content)), &out); err != nil {
+		return renderErrorNode{err: err}
+	}
+	return templateNode{
+		name: "components/markdown",
+		data: struct {
+			Class   string
+			Content template.HTML
+		}{
+			Class:   strings.TrimSpace(props.Props.Class),
+			Content: template.HTML(out.String()),
+		},
+	}
 }
 
 func layoutChildrenNode(name, className string, children []Node) Node {

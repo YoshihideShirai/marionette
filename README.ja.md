@@ -38,7 +38,7 @@ go run ./cmd/admin-sample
 
 ![Admin sample dashboard](docs/assets/admin-sample.png)
 
-ソース: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go), [`internal/adminsample/app.go`](internal/adminsample/app.go)
+ソース: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go)
 
 [`robbins23/daisyui-admin-dashboard-template`](https://github.com/robbins23/daisyui-admin-dashboard-template) を参考にした DashWind 風 DaisyUI ダッシュボードデモを起動します:
 
@@ -66,7 +66,7 @@ go run ./cmd/marionette
 go run ./cmd/simple-sample
 ```
 
-その後、http://127.0.0.1:8081 を開きます。
+その後、http://127.0.0.1:8081 を開きます。サンプルは [`cmd/simple-sample/main.go`](cmd/simple-sample/main.go) だけで完結します。
 
 デスクトップ WebView サンプルを起動します:
 

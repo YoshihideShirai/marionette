@@ -1,4 +1,4 @@
-package adminsample
+package main
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestOrdersFilterFragmentKeepsMainContentTarget(t *testing.T) {
-	app := BuildApp()
+	app := buildApp()
 	app.SetGlobal("loggedIn", true)
 	app.SetGlobal("currentPage", "overview")
 	handler := app.Handler()
@@ -33,7 +33,7 @@ func TestOrdersFilterFragmentKeepsMainContentTarget(t *testing.T) {
 }
 
 func TestDashboardUsesOverlayDrawerNavigation(t *testing.T) {
-	app := BuildApp()
+	app := buildApp()
 	app.SetGlobal("loggedIn", true)
 	handler := app.Handler()
 
@@ -55,7 +55,7 @@ func TestDashboardUsesOverlayDrawerNavigation(t *testing.T) {
 }
 
 func TestDashboardLinksDealsToDetailPages(t *testing.T) {
-	app := BuildApp()
+	app := buildApp()
 	app.SetGlobal("loggedIn", true)
 	handler := app.Handler()
 
@@ -74,7 +74,7 @@ func TestDashboardLinksDealsToDetailPages(t *testing.T) {
 }
 
 func TestOrderDetailPageShowsSelectedDeal(t *testing.T) {
-	app := BuildApp()
+	app := buildApp()
 	app.SetGlobal("loggedIn", true)
 	handler := app.Handler()
 
@@ -93,7 +93,7 @@ func TestOrderDetailPageShowsSelectedDeal(t *testing.T) {
 }
 
 func TestLoginReplacesNarrowLoginContainerWithDashboard(t *testing.T) {
-	app := BuildApp()
+	app := buildApp()
 	handler := app.Handler()
 
 	form := url.Values{"provider": {"demo-sso"}}

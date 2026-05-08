@@ -47,6 +47,57 @@
   `WithAssetIndex(true)` only when directory browsing is intentional.
 - Asset routes are included in `Handler()` and `Run()`.
 
+
+### `UseAssetProvider(provider assets.AssetProvider)` / `UseAssets(provider assets.AssetProvider)`
+- Replaces the provider that resolves Marionette's built-in framework/library
+  CSS and JavaScript URLs in generated shells.
+- Use a custom provider when you need full control over the URLs for DaisyUI,
+  Tailwind browser, HTMX, Chart.js, or MathJax.
+- `UseAssets` is the existing shorthand; `UseAssetProvider` is a descriptive
+  alias for the same behavior.
+
+### `UseOfflineAssets(basePath string)`
+- Uses Marionette's standard local vendor file names under `basePath` instead
+  of CDN URLs. The default logical file names are:
+  - `daisyui.css`
+  - `tailwindcss-browser.js`
+  - `htmx.min.js`
+  - `chart.umd.js`
+  - `mathjax-chtml.js`
+- Pair it with `Assets` to serve the files from a local directory or embedded
+  filesystem:
+
+```go
+package main
+
+import (
+    "embed"
+    "io/fs"
+    "log"
+    "time"
+
+    "github.com/YoshihideShirai/marionette/backend"
+)
+
+//go:embed frontend/assets/vendor/*
+var embeddedAssets embed.FS
+
+func main() {
+    app := backend.New()
+
+    vendorFS, err := fs.Sub(embeddedAssets, "frontend/assets/vendor")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    app.Assets("/vendor", vendorFS, backend.WithAssetCache(24*time.Hour), backend.WithAssetImmutable())
+    app.UseOfflineAssets("/vendor")
+
+    // register pages/actions...
+    log.Fatal(app.Run("127.0.0.1:8080"))
+}
+```
+
 ### `Downloads(prefix string, fsys fs.FS, options ...AssetOption)`
 - Serves static files from `fsys` under `prefix` with
   `Content-Disposition: attachment`.

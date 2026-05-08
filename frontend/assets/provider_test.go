@@ -17,7 +17,7 @@ func TestLocalAssetProviderResolvesBasePath(t *testing.T) {
 	if got, ok := provider.StylesheetURL(DaisyUI); !ok || got != "/assets/vendor/daisyui.css" {
 		t.Fatalf("expected local DaisyUI URL, got %q ok=%v", got, ok)
 	}
-	if got, ok := provider.ScriptURL(ChartJS); !ok || got != "/assets/vendor/chart.js" {
+	if got, ok := provider.ScriptURL(ChartJS); !ok || got != "/assets/vendor/chart.umd.js" {
 		t.Fatalf("expected local Chart.js URL, got %q ok=%v", got, ok)
 	}
 }

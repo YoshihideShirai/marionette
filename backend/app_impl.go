@@ -292,6 +292,17 @@ func (a *App) UseAssets(provider assets.AssetProvider) {
 	a.shellAssets.UseAssets(provider)
 }
 
+// UseAssetProvider replaces the provider used to resolve built-in framework/library CSS and JS URLs.
+func (a *App) UseAssetProvider(provider assets.AssetProvider) {
+	a.UseAssets(provider)
+}
+
+// UseOfflineAssets resolves Marionette's built-in framework/library CSS and JS from basePath.
+// Pair this with App.Assets(basePath, fsys) to serve vendor assets from a local or embedded fs.FS.
+func (a *App) UseOfflineAssets(basePath string) {
+	a.UseAssets(assets.NewLocalAssetProvider(basePath))
+}
+
 // UseStyleTemplate replaces framework stylesheet/script imports.
 // Call AddStylesheet/AddScript after this if you want extra imports.
 func (a *App) UseStyleTemplate(tpl frontend.StyleTemplate) {

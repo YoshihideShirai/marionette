@@ -61,8 +61,8 @@ func TestShellResolvesBuiltInAssetsThroughProvider(t *testing.T) {
 	for _, want := range []string{
 		`href="/vendor/daisyui.css"`,
 		`src="/vendor/tailwindcss-browser.js"`,
-		`src="/vendor/htmx.js"`,
-		`src="/vendor/chart.js"`,
+		`src="/vendor/htmx.min.js"`,
+		`src="/vendor/chart.umd.js"`,
 	} {
 		if !strings.Contains(out, want) {
 			t.Fatalf("expected provider-resolved asset %q in shell output, got %q", want, out)

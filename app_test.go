@@ -465,7 +465,7 @@ func TestContextLocalIsRequestScopedAndSharedStateUsesHelpers(t *testing.T) {
 	if !strings.Contains(rr.Body.String(), "local:app") {
 		t.Fatalf("expected local and shared state output, got %q", rr.Body.String())
 	}
-	if got := app.state["request"]; got != nil {
+	if got := app.GetGlobal("request"); got != nil {
 		t.Fatalf("expected Context.Local writes to stay request-local, got %v", got)
 	}
 }

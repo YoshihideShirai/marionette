@@ -263,6 +263,19 @@ type pageRoute struct {
 	options PageOptions
 }
 
+// AssetPolicy controls which asset URLs Marionette may emit into generated shells.
+type AssetPolicy = assets.AssetPolicy
+
+// AssetMode describes whether generated shells may depend on network-hosted assets.
+type AssetMode string
+
+const (
+	// AssetModeOnline allows Marionette's default CDN-backed asset resolution.
+	AssetModeOnline AssetMode = "online"
+	// AssetModeOffline rejects http:// and https:// asset URLs during shell rendering.
+	AssetModeOffline AssetMode = "offline"
+)
+
 // App is a minimal Go-only UI runtime for htmx driven desktop/web views.
 type App struct {
 	mu            sync.RWMutex
@@ -278,6 +291,8 @@ type App struct {
 	disableHTMX   bool
 	disableCharts bool
 	assetProvider assets.AssetProvider
+	assetPolicy   AssetPolicy
+	assetMode     AssetMode
 }
 
 func New() *App {
@@ -291,7 +306,32 @@ func New() *App {
 		styles:       []template.CSS{},
 		scripts:      []string{},
 		javascripts:  []template.JS{},
+		assetMode:    AssetModeOnline,
 	}
+}
+
+// SetAssetPolicy replaces the policy used to validate asset URLs emitted into full-page shells.
+func (a *App) SetAssetPolicy(policy AssetPolicy) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.assetPolicy = policy
+}
+
+// SetAssetMode switches between online and offline asset validation modes.
+func (a *App) SetAssetMode(mode AssetMode) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	switch mode {
+	case "", AssetModeOnline:
+		a.assetMode = AssetModeOnline
+		a.assetPolicy.ForbidExternalURLs = false
+	case AssetModeOffline:
+		a.assetMode = AssetModeOffline
+		a.assetPolicy.ForbidExternalURLs = true
+	default:
+		return fmt.Errorf("unknown asset mode: %s", mode)
+	}
+	return nil
 }
 
 // UseAssets replaces the provider used to resolve built-in framework/library CSS and JS URLs.
@@ -309,7 +349,11 @@ func (a *App) UseAssetProvider(provider assets.AssetProvider) {
 // UseOfflineAssets resolves Marionette's built-in framework/library CSS and JS from basePath.
 // Pair this with App.Assets(basePath, fsys) to serve vendor assets from a local or embedded fs.FS.
 func (a *App) UseOfflineAssets(basePath string) {
-	a.UseAssets(assets.NewLocalAssetProvider(basePath))
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.assetProvider = assets.NewLocalAssetProvider(basePath)
+	a.assetMode = AssetModeOffline
+	a.assetPolicy.ForbidExternalURLs = true
 }
 
 // EnableHTMX controls whether the default HTMX runtime is included in full-page shells.
@@ -606,6 +650,7 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 		Stylesheets:   append([]string(nil), a.stylesheets...),
 		Styles:        append([]template.CSS(nil), a.styles...),
 		AssetProvider: a.assetProvider,
+		AssetPolicy:   a.assetPolicy,
 		Scripts:       append([]string(nil), a.scripts...),
 		JavaScripts:   append([]template.JS(nil), a.javascripts...),
 		DisableHTMX:   a.disableHTMX,

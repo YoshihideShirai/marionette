@@ -151,3 +151,20 @@ func TestIntegrationToggleAndCalendarDayActionsUpdateFragments(t *testing.T) {
 		t.Fatalf("expected fragment response, got full document")
 	}
 }
+
+func TestDashWindDemoExternalStylesheetFailsInOfflineMode(t *testing.T) {
+	app := BuildApp()
+	app.UseOfflineAssets("/vendor")
+	handler := app.Handler()
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusInternalServerError {
+		t.Fatalf("expected offline policy failure status 500, got %d with body %q", rr.Code, rr.Body.String())
+	}
+	if body := rr.Body.String(); !strings.Contains(body, "asset policy forbids external URL") || !strings.Contains(body, "font-awesome/6.5.2/css/all.min.css") {
+		t.Fatalf("expected external Font Awesome policy error, got %q", body)
+	}
+}

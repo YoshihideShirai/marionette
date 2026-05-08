@@ -4,7 +4,6 @@
 
 ### Request-local vs shared state
 
-- Do not read or write `Context.State` directly in handlers. It remains for source compatibility only and is deprecated.
 - Use `Context.Local` for temporary values that should live only for the current request.
 - Use `Context.SetGlobal` / `Context.GetGlobal` for application-shared values. Any API whose name includes `Global` reads or writes state shared by all users of the app. These helpers go through the parent app mutex when the context belongs to an app.
 
@@ -37,33 +36,29 @@ app.Page("/", func(ctx *mb.Context) mf.Node {
 - Request-local scratch map initialized for contexts created by an app.
 - Values stored here are not shared with other requests and are not protected by the app mutex.
 
-### `State map[string]any`
-- Deprecated: use `Context.GetGlobal` / `Context.SetGlobal` for app-wide state or `Context.Local` for request-local state instead.
-- Do not use direct `Context.State[...]` access in new code.
-
 ### `SetGlobal(key string, value any)`
 - Writes application-shared state.
 - Because this API is named `Global`, the value is shared by all users and all requests for the app.
-- If context has a parent app, write is synchronized via the app mutex.
-- If no app is attached, writes to the deprecated `Context.State` map for compatibility.
+- Contexts created by an app synchronize writes via the app mutex.
+- If no app is attached, this is a no-op because there is no app-wide state map.
 
 ### `GetGlobal(key string) any`
 - Reads application-shared state.
 - Because this API is named `Global`, the value is shared by all users and all requests for the app.
-- If context has a parent app, read is synchronized via the app mutex.
-- If no app is attached, reads from the deprecated `Context.State` map for compatibility.
+- Contexts created by an app synchronize reads via the app mutex.
+- If no app is attached, this returns `nil` because there is no app-wide state map.
 - If the value is a mutable slice, map, or pointer, do not mutate it directly after `GetGlobal` returns; mutate under `UpdateGlobal` or read via `GetGlobalSnapshot` with a clone function.
 
 ### `GetGlobalSnapshot(key string, clone func(any) any) any`
 - Reads application-shared state and returns `clone(value)` while the app read lock is held.
 - Use this for read-only snapshots of slices, maps, or other mutable values before rendering or handing them to code that might mutate them.
-- If no app is attached, it clones from the deprecated `Context.State` map for compatibility.
+- If no app is attached, it calls `clone(nil)` because there is no app-wide state map.
 
 ### `UpdateGlobal(key string, fn func(old any) any) any`
 - Atomically reads, transforms, and writes application-shared state.
-- If context has a parent app, `old := state[key]`, `next := fn(old)`, and `state[key] = next` all happen while holding the app mutex.
+- Contexts created by an app run `old := state[key]`, `next := fn(old)`, and `state[key] = next` while holding the app mutex.
 - Use this instead of a separate `GetGlobal` → `SetGlobal` sequence whenever the new value depends on the old value.
-- If no app is attached, it updates the deprecated `Context.State` map for compatibility.
+- If no app is attached, it calls `fn(nil)` and returns the result without storing it because there is no app-wide state map.
 
 ```go
 app.Action("counter/increment", func(ctx *mb.Context) mf.Node {
@@ -89,10 +84,6 @@ ctx.SetGlobal("count", count+1) // use UpdateGlobal or IncrementGlobalInt instea
 ### `IncrementGlobalInt(key string, delta int) int`
 - Convenience wrapper around `UpdateGlobal` for integer counters/progress values.
 - Treats missing or non-`int` values as `0`, stores `old + delta`, and returns the new `int`.
-
-### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
-- Deprecated: use `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` when accessing app-wide state.
-- These compatibility aliases still access the same app-wide state shared by all users.
 
 ### Flash APIs
 

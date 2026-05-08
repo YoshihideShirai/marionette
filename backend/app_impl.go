@@ -19,8 +19,6 @@ type Context struct {
 	Request *http.Request
 	Local   map[string]any
 
-	// Deprecated: use Context.GetGlobal/SetGlobal or Context.Local instead.
-	State   map[string]any
 	app     *App
 	flashes []FlashMessage
 	session map[string]string
@@ -64,10 +62,6 @@ func (c *Context) Query(name string) string {
 // SetGlobal writes a value into app-wide state shared by all users.
 func (c *Context) SetGlobal(key string, value any) {
 	if c.app == nil {
-		if c.State == nil {
-			c.State = map[string]any{}
-		}
-		c.State[key] = value
 		return
 	}
 	c.app.mu.Lock()
@@ -78,7 +72,7 @@ func (c *Context) SetGlobal(key string, value any) {
 // GetGlobal reads a value from app-wide state shared by all users.
 func (c *Context) GetGlobal(key string) any {
 	if c.app == nil {
-		return c.State[key]
+		return nil
 	}
 	c.app.mu.RLock()
 	defer c.app.mu.RUnlock()
@@ -91,7 +85,7 @@ func (c *Context) GetGlobalSnapshot(key string, clone func(any) any) any {
 		return c.GetGlobal(key)
 	}
 	if c.app == nil {
-		return clone(c.State[key])
+		return clone(nil)
 	}
 	c.app.mu.RLock()
 	defer c.app.mu.RUnlock()
@@ -101,13 +95,7 @@ func (c *Context) GetGlobalSnapshot(key string, clone func(any) any) any {
 // UpdateGlobal atomically reads, transforms, and writes app-wide state.
 func (c *Context) UpdateGlobal(key string, fn func(old any) any) any {
 	if c.app == nil {
-		if c.State == nil {
-			c.State = map[string]any{}
-		}
-		old := c.State[key]
-		next := fn(old)
-		c.State[key] = next
-		return next
+		return fn(nil)
 	}
 	return c.app.UpdateGlobal(key, fn)
 }
@@ -128,27 +116,6 @@ func (c *Context) IncrementGlobalInt(key string, delta int) int {
 		return oldInt + delta
 	}).(int)
 	return next
-}
-
-// Set writes a value into app-wide state shared by all users.
-//
-// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
-func (c *Context) Set(key string, value any) {
-	c.SetGlobal(key, value)
-}
-
-// Get reads a value from app-wide state shared by all users.
-//
-// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
-func (c *Context) Get(key string) any {
-	return c.GetGlobal(key)
-}
-
-// GetInt reads app-wide state and type-asserts it to int.
-//
-// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
-func (c *Context) GetInt(key string) int {
-	return c.GetGlobalInt(key)
 }
 
 func (c *Context) AddFlash(level FlashLevel, message string) {
@@ -391,11 +358,6 @@ func (a *App) UseDaisyUITemplate() {
 	a.UseStyleTemplate(frontend.DaisyUITemplate)
 }
 
-// UseTailAdminTemplate is kept as a compatibility alias.
-func (a *App) UseTailAdminTemplate() {
-	a.UseDaisyUITemplate()
-}
-
 func (a *App) UseTailwindCSSTemplate() {
 	a.UseStyleTemplate(frontend.TailwindCSSTemplate)
 }
@@ -502,27 +464,6 @@ func (a *App) IncrementGlobalInt(key string, delta int) int {
 	return next
 }
 
-// Set writes a value into app-wide state shared by all users.
-//
-// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
-func (a *App) Set(key string, value any) {
-	a.SetGlobal(key, value)
-}
-
-// Get reads a value from app-wide state shared by all users.
-//
-// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
-func (a *App) Get(key string) any {
-	return a.GetGlobal(key)
-}
-
-// GetInt reads app-wide state and type-asserts it to int.
-//
-// Deprecated: use SetGlobal/GetGlobal when accessing app-wide state.
-func (a *App) GetInt(key string) int {
-	return a.GetGlobalInt(key)
-}
-
 // Page registers a full-page GET view.
 func (a *App) Page(path string, fn Handler, options ...PageOption) {
 	a.pages[normalizePagePath(path)] = pageRoute{handler: fn, options: applyPageOptions(options)}
@@ -593,7 +534,7 @@ func (a *App) newContext(w http.ResponseWriter, r *http.Request) *Context {
 		clearFlashCookie(w, secure)
 	}
 	local := map[string]any{}
-	return &Context{Writer: w, Request: r, Local: local, State: local, app: a, flashes: flashes, session: session}
+	return &Context{Writer: w, Request: r, Local: local, app: a, flashes: flashes, session: session}
 }
 
 func clearFlashCookie(w http.ResponseWriter, secure bool) {

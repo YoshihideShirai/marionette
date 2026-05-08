@@ -369,21 +369,6 @@ func TestGetGlobalSnapshotClonesWhileLocked(t *testing.T) {
 	if got := stored[0]; got != "Aiko" {
 		t.Fatalf("expected snapshot mutation not to change global state, got %q", got)
 	}
-
-	ctx := &Context{}
-	ctx.SetGlobal("labels", map[string]string{"role": "Admin"})
-	labels := ctx.GetGlobalSnapshot("labels", func(value any) any {
-		old, _ := value.(map[string]string)
-		next := make(map[string]string, len(old))
-		for key, value := range old {
-			next[key] = value
-		}
-		return next
-	}).(map[string]string)
-	labels["role"] = "Viewer"
-	if got := ctx.GetGlobal("labels").(map[string]string)["role"]; got != "Admin" {
-		t.Fatalf("expected fallback snapshot mutation not to change global state, got %q", got)
-	}
 }
 
 func TestUpdateGlobalHoldsLockAcrossTransform(t *testing.T) {
@@ -413,7 +398,7 @@ func TestUpdateGlobalHoldsLockAcrossTransform(t *testing.T) {
 	}
 }
 
-func TestContextUpdateGlobalDelegatesToAppAndSupportsFallbackState(t *testing.T) {
+func TestContextUpdateGlobalDelegatesToApp(t *testing.T) {
 	app := New()
 	app.SetGlobal("count", 1)
 	app.Page("/", func(ctx *Context) frontend.Node {
@@ -432,14 +417,6 @@ func TestContextUpdateGlobalDelegatesToAppAndSupportsFallbackState(t *testing.T)
 	}
 	if got := app.GetGlobalInt("count"); got != 3 {
 		t.Fatalf("expected app state to be updated, got %d", got)
-	}
-
-	ctx := &Context{}
-	if got := ctx.IncrementGlobalInt("count", 4); got != 4 {
-		t.Fatalf("expected fallback increment to return 4, got %d", got)
-	}
-	if got := ctx.State["count"]; got != 4 {
-		t.Fatalf("expected fallback state to be updated, got %v", got)
 	}
 }
 

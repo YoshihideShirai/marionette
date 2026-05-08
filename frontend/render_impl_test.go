@@ -75,6 +75,24 @@ func TestShellResolvesBuiltInAssetsThroughProvider(t *testing.T) {
 	}
 }
 
+func TestShellCanDisableDefaultFeatureScripts(t *testing.T) {
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{
+		DisableHTMX:   true,
+		DisableCharts: true,
+	})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, notWant := range []string{assets.HTMXURL, assets.ChartJSURL, "window.mrnInitCharts", "htmx:afterSwap"} {
+		if strings.Contains(out, notWant) {
+			t.Fatalf("did not expect disabled feature asset %q in shell output, got %q", notWant, out)
+		}
+	}
+	if !strings.Contains(out, "mrnToggleTheme") {
+		t.Fatalf("expected theme bootstrap to remain enabled, got %q", out)
+	}
+}
+
 func TestShellOptionsStyleTemplateOverridesDefault(t *testing.T) {
 	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{
 		StyleTemplate: StyleTemplate{

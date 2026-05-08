@@ -6,7 +6,6 @@ import (
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
-	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 type formula struct {
@@ -14,6 +13,8 @@ type formula struct {
 	Tex   string
 	Note  string
 }
+
+const mathJaxCHTMLURL = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"
 
 var formulas = []formula{
 	{
@@ -35,7 +36,7 @@ var formulas = []formula{
 
 func main() {
 	app := mb.New()
-	app.AddScript(assets.MathJaxCHTMLURL)
+	app.AddScript(mathJaxCHTMLURL)
 	app.AddJavaScript(customJavaScript())
 	app.AddStyle(customStyles())
 	app.SetGlobal("formulaIndex", 0)

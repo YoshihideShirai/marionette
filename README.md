@@ -47,7 +47,7 @@ Then open http://127.0.0.1:8082.
 
 ![Admin sample dashboard](docs/assets/admin-sample.png)
 
-Source: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go), [`internal/adminsample/app.go`](internal/adminsample/app.go)
+Source: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go)
 
 Run the DashWind-style DaisyUI dashboard demo inspired by [`robbins23/daisyui-admin-dashboard-template`](https://github.com/robbins23/daisyui-admin-dashboard-template):
 
@@ -82,7 +82,7 @@ Run the minimal sample:
 go run ./cmd/simple-sample
 ```
 
-Then open http://127.0.0.1:8081.
+Then open http://127.0.0.1:8081. The sample is self-contained in [`cmd/simple-sample/main.go`](cmd/simple-sample/main.go).
 
 Run the desktop WebView sample:
 

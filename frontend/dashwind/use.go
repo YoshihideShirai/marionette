@@ -2,11 +2,11 @@ package dashwind
 
 import (
 	"encoding/json"
-	"path"
 	"strings"
 
 	"github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 // Options configures DashWind assets registered by Use.
@@ -29,7 +29,10 @@ func Use(app *backend.App, options Options) {
 	if app == nil {
 		return
 	}
-	app.UseStyleTemplate(styleTemplate(options.AssetsBasePath))
+	app.UseStyleTemplate(styleTemplate())
+	if base := strings.TrimSpace(options.AssetsBasePath); base != "" {
+		app.UseAssets(assets.NewLocalAssetProvider(base))
+	}
 	if !options.DisableDefaultCSS {
 		app.AddStyle(DefaultCSS)
 	}
@@ -41,30 +44,8 @@ func Use(app *backend.App, options Options) {
 	}
 }
 
-func styleTemplate(assetsBasePath string) mf.StyleTemplate {
-	base := strings.TrimSpace(assetsBasePath)
-	if base == "" {
-		return mf.DaisyUITemplate
-	}
-	return mf.StyleTemplate{
-		Name:                 "dashwind",
-		FrameworkStylesheets: []string{assetURL(base, "daisyui.css")},
-		FrameworkScripts:     []string{assetURL(base, "tailwindcss-browser.js")},
-	}
-}
-
-func assetURL(basePath, name string) string {
-	basePath = strings.TrimRight(strings.TrimSpace(basePath), "/")
-	if basePath == "" {
-		return name
-	}
-	if strings.HasPrefix(basePath, "http://") || strings.HasPrefix(basePath, "https://") {
-		return basePath + "/" + name
-	}
-	if strings.HasPrefix(basePath, "/") {
-		return path.Join(basePath, name)
-	}
-	return path.Join("/", basePath, name)
+func styleTemplate() mf.StyleTemplate {
+	return mf.DaisyUITemplate
 }
 
 func themeBootstrapJS(theme string) string {

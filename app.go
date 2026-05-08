@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 // Context gives handlers controlled access to application state and request data.
@@ -264,16 +265,17 @@ type pageRoute struct {
 
 // App is a minimal Go-only UI runtime for htmx driven desktop/web views.
 type App struct {
-	mu           sync.RWMutex
-	state        map[string]any
-	pages        map[string]pageRoute
-	actions      map[string]Handler
-	assets       []assetRoute
-	cookieSecure bool
-	stylesheets  []string
-	styles       []template.CSS
-	scripts      []string
-	javascripts  []template.JS
+	mu            sync.RWMutex
+	state         map[string]any
+	pages         map[string]pageRoute
+	actions       map[string]Handler
+	assets        []assetRoute
+	cookieSecure  bool
+	stylesheets   []string
+	styles        []template.CSS
+	scripts       []string
+	javascripts   []template.JS
+	assetProvider assets.AssetProvider
 }
 
 func New() *App {
@@ -288,6 +290,13 @@ func New() *App {
 		scripts:      []string{},
 		javascripts:  []template.JS{},
 	}
+}
+
+// UseAssets replaces the provider used to resolve built-in framework/library CSS and JS URLs.
+func (a *App) UseAssets(provider assets.AssetProvider) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.assetProvider = provider
 }
 
 func (a *App) SetCookieSecure(secure bool) {
@@ -558,11 +567,12 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	return shellOptions{
-		Title:       pageOptions.Title,
-		Stylesheets: append([]string(nil), a.stylesheets...),
-		Styles:      append([]template.CSS(nil), a.styles...),
-		Scripts:     append([]string(nil), a.scripts...),
-		JavaScripts: append([]template.JS(nil), a.javascripts...),
+		Title:         pageOptions.Title,
+		Stylesheets:   append([]string(nil), a.stylesheets...),
+		Styles:        append([]template.CSS(nil), a.styles...),
+		AssetProvider: a.assetProvider,
+		Scripts:       append([]string(nil), a.scripts...),
+		JavaScripts:   append([]template.JS(nil), a.javascripts...),
 	}
 }
 

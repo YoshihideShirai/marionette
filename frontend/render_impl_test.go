@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"strings"
 	"testing"
+
+	"github.com/YoshihideShirai/marionette/frontend/assets"
 )
 
 func TestShellUsesStableRootID(t *testing.T) {
@@ -46,6 +48,29 @@ func TestShellAppliesDefaultStyleTemplate(t *testing.T) {
 	for _, src := range defaults.FrameworkScripts {
 		if !strings.Contains(out, `src="`+src+`"`) {
 			t.Fatalf("expected default script %q in shell output", src)
+		}
+	}
+}
+
+func TestShellResolvesBuiltInAssetsThroughProvider(t *testing.T) {
+	provider := assets.NewLocalAssetProvider("/vendor")
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{AssetProvider: provider})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, want := range []string{
+		`href="/vendor/daisyui.css"`,
+		`src="/vendor/tailwindcss-browser.js"`,
+		`src="/vendor/htmx.js"`,
+		`src="/vendor/chart.js"`,
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected provider-resolved asset %q in shell output, got %q", want, out)
+		}
+	}
+	for _, legacyCDN := range []string{assets.DaisyUICSSURL, assets.TailwindBrowserURL, assets.HTMXURL, assets.ChartJSURL} {
+		if strings.Contains(out, legacyCDN) {
+			t.Fatalf("did not expect CDN URL %q when provider is overridden, got %q", legacyCDN, out)
 		}
 	}
 }

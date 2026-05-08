@@ -114,6 +114,33 @@ func TestPageCanUseTailwindTemplatePreset(t *testing.T) {
 	}
 }
 
+func TestAppUseAssetsOverridesBuiltInAssetProvider(t *testing.T) {
+	app := New()
+	app.UseAssets(assets.NewLocalAssetProvider("/vendor"))
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	for _, want := range []string{
+		`href="/vendor/daisyui.css"`,
+		`src="/vendor/tailwindcss-browser.js"`,
+		`src="/vendor/htmx.js"`,
+		`src="/vendor/chart.js"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected provider-resolved asset %q, got %q", want, body)
+		}
+	}
+	if strings.Contains(body, assets.DaisyUICSSURL) || strings.Contains(body, assets.HTMXURL) {
+		t.Fatalf("did not expect CDN assets when provider is overridden, got %q", body)
+	}
+}
+
 func TestUseStyleTemplateByNameRejectsUnknown(t *testing.T) {
 	app := New()
 	err := app.UseStyleTemplateByName("unknown-template")

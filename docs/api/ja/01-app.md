@@ -191,6 +191,3 @@ func main() {
 - integer counters/progress values 向けの `UpdateGlobal` convenience wrapper です。
 - missing または non-`int` values を `0` として扱い、`old + delta` を保存し、新しい `int` を返します。
 
-#### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
-- Deprecated: app-wide state にアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` を使ってください。
-- これらの compatibility aliases は、現在もすべての users で共有される同じ app-wide state にアクセスします。

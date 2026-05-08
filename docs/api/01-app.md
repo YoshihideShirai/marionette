@@ -205,8 +205,4 @@ App state helpers whose names include `Global` read or write app-wide state shar
 - Convenience wrapper around `UpdateGlobal` for integer counters/progress values.
 - Treats missing or non-`int` values as `0`, stores `old + delta`, and returns the new `int`.
 
-#### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
-- Deprecated: use `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` when accessing app-wide state.
-- These compatibility aliases still access the same app-wide state shared by all users.
-
 ---

@@ -4,7 +4,6 @@
 
 ### リクエストローカル state と共有 state
 
-- ハンドラ内で `Context.State` を直接読み書きしないでください。後方互換のために残っていますが deprecated です。
 - そのリクエスト内だけで使う一時値は `Context.Local` に置きます。
 - アプリ全体で共有する値は `Context.SetGlobal` / `Context.GetGlobal` を使います。名前に `Global` が付く API はアプリの全ユーザーで共有される state を読み書きします。親アプリを持つ context では app mutex 経由で同期されます。
 
@@ -36,33 +35,29 @@ app.Page("/", func(ctx *mb.Context) mf.Node {
 - アプリが作成する context で初期化される、リクエストローカルな一時値用 map です。
 - ここに入れた値は他のリクエストと共有されず、app mutex の保護対象でもありません。
 
-### `State map[string]any`
-- Deprecated: アプリ全体の state には `Context.GetGlobal` / `Context.SetGlobal`、リクエスト内だけの state には `Context.Local` を使ってください。
-- 新しいコードでは `Context.State[...]` を直接触らないでください。
-
 ### `SetGlobal(key string, value any)`
 - アプリ共有 state に書き込みます。
 - API 名に `Global` が付くため、この値はアプリの全ユーザー・全リクエストで共有されます。
-- 親アプリを持つ context では app mutex 経由で同期されます。
-- 親アプリがない場合は互換性のため deprecated な `Context.State` map に書き込みます。
+- app が作成した context では app mutex 経由で同期されます。
+- 親アプリがない場合、app-wide state map がないため no-op です。
 
 ### `GetGlobal(key string) any`
 - アプリ共有 state を読み取ります。
 - API 名に `Global` が付くため、この値はアプリの全ユーザー・全リクエストで共有されます。
-- 親アプリを持つ context では app mutex 経由で同期されます。
-- 親アプリがない場合は互換性のため deprecated な `Context.State` map から読み取ります。
+- app が作成した context では app mutex 経由で同期されます。
+- 親アプリがない場合、app-wide state map がないため `nil` を返します。
 - 返ってきた slice、map、pointer は直接変更せず、変更は `UpdateGlobal` 内で行うか、`GetGlobalSnapshot` と clone 関数で snapshot を読んでください。
 
 ### `GetGlobalSnapshot(key string, clone func(any) any) any`
 - app の read lock を保持したままアプリ共有 state を読み取り、`clone(value)` を返します。
 - render や後続処理に slice、map などの mutable value を渡す前の snapshot 作成に使います。
-- 親アプリがない場合は互換性のため deprecated な `Context.State` map から clone します。
+- 親アプリがない場合、app-wide state map がないため `clone(nil)` を返します。
 
 ### `UpdateGlobal(key string, fn func(old any) any) any`
 - アプリ共有 state を atomically に読み取り、変換し、書き戻します。
-- 親アプリを持つ context では、app mutex を取得したまま `old := state[key]`、`next := fn(old)`、`state[key] = next` を実行します。
+- app が作成した context では、app mutex を取得したまま `old := state[key]`、`next := fn(old)`、`state[key] = next` を実行します。
 - 新しい値が古い値に依存する場合は、個別の `GetGlobal` → `SetGlobal` ではなくこちらを使ってください。
-- 親アプリがない場合は互換性のため deprecated な `Context.State` map を更新します。
+- 親アプリがない場合、app-wide state map がないため `fn(nil)` の結果を保存せずに返します。
 
 ```go
 app.Action("counter/increment", func(ctx *mb.Context) mf.Node {
@@ -88,10 +83,6 @@ ctx.SetGlobal("count", count+1) // UpdateGlobal または IncrementGlobalInt を
 ### `IncrementGlobalInt(key string, delta int) int`
 - integer のカウンターや進捗値向けの `UpdateGlobal` 便利ラッパーです。
 - 値がない、または `int` でない場合は `0` として扱い、`old + delta` を保存して新しい `int` を返します。
-
-### `Set(key string, value any)` / `Get(key string) any` / `GetInt(key string) int`
-- Deprecated: アプリ全体の state へアクセスするときは `SetGlobal` / `GetGlobal` / `GetGlobalInt` / `UpdateGlobal` を使ってください。
-- 互換エイリアスとして、現在も同じ全ユーザー共有 state にアクセスします。
 
 ### Flash APIs
 

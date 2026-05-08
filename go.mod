@@ -1,6 +1,6 @@
 module github.com/YoshihideShirai/marionette
 
-go 1.24.0
+go 1.25
 
 require (
 	github.com/rocketlaunchr/dataframe-go v0.0.0-20211025052708-a1030444159b
@@ -15,7 +15,7 @@ require (
 )
 
 require (
-	github.com/apache/thrift v0.13.0 // indirect
+	github.com/apache/thrift v0.23.0 // indirect
 	github.com/goccy/go-json v0.7.6 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/google/go-cmp v0.4.0 // indirect

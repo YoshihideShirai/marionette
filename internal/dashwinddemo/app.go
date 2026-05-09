@@ -24,6 +24,11 @@ type calendarEvent struct {
 	Day          int
 	Title, Theme string
 }
+type pipelineStage struct {
+	Label string
+	Value int
+	Class string
+}
 type integrationItem struct {
 	Name, Icon, IconURL, Description string
 	Active                           bool
@@ -49,6 +54,12 @@ var seedTransactions = []transaction{
 	{"INV-8843", "Northwind", "Growth", "May 04, 2026", "Pending", 6200},
 	{"INV-8844", "Blue Peak", "Starter", "May 02, 2026", "Failed", 1200},
 	{"INV-8845", "Sora Labs", "Enterprise", "Apr 30, 2026", "Paid", 15200},
+}
+var pipelineStages = []pipelineStage{
+	{Label: "Open", Value: 92, Class: "bg-blue-500"},
+	{Label: "Progress", Value: 128, Class: "bg-indigo-500"},
+	{Label: "Sold", Value: 54, Class: "bg-emerald-500"},
+	{Label: "Followup", Value: 76, Class: "bg-amber-500"},
 }
 var calendarEvents = []calendarEvent{
 	{Day: -3, Title: "Product call", Theme: "GREEN"},
@@ -270,7 +281,7 @@ func dashboardPage(ctx *mb.Context) mf.Node {
 		dw.MetricGrid(dw.MetricGridProps{Items: metrics}),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-2",
 			chartCard("Revenue", "Monthly recurring revenue", mf.Chart(mf.ChartProps{Type: mf.ChartTypeLine, Labels: []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "MRR", Data: []float64{18, 24, 28, 32, 38, 45}, BorderColor: "#3b82f6", BackgroundColor: "rgba(59,130,246,.18)", Fill: true, Tension: .35}}})),
-			chartCard("Pipeline", "Qualified leads by stage", mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: []string{"Open", "Progress", "Sold", "Followup"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "Leads", Data: []float64{92, 128, 54, 76}, BackgroundColor: "#6366f1"}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}})),
+			pipelineChart(),
 		),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-2", amountStats(), userChannels()),
 	)
@@ -362,6 +373,36 @@ func userChannels() mf.Node {
 
 func chartCard(title, desc string, chart mf.Node) mf.Node {
 	return mf.Card(mf.CardProps{Title: title, Description: desc, Props: mf.ComponentProps{Class: "bg-base-100 shadow"}}, chart)
+}
+
+func pipelineChart() mf.Node {
+	maxValue := 1
+	total := 0
+	for _, stage := range pipelineStages {
+		if stage.Value > maxValue {
+			maxValue = stage.Value
+		}
+		total += stage.Value
+	}
+
+	rows := make([]mf.Node, 0, len(pipelineStages)+1)
+	for _, stage := range pipelineStages {
+		width := stage.Value * 100 / maxValue
+		rows = append(rows, div("space-y-2",
+			div("flex items-center justify-between gap-3 text-sm",
+				div("font-medium", mf.Text(stage.Label)),
+				div("tabular-nums text-base-content/60", mf.Text(strconv.Itoa(stage.Value))),
+			),
+			div("h-4 overflow-hidden rounded bg-base-200",
+				mf.DivProps(mf.ElementProps{Class: strings.TrimSpace("h-full rounded " + stage.Class), Attrs: mf.Attrs{"style": fmt.Sprintf("width: %d%%", width), "aria-hidden": "true"}}),
+			),
+		))
+	}
+	rows = append(rows, div("mt-5 grid grid-cols-2 gap-3 border-t border-base-300 pt-4 text-sm",
+		div("", paragraph("text-base-content/60", "Total leads"), div("text-2xl font-bold text-primary", mf.Text(strconv.Itoa(total)))),
+		div("", paragraph("text-base-content/60", "Top stage"), div("text-2xl font-bold", mf.Text("Progress"))),
+	))
+	return mf.Card(mf.CardProps{Title: "Pipeline", Description: "Qualified leads by stage", Props: mf.ComponentProps{Class: "bg-base-100 shadow"}, Gap: "4"}, rows...)
 }
 
 func leadsPage(ctx *mb.Context) mf.Node {

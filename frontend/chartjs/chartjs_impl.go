@@ -116,6 +116,12 @@ func defaultBorderColors(chartType string, count int) []string {
 		return nil
 	}
 	switch chartType {
+	case string(ChartTypeBar):
+		palette := []string{"#2563eb", "#14b8a6", "#f59e0b", "#8b5cf6", "#ef4444", "#22c55e"}
+		if count > len(palette) {
+			count = len(palette)
+		}
+		return palette[:count]
 	case string(ChartTypePie), string(ChartTypeDoughnut):
 		colors := make([]string, count)
 		for i := range colors {

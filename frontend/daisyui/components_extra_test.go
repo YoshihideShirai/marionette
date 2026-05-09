@@ -4,8 +4,177 @@ import (
 	"strings"
 	"testing"
 
+	lowhtml "github.com/YoshihideShirai/marionette/frontend/html"
 	shared "github.com/YoshihideShirai/marionette/frontend/shared"
 )
+
+func TestSmallExtraComponentsRenderExpectedMarkup(t *testing.T) {
+	tests := []struct {
+		name string
+		node shared.Node
+		want []string
+	}{
+		{
+			name: "kbd",
+			node: Kbd("⌘K"),
+			want: []string{`<kbd class="kbd">⌘K</kbd>`},
+		},
+		{
+			name: "code",
+			node: Code("go test"),
+			want: []string{`<code class="bg-base-200 rounded px-1 py-0.5">go test</code>`},
+		},
+		{
+			name: "indicator",
+			node: Indicator(TextNode("3"), TextNode("Inbox")),
+			want: []string{`<div class="indicator">`, `class="indicator-item"`, `>3</span>`, `>Inbox</span>`},
+		},
+		{
+			name: "link",
+			node: Link("Docs", "/docs", shared.ComponentProps{Class: "link-primary"}),
+			want: []string{`<a class="link link-primary" href="/docs">Docs</a>`},
+		},
+		{
+			name: "tooltip",
+			node: Tooltip("Helpful", TextNode("?")),
+			want: []string{`<div class="tooltip" data-tip="Helpful">`, `>?</span>`},
+		},
+		{
+			name: "loading",
+			node: Loading("loading-lg"),
+			want: []string{`<span class="loading loading-spinner loading-lg"></span>`},
+		},
+		{
+			name: "radial progress",
+			node: RadialProgress(73, "text-primary"),
+			want: []string{`aria-valuenow="73"`, `class="radial-progress text-primary"`, `role="progressbar"`, `style="--value:73;"`, `>73%</div>`},
+		},
+		{
+			name: "range",
+			node: Range("volume", 7, 0, 10),
+			want: []string{`class="range"`, `max="10"`, `min="0"`, `name="volume"`, `type="range"`, `value="7"`},
+		},
+		{
+			name: "toggle",
+			node: Toggle("enabled", true),
+			want: []string{`checked="checked"`, `class="toggle"`, `name="enabled"`, `type="checkbox"`},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := renderComponentForTest(t, tt.node)
+			assertContainsAll(t, got, tt.want)
+		})
+	}
+}
+
+func TestCompositeExtraComponentsRenderExpectedContainers(t *testing.T) {
+	tests := []struct {
+		name string
+		node shared.Node
+		want []string
+	}{
+		{name: "join", node: Join(TextNode("Joined child")), want: []string{`<div class="join">`, `>Joined child</span>`}},
+		{name: "mask", node: Mask("mask-squircle", TextNode("Masked child")), want: []string{`<div class="mask mask-squircle">`, `>Masked child</span>`}},
+		{name: "carousel", node: Carousel(TextNode("Slide child")), want: []string{`<div class="carousel w-full">`, `>Slide child</span>`}},
+		{name: "carousel item", node: CarouselItem("slide-1", TextNode("Slide 1")), want: []string{`class="carousel-item w-full"`, `id="slide-1"`, `>Slide 1</span>`}},
+		{name: "chat bubble", node: ChatBubble(TextNode("Hello"), true), want: []string{`<div class="chat chat-end">`, `class="chat-bubble"`, `>Hello</span>`}},
+		{name: "dock", node: Dock(TextNode("Dock child")), want: []string{`<div class="dock">`, `>Dock child</span>`}},
+		{name: "fieldset", node: Fieldset("Profile", TextNode("Field child")), want: []string{`<fieldset class="fieldset">`, `<legend class="fieldset-legend">Profile</legend>`, `>Field child</span>`}},
+		{name: "browser mockup", node: BrowserMockup(TextNode("Browser child")), want: []string{`<div class="mockup-browser">`, `class="mockup-browser-toolbar"`, `https://example.com`, `>Browser child</span>`}},
+		{name: "phone mockup", node: PhoneMockup(TextNode("Phone child")), want: []string{`<div class="mockup-phone">`, `class="mockup-phone-camera"`, `class="mockup-phone-display"`, `>Phone child</span>`}},
+		{name: "code mockup", node: CodeMockup("npm test"), want: []string{`<div class="mockup-code">`, `<pre data-prefix="$"><code>npm test</code></pre>`}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := renderComponentForTest(t, tt.node)
+			assertContainsAll(t, got, tt.want)
+		})
+	}
+}
+
+func TestDropdownAddsDropdownContentAttrs(t *testing.T) {
+	t.Run("wraps non element content", func(t *testing.T) {
+		got := renderComponentForTest(t, Dropdown(TextNode("Open"), lowhtml.Raw("Menu")))
+		assertContainsAll(t, got, []string{`<div class="dropdown">`, `role="button"`, `tabindex="0"`, `<div class="dropdown-content" tabindex="-1">Menu</div>`})
+	})
+
+	t.Run("appends class to element content", func(t *testing.T) {
+		menu := lowhtml.ElementNode{Tag: "ul", Attrs: map[string]string{"class": "menu shadow", "id": "actions"}, Children: []shared.Node{TextNode("Edit")}}
+		got := renderComponentForTest(t, Dropdown(TextNode("Open"), menu))
+		assertContainsAll(t, got, []string{`<ul class="menu shadow dropdown-content" id="actions" tabindex="-1">`, `>Edit</span>`})
+	})
+}
+
+func TestRatingAndRangeInputs(t *testing.T) {
+	rating := renderComponentForTest(t, Rating("score", 5, 3))
+	assertContainsAll(t, rating, []string{`<div class="rating">`, `name="score"`, `type="radio"`, `value="3"`})
+	if got := strings.Count(rating, `type="radio"`); got != 5 {
+		t.Fatalf("expected 5 radio inputs, got %d in %q", got, rating)
+	}
+	if got := strings.Count(rating, `checked="checked"`); got != 1 {
+		t.Fatalf("expected 1 checked input, got %d in %q", got, rating)
+	}
+	assertContainsAll(t, rating, []string{`<input checked="checked" class="mask mask-star-2 bg-orange-400" name="score" type="radio" value="3"></input>`})
+
+	rangeHTML := renderComponentForTest(t, Range("score", 8, 1, 10))
+	assertContainsAll(t, rangeHTML, []string{`class="range"`, `max="10"`, `min="1"`, `name="score"`, `type="range"`, `value="8"`})
+}
+
+func TestVariantComponentsRenderExpectedClasses(t *testing.T) {
+	tests := []struct {
+		name       string
+		node       shared.Node
+		want       []string
+		wantCounts map[string]int
+	}{
+		{
+			name: "progress color and size",
+			node: ProgressWithVariant(45, 90, "Uploading", "success", shared.ComponentProps{Size: "lg", Class: "custom-progress"}),
+			want: []string{`<progress class="progress w-full  h-4 progress-success custom-progress" max="90" value="45">`, `<span>Uploading</span>`},
+		},
+		{
+			name: "badge color size style",
+			node: BadgeWithVariant("New", "primary", "lg", "outline", shared.ComponentProps{Class: "tracking-wide"}),
+			want: []string{`<span class="badge badge badge-primary badge-lg badge-outline tracking-wide">New</span>`},
+		},
+		{
+			name: "range color size and value",
+			node: RangeWithVariants("volume", 4, 0, 11, "secondary", "xs"),
+			want: []string{`class="range range-secondary range-xs"`, `max="11"`, `min="0"`, `name="volume"`, `type="range"`, `value="4"`},
+		},
+		{
+			name:       "rating size half allow clear and checked",
+			node:       RatingWithVariants("rating", 4, 2, "sm", true, true),
+			want:       []string{`<div class="rating rating-sm rating-half">`, `class="rating-hidden"`, `value="0"`, `value="2"`},
+			wantCounts: map[string]int{`type="radio"`: 5, `checked="checked"`: 1},
+		},
+		{
+			name: "toast placement and custom class",
+			node: ToastWithPlacement([]shared.Node{TextNode("Saved")}, "end", "bottom", "z-50"),
+			want: []string{`<div class="toast toast-end toast-bottom z-50">`, `>Saved</span>`},
+		},
+		{
+			name: "tooltip placement color and open",
+			node: TooltipWithVariants("Copied", TextNode("Copy"), "left", "info", true),
+			want: []string{`<div class="tooltip tooltip-left tooltip-info tooltip-open" data-tip="Copied">`, `>Copy</span>`},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := renderComponentForTest(t, tt.node)
+			assertContainsAll(t, got, tt.want)
+			for needle, wantCount := range tt.wantCounts {
+				if gotCount := strings.Count(got, needle); gotCount != wantCount {
+					t.Fatalf("expected %q count %d, got %d in %q", needle, wantCount, gotCount, got)
+				}
+			}
+		})
+	}
+}
 
 func TestToggleVariantRendersDaisyUIColorClasses(t *testing.T) {
 	tests := []struct {

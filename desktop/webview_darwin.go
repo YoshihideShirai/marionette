@@ -3,6 +3,8 @@
 package desktop
 
 // macOS desktop runtime is intentionally unsupported.
-func openWebView(_ string, _ Options) error {
+var openWebView = defaultOpenWebView
+
+func defaultOpenWebView(_ string, _ Options) error {
 	return marionetteDesktopMacOSIsUnsupported
 }

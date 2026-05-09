@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -13,6 +14,9 @@ type localServer struct {
 	URL    string
 	server *http.Server
 	errc   chan error
+
+	shutdownOnce sync.Once
+	shutdownErr  error
 }
 
 func startLocalServer(handler http.Handler) (*localServer, error) {
@@ -44,13 +48,17 @@ func (s *localServer) Shutdown(ctx context.Context) error {
 	if s == nil || s.server == nil {
 		return nil
 	}
-	if ctx == nil {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-	}
-	if err := s.server.Shutdown(ctx); err != nil {
-		return err
-	}
-	return <-s.errc
+	s.shutdownOnce.Do(func() {
+		if ctx == nil {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+		}
+		if err := s.server.Shutdown(ctx); err != nil {
+			s.shutdownErr = err
+			return
+		}
+		s.shutdownErr = <-s.errc
+	})
+	return s.shutdownErr
 }

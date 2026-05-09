@@ -4,7 +4,9 @@ package desktop
 
 import webview2 "github.com/jchv/go-webview2"
 
-func openWebView(url string, options Options) error {
+var openWebView = defaultOpenWebView
+
+func defaultOpenWebView(url string, options Options) error {
 	window := webview2.New(options.Debug)
 	defer window.Destroy()
 

@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -728,4 +729,145 @@ func decodeSessionFromCookie(t *testing.T, cookie *http.Cookie) map[string]strin
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.AddCookie(cookie)
 	return decodeSession(req)
+}
+
+func TestAssetsIgnoreEmptyAndRootPrefixes(t *testing.T) {
+	for _, prefix := range []string{"", "/"} {
+		t.Run(prefix, func(t *testing.T) {
+			app := New()
+			app.Assets(prefix, fstest.MapFS{
+				"app.css": {Data: []byte("body {}")},
+			})
+
+			if len(app.assets) != 0 {
+				t.Fatalf("expected no asset routes to be registered, got %d", len(app.assets))
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/app.css", nil)
+			rr := httptest.NewRecorder()
+			app.Handler().ServeHTTP(rr, req)
+
+			if rr.Code != http.StatusNotFound {
+				t.Fatalf("expected 404 for unregistered asset route, got %d", rr.Code)
+			}
+		})
+	}
+}
+
+func TestAssetNormalizesAndEscapesURLs(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{})
+
+	tests := map[string]string{
+		"../secret.txt":                   "/assets/secret.txt",
+		"images/a b.png":                  "/assets/images/a%20b.png",
+		"https://cdn.example.com/app.css": "https://cdn.example.com/app.css",
+		"data:text/plain,hi":              "data:text/plain,hi",
+	}
+	for name, want := range tests {
+		if got := app.Asset(name); got != want {
+			t.Fatalf("Asset(%q) = %q, want %q", name, got, want)
+		}
+	}
+}
+
+func TestAssetsRejectInvalidEscapes(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"app.css": {Data: []byte("body {}")},
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.URL = &url.URL{Path: "/assets/%zz"}
+	req.RequestURI = "/assets/%zz"
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400 for invalid escape, got %d", rr.Code)
+	}
+}
+
+func TestAssetsDoNotResolveDotDotOutsidePrefix(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"file": {Data: []byte("root file")},
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/assets/%2e%2e/file", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusNotFound {
+		t.Fatalf("expected 404 for dot-dot asset request, got %d with body %q", rr.Code, rr.Body.String())
+	}
+}
+
+func TestAssetsRejectNonGetAndHeadMethods(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"app.css": {Data: []byte("body {}")},
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/assets/app.css", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("expected 405 for POST asset request, got %d", rr.Code)
+	}
+}
+
+func TestAssetsAllowDirectoryIndexOnlyWhenEnabled(t *testing.T) {
+	fsys := fstest.MapFS{
+		"icons":           {Mode: 0o755 | fs.ModeDir},
+		"icons/check.svg": {Data: []byte("<svg></svg>")},
+	}
+
+	t.Run("disabled", func(t *testing.T) {
+		app := New()
+		app.Assets("/assets", fsys)
+
+		req := httptest.NewRequest(http.MethodGet, "/assets/icons/", nil)
+		rr := httptest.NewRecorder()
+		app.Handler().ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusNotFound {
+			t.Fatalf("expected 404 when directory index is disabled, got %d", rr.Code)
+		}
+	})
+
+	t.Run("enabled", func(t *testing.T) {
+		app := New()
+		app.Assets("/assets", fsys, WithAssetIndex(true))
+
+		req := httptest.NewRequest(http.MethodGet, "/assets/icons/", nil)
+		rr := httptest.NewRecorder()
+		app.Handler().ServeHTTP(rr, req)
+
+		if rr.Code != http.StatusOK {
+			t.Fatalf("expected 200 when directory index is enabled, got %d", rr.Code)
+		}
+		if body := rr.Body.String(); !strings.Contains(body, "check.svg") {
+			t.Fatalf("expected directory index to include child file, got %q", body)
+		}
+	})
+}
+
+func TestAssetContentTypeExtensionNormalization(t *testing.T) {
+	app := New()
+	app.Assets("/assets", fstest.MapFS{
+		"report.csv": {Data: []byte("name\nAiko\n")},
+	}, WithAssetContentTypes(map[string]string{"CSV": "text/csv; charset=utf-8"}))
+
+	req := httptest.NewRequest(http.MethodGet, "/assets/report.csv", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+	if got := rr.Header().Get("Content-Type"); got != "text/csv; charset=utf-8" {
+		t.Fatalf("expected normalized CSV content type, got %q", got)
+	}
 }

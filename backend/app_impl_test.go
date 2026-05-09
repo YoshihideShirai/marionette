@@ -990,3 +990,157 @@ func TestAssetContentTypeExtensionNormalization(t *testing.T) {
 		t.Fatalf("expected normalized CSV content type, got %q", got)
 	}
 }
+
+func TestContextRequestHelpers(t *testing.T) {
+	app := New()
+	app.Action("/requests/{id}", func(ctx *Context) frontend.Node {
+		got := strings.Join([]string{
+			ctx.Param("id"),
+			ctx.Query("filter"),
+			ctx.FormValue("name"),
+		}, ":")
+		return frontend.DivProps(frontend.ElementProps{ID: "request-helpers"}, frontend.Text(got))
+	})
+
+	form := url.Values{"name": {"Aiko"}}
+	req := httptest.NewRequest(http.MethodPost, "/requests/42?filter=active", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d with body %q", rr.Code, rr.Body.String())
+	}
+	if body := rr.Body.String(); !strings.Contains(body, ">42:active:Aiko<") {
+		t.Fatalf("expected route param, query, and form values in response, got %q", body)
+	}
+}
+
+func TestContextGlobalHelpers(t *testing.T) {
+	app := New()
+	app.Page("/", func(ctx *Context) frontend.Node {
+		ctx.SetGlobal("count", 2)
+		ctx.SetGlobal("names", []string{"Aiko", "Ren"})
+
+		snapshot := ctx.GetGlobalSnapshot("names", func(value any) any {
+			names, _ := value.([]string)
+			return append([]string(nil), names...)
+		}).([]string)
+		snapshot[0] = "changed"
+
+		next := ctx.IncrementGlobalInt("count", 3)
+		stored := ctx.GetGlobalSnapshot("names", func(value any) any {
+			names, _ := value.([]string)
+			return append([]string(nil), names...)
+		}).([]string)
+
+		got := stored[0] + ":" + strconv.Itoa(ctx.GetGlobalInt("count")) + ":" + strconv.Itoa(next)
+		return frontend.DivProps(frontend.ElementProps{ID: "global-helpers"}, frontend.Text(got))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if body := rr.Body.String(); !strings.Contains(body, ">Aiko:5:5<") {
+		t.Fatalf("expected context global helper output, got %q", body)
+	}
+	if got := app.GetGlobalInt("count"); got != 5 {
+		t.Fatalf("expected app global count to be 5, got %d", got)
+	}
+}
+
+func TestRenderAndHandleConvenienceMethods(t *testing.T) {
+	app := New()
+	app.Render(func(ctx *Context) frontend.Node {
+		return frontend.DivProps(frontend.ElementProps{ID: "root"}, frontend.Text("root page"))
+	})
+	app.Handle("save", func(ctx *Context) frontend.Node {
+		return frontend.DivProps(frontend.ElementProps{ID: "save"}, frontend.Text("saved"))
+	})
+
+	handler := app.Handler()
+	rootRR := httptest.NewRecorder()
+	handler.ServeHTTP(rootRR, httptest.NewRequest(http.MethodGet, "/", nil))
+	if body := rootRR.Body.String(); !strings.Contains(body, "root page") {
+		t.Fatalf("expected Render to register / page, got %q", body)
+	}
+
+	actionRR := httptest.NewRecorder()
+	handler.ServeHTTP(actionRR, httptest.NewRequest(http.MethodPost, "/save", nil))
+	if actionRR.Code != http.StatusOK {
+		t.Fatalf("expected Handle action status 200, got %d with body %q", actionRR.Code, actionRR.Body.String())
+	}
+	if body := actionRR.Body.String(); !strings.Contains(body, "saved") {
+		t.Fatalf("expected Handle to register POST action, got %q", body)
+	}
+}
+
+func TestEnableDisableHTMX(t *testing.T) {
+	app := New()
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	app.DisableHTMX()
+	disabledRR := httptest.NewRecorder()
+	app.Handler().ServeHTTP(disabledRR, httptest.NewRequest(http.MethodGet, "/", nil))
+	if body := disabledRR.Body.String(); strings.Contains(body, assets.HTMXURL) {
+		t.Fatalf("did not expect HTMX script after DisableHTMX, got %q", body)
+	}
+
+	app.EnableHTMX(true)
+	enabledRR := httptest.NewRecorder()
+	app.Handler().ServeHTTP(enabledRR, httptest.NewRequest(http.MethodGet, "/", nil))
+	if body := enabledRR.Body.String(); !strings.Contains(body, assets.HTMXURL) {
+		t.Fatalf("expected HTMX script after EnableHTMX(true), got %q", body)
+	}
+}
+
+func TestUseAssetProviderAlias(t *testing.T) {
+	app := New()
+	app.UseAssetProvider(assets.NewLocalAssetProvider("/vendor"))
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	for _, want := range []string{
+		`href="/vendor/daisyui.css"`,
+		`src="/vendor/tailwindcss-browser.js"`,
+		`src="/vendor/htmx.min.js"`,
+		`src="/vendor/chart.umd.js"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected provider-resolved asset %q, got %q", want, body)
+		}
+	}
+	if strings.Contains(body, assets.DaisyUICSSURL) || strings.Contains(body, assets.HTMXURL) {
+		t.Fatalf("did not expect CDN assets when provider alias is used, got %q", body)
+	}
+}
+
+func TestUseDaisyUITemplate(t *testing.T) {
+	app := New()
+	app.UseTailwindCSSTemplate()
+	app.UseDaisyUITemplate()
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Dashboard"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	if !strings.Contains(body, `href="`+assets.DaisyUICSSURL+`"`) {
+		t.Fatalf("expected DaisyUI stylesheet in shell, got %q", body)
+	}
+	if !strings.Contains(body, `src="`+assets.TailwindBrowserURL+`"`) {
+		t.Fatalf("expected Tailwind browser script from DaisyUI template in shell, got %q", body)
+	}
+}

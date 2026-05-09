@@ -491,7 +491,7 @@ func (a *App) Handler() http.Handler {
 		localPath := path
 		localRoute := route
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path != localPath {
+			if localPath == "/" && r.URL.Path != "/" {
 				http.NotFound(w, r)
 				return
 			}

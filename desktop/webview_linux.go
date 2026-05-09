@@ -4,7 +4,9 @@ package desktop
 
 import webkitgtk "github.com/malivvan/webkitgtk"
 
-func openWebView(url string, options Options) error {
+var openWebView = defaultOpenWebView
+
+func defaultOpenWebView(url string, options Options) error {
 	app := webkitgtk.New(webkitgtk.AppOptions{
 		Name: "Marionette",
 	})

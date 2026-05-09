@@ -36,18 +36,6 @@ Marionette は、未検証の「トークン削減率」を単独で主張する
 
 ## まずは 1 分で体験
 
-代表的な管理画面サンプルを起動します:
-
-```bash
-go run ./cmd/admin-sample
-```
-
-その後、http://127.0.0.1:8082 を開きます。
-
-![Admin sample dashboard](docs/assets/admin-sample.png)
-
-ソース: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go)
-
 [`robbins23/daisyui-admin-dashboard-template`](https://github.com/robbins23/daisyui-admin-dashboard-template) を参考にした DashWind 風 DaisyUI ダッシュボードデモを起動します:
 
 ```bash
@@ -67,37 +55,7 @@ app := mb.New()
 dw.Use(app, dw.Options{})
 ```
 
-フルデモを起動します:
-
-```bash
-go run ./cmd/marionette
-```
-
-その後、http://127.0.0.1:8080 を開きます。
-
-最小サンプルを起動します:
-
-```bash
-go run ./cmd/simple-sample
-```
-
-その後、http://127.0.0.1:8081 を開きます。サンプルは [`cmd/simple-sample/main.go`](cmd/simple-sample/main.go) だけで完結します。
-
-AI チャットサンプルデモを起動します（ストリーミング応答はシミュレーションで、外部 API キーは不要です）:
-
-```bash
-go run ./cmd/ai-chat-sample
-```
-
-その後、http://127.0.0.1:8084 を開きます。サンプルは [`cmd/ai-chat-sample/main.go`](cmd/ai-chat-sample/main.go) だけで完結します。
-
-デスクトップ WebView サンプルを起動します:
-
-```bash
-go run -tags marionette_desktop ./cmd/marionette-desktop
-```
-
-デスクトップランタイムは、同じ Marionette アプリモデルを localhost サーバーとネイティブ WebView シェルの背後で使います。Linux で desktop tag をビルドするには、GTK 3 と WebKitGTK の開発パッケージが必要です。
+その他の実行可能なデモは [デモギャラリー](https://yoshihideshirai.github.io/marionette/ja/demos/) にまとめています。
 
 ## ドキュメント
 
@@ -106,6 +64,7 @@ README は意図的に小さく保っています。チュートリアル、API 
 - ドキュメントサイト: https://yoshihideshirai.github.io/marionette/ja/
 - チュートリアル: https://yoshihideshirai.github.io/marionette/ja/tutorial/
 - API ドキュメント: https://yoshihideshirai.github.io/marionette/ja/api/
+- デモギャラリー: https://yoshihideshirai.github.io/marionette/ja/demos/
 - コンポーネントギャラリー: https://yoshihideshirai.github.io/marionette/ja/components/
 - AI-friendly architecture: https://yoshihideshirai.github.io/marionette/ja/ai-friendly/
 - State Management ガイド: [docs/state-management.ja.md](docs/state-management.ja.md)

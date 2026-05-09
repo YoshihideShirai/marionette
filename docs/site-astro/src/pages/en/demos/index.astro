@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import adminSample from '../../../../../assets/admin-sample.png';
+import dashwindDemo from '../../../../../assets/dashwind-demo.png';
+
+const demos = [
+  {
+    title: 'Admin sample dashboard',
+    description: 'Representative admin UI sample with dashboard widgets, data exploration, and operational controls.',
+    command: 'go run ./cmd/admin-sample',
+    url: 'http://127.0.0.1:8082',
+    sources: [{ label: 'cmd/admin-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/admin-sample/main.go' }],
+    image: adminSample,
+    imageAlt: 'Admin sample dashboard screenshot',
+  },
+  {
+    title: 'DashWind-style DaisyUI dashboard demo',
+    description: 'DaisyUI-inspired DashWind admin dashboard based on the Marionette DashWind shell and helpers.',
+    command: 'go run ./cmd/dashwind-demo',
+    url: 'http://127.0.0.1:8083',
+    sources: [
+      { label: 'cmd/dashwind-demo/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/dashwind-demo/main.go' },
+      { label: 'internal/dashwinddemo/app.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/internal/dashwinddemo/app.go' },
+    ],
+    image: dashwindDemo,
+    imageAlt: 'DashWind demo dashboard screenshot',
+    note: 'Minimal setup registers the DaisyUI template, DashWind CSS, and browser helpers with dw.Use(app, dw.Options{}).',
+  },
+  {
+    title: 'Full Marionette demo',
+    description: 'The complete demo app that showcases Marionette pages, data views, charts, actions, and state flows.',
+    command: 'go run ./cmd/marionette',
+    url: 'http://127.0.0.1:8080',
+    sources: [{ label: 'cmd/marionette', href: 'https://github.com/YoshihideShirai/marionette/tree/main/cmd/marionette' }],
+  },
+  {
+    title: 'Minimal sample',
+    description: 'A compact, self-contained app that is useful when you want to inspect the smallest runnable Marionette shape.',
+    command: 'go run ./cmd/simple-sample',
+    url: 'http://127.0.0.1:8081',
+    sources: [{ label: 'cmd/simple-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/simple-sample/main.go' }],
+  },
+  {
+    title: 'AI chat sample',
+    description: 'Simulated streaming chat replies without requiring an external API key.',
+    command: 'go run ./cmd/ai-chat-sample',
+    url: 'http://127.0.0.1:8084',
+    sources: [{ label: 'cmd/ai-chat-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/ai-chat-sample/main.go' }],
+  },
+  {
+    title: 'Desktop WebView sample',
+    description: 'Runs the same Marionette app model behind a localhost server and native WebView shell.',
+    command: 'go run -tags marionette_desktop ./cmd/marionette-desktop',
+    url: 'Desktop window',
+    sources: [{ label: 'cmd/marionette-desktop', href: 'https://github.com/YoshihideShirai/marionette/tree/main/cmd/marionette-desktop' }],
+    note: 'On Linux, install GTK 3 and WebKitGTK development packages before building the desktop tag.',
+  },
+];
+---
+<BaseLayout title="Demo Gallery - Marionette" lang="en" languageSwitcherPath="/marionette/ja/demos/">
+  <article class="demo-gallery">
+    <header class="demo-gallery-header">
+      <p class="eyebrow">Demo Gallery</p>
+      <h1>Try Marionette demos</h1>
+      <p class="lead">
+        Run the sample apps that used to live in the README's quick-start section. Each demo is started from the repository root.
+      </p>
+    </header>
+
+    <div class="demo-grid">
+      {demos.map((demo) => (
+        <section class="demo-card">
+          {demo.image ? (
+            <figure class="demo-card-figure">
+              <img src={demo.image.src} width={demo.image.width} height={demo.image.height} alt={demo.imageAlt} loading="lazy" />
+            </figure>
+          ) : null}
+          <div class="demo-card-body">
+            <h2>{demo.title}</h2>
+            <p>{demo.description}</p>
+            <dl class="demo-meta">
+              <div>
+                <dt>Run</dt>
+                <dd><code>{demo.command}</code></dd>
+              </div>
+              <div>
+                <dt>Open</dt>
+                <dd><code>{demo.url}</code></dd>
+              </div>
+              <div>
+                <dt>Source</dt>
+                <dd>
+                  {demo.sources.map((source, index) => (
+                    <>
+                      <a href={source.href} target="_blank" rel="noreferrer">{source.label}</a>{index < demo.sources.length - 1 ? ', ' : ''}
+                    </>
+                  ))}
+                </dd>
+              </div>
+            </dl>
+            {demo.note ? <p class="demo-note">{demo.note}</p> : null}
+          </div>
+        </section>
+      ))}
+    </div>
+  </article>
+</BaseLayout>

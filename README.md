@@ -37,18 +37,6 @@ Marionette is designed around context compression rather than unverified token m
 
 ## Try it in 1 minute
 
-Run the representative admin sample:
-
-```bash
-go run ./cmd/admin-sample
-```
-
-Then open http://127.0.0.1:8082.
-
-![Admin sample dashboard](docs/assets/admin-sample.png)
-
-Source: [`cmd/admin-sample/main.go`](cmd/admin-sample/main.go)
-
 Run the DashWind-style DaisyUI dashboard demo inspired by [`robbins23/daisyui-admin-dashboard-template`](https://github.com/robbins23/daisyui-admin-dashboard-template):
 
 ```bash
@@ -68,39 +56,7 @@ app := mb.New()
 dw.Use(app, dw.Options{})
 ```
 
-Run the full demo:
-
-```bash
-go run ./cmd/marionette
-```
-
-Then open http://127.0.0.1:8080.
-
-Run the minimal sample:
-
-```bash
-go run ./cmd/simple-sample
-```
-
-Then open http://127.0.0.1:8081. The sample is self-contained in [`cmd/simple-sample/main.go`](cmd/simple-sample/main.go).
-
-Run the AI chat sample demo (simulated streaming replies, no external API key required):
-
-```bash
-go run ./cmd/ai-chat-sample
-```
-
-Then open http://127.0.0.1:8084. The sample is self-contained in [`cmd/ai-chat-sample/main.go`](cmd/ai-chat-sample/main.go).
-
-Run the desktop WebView sample:
-
-```bash
-go run -tags marionette_desktop ./cmd/marionette-desktop
-```
-
-The desktop runtime uses the same Marionette app model behind a localhost
-server and native WebView shell. On Linux, install GTK 3 and WebKitGTK
-development packages before building the desktop tag.
+More runnable demos are available in the [Demo Gallery](https://yoshihideshirai.github.io/marionette/en/demos/).
 
 ## Documentation
 
@@ -110,6 +66,7 @@ API details, and component examples:
 - Docs site: https://yoshihideshirai.github.io/marionette/
 - Tutorial: https://yoshihideshirai.github.io/marionette/en/tutorial/
 - API docs: https://yoshihideshirai.github.io/marionette/en/api/
+- Demo gallery: https://yoshihideshirai.github.io/marionette/en/demos/
 - Components gallery: https://yoshihideshirai.github.io/marionette/en/components/
 - AI-friendly architecture: https://yoshihideshirai.github.io/marionette/en/ai-friendly/
 - State management guide: [docs/state-management.md](docs/state-management.md)

@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import adminSample from '../../../../../assets/admin-sample.png';
+import dashwindDemo from '../../../../../assets/dashwind-demo.png';
+
+const demos = [
+  {
+    title: '管理画面サンプルダッシュボード',
+    description: 'ダッシュボードウィジェット、データ探索、運用操作を含む代表的な管理画面サンプルです。',
+    command: 'go run ./cmd/admin-sample',
+    url: 'http://127.0.0.1:8082',
+    sources: [{ label: 'cmd/admin-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/admin-sample/main.go' }],
+    image: adminSample,
+    imageAlt: '管理画面サンプルダッシュボードのスクリーンショット',
+  },
+  {
+    title: 'DashWind 風 DaisyUI ダッシュボードデモ',
+    description: 'Marionette の DashWind shell とヘルパーで構成した DaisyUI 風の管理画面デモです。',
+    command: 'go run ./cmd/dashwind-demo',
+    url: 'http://127.0.0.1:8083',
+    sources: [
+      { label: 'cmd/dashwind-demo/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/dashwind-demo/main.go' },
+      { label: 'internal/dashwinddemo/app.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/internal/dashwinddemo/app.go' },
+    ],
+    image: dashwindDemo,
+    imageAlt: 'DashWind デモダッシュボードのスクリーンショット',
+    note: '最小構成では dw.Use(app, dw.Options{}) の 1 回の呼び出しで DaisyUI テンプレート、DashWind CSS、ブラウザヘルパーを登録できます。',
+  },
+  {
+    title: 'Marionette フルデモ',
+    description: 'Marionette のページ、データビュー、チャート、アクション、状態フローをまとめて確認できるフルデモです。',
+    command: 'go run ./cmd/marionette',
+    url: 'http://127.0.0.1:8080',
+    sources: [{ label: 'cmd/marionette', href: 'https://github.com/YoshihideShirai/marionette/tree/main/cmd/marionette' }],
+  },
+  {
+    title: '最小サンプル',
+    description: 'Marionette の最小の実行形を確認したいときに便利な、自己完結した小さなアプリです。',
+    command: 'go run ./cmd/simple-sample',
+    url: 'http://127.0.0.1:8081',
+    sources: [{ label: 'cmd/simple-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/simple-sample/main.go' }],
+  },
+  {
+    title: 'AI チャットサンプル',
+    description: '外部 API キーなしで、ストリーミング応答のシミュレーションを確認できるチャットサンプルです。',
+    command: 'go run ./cmd/ai-chat-sample',
+    url: 'http://127.0.0.1:8084',
+    sources: [{ label: 'cmd/ai-chat-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/ai-chat-sample/main.go' }],
+  },
+  {
+    title: 'デスクトップ WebView サンプル',
+    description: '同じ Marionette アプリモデルを localhost サーバーとネイティブ WebView シェルの背後で動かします。',
+    command: 'go run -tags marionette_desktop ./cmd/marionette-desktop',
+    url: 'デスクトップウィンドウ',
+    sources: [{ label: 'cmd/marionette-desktop', href: 'https://github.com/YoshihideShirai/marionette/tree/main/cmd/marionette-desktop' }],
+    note: 'Linux で desktop tag をビルドするには、GTK 3 と WebKitGTK の開発パッケージが必要です。',
+  },
+];
+---
+<BaseLayout title="デモギャラリー - Marionette" lang="ja" languageSwitcherPath="/marionette/en/demos/">
+  <article class="demo-gallery">
+    <header class="demo-gallery-header">
+      <p class="eyebrow">Demo Gallery</p>
+      <h1>Marionette デモを試す</h1>
+      <p class="lead">
+        README の Quick Start に置いていたサンプルアプリを集約しました。各デモはリポジトリルートから起動します。
+      </p>
+    </header>
+
+    <div class="demo-grid">
+      {demos.map((demo) => (
+        <section class="demo-card">
+          {demo.image ? (
+            <figure class="demo-card-figure">
+              <img src={demo.image.src} width={demo.image.width} height={demo.image.height} alt={demo.imageAlt} loading="lazy" />
+            </figure>
+          ) : null}
+          <div class="demo-card-body">
+            <h2>{demo.title}</h2>
+            <p>{demo.description}</p>
+            <dl class="demo-meta">
+              <div>
+                <dt>起動</dt>
+                <dd><code>{demo.command}</code></dd>
+              </div>
+              <div>
+                <dt>開く</dt>
+                <dd><code>{demo.url}</code></dd>
+              </div>
+              <div>
+                <dt>ソース</dt>
+                <dd>
+                  {demo.sources.map((source, index) => (
+                    <>
+                      <a href={source.href} target="_blank" rel="noreferrer">{source.label}</a>{index < demo.sources.length - 1 ? ', ' : ''}
+                    </>
+                  ))}
+                </dd>
+              </div>
+            </dl>
+            {demo.note ? <p class="demo-note">{demo.note}</p> : null}
+          </div>
+        </section>
+      ))}
+    </div>
+  </article>
+</BaseLayout>

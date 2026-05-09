@@ -17,12 +17,14 @@ const apiNavItems = await getApiNavItems(isJa ? 'ja' : 'en', langRoot);
 const introItems = isJa
   ? [
       { label: 'ホーム', href: `${langRoot}/` },
+      { label: 'デモギャラリー', href: `${langRoot}/demos/` },
       { label: 'AI-friendly', href: `${langRoot}/ai-friendly/` },
       { label: 'ベンチマーク', href: `${langRoot}/ai-friendly/benchmark/` },
       { label: 'レポート', href: `${langRoot}/reports/` },
     ]
   : [
       { label: 'Home', href: `${langRoot}/` },
+      { label: 'Demo Gallery', href: `${langRoot}/demos/` },
       { label: 'AI-friendly', href: `${langRoot}/ai-friendly/` },
       { label: 'Benchmark', href: `${langRoot}/ai-friendly/benchmark/` },
       { label: 'Reports', href: `${langRoot}/reports/` },

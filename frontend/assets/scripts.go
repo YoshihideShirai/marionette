@@ -78,6 +78,16 @@ const ThemeBootstrapJS = `(function() {
 
 const ChartBootstrapJS = `(function() {
   var charts = new WeakMap();
+  var observed = new WeakSet();
+
+  function observeChartRoot(container) {
+    if (!window.ResizeObserver || observed.has(container)) return;
+    observed.add(container);
+    var observer = new ResizeObserver(function() {
+      scheduleInitCharts(container);
+    });
+    observer.observe(container);
+  }
 
   function initCharts(root) {
     if (!window.Chart) return;
@@ -86,8 +96,15 @@ const ChartBootstrapJS = `(function() {
     canvases.forEach(function(canvas) {
       var container = canvas.closest("[data-mrn-chart-root]");
       if (!container) return;
+      observeChartRoot(container);
       var configEl = container.querySelector("[data-mrn-chart-config]");
       if (!configEl) return;
+      var frame = canvas.parentElement;
+      var rect = frame && frame.getBoundingClientRect ? frame.getBoundingClientRect() : null;
+      if (rect && (rect.width < 1 || rect.height < 1)) return;
+      canvas.style.display = "block";
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
 
       var config;
       try {
@@ -96,14 +113,11 @@ const ChartBootstrapJS = `(function() {
         return;
       }
 
-      var existing = charts.get(canvas);
-      if (existing) existing.destroy();
-      var chart = new window.Chart(canvas, config);
-      chart.options = chart.options || {};
-      chart.options.onClick = function(_, elements) {
+      config.options = config.options || {};
+      config.options.onClick = function(_, elements) {
         if (!elements || !elements.length) return;
         var first = elements[0];
-        var label = (chart.data && chart.data.labels && chart.data.labels[first.index]) || "";
+        var label = (config.data && config.data.labels && config.data.labels[first.index]) || "";
         var stateName = container.getAttribute("data-mrn-query-state");
         var column = container.getAttribute("data-mrn-filter-column");
         if (!stateName || !column) return;
@@ -113,16 +127,50 @@ const ChartBootstrapJS = `(function() {
           window.htmx.trigger(document.body, "mrn:data-query-change", payload);
         }
       };
-      chart.update();
+
+      var existing = charts.get(canvas);
+      if (!existing && window.Chart.getChart) {
+        existing = window.Chart.getChart(canvas);
+      }
+      if (existing) existing.destroy();
+
+      var chart;
+      try {
+        chart = new window.Chart(canvas, config);
+      } catch (e) {
+        if (window.console && console.error) console.error("Marionette chart init failed", e);
+        return;
+      }
       charts.set(canvas, chart);
     });
   }
 
+  function scheduleInitCharts(root) {
+    initCharts(root);
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(function() {
+        initCharts(root);
+      });
+    }
+    window.setTimeout(function() {
+      initCharts(root);
+    }, 80);
+    window.setTimeout(function() {
+      initCharts(root);
+    }, 250);
+    window.setTimeout(function() {
+      initCharts(root);
+    }, 750);
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
-    initCharts(document);
+    scheduleInitCharts(document);
+  });
+  window.addEventListener("load", function() {
+    scheduleInitCharts(document);
   });
   document.addEventListener("htmx:afterSwap", function(event) {
-    initCharts(event.detail && event.detail.elt ? event.detail.elt : document);
+    scheduleInitCharts(event.detail && event.detail.elt ? event.detail.elt : document);
   });
   document.addEventListener("mrn:data-query-change", function(event) {
     var detail = event.detail || {};

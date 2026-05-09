@@ -524,3 +524,208 @@ func TestAssetModeOfflineRejectsDefaultCDNFrameworkAssets(t *testing.T) {
 		t.Fatalf("expected clear external URL policy error, got %q", body)
 	}
 }
+
+func TestFlashCookiesAreIssuedReadAndCleared(t *testing.T) {
+	app := New()
+	app.Page("/set-flash", func(ctx *Context) frontend.Node {
+		ctx.FlashSuccess(" saved ")
+		return frontend.Text("set")
+	})
+	app.Page("/read-flash", func(ctx *Context) frontend.Node {
+		flashes := ctx.Flashes()
+		if len(flashes) != 1 {
+			t.Fatalf("expected one flash, got %#v", flashes)
+		}
+		if flashes[0].Level != FlashSuccess {
+			t.Fatalf("expected success flash level, got %q", flashes[0].Level)
+		}
+		if flashes[0].Message != "saved" {
+			t.Fatalf("expected trimmed flash message, got %q", flashes[0].Message)
+		}
+		return frontend.Text(flashes[0].Message)
+	})
+
+	handler := app.Handler()
+	setReq := httptest.NewRequest(http.MethodGet, "/set-flash", nil)
+	setRR := httptest.NewRecorder()
+	handler.ServeHTTP(setRR, setReq)
+
+	flashCookie := responseCookie(setRR, flashCookieName)
+	if flashCookie == nil {
+		t.Fatalf("expected %s cookie to be issued", flashCookieName)
+	}
+	if flashCookie.Value == "" {
+		t.Fatalf("expected %s cookie value to be populated", flashCookieName)
+	}
+
+	readReq := httptest.NewRequest(http.MethodGet, "/read-flash", nil)
+	readReq.AddCookie(flashCookie)
+	readRR := httptest.NewRecorder()
+	handler.ServeHTTP(readRR, readReq)
+
+	if !strings.Contains(readRR.Body.String(), "saved") {
+		t.Fatalf("expected rendered flash message, got %q", readRR.Body.String())
+	}
+	clearCookie := responseCookie(readRR, flashCookieName)
+	if clearCookie == nil {
+		t.Fatalf("expected %s clear cookie to be issued", flashCookieName)
+	}
+	if clearCookie.Value != "" || clearCookie.MaxAge != -1 {
+		t.Fatalf("expected clear cookie with empty value and MaxAge -1, got %#v", clearCookie)
+	}
+}
+
+func TestEmptyFlashDoesNotIssueCookie(t *testing.T) {
+	app := New()
+	app.Page("/empty-flash", func(ctx *Context) frontend.Node {
+		ctx.FlashSuccess("   ")
+		return frontend.Text("empty")
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/empty-flash", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	if cookie := responseCookie(rr, flashCookieName); cookie != nil {
+		t.Fatalf("did not expect %s cookie for empty flash, got %#v", flashCookieName, cookie)
+	}
+}
+
+func TestSessionCookiePersistsAndCanBeCleared(t *testing.T) {
+	app := New()
+	app.Page("/set-session", func(ctx *Context) frontend.Node {
+		ctx.SetSession("user", "aiko")
+		return frontend.Text("set")
+	})
+	app.Page("/read-session", func(ctx *Context) frontend.Node {
+		if got := ctx.Session("user"); got != "aiko" {
+			t.Fatalf("expected session value to be restored, got %q", got)
+		}
+		return frontend.Text(ctx.Session("user"))
+	})
+	app.Page("/clear-session", func(ctx *Context) frontend.Node {
+		if got := ctx.Session("user"); got != "aiko" {
+			t.Fatalf("expected session value before clear, got %q", got)
+		}
+		ctx.ClearSession()
+		if got := ctx.Session("user"); got != "" {
+			t.Fatalf("expected session value to be empty after clear, got %q", got)
+		}
+		return frontend.Text("cleared")
+	})
+
+	handler := app.Handler()
+	setReq := httptest.NewRequest(http.MethodGet, "/set-session", nil)
+	setRR := httptest.NewRecorder()
+	handler.ServeHTTP(setRR, setReq)
+
+	sessionCookie := responseCookie(setRR, sessionCookieName)
+	if sessionCookie == nil {
+		t.Fatalf("expected %s cookie to be issued", sessionCookieName)
+	}
+	if sessionCookie.Value == "" {
+		t.Fatalf("expected %s cookie value to be populated", sessionCookieName)
+	}
+
+	readReq := httptest.NewRequest(http.MethodGet, "/read-session", nil)
+	readReq.AddCookie(sessionCookie)
+	readRR := httptest.NewRecorder()
+	handler.ServeHTTP(readRR, readReq)
+	if !strings.Contains(readRR.Body.String(), "aiko") {
+		t.Fatalf("expected rendered session value, got %q", readRR.Body.String())
+	}
+
+	clearReq := httptest.NewRequest(http.MethodGet, "/clear-session", nil)
+	clearReq.AddCookie(sessionCookie)
+	clearRR := httptest.NewRecorder()
+	handler.ServeHTTP(clearRR, clearReq)
+
+	clearedCookie := responseCookie(clearRR, sessionCookieName)
+	if clearedCookie == nil {
+		t.Fatalf("expected %s cookie after ClearSession", sessionCookieName)
+	}
+	if decoded := decodeSessionFromCookie(t, clearedCookie); len(decoded) != 0 {
+		t.Fatalf("expected cleared session cookie to decode to empty map, got %#v", decoded)
+	}
+}
+
+func TestSecureCookiesUseAppCookieSecureSetting(t *testing.T) {
+	app := New()
+	app.SetCookieSecure(true)
+	app.Page("/secure-cookies", func(ctx *Context) frontend.Node {
+		ctx.FlashSuccess("saved")
+		ctx.SetSession("user", "aiko")
+		return frontend.Text("secure")
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/secure-cookies", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	flashCookie := responseCookie(rr, flashCookieName)
+	if flashCookie == nil {
+		t.Fatalf("expected %s cookie", flashCookieName)
+	}
+	if !flashCookie.Secure {
+		t.Fatalf("expected %s cookie to be Secure", flashCookieName)
+	}
+	sessionCookie := responseCookie(rr, sessionCookieName)
+	if sessionCookie == nil {
+		t.Fatalf("expected %s cookie", sessionCookieName)
+	}
+	if !sessionCookie.Secure {
+		t.Fatalf("expected %s cookie to be Secure", sessionCookieName)
+	}
+}
+
+func TestPageAndActionEnforceMethodsAndActionParsesForm(t *testing.T) {
+	app := New()
+	app.Page("/page", func(ctx *Context) frontend.Node {
+		return frontend.Text("page")
+	})
+	app.Action("submit", func(ctx *Context) frontend.Node {
+		return frontend.Text(ctx.FormValue("name"))
+	})
+
+	handler := app.Handler()
+	pagePostReq := httptest.NewRequest(http.MethodPost, "/page", nil)
+	pagePostRR := httptest.NewRecorder()
+	handler.ServeHTTP(pagePostRR, pagePostReq)
+	if pagePostRR.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("expected POST to Page to return 405, got %d", pagePostRR.Code)
+	}
+
+	actionGetReq := httptest.NewRequest(http.MethodGet, "/submit", nil)
+	actionGetRR := httptest.NewRecorder()
+	handler.ServeHTTP(actionGetRR, actionGetReq)
+	if actionGetRR.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("expected GET to Action to return 405, got %d", actionGetRR.Code)
+	}
+
+	actionPostReq := httptest.NewRequest(http.MethodPost, "/submit", strings.NewReader("name=Aiko"))
+	actionPostReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	actionPostRR := httptest.NewRecorder()
+	handler.ServeHTTP(actionPostRR, actionPostReq)
+	if actionPostRR.Code != http.StatusOK {
+		t.Fatalf("expected POST to Action to return 200, got %d", actionPostRR.Code)
+	}
+	if got := actionPostRR.Body.String(); !strings.Contains(got, "Aiko") {
+		t.Fatalf("expected action to read parsed form value, got %q", got)
+	}
+}
+
+func responseCookie(rr *httptest.ResponseRecorder, name string) *http.Cookie {
+	for _, cookie := range rr.Result().Cookies() {
+		if cookie.Name == name {
+			return cookie
+		}
+	}
+	return nil
+}
+
+func decodeSessionFromCookie(t *testing.T, cookie *http.Cookie) map[string]string {
+	t.Helper()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(cookie)
+	return decodeSession(req)
+}

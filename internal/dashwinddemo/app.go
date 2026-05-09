@@ -12,8 +12,8 @@ import (
 )
 
 type statCard struct {
-	Title, Value, Icon, Description, Trend string
-	TrendTone                              dw.Tone
+	Title, Value, IconName, Description, Trend string
+	TrendTone                                  dw.Tone
 }
 type lead struct{ Name, Role, Email, CreatedAt, Status, Owner, Avatar string }
 type transaction struct {
@@ -32,10 +32,10 @@ type bill struct{ InvoiceNo, Amount, Description, Status, GeneratedOn, PaidOn st
 type teamMember struct{ Name, Email, Role, Joined, Avatar string }
 
 var statsData = []statCard{
-	{Title: "New Users", Value: "34.7k", Icon: "U", Description: "Acquired this period", Trend: "↗︎ 2300 (22%)", TrendTone: dw.ToneSuccess},
-	{Title: "Total Sales", Value: "$34,545", Icon: "$", Description: "Current month", Trend: "On track", TrendTone: dw.ToneNeutral},
-	{Title: "Pending Leads", Value: "450", Icon: "L", Description: "50 in hot leads", Trend: "Needs follow-up", TrendTone: dw.ToneWarning},
-	{Title: "Active Users", Value: "5.6k", Icon: "↯", Description: "Weekly active accounts", Trend: "↙ 300 (18%)", TrendTone: dw.ToneError},
+	{Title: "New Users", Value: "34.7k", IconName: "fa-user-plus", Description: "Acquired this period", Trend: "↗︎ 2300 (22%)", TrendTone: dw.ToneSuccess},
+	{Title: "Total Sales", Value: "$34,545", IconName: "fa-dollar-sign", Description: "Current month", Trend: "On track", TrendTone: dw.ToneNeutral},
+	{Title: "Pending Leads", Value: "450", IconName: "fa-address-card", Description: "50 in hot leads", Trend: "Needs follow-up", TrendTone: dw.ToneWarning},
+	{Title: "Active Users", Value: "5.6k", IconName: "fa-bolt", Description: "Weekly active accounts", Trend: "↙ 300 (18%)", TrendTone: dw.ToneError},
 }
 var seedLeads = []lead{
 	{"Alex Morgan", "Product buyer", "alex@example.com", "02 May 26", "In Progress", "Olivia", "AM"},
@@ -98,31 +98,35 @@ var routes = dw.Navigation{
 		{Path: "/integration", IconNode: navFontIcon("fa-bolt"), Label: "Integration"},
 		{Path: "/calendar", IconNode: navFontIcon("fa-calendar-days"), Label: "Calendar"},
 		{IconNode: navFontIcon("fa-file-lines"), Label: "Pages", Children: []dw.NavItem{
-			{Path: "/login", Icon: "↪", Label: "Login"},
-			{Path: "/register", Icon: "U", Label: "Register"},
-			{Path: "/forgot-password", Icon: "K", Label: "Forgot Password"},
-			{Path: "/blank", Icon: "□", Label: "Blank Page"},
-			{Path: "/404", Icon: "!", Label: "404"},
+			{Path: "/login", IconNode: navFontIcon("fa-right-to-bracket"), Label: "Login"},
+			{Path: "/register", IconNode: navFontIcon("fa-user-plus"), Label: "Register"},
+			{Path: "/forgot-password", IconNode: navFontIcon("fa-key"), Label: "Forgot Password"},
+			{Path: "/blank", IconNode: navFontIcon("fa-square"), Label: "Blank Page"},
+			{Path: "/404", IconNode: navFontIcon("fa-triangle-exclamation"), Label: "404"},
 		}},
 		{IconNode: navFontIcon("fa-gear"), Label: "Settings", Children: []dw.NavItem{
-			{Path: "/settings-profile", Icon: "⚙", Label: "Profile"},
-			{Path: "/settings-billing", Icon: "W", Label: "Billing"},
-			{Path: "/settings-team", Icon: "◎", Label: "Team Members"},
+			{Path: "/settings-profile", IconNode: navFontIcon("fa-user-gear"), Label: "Profile"},
+			{Path: "/settings-billing", IconNode: navFontIcon("fa-wallet"), Label: "Billing"},
+			{Path: "/settings-team", IconNode: navFontIcon("fa-user-group"), Label: "Team Members"},
 		}},
 		{IconNode: navFontIcon("fa-book-open"), Label: "Documentation", Children: []dw.NavItem{
-			{Path: "/getting-started", Icon: "D", Label: "Getting Started"},
-			{Path: "/features", Icon: "▤", Label: "Features"},
-			{Path: "/components", Icon: "<> ", Label: "Components"},
+			{Path: "/getting-started", IconNode: navFontIcon("fa-circle-play"), Label: "Getting Started"},
+			{Path: "/features", IconNode: navFontIcon("fa-list-check"), Label: "Features"},
+			{Path: "/components", IconNode: navFontIcon("fa-code"), Label: "Components"},
 		}},
 	}},
 }
 
 func navFontIcon(name string) mf.Node {
+	return fontIcon(name, "w-6 text-center text-base")
+}
+
+func fontIcon(name, className string) mf.Node {
 	return mf.FontIcon(mf.FontIconProps{
 		Library:    "fa-solid",
 		Name:       name,
 		Decorative: true,
-		Props:      mf.ComponentProps{Class: "w-6 text-center text-base"},
+		Props:      mf.ComponentProps{Class: className},
 	})
 }
 
@@ -279,7 +283,7 @@ func statCardNode(s statCard) dw.Metric {
 		Description: s.Description,
 		Trend:       s.Trend,
 		TrendTone:   s.TrendTone,
-		Icon:        mf.Text(s.Icon),
+		Icon:        fontIcon(s.IconName, ""),
 	}
 }
 
@@ -301,7 +305,7 @@ func periodForm(period string) mf.Node {
 
 func dashboardMoreMenu() mf.Node {
 	return div("dropdown dropdown-end",
-		daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-sm btn-ghost btn-square"}, map[string]string{"type": "button", "tabindex": "0", "aria-label": "Dashboard options"}, mf.Text("⋮")),
+		daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-sm btn-ghost btn-square"}, map[string]string{"type": "button", "tabindex": "0", "aria-label": "Dashboard options"}, fontIcon("fa-ellipsis-vertical", "h-4 w-4")),
 		mf.UlProps(mf.ElementProps{Class: "dropdown-content menu bg-base-100 rounded-box z-10 w-44 p-2 shadow", Attrs: mf.Attrs{"tabindex": "0"}},
 			mf.Li(daisy.ButtonWithAttrs("Email Digests", mf.ComponentProps{Class: "btn-ghost btn-sm justify-start"}, map[string]string{"type": "submit", "name": "period", "value": "Last 7 days"})),
 			mf.Li(daisy.ButtonWithAttrs("Download", mf.ComponentProps{Class: "btn-ghost btn-sm justify-start"}, map[string]string{"type": "submit", "name": "period", "value": "This quarter"})),
@@ -386,12 +390,13 @@ func leadsPage(ctx *mb.Context) mf.Node {
 			EmptyState: mf.EmptyStateProps{Title: "No leads found", Description: "Add a demo lead to repopulate this table."},
 			RowActions: func(l lead) []dw.Action {
 				return []dw.Action{{
-					Label:  "✕",
-					Action: "/leads/delete",
-					Target: "#" + mainTargetID,
-					Swap:   "outerHTML",
-					Class:  "btn-square btn-ghost btn-sm",
-					Fields: map[string]string{"email": l.Email},
+					Action:  "/leads/delete",
+					Target:  "#" + mainTargetID,
+					Swap:    "outerHTML",
+					Class:   "btn-square btn-ghost btn-sm",
+					Fields:  map[string]string{"email": l.Email},
+					Attrs:   mf.Attrs{"aria-label": "Delete " + l.Name},
+					Content: fontIcon("fa-trash", "h-4 w-4"),
 				}}
 			},
 		}),
@@ -499,9 +504,9 @@ func calendarToolbar(selectedDay int) mf.Node {
 		div("flex flex-wrap items-center gap-2 sm:gap-4",
 			paragraph("w-48 text-xl font-semibold", "May 2026"),
 			span("text-xs", "Beta"),
-			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Previous month"}, mf.FontIcon(mf.FontIconProps{Library: "fa-solid", Name: "fa-chevron-left", Decorative: true, Props: mf.ComponentProps{Class: "h-5 w-5"}})),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Previous month"}, fontIcon("fa-chevron-left", "h-5 w-5")),
 			daisy.ButtonWithAttrs("Current Month", mf.ComponentProps{Class: "btn-sm btn-ghost normal-case"}, map[string]string{"type": "button"}),
-			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Next month"}, mf.FontIcon(mf.FontIconProps{Library: "fa-solid", Name: "fa-chevron-right", Decorative: true, Props: mf.ComponentProps{Class: "h-5 w-5"}})),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Next month"}, fontIcon("fa-chevron-right", "h-5 w-5")),
 		),
 		daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
 			daisy.HiddenField("day", strconv.Itoa(selectedDay)),

@@ -19,7 +19,7 @@ func TestDashboardRendersDashWindTemplateSections(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rr.Code)
 	}
 	body := rr.Body.String()
-	for _, want := range []string{"DashWind", "fa-solid fa-house", "font-awesome/6.5.2/css/all.min.css", "New Users", "Total Sales", "User Signup Source", "Amount to be Collected", "Cash in hand", "Refresh Data", "Share", "Email Digests", "Download", "drawer lg:drawer-open dashwind-shell", "hx-post=\"/dashboard/period\""} {
+	for _, want := range []string{"DashWind", "fa-solid fa-house", "fa-user-plus", "fa-ellipsis-vertical", "font-awesome/6.5.2/css/all.min.css", "New Users", "Total Sales", "User Signup Source", "Amount to be Collected", "Cash in hand", "Refresh Data", "Share", "Email Digests", "Download", "drawer lg:drawer-open dashwind-shell", "hx-post=\"/dashboard/period\""} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected dashboard to contain %q, got %q", want, body)
 		}
@@ -60,7 +60,7 @@ func TestLeadsAddAndDeleteActionsUpdateFragment(t *testing.T) {
 		t.Fatalf("expected add 200, got %d", addRR.Code)
 	}
 	addBody := addRR.Body.String()
-	for _, want := range []string{"Demo Lead 6", "Added a demo lead", `id="dashwind-main"`} {
+	for _, want := range []string{"Demo Lead 6", "Added a demo lead", `id="dashwind-main"`, "fa-trash"} {
 		if !strings.Contains(addBody, want) {
 			t.Fatalf("expected add response to contain %q, got %q", want, addBody)
 		}

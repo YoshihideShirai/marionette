@@ -27,7 +27,7 @@ type calendarEvent struct {
 type pipelineStage struct {
 	Label string
 	Value int
-	Class string
+	Color string
 }
 type integrationItem struct {
 	Name, Icon, IconURL, Description string
@@ -56,10 +56,10 @@ var seedTransactions = []transaction{
 	{"INV-8845", "Sora Labs", "Enterprise", "Apr 30, 2026", "Paid", 15200},
 }
 var pipelineStages = []pipelineStage{
-	{Label: "Open", Value: 92, Class: "bg-blue-500"},
-	{Label: "Progress", Value: 128, Class: "bg-indigo-500"},
-	{Label: "Sold", Value: 54, Class: "bg-emerald-500"},
-	{Label: "Followup", Value: 76, Class: "bg-amber-500"},
+	{Label: "Open", Value: 92, Color: "#3b82f6"},
+	{Label: "Progress", Value: 128, Color: "#6366f1"},
+	{Label: "Sold", Value: 54, Color: "#10b981"},
+	{Label: "Followup", Value: 76, Color: "#f59e0b"},
 }
 var calendarEvents = []calendarEvent{
 	{Day: -3, Title: "Product call", Theme: "GREEN"},
@@ -376,33 +376,29 @@ func chartCard(title, desc string, chart mf.Node) mf.Node {
 }
 
 func pipelineChart() mf.Node {
-	maxValue := 1
-	total := 0
+	labels := make([]string, 0, len(pipelineStages))
+	values := make([]float64, 0, len(pipelineStages))
+	colors := make([]string, 0, len(pipelineStages))
 	for _, stage := range pipelineStages {
-		if stage.Value > maxValue {
-			maxValue = stage.Value
-		}
-		total += stage.Value
+		labels = append(labels, stage.Label)
+		values = append(values, float64(stage.Value))
+		colors = append(colors, stage.Color)
 	}
-
-	rows := make([]mf.Node, 0, len(pipelineStages)+1)
-	for _, stage := range pipelineStages {
-		width := stage.Value * 100 / maxValue
-		rows = append(rows, div("space-y-2",
-			div("flex items-center justify-between gap-3 text-sm",
-				div("font-medium", mf.Text(stage.Label)),
-				div("tabular-nums text-base-content/60", mf.Text(strconv.Itoa(stage.Value))),
-			),
-			div("h-4 overflow-hidden rounded bg-base-200",
-				mf.DivProps(mf.ElementProps{Class: strings.TrimSpace("h-full rounded " + stage.Class), Attrs: mf.Attrs{"style": fmt.Sprintf("width: %d%%", width), "aria-hidden": "true"}}),
-			),
-		))
-	}
-	rows = append(rows, div("mt-5 grid grid-cols-2 gap-3 border-t border-base-300 pt-4 text-sm",
-		div("", paragraph("text-base-content/60", "Total leads"), div("text-2xl font-bold text-primary", mf.Text(strconv.Itoa(total)))),
-		div("", paragraph("text-base-content/60", "Top stage"), div("text-2xl font-bold", mf.Text("Progress"))),
-	))
-	return mf.Card(mf.CardProps{Title: "Pipeline", Description: "Qualified leads by stage", Props: mf.ComponentProps{Class: "bg-base-100 shadow"}, Gap: "4"}, rows...)
+	return mf.Chart(mf.ChartProps{
+		Type:        mf.ChartTypeBar,
+		Title:       "Pipeline",
+		Description: "Qualified leads by stage",
+		Labels:      labels,
+		Height:      280,
+		Datasets: []mf.ChartDataset{{
+			Label:            "Leads",
+			Data:             values,
+			BackgroundColors: colors,
+			BorderColors:     colors,
+		}},
+		Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true},
+		Props:   mf.ComponentProps{Class: "bg-base-100 shadow"},
+	})
 }
 
 func leadsPage(ctx *mb.Context) mf.Node {

@@ -80,3 +80,28 @@ func TestDashwindPrimitiveComponentsRenderDaisyUIMarkup(t *testing.T) {
 		}
 	}
 }
+
+func TestThemeToggleButtonIncludesSystemModeState(t *testing.T) {
+	html, err := ThemeToggleButton(shared.ComponentProps{Class: "btn-sm"}).Render()
+	if err != nil {
+		t.Fatalf("render ThemeToggleButton: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`aria-label="Toggle theme: system, light, dark"`,
+		`data-mrn-theme-toggle="true"`,
+		`data-mrn-theme-mode="system"`,
+		`data-mrn-theme-icon="true"`,
+		`◐`,
+		`globalThis.mrnToggleTheme()`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+	for _, unwanted := range []string{`data-mrn-theme-label`, `System`, `Light`, `Dark`, `Theme:`} {
+		if strings.Contains(got, unwanted) {
+			t.Fatalf("expected no visible theme text %q in %q", unwanted, got)
+		}
+	}
+}

@@ -80,7 +80,51 @@ func TestShellResolvesBuiltInAssetsThroughProvider(t *testing.T) {
 	}
 }
 
-func TestShellCanDisableDefaultFeatureScripts(t *testing.T) {
+func TestShellIncludesDefaultFeatureScripts(t *testing.T) {
+	out, err := shell(template.HTML(`<div id="app"></div>`))
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, want := range []string{assets.HTMXURL, assets.ChartJSURL, "window.mrnInitCharts", "htmx:afterSwap"} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected default feature asset %q in shell output, got %q", want, out)
+		}
+	}
+}
+
+func TestShellDisableHTMXKeepsCharts(t *testing.T) {
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{DisableHTMX: true})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, notWant := range []string{assets.HTMXURL} {
+		if strings.Contains(out, notWant) {
+			t.Fatalf("did not expect disabled HTMX asset %q in shell output, got %q", notWant, out)
+		}
+	}
+	for _, want := range []string{assets.ChartJSURL, "window.mrnInitCharts", "htmx:afterSwap"} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected chart asset/bootstrap %q to remain in shell output, got %q", want, out)
+		}
+	}
+}
+
+func TestShellDisableChartsKeepsHTMX(t *testing.T) {
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{DisableCharts: true})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, notWant := range []string{assets.ChartJSURL, "window.mrnInitCharts", "htmx:afterSwap"} {
+		if strings.Contains(out, notWant) {
+			t.Fatalf("did not expect disabled chart asset/bootstrap %q in shell output, got %q", notWant, out)
+		}
+	}
+	if !strings.Contains(out, assets.HTMXURL) {
+		t.Fatalf("expected HTMX asset to remain in shell output, got %q", out)
+	}
+}
+
+func TestShellDisableHTMXAndChartsOmitsFeatureScripts(t *testing.T) {
 	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{
 		DisableHTMX:   true,
 		DisableCharts: true,
@@ -95,6 +139,147 @@ func TestShellCanDisableDefaultFeatureScripts(t *testing.T) {
 	}
 	if !strings.Contains(out, "mrnToggleTheme") {
 		t.Fatalf("expected theme bootstrap to remain enabled, got %q", out)
+	}
+}
+
+func TestShellAssetProviderSilentlySkipsMissingAssets(t *testing.T) {
+	provider := assets.LocalAssetProvider{
+		BasePath: "/vendor",
+		Stylesheets: map[assets.AssetName]string{
+			assets.DaisyUI: assets.DaisyUICSSFile,
+		},
+		Scripts: map[assets.AssetName]string{
+			assets.HTMX: assets.HTMXJSFile,
+		},
+	}
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{AssetProvider: provider})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, want := range []string{`href="/vendor/daisyui.css"`, `src="/vendor/htmx.min.js"`} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected provider-resolved asset %q in shell output, got %q", want, out)
+		}
+	}
+	for _, notWant := range []string{
+		`src="/vendor/tailwindcss-browser.js"`,
+		`src="/vendor/chart.umd.js"`,
+		assets.TailwindBrowserURL,
+		assets.ChartJSURL,
+	} {
+		if strings.Contains(out, notWant) {
+			t.Fatalf("did not expect missing/skipped asset %q in shell output, got %q", notWant, out)
+		}
+	}
+}
+
+func TestShellAssetPolicyForbidsExternalURLsByKind(t *testing.T) {
+	policy := assets.AssetPolicy{ForbidExternalURLs: true}
+	tests := []struct {
+		name    string
+		options shellOptions
+		want    string
+	}{
+		{
+			name: "framework stylesheet",
+			options: shellOptions{
+				AssetPolicy:          policy,
+				FrameworkStylesheets: []string{"https://cdn.example.com/framework.css"},
+				DisableHTMX:          true,
+				DisableCharts:        true,
+			},
+			want: "asset policy forbids external URL for framework stylesheet",
+		},
+		{
+			name: "framework script",
+			options: shellOptions{
+				AssetPolicy:      policy,
+				FrameworkScripts: []string{"https://cdn.example.com/framework.js"},
+				DisableHTMX:      true,
+				DisableCharts:    true,
+			},
+			want: "asset policy forbids external URL for framework script",
+		},
+		{
+			name: "stylesheet",
+			options: shellOptions{
+				AssetPolicy:          policy,
+				FrameworkStylesheets: []string{"/assets/framework.css"},
+				Stylesheets:          []string{"https://cdn.example.com/app.css"},
+				DisableHTMX:          true,
+				DisableCharts:        true,
+			},
+			want: "asset policy forbids external URL for stylesheet",
+		},
+		{
+			name: "script",
+			options: shellOptions{
+				AssetPolicy:          policy,
+				FrameworkStylesheets: []string{"/assets/framework.css"},
+				Scripts:              []string{"https://cdn.example.com/app.js"},
+				DisableHTMX:          true,
+				DisableCharts:        true,
+			},
+			want: "asset policy forbids external URL for script",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := shellWithOptions(template.HTML(`<div id="app"></div>`), tt.options)
+			if err == nil {
+				t.Fatalf("expected asset policy error")
+			}
+			if !strings.Contains(err.Error(), tt.want) {
+				t.Fatalf("expected error to contain %q, got %q", tt.want, err.Error())
+			}
+		})
+	}
+}
+
+func TestShellAssetsUseStyleTemplateDeepCopiesTemplate(t *testing.T) {
+	tpl := StyleTemplate{
+		Name:                      "copy-test",
+		FrameworkStylesheets:      []string{"/assets/original-framework.css"},
+		FrameworkScripts:          []string{"/assets/original-framework.js"},
+		FrameworkStylesheetAssets: []assets.AssetName{assets.DaisyUI},
+		FrameworkScriptAssets:     []assets.AssetName{assets.TailwindCSSBrowser},
+	}
+	var shellAssets ShellAssets
+	shellAssets.UseStyleTemplate(tpl)
+
+	tpl.FrameworkStylesheets[0] = "/assets/mutated-framework.css"
+	tpl.FrameworkScripts[0] = "/assets/mutated-framework.js"
+	tpl.FrameworkStylesheetAssets[0] = assets.AssetName("mutated-stylesheet")
+	tpl.FrameworkScriptAssets[0] = assets.AssetName("mutated-script")
+
+	if got := shellAssets.StyleTemplate.FrameworkStylesheetAssets[0]; got != assets.DaisyUI {
+		t.Fatalf("expected stylesheet asset slice to be deep-copied, got %q", got)
+	}
+	if got := shellAssets.StyleTemplate.FrameworkScriptAssets[0]; got != assets.TailwindCSSBrowser {
+		t.Fatalf("expected script asset slice to be deep-copied, got %q", got)
+	}
+
+	// Force direct framework URLs so the rendered shell proves the copied URL slices,
+	// rather than the mutated source template, are used after UseStyleTemplate returns.
+	shellAssets.StyleTemplate.FrameworkStylesheetAssets = nil
+	shellAssets.StyleTemplate.FrameworkScriptAssets = nil
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{
+		StyleTemplate: shellAssets.StyleTemplate,
+		DisableHTMX:   true,
+		DisableCharts: true,
+	})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, want := range []string{`href="/assets/original-framework.css"`, `src="/assets/original-framework.js"`} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected copied template asset %q in shell output, got %q", want, out)
+		}
+	}
+	for _, notWant := range []string{"/assets/mutated-framework.css", "/assets/mutated-framework.js"} {
+		if strings.Contains(out, notWant) {
+			t.Fatalf("did not expect mutated template asset %q in shell output, got %q", notWant, out)
+		}
 	}
 }
 

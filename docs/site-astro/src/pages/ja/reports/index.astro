@@ -5,6 +5,9 @@ import { formatGeneratedAt, formatNumber, getReportSummary } from '../../../lib/
 const summary = await getReportSummary();
 const generatedAt = formatGeneratedAt(summary.generatedAt, 'ja-JP');
 const topLanguages = summary.cloc.languages.slice(0, 10);
+const coverageScope = summary.coverage.packageCount
+  ? `フレームワークパッケージ ${summary.coverage.packageCount} 件`
+  : 'フレームワークパッケージのみ';
 ---
 <BaseLayout title="Marionette レポート" lang="ja" languageSwitcherPath="/marionette/en/reports/">
   <h1>メトリクスレポート</h1>
@@ -34,7 +37,7 @@ const topLanguages = summary.cloc.languages.slice(0, 10);
     <article class="metric-card">
       <span class="metric-label">UT カバレッジ</span>
       <strong>{summary.coverage.total ? `${summary.coverage.total}%` : '未生成'}</strong>
-      <span>go test ./...</span>
+      <span>{summary.coverage.command ?? 'go test <framework packages>'} · {coverageScope}</span>
     </article>
   </section>
 

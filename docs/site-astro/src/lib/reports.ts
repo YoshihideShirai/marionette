@@ -20,6 +20,8 @@ export type ReportSummary = {
   coverage: {
     total: string | null;
     totalLine: string | null;
+    command?: string;
+    packageCount?: number;
   };
   links: {
     clocText: string;
@@ -43,6 +45,8 @@ const fallbackSummary: ReportSummary = {
   coverage: {
     total: null,
     totalLine: null,
+    command: 'go test <framework packages>',
+    packageCount: 0,
   },
   links: {
     clocText: '/marionette/reports/cloc.txt',

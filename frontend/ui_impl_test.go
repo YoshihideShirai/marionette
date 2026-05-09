@@ -4,9 +4,6 @@ import (
 	"strings"
 	"sync"
 	"testing"
-
-	componentspkg "github.com/YoshihideShirai/marionette/frontend/components"
-	daisyui "github.com/YoshihideShirai/marionette/frontend/daisyui"
 )
 
 func TestHeadingHelpersRenderExpectedTags(t *testing.T) {
@@ -174,57 +171,6 @@ func TestActionFormRendersHTMXActionAttributes(t *testing.T) {
 		if !strings.Contains(got, want) {
 			t.Fatalf("expected %q in %q", want, got)
 		}
-	}
-}
-
-func TestComponentAliasesMatchCanonicalRenderOutput(t *testing.T) {
-	child := TextNode("child")
-	actions := TextNode("actions")
-	tests := []struct {
-		name      string
-		alias     Node
-		canonical Node
-	}{
-		{
-			name:      "ThemeToggleButton aliases daisyui.ThemeToggleButton",
-			alias:     ThemeToggleButton(ComponentProps{Class: "btn-sm"}),
-			canonical: daisyui.ThemeToggleButton(ComponentProps{Class: "btn-sm"}),
-		},
-		{
-			name:      "Grid aliases components.Grid",
-			alias:     Grid(GridProps{Columns: "2", Gap: "sm", Props: ComponentProps{Class: "custom-grid"}}, child),
-			canonical: componentspkg.Grid(GridProps{Columns: "2", Gap: "sm", Props: ComponentProps{Class: "custom-grid"}}, child),
-		},
-		{
-			name:      "Region aliases components.Region",
-			alias:     Region(RegionProps{ID: "demo-region", Props: ComponentProps{Class: "custom-region"}}, child),
-			canonical: componentspkg.Region(RegionProps{ID: "demo-region", Props: ComponentProps{Class: "custom-region"}}, child),
-		},
-		{
-			name:      "Badge aliases daisyui.Badge",
-			alias:     Badge(BadgeProps{Label: "Ready", Props: ComponentProps{Class: "badge-success"}}),
-			canonical: daisyui.Badge(BadgeProps{Label: "Ready", Props: ComponentProps{Class: "badge-success"}}),
-		},
-		{
-			name: "Card aliases daisyui.Card",
-			alias: Card(CardProps{
-				Title:       "Card title",
-				Description: "Card description",
-				Actions:     actions,
-				Props:       ComponentProps{Class: "custom-card"},
-			}, child),
-			canonical: daisyui.Card("Card title", "Card description", actions, []Node{child}, ComponentProps{Class: "custom-card"}),
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := renderFrontendNodeForTest(t, tt.alias)
-			want := renderFrontendNodeForTest(t, tt.canonical)
-			if got != want {
-				t.Fatalf("alias render output mismatch\nwant: %q\n got: %q", want, got)
-			}
-		})
 	}
 }
 

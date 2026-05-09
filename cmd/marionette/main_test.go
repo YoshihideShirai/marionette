@@ -148,8 +148,11 @@ func TestUsersPageIncludesThemeToggleButton(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rr.Code)
 	}
 	body := rr.Body.String()
-	if !strings.Contains(body, "🌓 Theme") {
+	if !strings.Contains(body, `aria-label="Toggle theme: system, light, dark"`) {
 		t.Fatalf("expected theme toggle button label, got %q", body)
+	}
+	if !strings.Contains(body, `data-mrn-theme-toggle="true"`) {
+		t.Fatalf("expected theme toggle button state hook, got %q", body)
 	}
 	if !strings.Contains(body, "mrnToggleTheme") {
 		t.Fatalf("expected theme toggle button onclick handler, got %q", body)

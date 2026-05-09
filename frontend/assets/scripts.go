@@ -3,20 +3,75 @@ package assets
 const ThemeBootstrapJS = `(function() {
   var root = document.documentElement;
   var key = "marionette-theme";
+  var systemQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  var labels = { system: "System", corporate: "Light", dark: "Dark" };
+  var cycle = { system: "corporate", corporate: "dark", dark: "system" };
+
+  function normalizeTheme(value) {
+    return value === "dark" || value === "corporate" || value === "system" ? value : "system";
+  }
+
+  function resolveTheme(mode) {
+    if (mode === "system") {
+      return systemQuery && systemQuery.matches ? "dark" : "corporate";
+    }
+    return mode;
+  }
+
+  function updateThemeControls(mode) {
+    var controls = document.querySelectorAll ? document.querySelectorAll("[data-mrn-theme-toggle]") : [];
+    controls.forEach(function(control) {
+      control.setAttribute("aria-pressed", String(mode !== "system"));
+      control.setAttribute("data-mrn-theme-mode", mode);
+      var label = control.querySelector("[data-mrn-theme-label]");
+      if (label) label.textContent = labels[mode] || labels.system;
+    });
+  }
+
+  function applyTheme(mode, persist) {
+    mode = normalizeTheme(mode);
+    root.setAttribute("data-theme", resolveTheme(mode));
+    root.setAttribute("data-mrn-theme-mode", mode);
+    updateThemeControls(mode);
+    if (persist) {
+      try {
+        localStorage.setItem(key, mode);
+      } catch (e) {}
+    }
+  }
+
   var storedTheme = null;
   try {
     storedTheme = localStorage.getItem(key);
   } catch (e) {}
-  var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  var theme = storedTheme || (prefersDark ? "dark" : "corporate");
-  root.setAttribute("data-theme", theme);
-  window.mrnToggleTheme = function() {
-    var next = root.getAttribute("data-theme") === "dark" ? "corporate" : "dark";
-    root.setAttribute("data-theme", next);
-    try {
-      localStorage.setItem(key, next);
-    } catch (e) {}
+
+  applyTheme(normalizeTheme(storedTheme), false);
+
+  window.mrnSetTheme = function(mode) {
+    applyTheme(mode, true);
   };
+
+  window.mrnToggleTheme = function() {
+    var current = normalizeTheme(root.getAttribute("data-mrn-theme-mode"));
+    applyTheme(cycle[current] || "system", true);
+  };
+
+  document.addEventListener("DOMContentLoaded", function() {
+    updateThemeControls(normalizeTheme(root.getAttribute("data-mrn-theme-mode")));
+  });
+
+  if (systemQuery) {
+    var handleSystemChange = function() {
+      if (normalizeTheme(root.getAttribute("data-mrn-theme-mode")) === "system") {
+        applyTheme("system", false);
+      }
+    };
+    if (systemQuery.addEventListener) {
+      systemQuery.addEventListener("change", handleSystemChange);
+    } else if (systemQuery.addListener) {
+      systemQuery.addListener(handleSystemChange);
+    }
+  }
 })();`
 
 const ChartBootstrapJS = `(function() {

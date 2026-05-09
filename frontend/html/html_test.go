@@ -1,6 +1,7 @@
 package html
 
 import (
+	"html/template"
 	"strings"
 	"testing"
 )
@@ -29,10 +30,113 @@ func TestElementEscapesTextAndAttrs(t *testing.T) {
 	}
 }
 
-func TestElementRejectsInvalidTag(t *testing.T) {
-	_, err := Element("div onclick=alert(1)", ElementProps{}).Render()
-	if err == nil {
-		t.Fatal("Render() error = nil, want invalid tag error")
+func TestElementRejectsInvalidTags(t *testing.T) {
+	tests := []struct {
+		name string
+		tag  string
+	}{
+		{name: "empty", tag: ""},
+		{name: "starts with digit", tag: "1div"},
+		{name: "contains space", tag: "div script"},
+		{name: "contains greater-than", tag: "div>"},
+		{name: "contains slash", tag: "x/y"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := Element(tt.tag, ElementProps{}).Render()
+			if err == nil {
+				t.Fatal("Render() error = nil, want invalid tag error")
+			}
+		})
+	}
+}
+
+func FuzzElementEscapesTextAndAttrs(f *testing.F) {
+	for _, seed := range []struct {
+		text string
+		attr string
+	}{
+		{text: `<text> "quoted" & 'single'`, attr: `<attr> "quoted" & 'single'`},
+		{text: `<`, attr: `>`},
+		{text: `"`, attr: `&`},
+		{text: `'`, attr: `<>&"'`},
+	} {
+		f.Add(seed.text, seed.attr)
+	}
+
+	f.Fuzz(func(t *testing.T, text, attr string) {
+		rendered, err := ElementNode{
+			Tag:   "div",
+			Attrs: map[string]string{"data-value": attr},
+			Text:  text,
+		}.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		want := `<div data-value="` + template.HTMLEscapeString(attr) + `">` + template.HTMLEscapeString(text) + `</div>`
+		if got := string(rendered); got != want {
+			t.Fatalf("Render() = %q, want %q", got, want)
+		}
+	})
+}
+
+func TestElementAllowsValidCustomAndSvgTags(t *testing.T) {
+	for _, tag := range []string{"my-element", "svg", "path"} {
+		t.Run(tag, func(t *testing.T) {
+			rendered, err := Element(tag, ElementProps{Attrs: Attrs{"data-tag": tag}}, Text("ok")).Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+			want := `<` + tag + ` data-tag="` + tag + `"><span>ok</span></` + tag + `>`
+			if got := string(rendered); got != want {
+				t.Fatalf("Render() = %q, want %q", got, want)
+			}
+		})
+	}
+}
+
+func TestElementAttrsRenderInDeterministicKeyOrder(t *testing.T) {
+	rendered, err := ElementNode{
+		Tag: "div",
+		Attrs: map[string]string{
+			"zeta":  "last",
+			"alpha": "first",
+			"data":  "middle",
+		},
+	}.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	want := `<div alpha="first" data="middle" zeta="last"></div>`
+	if got := string(rendered); got != want {
+		t.Fatalf("Render() = %q, want deterministic sorted attrs %q", got, want)
+	}
+}
+
+func TestElementSkipsNilChildWithoutPanic(t *testing.T) {
+	rendered, err := Div(Text("before"), nil, Text("after")).Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	want := `<div><span>before</span><span>after</span></div>`
+	if got := string(rendered); got != want {
+		t.Fatalf("Render() = %q, want nil child skipped as %q", got, want)
+	}
+}
+
+func TestRawDangerouslyRendersUnescapedTrustedHTML(t *testing.T) {
+	const unsafe = `<script>alert("x")</script><b data-x="&">raw</b>`
+
+	rendered, err := Raw(unsafe).Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+	if got := string(rendered); got != unsafe {
+		t.Fatalf("Raw Render() = %q, want unescaped trusted HTML %q", got, unsafe)
 	}
 }
 

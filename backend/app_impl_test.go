@@ -679,39 +679,158 @@ func TestSecureCookiesUseAppCookieSecureSetting(t *testing.T) {
 	}
 }
 
-func TestPageAndActionEnforceMethodsAndActionParsesForm(t *testing.T) {
-	app := New()
-	app.Page("/page", func(ctx *Context) frontend.Node {
-		return frontend.Text("page")
-	})
-	app.Action("submit", func(ctx *Context) frontend.Node {
-		return frontend.Text(ctx.FormValue("name"))
-	})
-
-	handler := app.Handler()
-	pagePostReq := httptest.NewRequest(http.MethodPost, "/page", nil)
-	pagePostRR := httptest.NewRecorder()
-	handler.ServeHTTP(pagePostRR, pagePostReq)
-	if pagePostRR.Code != http.StatusMethodNotAllowed {
-		t.Fatalf("expected POST to Page to return 405, got %d", pagePostRR.Code)
+func TestRouteBehavior(t *testing.T) {
+	tests := []struct {
+		name         string
+		setup        func(*App)
+		method       string
+		path         string
+		body         string
+		contentType  string
+		wantStatus   int
+		wantContains string
+	}{
+		{
+			name: "page path without leading slash is available with slash",
+			setup: func(app *App) {
+				app.Page("users", func(ctx *Context) frontend.Node {
+					return frontend.Text("users page")
+				})
+			},
+			method:       http.MethodGet,
+			path:         "/users",
+			wantStatus:   http.StatusOK,
+			wantContains: "users page",
+		},
+		{
+			name: "empty page path registers root",
+			setup: func(app *App) {
+				app.Page("", func(ctx *Context) frontend.Node {
+					return frontend.Text("root page")
+				})
+			},
+			method:       http.MethodGet,
+			path:         "/",
+			wantStatus:   http.StatusOK,
+			wantContains: "root page",
+		},
+		{
+			name: "action path with leading slash is available",
+			setup: func(app *App) {
+				app.Action("/save", func(ctx *Context) frontend.Node {
+					return frontend.Text(ctx.FormValue("name"))
+				})
+			},
+			method:       http.MethodPost,
+			path:         "/save",
+			body:         "name=slash",
+			contentType:  "application/x-www-form-urlencoded",
+			wantStatus:   http.StatusOK,
+			wantContains: "slash",
+		},
+		{
+			name: "action path without leading slash is normalized",
+			setup: func(app *App) {
+				app.Action("save", func(ctx *Context) frontend.Node {
+					return frontend.Text(ctx.FormValue("name"))
+				})
+			},
+			method:       http.MethodPost,
+			path:         "/save",
+			body:         "name=plain",
+			contentType:  "application/x-www-form-urlencoded",
+			wantStatus:   http.StatusOK,
+			wantContains: "plain",
+		},
+		{
+			name: "post to page route is rejected",
+			setup: func(app *App) {
+				app.Page("/page", func(ctx *Context) frontend.Node {
+					return frontend.Text("page")
+				})
+			},
+			method:       http.MethodPost,
+			path:         "/page",
+			wantStatus:   http.StatusMethodNotAllowed,
+			wantContains: "method not allowed",
+		},
+		{
+			name: "get to action route is rejected",
+			setup: func(app *App) {
+				app.Action("submit", func(ctx *Context) frontend.Node {
+					return frontend.Text("submitted")
+				})
+			},
+			method:       http.MethodGet,
+			path:         "/submit",
+			wantStatus:   http.StatusMethodNotAllowed,
+			wantContains: "method not allowed",
+		},
+		{
+			name: "action rejects invalid form body",
+			setup: func(app *App) {
+				app.Action("submit", func(ctx *Context) frontend.Node {
+					return frontend.Text("submitted")
+				})
+			},
+			method:       http.MethodPost,
+			path:         "/submit",
+			body:         "name=%zz",
+			contentType:  "application/x-www-form-urlencoded",
+			wantStatus:   http.StatusBadRequest,
+			wantContains: "invalid URL escape",
+		},
+		{
+			name: "action rejects invalid content type combination",
+			setup: func(app *App) {
+				app.Action("submit", func(ctx *Context) frontend.Node {
+					return frontend.Text("submitted")
+				})
+			},
+			method:       http.MethodPost,
+			path:         "/submit",
+			body:         "name=Aiko",
+			contentType:  "application/x-www-form-urlencoded; %",
+			wantStatus:   http.StatusBadRequest,
+			wantContains: "mime",
+		},
+		{
+			name:         "unregistered root reports missing page registration",
+			setup:        func(app *App) {},
+			method:       http.MethodGet,
+			path:         "/",
+			wantStatus:   http.StatusInternalServerError,
+			wantContains: "missing app.Page or app.Render registration for /",
+		},
+		{
+			name:         "unregistered non-root returns not found",
+			setup:        func(app *App) {},
+			method:       http.MethodGet,
+			path:         "/missing",
+			wantStatus:   http.StatusNotFound,
+			wantContains: "404 page not found",
+		},
 	}
 
-	actionGetReq := httptest.NewRequest(http.MethodGet, "/submit", nil)
-	actionGetRR := httptest.NewRecorder()
-	handler.ServeHTTP(actionGetRR, actionGetReq)
-	if actionGetRR.Code != http.StatusMethodNotAllowed {
-		t.Fatalf("expected GET to Action to return 405, got %d", actionGetRR.Code)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			app := New()
+			tt.setup(app)
 
-	actionPostReq := httptest.NewRequest(http.MethodPost, "/submit", strings.NewReader("name=Aiko"))
-	actionPostReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	actionPostRR := httptest.NewRecorder()
-	handler.ServeHTTP(actionPostRR, actionPostReq)
-	if actionPostRR.Code != http.StatusOK {
-		t.Fatalf("expected POST to Action to return 200, got %d", actionPostRR.Code)
-	}
-	if got := actionPostRR.Body.String(); !strings.Contains(got, "Aiko") {
-		t.Fatalf("expected action to read parsed form value, got %q", got)
+			req := httptest.NewRequest(tt.method, tt.path, strings.NewReader(tt.body))
+			if tt.contentType != "" {
+				req.Header.Set("Content-Type", tt.contentType)
+			}
+			rr := httptest.NewRecorder()
+			app.Handler().ServeHTTP(rr, req)
+
+			if rr.Code != tt.wantStatus {
+				t.Fatalf("expected status %d, got %d with body %q", tt.wantStatus, rr.Code, rr.Body.String())
+			}
+			if tt.wantContains != "" && !strings.Contains(rr.Body.String(), tt.wantContains) {
+				t.Fatalf("expected body to contain %q, got %q", tt.wantContains, rr.Body.String())
+			}
+		})
 	}
 }
 

@@ -523,7 +523,7 @@ func radioGroupComponent(props RadioGroupComponentProps) Node {
 }
 
 func RadioGroupWithVariants(name, ariaLabel string, items []RadioItem, props RadioVariantProps) Node {
-	return RadioGroup(RadioGroupComponentProps{
+	return radioGroupComponent(RadioGroupComponentProps{
 		Name:      name,
 		AriaLabel: ariaLabel,
 		Items:     items,
@@ -558,7 +558,7 @@ func switchComponent(props SwitchComponentProps) Node {
 }
 
 func SwitchWithVariants(name, value, label string, checked bool, props SwitchVariantProps) Node {
-	return Switch(SwitchComponentProps{
+	return switchComponent(SwitchComponentProps{
 		Name:    name,
 		Value:   value,
 		Label:   label,

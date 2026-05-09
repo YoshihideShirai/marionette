@@ -12,5 +12,7 @@ exclude = [
   "http://127.0.0.1:8083/",
   "http://127.0.0.1:8084/",
   "http://localhost/",
-  "https://github.com/YoshihideShirai/marionette/blob/main/"
+  "https://github.com/YoshihideShirai/marionette/blob/main/",
+  "https://yoshihideshirai.github.io/marionette/en/demos/",
+  "https://yoshihideshirai.github.io/marionette/ja/demos/"
 ]

@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { formatGeneratedAt, formatNumber, getReportSummary } from '../../../lib/reports';
+
+const summary = await getReportSummary();
+const generatedAt = formatGeneratedAt(summary.generatedAt, 'ja-JP');
+const topLanguages = summary.cloc.languages.slice(0, 10);
+---
+<BaseLayout title="Marionette レポート" lang="ja" languageSwitcherPath="/marionette/en/reports/">
+  <h1>メトリクスレポート</h1>
+  <p class="lead">GitHub Pages のデプロイ時に生成した cloc によるステップ数と Go 単体テストのカバレッジを確認できます。</p>
+
+  <section class="report-meta" aria-label="レポート情報">
+    <span>生成日時: <strong>{generatedAt}</strong></span>
+    {summary.commit && <span>Commit: <code>{summary.commit}</code></span>}
+  </section>
+
+  <section class="metric-grid" aria-label="サマリー">
+    <article class="metric-card">
+      <span class="metric-label">コード行数</span>
+      <strong>{formatNumber(summary.cloc.code)}</strong>
+      <span>{formatNumber(summary.cloc.files)} files</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-label">コメント行</span>
+      <strong>{formatNumber(summary.cloc.comment)}</strong>
+      <span>cloc 集計</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-label">空行</span>
+      <strong>{formatNumber(summary.cloc.blank)}</strong>
+      <span>cloc 集計</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-label">UT カバレッジ</span>
+      <strong>{summary.coverage.total ? `${summary.coverage.total}%` : '未生成'}</strong>
+      <span>go test ./...</span>
+    </article>
+  </section>
+
+  <section class="top-section" aria-labelledby="report-downloads-ja">
+    <h2 id="report-downloads-ja">レポートファイル</h2>
+    <div class="doc-card-grid">
+      <a class="doc-card" href={summary.links.coverageHtml}><strong>Coverage HTML</strong><span>Go の関数・ステートメント単位のカバレッジをブラウザで確認します。</span></a>
+      <a class="doc-card" href={summary.links.coverageText}><strong>Coverage text</strong><span><code>go tool cover -func</code> のテキスト出力です。</span></a>
+      <a class="doc-card" href={summary.links.clocText}><strong>cloc text</strong><span>言語別の行数集計をテキストで確認します。</span></a>
+      <a class="doc-card" href={summary.links.clocJson}><strong>cloc JSON</strong><span>自動処理向けの cloc JSON 出力です。</span></a>
+    </div>
+  </section>
+
+  <section class="top-section" aria-labelledby="language-breakdown-ja">
+    <h2 id="language-breakdown-ja">言語別コード行数</h2>
+    {topLanguages.length > 0 ? (
+      <div class="table-scroll">
+        <table class="benchmark-table report-table">
+          <thead>
+            <tr><th>言語</th><th>ファイル数</th><th>コード</th><th>コメント</th><th>空行</th></tr>
+          </thead>
+          <tbody>
+            {topLanguages.map((item) => (
+              <tr>
+                <th>{item.language}</th>
+                <td>{formatNumber(item.files)}</td>
+                <td>{formatNumber(item.code)}</td>
+                <td>{formatNumber(item.comment)}</td>
+                <td>{formatNumber(item.blank)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <p>レポートは GitHub Pages のデプロイ時に生成されます。</p>
+    )}
+  </section>
+</BaseLayout>

@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { formatGeneratedAt, formatNumber, getReportSummary } from '../../../lib/reports';
+
+const summary = await getReportSummary();
+const generatedAt = formatGeneratedAt(summary.generatedAt, 'en-US');
+const topLanguages = summary.cloc.languages.slice(0, 10);
+---
+<BaseLayout title="Marionette Reports" lang="en" languageSwitcherPath="/marionette/ja/reports/">
+  <h1>Metrics Reports</h1>
+  <p class="lead">Review cloc source line counts and Go unit test coverage generated during the GitHub Pages deployment.</p>
+
+  <section class="report-meta" aria-label="Report information">
+    <span>Generated: <strong>{generatedAt}</strong></span>
+    {summary.commit && <span>Commit: <code>{summary.commit}</code></span>}
+  </section>
+
+  <section class="metric-grid" aria-label="Summary">
+    <article class="metric-card">
+      <span class="metric-label">Code lines</span>
+      <strong>{formatNumber(summary.cloc.code)}</strong>
+      <span>{formatNumber(summary.cloc.files)} files</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-label">Comment lines</span>
+      <strong>{formatNumber(summary.cloc.comment)}</strong>
+      <span>cloc total</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-label">Blank lines</span>
+      <strong>{formatNumber(summary.cloc.blank)}</strong>
+      <span>cloc total</span>
+    </article>
+    <article class="metric-card">
+      <span class="metric-label">UT coverage</span>
+      <strong>{summary.coverage.total ? `${summary.coverage.total}%` : 'Not generated'}</strong>
+      <span>go test ./...</span>
+    </article>
+  </section>
+
+  <section class="top-section" aria-labelledby="report-downloads-en">
+    <h2 id="report-downloads-en">Report files</h2>
+    <div class="doc-card-grid">
+      <a class="doc-card" href={summary.links.coverageHtml}><strong>Coverage HTML</strong><span>Browse Go function and statement coverage.</span></a>
+      <a class="doc-card" href={summary.links.coverageText}><strong>Coverage text</strong><span>Text output from <code>go tool cover -func</code>.</span></a>
+      <a class="doc-card" href={summary.links.clocText}><strong>cloc text</strong><span>Language-by-language line-count summary.</span></a>
+      <a class="doc-card" href={summary.links.clocJson}><strong>cloc JSON</strong><span>Machine-readable cloc output for automation.</span></a>
+    </div>
+  </section>
+
+  <section class="top-section" aria-labelledby="language-breakdown-en">
+    <h2 id="language-breakdown-en">Language breakdown</h2>
+    {topLanguages.length > 0 ? (
+      <div class="table-scroll">
+        <table class="benchmark-table report-table">
+          <thead>
+            <tr><th>Language</th><th>Files</th><th>Code</th><th>Comments</th><th>Blank</th></tr>
+          </thead>
+          <tbody>
+            {topLanguages.map((item) => (
+              <tr>
+                <th>{item.language}</th>
+                <td>{formatNumber(item.files)}</td>
+                <td>{formatNumber(item.code)}</td>
+                <td>{formatNumber(item.comment)}</td>
+                <td>{formatNumber(item.blank)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <p>Reports are generated during the GitHub Pages deployment.</p>
+    )}
+  </section>
+</BaseLayout>

@@ -7,6 +7,10 @@ on:
     paths:
       - '.github/workflows/deploy-pages.yml'
       - 'docs/site-astro/**'
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'templates/**'
 
 permissions:
   contents: read
@@ -34,8 +38,19 @@ jobs:
           cache: npm
           cache-dependency-path: docs/site-astro/package-lock.json
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Install report tooling
+        run: sudo apt-get update && sudo apt-get install -y cloc
+
+      - name: Generate cloc and coverage reports
+        run: npm run reports
 
       - name: Build Astro site
         run: npm run build

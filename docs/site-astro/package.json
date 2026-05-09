@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "reports": "node scripts/generate-reports.mjs",
+    "build": "astro build && pagefind --site dist --glob \"**/index.html\"",
     "preview": "astro preview"
   },
   "engines": {

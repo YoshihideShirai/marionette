@@ -50,9 +50,24 @@ run('cloc', [
   `--out=${clocTextPath}`,
 ]);
 
+const modulePath = run('go', ['list', '-m'], { capture: true });
+const frameworkPackagePrefixes = [
+  `${modulePath}/backend`,
+  `${modulePath}/desktop`,
+  `${modulePath}/frontend`,
+  `${modulePath}/internal/componenttmpl`,
+];
+const isFrameworkPackage = (pkg) =>
+  frameworkPackagePrefixes.some((prefix) => pkg === prefix || pkg.startsWith(`${prefix}/`));
 const packages = run('go', ['list', './...'], { capture: true })
   .split('\n')
-  .filter((pkg) => pkg && !pkg.includes('/docs/site-astro/dist/'));
+  .filter((pkg) => pkg && isFrameworkPackage(pkg));
+
+if (packages.length === 0) {
+  throw new Error('No framework packages found for coverage report');
+}
+
+const coverageCommand = 'go test <framework packages> -coverprofile=coverage.out -covermode=atomic';
 
 run('go', ['test', ...packages, `-coverprofile=${coverageProfilePath}`, '-covermode=atomic']);
 run('go', ['tool', 'cover', `-html=${coverageProfilePath}`, `-o=${coverageHtmlPath}`]);
@@ -89,6 +104,8 @@ const summary = {
   coverage: {
     total: coverageTotal,
     totalLine: coverageTotalLine ?? null,
+    command: coverageCommand,
+    packageCount: packages.length,
   },
   links: {
     clocText: '/marionette/reports/cloc.txt',

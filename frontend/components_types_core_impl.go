@@ -24,6 +24,8 @@ type FormProps = shared.FormProps
 
 type ActionFormProps = shared.ActionFormProps
 
+type StreamTriggerProps = shared.StreamTriggerProps
+
 type InputOptions = shared.InputOptions
 
 type TextareaOptions = shared.TextareaOptions

@@ -439,3 +439,30 @@ func classTokenSet(className string) map[string]bool {
 	}
 	return set
 }
+
+func TestStreamTriggerRendersHTMXPollingAttributes(t *testing.T) {
+	html, err := StreamTrigger(StreamTriggerProps{
+		ID:     "reply-stream",
+		Action: "/chat/stream",
+		Target: "#chat-panel",
+		Delay:  "250ms",
+		Props:  ComponentProps{Class: "custom-stream"},
+	}).Render()
+	if err != nil {
+		t.Fatalf("stream trigger render failed: %v", err)
+	}
+	got := string(html)
+	for _, want := range []string{
+		`id="reply-stream"`,
+		`class="hidden custom-stream"`,
+		`aria-hidden="true"`,
+		`hx-post="/chat/stream"`,
+		`hx-trigger="load delay:250ms"`,
+		`hx-target="#chat-panel"`,
+		`hx-swap="outerHTML"`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+}

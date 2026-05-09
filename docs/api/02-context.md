@@ -85,6 +85,28 @@ ctx.SetGlobal("count", count+1) // use UpdateGlobal or IncrementGlobalInt instea
 - Convenience wrapper around `UpdateGlobal` for integer counters/progress values.
 - Treats missing or non-`int` values as `0`, stores `old + delta`, and returns the new `int`.
 
+### Text stream APIs
+
+Text stream helpers keep chunked text progress in application state so an htmx action can reveal a long response over multiple fragment requests. They are useful for AI-chat-style demos and can be paired with `frontend.StreamTrigger`.
+
+#### `StartTextStream(options TextStreamOptions)`
+- Starts or replaces a named text stream.
+- `TextStreamOptions.Name` identifies the stream. Blank names are ignored.
+- `TextStreamOptions.Text` is the full response text.
+- `TextStreamOptions.ChunkSize` controls how many word chunks `AdvanceTextStream` reveals per call; values less than 1 use the default.
+
+#### `AdvanceTextStream(name string) TextStreamStep`
+- Reveals the next chunk for a named stream and returns the cumulative content.
+- `TextStreamStep.Active` is `false` when no stream exists.
+- `TextStreamStep.Done` becomes `true` on the final chunk; the stream is cleared after that final step.
+- `Cursor` and `Total` report chunk progress.
+
+#### `ResetTextStream(name string)`
+- Clears the named stream.
+
+#### `TextStreamActive(name string) bool`
+- Reports whether a named stream can still advance.
+
 ### Flash APIs
 
 #### `Flashes() []FlashMessage`

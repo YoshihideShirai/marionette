@@ -28,9 +28,6 @@ func buildApp() *mb.App {
 	app.SetGlobal("messages", []chatMessage{welcomeMessage()})
 	app.SetGlobal("nextMessageID", 2)
 	app.SetGlobal("chatError", "")
-	app.SetGlobal("streamReply", "")
-	app.SetGlobal("streamCursor", 0)
-	app.SetGlobal("streamingMessageID", 0)
 	app.DisableCharts()
 	app.AddStyle(`
 		#marionette-root { width: min(100%, 72rem); }
@@ -51,10 +48,11 @@ func buildApp() *mb.App {
 		ctx.SetGlobal("chatError", "")
 		userID := ctx.IncrementGlobalInt("nextMessageID", 1) - 1
 		assistantID := ctx.IncrementGlobalInt("nextMessageID", 1) - 1
-		reply := demoReply(prompt)
-		ctx.SetGlobal("streamReply", reply)
-		ctx.SetGlobal("streamCursor", 0)
-		ctx.SetGlobal("streamingMessageID", assistantID)
+		ctx.StartTextStream(mb.TextStreamOptions{
+			Name:      "chat-reply",
+			Text:      demoReply(prompt),
+			ChunkSize: 5,
+		})
 		ctx.UpdateGlobal("messages", func(old any) any {
 			messages := cloneMessages(old).([]chatMessage)
 			messages = append(messages,
@@ -75,9 +73,7 @@ func buildApp() *mb.App {
 		ctx.SetGlobal("messages", []chatMessage{welcomeMessage()})
 		ctx.SetGlobal("nextMessageID", 2)
 		ctx.SetGlobal("chatError", "")
-		ctx.SetGlobal("streamReply", "")
-		ctx.SetGlobal("streamCursor", 0)
-		ctx.SetGlobal("streamingMessageID", 0)
+		ctx.ResetTextStream("chat-reply")
 		return chatPanel(ctx)
 	})
 
@@ -157,15 +153,11 @@ func messageBubble(msg chatMessage) mf.Node {
 }
 
 func streamTrigger() mf.Node {
-	return mf.DivProps(mf.ElementProps{
-		Class: "hidden",
-		Attrs: mf.Attrs{
-			"aria-hidden": "true",
-			"hx-post":     "/chat/stream",
-			"hx-trigger":  "load delay:350ms",
-			"hx-target":   "#chat-panel",
-			"hx-swap":     "outerHTML",
-		},
+	return mf.StreamTrigger(mf.StreamTriggerProps{
+		Action: "/chat/stream",
+		Target: "#chat-panel",
+		Swap:   "outerHTML",
+		Delay:  "350ms",
 	})
 }
 
@@ -224,7 +216,7 @@ func sidebar() mf.Node {
 		),
 		mf.Alert(mf.AlertProps{
 			Title:       "Integration note",
-			Description: "For production, replace demoReply and advanceStream with an LLM streaming client and load API keys from environment variables or secret management.",
+			Description: "For production, feed real LLM chunks through the text stream APIs and load API keys from environment variables or secret management.",
 			Props:       mf.ComponentProps{Class: "alert-info"},
 		}),
 	)
@@ -247,59 +239,34 @@ func demoReply(prompt string) string {
 	case strings.Contains(lower, "sales"):
 		return "For sales data, consider showing KPIs in cards, details in a table, and trends in a chart. You could also extract conditions from the chat and apply them to DataQueryState."
 	case strings.Contains(lower, "api") || strings.Contains(lower, "llm") || strings.Contains(lower, "ai"):
-		return "To connect an external LLM, replace this demoReply function and advanceStream with a streaming API client. The UI can keep the same Node structure while the reply chunks come from the model."
+		return "To connect an external LLM, replace this demoReply function with a streaming API client and feed chunks through the text stream APIs. The UI can keep the same Node structure while the reply chunks come from the model."
 	default:
 		return fmt.Sprintf("I reviewed %q. With Marionette, input handling, state updates, partial updates, and streaming-style UI feedback can stay in one Go flow.", prompt)
 	}
 }
 
 func advanceStream(ctx *mb.Context) {
-	reply, _ := ctx.GetGlobal("streamReply").(string)
-	messageID := ctx.GetGlobalInt("streamingMessageID")
-	if strings.TrimSpace(reply) == "" || messageID == 0 {
+	step := ctx.AdvanceTextStream("chat-reply")
+	if !step.Active {
 		return
 	}
 
-	chunks := streamChunks(reply)
-	cursor := ctx.GetGlobalInt("streamCursor")
-	next := cursor + 5
-	if next > len(chunks) {
-		next = len(chunks)
-	}
-	if next <= 0 {
-		return
-	}
-
-	done := next >= len(chunks)
-	content := strings.Join(chunks[:next], " ")
-	if !done {
+	content := step.Content
+	if !step.Done {
 		content += " ▌"
-	}
-	ctx.SetGlobal("streamCursor", next)
-	if done {
-		ctx.SetGlobal("streamReply", "")
-		ctx.SetGlobal("streamingMessageID", 0)
 	}
 
 	ctx.UpdateGlobal("messages", func(old any) any {
 		messages := cloneMessages(old).([]chatMessage)
 		for i := range messages {
-			if messages[i].ID == messageID {
+			if messages[i].Streaming {
 				messages[i].Content = content
-				messages[i].Streaming = !done
+				messages[i].Streaming = !step.Done
 				break
 			}
 		}
 		return messages
 	})
-}
-
-func streamChunks(reply string) []string {
-	chunks := strings.Fields(reply)
-	if len(chunks) == 0 {
-		return []string{reply}
-	}
-	return chunks
 }
 
 func hasStreamingMessage(messages []chatMessage) bool {

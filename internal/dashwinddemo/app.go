@@ -20,6 +20,10 @@ type transaction struct {
 	Invoice, Customer, Plan, Date, Status string
 	Amount                                int
 }
+type calendarEvent struct {
+	Day          int
+	Title, Theme string
+}
 type integrationItem struct {
 	Name, Icon, IconURL, Description string
 	Active                           bool
@@ -45,6 +49,22 @@ var seedTransactions = []transaction{
 	{"INV-8843", "Northwind", "Growth", "May 04, 2026", "Pending", 6200},
 	{"INV-8844", "Blue Peak", "Starter", "May 02, 2026", "Failed", 1200},
 	{"INV-8845", "Sora Labs", "Enterprise", "Apr 30, 2026", "Paid", 15200},
+}
+var calendarEvents = []calendarEvent{
+	{Day: -3, Title: "Product call", Theme: "GREEN"},
+	{Day: 1, Title: "Meeting with tech team", Theme: "PINK"},
+	{Day: 7, Title: "Meeting with Cristina", Theme: "PURPLE"},
+	{Day: 9, Title: "Meeting with Alex", Theme: "BLUE"},
+	{Day: 9, Title: "Product Call", Theme: "GREEN"},
+	{Day: 9, Title: "Client Meeting", Theme: "PURPLE"},
+	{Day: 12, Title: "Client Meeting", Theme: "ORANGE"},
+	{Day: 14, Title: "Product meeting", Theme: "PINK"},
+	{Day: 17, Title: "Sales Meeting", Theme: "GREEN"},
+	{Day: 17, Title: "Product Meeting", Theme: "ORANGE"},
+	{Day: 17, Title: "Marketing Meeting", Theme: "PINK"},
+	{Day: 17, Title: "Client Meeting", Theme: "GREEN"},
+	{Day: 21, Title: "Sales meeting", Theme: "BLUE"},
+	{Day: 25, Title: "Client meeting", Theme: "PURPLE"},
 }
 var integrationList = []integrationItem{
 	{Name: "Slack", Icon: "S", IconURL: "https://cdn.simpleicons.org/slack", Description: "Instant messaging and workflow notifications for customer operations.", Active: true},
@@ -461,69 +481,121 @@ func integrationLogo(item integrationItem) mf.Node {
 func calendarPage(ctx *mb.Context) mf.Node {
 	selectedDay, _ := ctx.GetGlobal("calendarSelectedDay").(int)
 	if selectedDay < 1 || selectedDay > 31 {
-		selectedDay = 8
-	}
-	days := []mf.Node{}
-	for day := 1; day <= 35; day++ {
-		className := "min-h-20 rounded-box border border-base-300 bg-base-100 p-2 text-left text-sm transition hover:border-primary hover:bg-primary/5"
-		label := strconv.Itoa(day)
-		actualDay := day
-		if day > 31 {
-			className += " opacity-30"
-			label = strconv.Itoa(day - 31)
-			actualDay = day - 31
-		}
-		if hasCalendarEvents(actualDay) {
-			className += " ring-2 ring-primary/30"
-		}
-		if actualDay == selectedDay && day <= 31 {
-			className += " bg-primary text-primary-content ring-primary"
-		}
-		days = append(days, daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
-			daisy.HiddenField("day", strconv.Itoa(actualDay)),
-			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: className}, map[string]string{"type": "submit"}, div("font-semibold", mf.Text(label)), calendarDot(actualDay)),
-		))
+		selectedDay = 9
 	}
 	return div("space-y-6",
-		pageTitle("Calendar", "Calendar view and customer-success events with a right drawer style day detail panel.", nil),
 		noticeNode(ctx),
-		div("grid grid-cols-1 gap-6 xl:grid-cols-3",
-			cardPanel("May 2026", "Monthly schedule", div("grid grid-cols-7 gap-2", days...)),
-			calendarDayPanel(selectedDay),
+		div("w-full rounded-lg bg-base-100 p-4 shadow",
+			calendarToolbar(selectedDay),
+			div("divider my-4", mf.Raw("")),
+			calendarWeekdayRow(),
+			div("mt-1 grid grid-cols-7 place-items-center", calendarDayCells(selectedDay)...),
 		),
 	)
 }
 
-func calendarDot(day int) mf.Node {
-	if !hasCalendarEvents(day) {
-		return mf.Raw("")
-	}
-	return div("mt-4 flex gap-1", span("h-2 w-2 rounded-full bg-current opacity-80", ""), span("text-xs", "events"))
-}
-
-func calendarDayPanel(day int) mf.Node {
-	return dw.CardPanel(dw.CardPanelProps{Title: fmt.Sprintf("May %02d details", day), Description: "Right drawer event feed", Class: "xl:sticky xl:top-24", BodyClass: "space-y-4"},
-		paragraph("text-sm text-base-content/70", "Click a calendar day to update this drawer-like panel without leaving the page."),
-		bulletList(calendarEvents(day)...),
+func calendarToolbar(selectedDay int) mf.Node {
+	return div("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+		div("flex flex-wrap items-center gap-2 sm:gap-4",
+			paragraph("w-48 text-xl font-semibold", "May 2026"),
+			span("text-xs", "Beta"),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Previous month"}, mf.FontIcon(mf.FontIconProps{Library: "fa-solid", Name: "fa-chevron-left", Decorative: true, Props: mf.ComponentProps{Class: "h-5 w-5"}})),
+			daisy.ButtonWithAttrs("Current Month", mf.ComponentProps{Class: "btn-sm btn-ghost normal-case"}, map[string]string{"type": "button"}),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Next month"}, mf.FontIcon(mf.FontIconProps{Library: "fa-solid", Name: "fa-chevron-right", Decorative: true, Props: mf.ComponentProps{Class: "h-5 w-5"}})),
+		),
+		daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
+			daisy.HiddenField("day", strconv.Itoa(selectedDay)),
+			daisy.ButtonWithAttrs("Add New Event", mf.ComponentProps{Class: "btn-sm btn-ghost btn-outline normal-case"}, map[string]string{"type": "submit"}),
+		),
 	)
 }
 
-func hasCalendarEvents(day int) bool {
-	return len(calendarEvents(day)) > 0
+func calendarWeekdayRow() mf.Node {
+	weekdays := []string{"sun", "mon", "tue", "wed", "thu", "fri", "sat"}
+	nodes := make([]mf.Node, 0, len(weekdays))
+	for _, day := range weekdays {
+		nodes = append(nodes, div("text-xs capitalize", mf.Text(day)))
+	}
+	return div("grid grid-cols-7 gap-6 place-items-center sm:gap-12", nodes...)
 }
 
-func calendarEvents(day int) []string {
-	switch day {
-	case 8:
-		return []string{"09:00 - Enterprise QBR", "14:30 - Customer health review"}
-	case 13:
-		return []string{"11:00 - Renewal review", "16:00 - Finance approval"}
-	case 20:
-		return []string{"10:00 - Product webinar", "15:00 - Campaign planning"}
-	case 28:
-		return []string{"13:00 - Campaign retrospective"}
+func calendarDayCells(selectedDay int) []mf.Node {
+	days := make([]mf.Node, 0, 42)
+	for offset := -4; offset <= 37; offset++ {
+		monthDay := offset
+		displayDay := offset
+		inMonth := offset >= 1 && offset <= 31
+		if offset < 1 {
+			displayDay = 30 + offset
+		}
+		if offset > 31 {
+			displayDay = offset - 31
+		}
+		days = append(days, calendarDayCell(monthDay, displayDay, inMonth, selectedDay))
+	}
+	return days
+}
+
+func calendarDayCell(monthDay, displayDay int, inMonth bool, selectedDay int) mf.Node {
+	dayClass := "inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full mx-1 mt-1 text-sm hover:bg-base-300"
+	if !inMonth {
+		dayClass += " text-slate-400 dark:text-slate-600"
+	}
+	if monthDay == 9 && inMonth {
+		dayClass += " bg-blue-100 dark:bg-blue-400 dark:text-white dark:hover:bg-base-300"
+	}
+	if monthDay == selectedDay && inMonth {
+		dayClass += " ring-2 ring-primary"
+	}
+
+	children := []mf.Node{daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
+		daisy.HiddenField("day", strconv.Itoa(displayDay)),
+		mf.Element("button", mf.ElementProps{Class: dayClass, Attrs: mf.Attrs{"type": "submit", "aria-label": fmt.Sprintf("Select May %d", displayDay)}}, mf.Text(strconv.Itoa(displayDay))),
+	)}
+
+	events := eventsForCalendarDay(monthDay)
+	visibleEvents := events
+	moreCount := 0
+	if len(events) > 2 {
+		moreCount = len(events) - 2
+		visibleEvents = events[:2]
+	}
+	for _, event := range visibleEvents {
+		children = append(children, paragraph("mt-1 truncate px-2 text-xs "+calendarThemeClass(event.Theme), event.Title))
+	}
+	if moreCount > 0 {
+		children = append(children, daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
+			daisy.HiddenField("day", strconv.Itoa(displayDay)),
+			mf.Element("button", mf.ElementProps{Class: "mt-1 truncate px-2 text-left text-xs font-medium hover:underline", Attrs: mf.Attrs{"type": "submit"}}, mf.Text(fmt.Sprintf("%d more", moreCount))),
+		))
+	}
+	return div("h-28 w-full border border-solid border-base-300 text-left", children...)
+}
+
+func eventsForCalendarDay(day int) []calendarEvent {
+	events := []calendarEvent{}
+	for _, event := range calendarEvents {
+		if event.Day == day {
+			events = append(events, event)
+		}
+	}
+	return events
+}
+
+func calendarThemeClass(theme string) string {
+	switch theme {
+	case "BLUE":
+		return "bg-blue-200 dark:bg-blue-600 dark:text-blue-100"
+	case "GREEN":
+		return "bg-green-200 dark:bg-green-600 dark:text-green-100"
+	case "PURPLE":
+		return "bg-purple-200 dark:bg-purple-600 dark:text-purple-100"
+	case "ORANGE":
+		return "bg-orange-200 dark:bg-orange-600 dark:text-orange-100"
+	case "PINK":
+		return "bg-pink-200 dark:bg-pink-600 dark:text-pink-100"
 	default:
-		return []string{"No scheduled events"}
+		return ""
 	}
 }
 

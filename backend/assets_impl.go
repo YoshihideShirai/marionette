@@ -150,6 +150,10 @@ func (r assetRoute) handler() http.Handler {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		if assetPathEscapesRoot(name) {
+			http.NotFound(w, req)
+			return
+		}
 		name = strings.TrimPrefix(path.Clean("/"+name), "/")
 		if name == "." || name == "" {
 			http.NotFound(w, req)
@@ -240,6 +244,15 @@ func normalizeAssetExtension(ext string) string {
 		ext = "." + ext
 	}
 	return ext
+}
+
+func assetPathEscapesRoot(name string) bool {
+	for _, segment := range strings.Split(name, "/") {
+		if segment == ".." {
+			return true
+		}
+	}
+	return false
 }
 
 func escapeAssetPath(name string) string {

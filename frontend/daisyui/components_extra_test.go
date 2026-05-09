@@ -396,3 +396,112 @@ func TestVariantComponentsRenderBoundaryAttributes(t *testing.T) {
 		})
 	}
 }
+
+func TestCoreComponentsRenderExpectedRolesAndClasses(t *testing.T) {
+	alert := renderComponentForTest(t, Alert("Heads up", "Check settings", shared.ComponentProps{Class: "alert-warning"}))
+	assertContainsAll(t, alert, []string{`role="alert"`, `class="alert alert-warning"`, `Heads up Check settings`})
+
+	toast := renderComponentForTest(t, Toast("Saved", "Profile updated", shared.ComponentProps{Class: "toast-end"}))
+	assertContainsAll(t, toast, []string{`class="toast toast-end"`, `class="alert"`, `role="alert"`, `Saved Profile updated`})
+
+	modal := renderComponentForTest(t, Modal(shared.ModalProps{
+		Title:   "Confirm delete",
+		Body:    TextNode("Are you sure?"),
+		Actions: Button("Delete", shared.ComponentProps{Class: "btn-error"}),
+		Open:    true,
+	}))
+	assertContainsAll(t, modal, []string{`<dialog class="modal" open="open">`, `class="modal-box"`, `class="modal-backdrop"`, `method="dialog"`})
+}
+
+func TestCardRendersOptionalHeaderActionsAndChildren(t *testing.T) {
+	withHeader := renderComponentForTest(t, Card(
+		"Project",
+		"Recent activity",
+		Button("Archive", shared.ComponentProps{Class: "btn-sm"}),
+		[]shared.Node{TextNode("card child")},
+		shared.ComponentProps{Class: "border"},
+	))
+	assertContainsAll(t, withHeader, []string{`class="card bg-base-100 shadow-sm border"`, `class="card-body"`, `class="card-title"`, `Project`, `Recent activity`, `class="card-actions justify-end"`, `Archive`, `card child`})
+
+	withoutHeader := renderComponentForTest(t, Card(
+		"",
+		"",
+		nil,
+		[]shared.Node{TextNode("only child")},
+		shared.ComponentProps{},
+	))
+	assertContainsAll(t, withoutHeader, []string{`class="card bg-base-100 shadow-sm"`, `only child`})
+	assertContainsNone(t, withoutHeader, []string{`class="card-body"`, `class="card-title"`, `class="card-actions justify-end"`})
+}
+
+func TestSkeletonDefaultsRowsToThree(t *testing.T) {
+	for _, rows := range []int{0, -2} {
+		t.Run("rows", func(t *testing.T) {
+			got := renderComponentForTest(t, Skeleton(rows, shared.ComponentProps{Class: "animate-pulse"}))
+			assertContainsAll(t, got, []string{`class="space-y-2 animate-pulse"`})
+			if count := strings.Count(got, `class="skeleton h-4 w-full"`); count != 3 {
+				t.Fatalf("expected 3 default skeleton rows, got %d in %q", count, got)
+			}
+		})
+	}
+}
+
+func TestFormComponentsRenderHTMXAttributes(t *testing.T) {
+	got := renderComponentForTest(t, ActionForm(shared.ActionFormProps{
+		Action: "/contacts",
+		Target: "#contacts",
+		Swap:   "outerHTML",
+		Props:  shared.ComponentProps{Class: "gap-4"},
+	}, HiddenField("csrf", "token")))
+	assertContainsAll(t, got, []string{`method="post"`, `action="/contacts"`, `hx-post="/contacts"`, `hx-target="#contacts"`, `hx-swap="outerHTML"`, `class="space-y-4 gap-4"`, `type="hidden"`})
+}
+
+func TestFormFieldRendersRequiredHintAndError(t *testing.T) {
+	got := renderComponentForTest(t, FormField(
+		Input("email", "", shared.ComponentProps{Class: "input-bordered"}),
+		shared.FormFieldProps{Label: "Email", Required: true, Hint: "We never share it.", Error: "Email is required"},
+	))
+	assertContainsAll(t, got, []string{`class="fieldset w-full"`, `class="fieldset-legend"`, `Email *`, `We never share it.`, `class="label text-error"`, `Email is required`})
+}
+
+func TestLayoutComponentsRenderLandmarks(t *testing.T) {
+	appShell := renderComponentForTest(t, AppShell(shared.AppShellProps{
+		ID:      "app-shell",
+		MainID:  "main-content",
+		Header:  textNode("header", map[string]string{"class": "site-header"}, "Header"),
+		Content: TextNode("Main content"),
+		Props:   shared.ComponentProps{Class: "theme-shell"},
+	}))
+	assertContainsAll(t, appShell, []string{`<div class="min-h-screen bg-base-100 theme-shell" id="app-shell">`, `<main class="mx-auto w-full max-w-7xl p-4 md:p-6" id="main-content">`, `Main content`})
+
+	region := renderComponentForTest(t, Region(shared.RegionProps{ID: "reports", Props: shared.ComponentProps{Class: "space-y-6"}}, TextNode("Reports")))
+	assertContainsAll(t, region, []string{`<section class="space-y-3 space-y-6" id="reports">`, `Reports`})
+
+	split := renderComponentForTest(t, Split(shared.SplitProps{Main: TextNode("Primary"), Aside: TextNode("Aside"), ReverseOnMobile: true, Props: shared.ComponentProps{Class: "items-start"}}))
+	assertContainsAll(t, split, []string{`class="flex flex-col-reverse gap-4 items-start"`, `class="flex-1"`, `<aside class="w-full lg:w-80">`, `Primary`, `Aside`})
+
+	container := renderComponentForTest(t, Container(shared.ContainerProps{MaxWidth: "max-w-5xl", Padding: "px-4", Centered: true, Props: shared.ComponentProps{Class: "dashboard"}}, TextNode("Contained")))
+	assertContainsAll(t, container, []string{`class="w-full max-w-5xl mx-auto px-4 dashboard"`, `Contained`})
+}
+
+func TestAdminNavigationAndStatsComponents(t *testing.T) {
+	navbar := renderComponentForTest(t, NavbarWithProps(NavbarProps{Class: "bg-base-200"}, MenuLink(MenuLinkProps{Label: "Dashboard", Href: "/admin", Icon: "🏠", Active: true, Class: "font-medium"})))
+	assertContainsAll(t, navbar, []string{`class="navbar bg-base-200"`, `href="/admin"`, `class="font-medium active"`, `class="w-6 text-center"`, `Dashboard`, `🏠`})
+
+	stats := renderComponentForTest(t, StatsWithProps(StatsProps{Class: "shadow"},
+		StatItem(StatProps{Title: "Revenue", Value: "$1.2k", Description: "Today", Figure: TextNode("↗"), FigureClass: "text-success", Class: "place-items-center", ValueClass: "text-primary"}),
+		StatItem(StatProps{Title: "Users", Value: "42", Description: "Active"}),
+	))
+	assertContainsAll(t, stats, []string{`class="stats shadow"`, `class="stat place-items-center"`, `class="stat-figure text-success"`, `class="stat-value text-primary"`, `Revenue`, `$1.2k`, `Users`, `42`})
+	if count := strings.Count(stats, `class="stat-figure`); count != 1 {
+		t.Fatalf("expected only the stat with a figure to render stat-figure, got %d in %q", count, stats)
+	}
+}
+
+func TestAdminButtonAttrsMergeAndDisabled(t *testing.T) {
+	button := renderComponentForTest(t, ButtonWithAttrs("Save", shared.ComponentProps{Class: "btn-primary", Disabled: true}, map[string]string{"class": "gap-2", "type": "submit", "data-action": "save"}))
+	assertContainsAll(t, button, []string{`class="btn btn-primary gap-2"`, `data-action="save"`, `disabled="disabled"`, `type="submit"`, `Save`})
+
+	contentButton := renderComponentForTest(t, ButtonContentWithAttrs(shared.ComponentProps{Class: "btn-ghost", Disabled: true}, map[string]string{"class": "w-full", "aria-label": "Open menu"}, TextNode("Menu")))
+	assertContainsAll(t, contentButton, []string{`aria-label="Open menu"`, `class="btn btn-ghost w-full"`, `disabled="disabled"`, `Menu`})
+}

@@ -91,12 +91,17 @@ func TestThemeToggleButtonIncludesSystemModeState(t *testing.T) {
 		`aria-label="Toggle theme: system, light, dark"`,
 		`data-mrn-theme-toggle="true"`,
 		`data-mrn-theme-mode="system"`,
-		`data-mrn-theme-label="true"`,
-		`System`,
+		`data-mrn-theme-icon="true"`,
+		`◐`,
 		`globalThis.mrnToggleTheme()`,
 	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("expected %q in %q", want, got)
+		}
+	}
+	for _, unwanted := range []string{`data-mrn-theme-label`, `System`, `Light`, `Dark`, `Theme:`} {
+		if strings.Contains(got, unwanted) {
+			t.Fatalf("expected no visible theme text %q in %q", unwanted, got)
 		}
 	}
 }

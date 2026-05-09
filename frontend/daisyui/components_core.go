@@ -579,8 +579,7 @@ func ThemeToggleButton(props shared.ComponentProps) shared.Node {
 		"data-mrn-theme-mode":   "system",
 		"onclick":               "globalThis.mrnToggleTheme()",
 	},
-		textNode("span", nil, "🌓 Theme: "),
-		textNode("span", map[string]string{"data-mrn-theme-label": "true"}, "System"),
+		textNode("span", map[string]string{"aria-hidden": "true", "data-mrn-theme-icon": "true"}, "◐"),
 	)
 }
 

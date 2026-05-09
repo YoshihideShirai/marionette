@@ -633,7 +633,7 @@ func topbar(props ShellProps, drawerID string) mf.Node {
 	actions := append([]mf.Node{}, props.Actions...)
 	if len(actions) == 0 {
 		actions = []mf.Node{
-			daisy.ButtonWithAttrs("◐", mf.ComponentProps{Class: "btn-ghost btn-circle"}, map[string]string{"type": "button", "onclick": "mrnToggleTheme()", "aria-label": "toggle theme"}),
+			mf.ThemeToggleButton(mf.ComponentProps{Class: "btn-circle"}),
 			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-ghost btn-circle indicator"}, map[string]string{"type": "button", "aria-label": "notifications"}, span("indicator-item badge badge-primary badge-xs", ""), mf.Text("🔔")),
 			renderUserMenu(props.User),
 		}

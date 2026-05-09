@@ -32,7 +32,7 @@ func TestShellIncludesThemeBootstrapScript(t *testing.T) {
 	if !strings.Contains(out, "marionette-theme") {
 		t.Fatalf("expected localStorage theme key in shell output, got %q", out)
 	}
-	for _, want := range []string{"system", "mrnSetTheme", "data-mrn-theme-mode", "prefers-color-scheme: dark"} {
+	for _, want := range []string{"system", "mrnSetTheme", "data-mrn-theme-mode", "data-mrn-theme-icon", "prefers-color-scheme: dark"} {
 		if !strings.Contains(out, want) {
 			t.Fatalf("expected theme bootstrap to contain %q, got %q", want, out)
 		}

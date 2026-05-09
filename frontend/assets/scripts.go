@@ -5,6 +5,7 @@ const ThemeBootstrapJS = `(function() {
   var key = "marionette-theme";
   var systemQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
   var labels = { system: "System", corporate: "Light", dark: "Dark" };
+  var icons = { system: "◐", corporate: "☀", dark: "☾" };
   var cycle = { system: "corporate", corporate: "dark", dark: "system" };
 
   function normalizeTheme(value) {
@@ -22,9 +23,10 @@ const ThemeBootstrapJS = `(function() {
     var controls = document.querySelectorAll ? document.querySelectorAll("[data-mrn-theme-toggle]") : [];
     controls.forEach(function(control) {
       control.setAttribute("aria-pressed", String(mode !== "system"));
+      control.setAttribute("aria-label", "Toggle theme: " + (labels[mode] || labels.system));
       control.setAttribute("data-mrn-theme-mode", mode);
-      var label = control.querySelector("[data-mrn-theme-label]");
-      if (label) label.textContent = labels[mode] || labels.system;
+      var icon = control.querySelector("[data-mrn-theme-icon]");
+      if (icon) icon.textContent = icons[mode] || icons.system;
     });
   }
 

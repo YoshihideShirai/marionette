@@ -84,6 +84,14 @@ go run ./cmd/simple-sample
 
 Then open http://127.0.0.1:8081. The sample is self-contained in [`cmd/simple-sample/main.go`](cmd/simple-sample/main.go).
 
+Run the AI chat sample demo (simulated streaming replies, no external API key required):
+
+```bash
+go run ./cmd/ai-chat-sample
+```
+
+Then open http://127.0.0.1:8084. The sample is self-contained in [`cmd/ai-chat-sample/main.go`](cmd/ai-chat-sample/main.go).
+
 Run the desktop WebView sample:
 
 ```bash

@@ -152,6 +152,16 @@ type ActionFormProps struct {
 	Props  ComponentProps
 }
 
+type StreamTriggerProps struct {
+	ID      string
+	Action  string
+	Target  string
+	Swap    string
+	Delay   string
+	Trigger string
+	Props   ComponentProps
+}
+
 type InputOptions struct {
 	Type        string
 	Placeholder string

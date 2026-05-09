@@ -24,5 +24,10 @@
   - `Centered: true` adds `mx-auto`
 - `Region(props RegionProps, children ...Node) Node`
   - `ID` is required (blank returns render error node)
+- `StreamTrigger(props StreamTriggerProps) Node`
+  - Renders a hidden htmx polling trigger for server-side stream actions.
+  - `Action` and `Target` are required; blank values return a render error node.
+  - `Swap` defaults to `outerHTML`.
+  - `Delay` defaults to `350ms` and is used as `hx-trigger="load delay:<Delay>"` unless `Trigger` is set.
 - `Card(props CardProps, children ...Node) Node`
 - `Section(props SectionProps, children ...Node) Node`

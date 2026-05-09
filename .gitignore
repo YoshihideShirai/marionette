@@ -1,1 +1,13 @@
 .codex
+
+# Local Go build artifacts.
+*.exe
+*.test
+/admin-sample
+/ai-chat-sample
+/custom-javascript-sample
+/dashwind-demo
+/marionette
+/marionette-desktop
+/simple-sample
+/cmd/ai-chat-sample/ai-chat-sample

@@ -35,6 +35,13 @@ var formulas = []formula{
 }
 
 func main() {
+	app := buildApp()
+	if err := app.Run("127.0.0.1:8082"); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func buildApp() *mb.App {
 	app := mb.New()
 	app.AddScript(mathJaxCHTMLURL)
 	app.AddJavaScript(customJavaScript())
@@ -53,9 +60,7 @@ func main() {
 		return formulaPanel(formulas[next])
 	})
 
-	if err := app.Run("127.0.0.1:8082"); err != nil {
-		log.Fatal(err)
-	}
+	return app
 }
 
 func page(ctx *mb.Context) mf.Node {

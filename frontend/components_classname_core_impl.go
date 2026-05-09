@@ -180,11 +180,34 @@ func textareaSizeClass(size string) string {
 }
 
 func checkboxClass(props ComponentProps) string {
-	base := []string{"checkbox", checkboxSizeClass(props.Size)}
+	base := []string{"checkbox", checkboxVariantClass(props.Variant), checkboxSizeClass(props.Size)}
 	if props.Class != "" {
 		base = append(base, props.Class)
 	}
 	return joinClass(base...)
+}
+
+func checkboxVariantClass(variant string) string {
+	switch strings.ToLower(strings.TrimSpace(variant)) {
+	case "primary":
+		return "checkbox-primary"
+	case "secondary":
+		return "checkbox-secondary"
+	case "accent":
+		return "checkbox-accent"
+	case "neutral":
+		return "checkbox-neutral"
+	case "info":
+		return "checkbox-info"
+	case "success":
+		return "checkbox-success"
+	case "warning":
+		return "checkbox-warning"
+	case "error", "danger":
+		return "checkbox-error"
+	default:
+		return ""
+	}
 }
 
 func checkboxSizeClass(size string) string {
@@ -199,11 +222,34 @@ func checkboxSizeClass(size string) string {
 }
 
 func radioClass(props ComponentProps) string {
-	base := []string{"radio", radioSizeClass(props.Size)}
+	base := []string{"radio", radioVariantClass(props.Variant), radioSizeClass(props.Size)}
 	if props.Class != "" {
 		base = append(base, props.Class)
 	}
 	return joinClass(base...)
+}
+
+func radioVariantClass(variant string) string {
+	switch strings.ToLower(strings.TrimSpace(variant)) {
+	case "primary":
+		return "radio-primary"
+	case "secondary":
+		return "radio-secondary"
+	case "accent":
+		return "radio-accent"
+	case "neutral":
+		return "radio-neutral"
+	case "info":
+		return "radio-info"
+	case "success":
+		return "radio-success"
+	case "warning":
+		return "radio-warning"
+	case "error", "danger":
+		return "radio-error"
+	default:
+		return ""
+	}
 }
 
 func radioSizeClass(size string) string {
@@ -218,11 +264,34 @@ func radioSizeClass(size string) string {
 }
 
 func switchClass(props ComponentProps) string {
-	base := []string{"toggle", toggleSizeClass(props.Size)}
+	base := []string{"toggle", toggleVariantClass(props.Variant), toggleSizeClass(props.Size)}
 	if props.Class != "" {
 		base = append(base, props.Class)
 	}
 	return joinClass(base...)
+}
+
+func toggleVariantClass(variant string) string {
+	switch strings.ToLower(strings.TrimSpace(variant)) {
+	case "primary":
+		return "toggle-primary"
+	case "secondary":
+		return "toggle-secondary"
+	case "accent":
+		return "toggle-accent"
+	case "neutral":
+		return "toggle-neutral"
+	case "info":
+		return "toggle-info"
+	case "success":
+		return "toggle-success"
+	case "warning":
+		return "toggle-warning"
+	case "error", "danger":
+		return "toggle-error"
+	default:
+		return ""
+	}
 }
 
 func toggleSizeClass(size string) string {

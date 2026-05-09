@@ -10,16 +10,22 @@ import (
 )
 
 func main() {
-	app := buildApp(
-		"Marionette Desktop",
-		"The same server-side Marionette app running inside a desktop WebView shell.",
-	)
-	if err := desktop.Run(app, desktop.Options{
-		Title:  "Marionette Desktop",
+	app := buildApp(desktopTitle, desktopDescription)
+	if err := desktop.Run(app, desktopOptions()); err != nil {
+		log.Fatal(err)
+	}
+}
+
+const (
+	desktopTitle       = "Marionette Desktop"
+	desktopDescription = "The same server-side Marionette app running inside a desktop WebView shell."
+)
+
+func desktopOptions() desktop.Options {
+	return desktop.Options{
+		Title:  desktopTitle,
 		Width:  1200,
 		Height: 800,
-	}); err != nil {
-		log.Fatal(err)
 	}
 }
 

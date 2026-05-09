@@ -12,13 +12,22 @@ import (
 )
 
 type statCard struct {
-	Title, Value, Icon, Description, Trend string
-	TrendTone                              dw.Tone
+	Title, Value, IconName, Description, Trend string
+	TrendTone                                  dw.Tone
 }
 type lead struct{ Name, Role, Email, CreatedAt, Status, Owner, Avatar string }
 type transaction struct {
 	Invoice, Customer, Plan, Date, Status string
 	Amount                                int
+}
+type calendarEvent struct {
+	Day          int
+	Title, Theme string
+}
+type pipelineStage struct {
+	Label string
+	Value int
+	Color string
 }
 type integrationItem struct {
 	Name, Icon, IconURL, Description string
@@ -28,10 +37,10 @@ type bill struct{ InvoiceNo, Amount, Description, Status, GeneratedOn, PaidOn st
 type teamMember struct{ Name, Email, Role, Joined, Avatar string }
 
 var statsData = []statCard{
-	{Title: "New Users", Value: "34.7k", Icon: "U", Description: "Acquired this period", Trend: "↗︎ 2300 (22%)", TrendTone: dw.ToneSuccess},
-	{Title: "Total Sales", Value: "$34,545", Icon: "$", Description: "Current month", Trend: "On track", TrendTone: dw.ToneNeutral},
-	{Title: "Pending Leads", Value: "450", Icon: "L", Description: "50 in hot leads", Trend: "Needs follow-up", TrendTone: dw.ToneWarning},
-	{Title: "Active Users", Value: "5.6k", Icon: "↯", Description: "Weekly active accounts", Trend: "↙ 300 (18%)", TrendTone: dw.ToneError},
+	{Title: "New Users", Value: "34.7k", IconName: "fa-user-plus", Description: "Acquired this period", Trend: "↗︎ 2300 (22%)", TrendTone: dw.ToneSuccess},
+	{Title: "Total Sales", Value: "$34,545", IconName: "fa-dollar-sign", Description: "Current month", Trend: "On track", TrendTone: dw.ToneNeutral},
+	{Title: "Pending Leads", Value: "450", IconName: "fa-address-card", Description: "50 in hot leads", Trend: "Needs follow-up", TrendTone: dw.ToneWarning},
+	{Title: "Active Users", Value: "5.6k", IconName: "fa-bolt", Description: "Weekly active accounts", Trend: "↙ 300 (18%)", TrendTone: dw.ToneError},
 }
 var seedLeads = []lead{
 	{"Alex Morgan", "Product buyer", "alex@example.com", "02 May 26", "In Progress", "Olivia", "AM"},
@@ -45,6 +54,28 @@ var seedTransactions = []transaction{
 	{"INV-8843", "Northwind", "Growth", "May 04, 2026", "Pending", 6200},
 	{"INV-8844", "Blue Peak", "Starter", "May 02, 2026", "Failed", 1200},
 	{"INV-8845", "Sora Labs", "Enterprise", "Apr 30, 2026", "Paid", 15200},
+}
+var pipelineStages = []pipelineStage{
+	{Label: "Open", Value: 92, Color: "#3b82f6"},
+	{Label: "Progress", Value: 128, Color: "#6366f1"},
+	{Label: "Sold", Value: 54, Color: "#10b981"},
+	{Label: "Followup", Value: 76, Color: "#f59e0b"},
+}
+var calendarEvents = []calendarEvent{
+	{Day: -3, Title: "Product call", Theme: "GREEN"},
+	{Day: 1, Title: "Meeting with tech team", Theme: "PINK"},
+	{Day: 7, Title: "Meeting with Cristina", Theme: "PURPLE"},
+	{Day: 9, Title: "Meeting with Alex", Theme: "BLUE"},
+	{Day: 9, Title: "Product Call", Theme: "GREEN"},
+	{Day: 9, Title: "Client Meeting", Theme: "PURPLE"},
+	{Day: 12, Title: "Client Meeting", Theme: "ORANGE"},
+	{Day: 14, Title: "Product meeting", Theme: "PINK"},
+	{Day: 17, Title: "Sales Meeting", Theme: "GREEN"},
+	{Day: 17, Title: "Product Meeting", Theme: "ORANGE"},
+	{Day: 17, Title: "Marketing Meeting", Theme: "PINK"},
+	{Day: 17, Title: "Client Meeting", Theme: "GREEN"},
+	{Day: 21, Title: "Sales meeting", Theme: "BLUE"},
+	{Day: 25, Title: "Client meeting", Theme: "PURPLE"},
 }
 var integrationList = []integrationItem{
 	{Name: "Slack", Icon: "S", IconURL: "https://cdn.simpleicons.org/slack", Description: "Instant messaging and workflow notifications for customer operations.", Active: true},
@@ -78,31 +109,35 @@ var routes = dw.Navigation{
 		{Path: "/integration", IconNode: navFontIcon("fa-bolt"), Label: "Integration"},
 		{Path: "/calendar", IconNode: navFontIcon("fa-calendar-days"), Label: "Calendar"},
 		{IconNode: navFontIcon("fa-file-lines"), Label: "Pages", Children: []dw.NavItem{
-			{Path: "/login", Icon: "↪", Label: "Login"},
-			{Path: "/register", Icon: "U", Label: "Register"},
-			{Path: "/forgot-password", Icon: "K", Label: "Forgot Password"},
-			{Path: "/blank", Icon: "□", Label: "Blank Page"},
-			{Path: "/404", Icon: "!", Label: "404"},
+			{Path: "/login", IconNode: navFontIcon("fa-right-to-bracket"), Label: "Login"},
+			{Path: "/register", IconNode: navFontIcon("fa-user-plus"), Label: "Register"},
+			{Path: "/forgot-password", IconNode: navFontIcon("fa-key"), Label: "Forgot Password"},
+			{Path: "/blank", IconNode: navFontIcon("fa-square"), Label: "Blank Page"},
+			{Path: "/404", IconNode: navFontIcon("fa-triangle-exclamation"), Label: "404"},
 		}},
 		{IconNode: navFontIcon("fa-gear"), Label: "Settings", Children: []dw.NavItem{
-			{Path: "/settings-profile", Icon: "⚙", Label: "Profile"},
-			{Path: "/settings-billing", Icon: "W", Label: "Billing"},
-			{Path: "/settings-team", Icon: "◎", Label: "Team Members"},
+			{Path: "/settings-profile", IconNode: navFontIcon("fa-user-gear"), Label: "Profile"},
+			{Path: "/settings-billing", IconNode: navFontIcon("fa-wallet"), Label: "Billing"},
+			{Path: "/settings-team", IconNode: navFontIcon("fa-user-group"), Label: "Team Members"},
 		}},
 		{IconNode: navFontIcon("fa-book-open"), Label: "Documentation", Children: []dw.NavItem{
-			{Path: "/getting-started", Icon: "D", Label: "Getting Started"},
-			{Path: "/features", Icon: "▤", Label: "Features"},
-			{Path: "/components", Icon: "<> ", Label: "Components"},
+			{Path: "/getting-started", IconNode: navFontIcon("fa-circle-play"), Label: "Getting Started"},
+			{Path: "/features", IconNode: navFontIcon("fa-list-check"), Label: "Features"},
+			{Path: "/components", IconNode: navFontIcon("fa-code"), Label: "Components"},
 		}},
 	}},
 }
 
 func navFontIcon(name string) mf.Node {
+	return fontIcon(name, "w-6 text-center text-base")
+}
+
+func fontIcon(name, className string) mf.Node {
 	return mf.FontIcon(mf.FontIconProps{
 		Library:    "fa-solid",
 		Name:       name,
 		Decorative: true,
-		Props:      mf.ComponentProps{Class: "w-6 text-center text-base"},
+		Props:      mf.ComponentProps{Class: className},
 	})
 }
 
@@ -246,7 +281,7 @@ func dashboardPage(ctx *mb.Context) mf.Node {
 		dw.MetricGrid(dw.MetricGridProps{Items: metrics}),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-2",
 			chartCard("Revenue", "Monthly recurring revenue", mf.Chart(mf.ChartProps{Type: mf.ChartTypeLine, Labels: []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "MRR", Data: []float64{18, 24, 28, 32, 38, 45}, BorderColor: "#3b82f6", BackgroundColor: "rgba(59,130,246,.18)", Fill: true, Tension: .35}}})),
-			chartCard("Pipeline", "Qualified leads by stage", mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: []string{"Open", "Progress", "Sold", "Followup"}, Height: 260, Datasets: []mf.ChartDataset{{Label: "Leads", Data: []float64{92, 128, 54, 76}, BackgroundColor: "#6366f1"}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}})),
+			pipelineChart(),
 		),
 		div("grid grid-cols-1 gap-6 xl:grid-cols-2", amountStats(), userChannels()),
 	)
@@ -259,7 +294,7 @@ func statCardNode(s statCard) dw.Metric {
 		Description: s.Description,
 		Trend:       s.Trend,
 		TrendTone:   s.TrendTone,
-		Icon:        mf.Text(s.Icon),
+		Icon:        fontIcon(s.IconName, ""),
 	}
 }
 
@@ -281,7 +316,7 @@ func periodForm(period string) mf.Node {
 
 func dashboardMoreMenu() mf.Node {
 	return div("dropdown dropdown-end",
-		daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-sm btn-ghost btn-square"}, map[string]string{"type": "button", "tabindex": "0", "aria-label": "Dashboard options"}, mf.Text("⋮")),
+		daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-sm btn-ghost btn-square"}, map[string]string{"type": "button", "tabindex": "0", "aria-label": "Dashboard options"}, fontIcon("fa-ellipsis-vertical", "h-4 w-4")),
 		mf.UlProps(mf.ElementProps{Class: "dropdown-content menu bg-base-100 rounded-box z-10 w-44 p-2 shadow", Attrs: mf.Attrs{"tabindex": "0"}},
 			mf.Li(daisy.ButtonWithAttrs("Email Digests", mf.ComponentProps{Class: "btn-ghost btn-sm justify-start"}, map[string]string{"type": "submit", "name": "period", "value": "Last 7 days"})),
 			mf.Li(daisy.ButtonWithAttrs("Download", mf.ComponentProps{Class: "btn-ghost btn-sm justify-start"}, map[string]string{"type": "submit", "name": "period", "value": "This quarter"})),
@@ -340,6 +375,32 @@ func chartCard(title, desc string, chart mf.Node) mf.Node {
 	return mf.Card(mf.CardProps{Title: title, Description: desc, Props: mf.ComponentProps{Class: "bg-base-100 shadow"}}, chart)
 }
 
+func pipelineChart() mf.Node {
+	labels := make([]string, 0, len(pipelineStages))
+	values := make([]float64, 0, len(pipelineStages))
+	colors := make([]string, 0, len(pipelineStages))
+	for _, stage := range pipelineStages {
+		labels = append(labels, stage.Label)
+		values = append(values, float64(stage.Value))
+		colors = append(colors, stage.Color)
+	}
+	return mf.Chart(mf.ChartProps{
+		Type:        mf.ChartTypeBar,
+		Title:       "Pipeline",
+		Description: "Qualified leads by stage",
+		Labels:      labels,
+		Height:      280,
+		Datasets: []mf.ChartDataset{{
+			Label:            "Leads",
+			Data:             values,
+			BackgroundColors: colors,
+			BorderColors:     colors,
+		}},
+		Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true},
+		Props:   mf.ComponentProps{Class: "bg-base-100 shadow"},
+	})
+}
+
 func leadsPage(ctx *mb.Context) mf.Node {
 	rows := ctx.GetGlobal("leads").([]lead)
 	columns := []dw.Column[lead]{
@@ -366,12 +427,13 @@ func leadsPage(ctx *mb.Context) mf.Node {
 			EmptyState: mf.EmptyStateProps{Title: "No leads found", Description: "Add a demo lead to repopulate this table."},
 			RowActions: func(l lead) []dw.Action {
 				return []dw.Action{{
-					Label:  "✕",
-					Action: "/leads/delete",
-					Target: "#" + mainTargetID,
-					Swap:   "outerHTML",
-					Class:  "btn-square btn-ghost btn-sm",
-					Fields: map[string]string{"email": l.Email},
+					Action:  "/leads/delete",
+					Target:  "#" + mainTargetID,
+					Swap:    "outerHTML",
+					Class:   "btn-square btn-ghost btn-sm",
+					Fields:  map[string]string{"email": l.Email},
+					Attrs:   mf.Attrs{"aria-label": "Delete " + l.Name},
+					Content: fontIcon("fa-trash", "h-4 w-4"),
 				}}
 			},
 		}),
@@ -461,69 +523,121 @@ func integrationLogo(item integrationItem) mf.Node {
 func calendarPage(ctx *mb.Context) mf.Node {
 	selectedDay, _ := ctx.GetGlobal("calendarSelectedDay").(int)
 	if selectedDay < 1 || selectedDay > 31 {
-		selectedDay = 8
-	}
-	days := []mf.Node{}
-	for day := 1; day <= 35; day++ {
-		className := "min-h-20 rounded-box border border-base-300 bg-base-100 p-2 text-left text-sm transition hover:border-primary hover:bg-primary/5"
-		label := strconv.Itoa(day)
-		actualDay := day
-		if day > 31 {
-			className += " opacity-30"
-			label = strconv.Itoa(day - 31)
-			actualDay = day - 31
-		}
-		if hasCalendarEvents(actualDay) {
-			className += " ring-2 ring-primary/30"
-		}
-		if actualDay == selectedDay && day <= 31 {
-			className += " bg-primary text-primary-content ring-primary"
-		}
-		days = append(days, daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
-			daisy.HiddenField("day", strconv.Itoa(actualDay)),
-			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: className}, map[string]string{"type": "submit"}, div("font-semibold", mf.Text(label)), calendarDot(actualDay)),
-		))
+		selectedDay = 9
 	}
 	return div("space-y-6",
-		pageTitle("Calendar", "Calendar view and customer-success events with a right drawer style day detail panel.", nil),
 		noticeNode(ctx),
-		div("grid grid-cols-1 gap-6 xl:grid-cols-3",
-			cardPanel("May 2026", "Monthly schedule", div("grid grid-cols-7 gap-2", days...)),
-			calendarDayPanel(selectedDay),
+		div("w-full rounded-lg bg-base-100 p-4 shadow",
+			calendarToolbar(selectedDay),
+			div("divider my-4", mf.Raw("")),
+			calendarWeekdayRow(),
+			div("mt-1 grid grid-cols-7 place-items-center", calendarDayCells(selectedDay)...),
 		),
 	)
 }
 
-func calendarDot(day int) mf.Node {
-	if !hasCalendarEvents(day) {
-		return mf.Raw("")
-	}
-	return div("mt-4 flex gap-1", span("h-2 w-2 rounded-full bg-current opacity-80", ""), span("text-xs", "events"))
-}
-
-func calendarDayPanel(day int) mf.Node {
-	return dw.CardPanel(dw.CardPanelProps{Title: fmt.Sprintf("May %02d details", day), Description: "Right drawer event feed", Class: "xl:sticky xl:top-24", BodyClass: "space-y-4"},
-		paragraph("text-sm text-base-content/70", "Click a calendar day to update this drawer-like panel without leaving the page."),
-		bulletList(calendarEvents(day)...),
+func calendarToolbar(selectedDay int) mf.Node {
+	return div("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+		div("flex flex-wrap items-center gap-2 sm:gap-4",
+			paragraph("w-48 text-xl font-semibold", "May 2026"),
+			span("text-xs", "Beta"),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Previous month"}, fontIcon("fa-chevron-left", "h-5 w-5")),
+			daisy.ButtonWithAttrs("Current Month", mf.ComponentProps{Class: "btn-sm btn-ghost normal-case"}, map[string]string{"type": "button"}),
+			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-square btn-sm btn-ghost"}, map[string]string{"type": "button", "aria-label": "Next month"}, fontIcon("fa-chevron-right", "h-5 w-5")),
+		),
+		daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
+			daisy.HiddenField("day", strconv.Itoa(selectedDay)),
+			daisy.ButtonWithAttrs("Add New Event", mf.ComponentProps{Class: "btn-sm btn-ghost btn-outline normal-case"}, map[string]string{"type": "submit"}),
+		),
 	)
 }
 
-func hasCalendarEvents(day int) bool {
-	return len(calendarEvents(day)) > 0
+func calendarWeekdayRow() mf.Node {
+	weekdays := []string{"sun", "mon", "tue", "wed", "thu", "fri", "sat"}
+	nodes := make([]mf.Node, 0, len(weekdays))
+	for _, day := range weekdays {
+		nodes = append(nodes, div("text-xs capitalize", mf.Text(day)))
+	}
+	return div("grid grid-cols-7 gap-6 place-items-center sm:gap-12", nodes...)
 }
 
-func calendarEvents(day int) []string {
-	switch day {
-	case 8:
-		return []string{"09:00 - Enterprise QBR", "14:30 - Customer health review"}
-	case 13:
-		return []string{"11:00 - Renewal review", "16:00 - Finance approval"}
-	case 20:
-		return []string{"10:00 - Product webinar", "15:00 - Campaign planning"}
-	case 28:
-		return []string{"13:00 - Campaign retrospective"}
+func calendarDayCells(selectedDay int) []mf.Node {
+	days := make([]mf.Node, 0, 42)
+	for offset := -4; offset <= 37; offset++ {
+		monthDay := offset
+		displayDay := offset
+		inMonth := offset >= 1 && offset <= 31
+		if offset < 1 {
+			displayDay = 30 + offset
+		}
+		if offset > 31 {
+			displayDay = offset - 31
+		}
+		days = append(days, calendarDayCell(monthDay, displayDay, inMonth, selectedDay))
+	}
+	return days
+}
+
+func calendarDayCell(monthDay, displayDay int, inMonth bool, selectedDay int) mf.Node {
+	dayClass := "inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full mx-1 mt-1 text-sm hover:bg-base-300"
+	if !inMonth {
+		dayClass += " text-slate-400 dark:text-slate-600"
+	}
+	if monthDay == 9 && inMonth {
+		dayClass += " bg-blue-100 dark:bg-blue-400 dark:text-white dark:hover:bg-base-300"
+	}
+	if monthDay == selectedDay && inMonth {
+		dayClass += " ring-2 ring-primary"
+	}
+
+	children := []mf.Node{daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
+		daisy.HiddenField("day", strconv.Itoa(displayDay)),
+		mf.Element("button", mf.ElementProps{Class: dayClass, Attrs: mf.Attrs{"type": "submit", "aria-label": fmt.Sprintf("Select May %d", displayDay)}}, mf.Text(strconv.Itoa(displayDay))),
+	)}
+
+	events := eventsForCalendarDay(monthDay)
+	visibleEvents := events
+	moreCount := 0
+	if len(events) > 2 {
+		moreCount = len(events) - 2
+		visibleEvents = events[:2]
+	}
+	for _, event := range visibleEvents {
+		children = append(children, paragraph("mt-1 truncate px-2 text-xs "+calendarThemeClass(event.Theme), event.Title))
+	}
+	if moreCount > 0 {
+		children = append(children, daisy.ActionFormWithOptions(daisy.ActionFormOptions{Action: "/calendar/day", Target: "#" + mainTargetID, Swap: "outerHTML"},
+			daisy.HiddenField("day", strconv.Itoa(displayDay)),
+			mf.Element("button", mf.ElementProps{Class: "mt-1 truncate px-2 text-left text-xs font-medium hover:underline", Attrs: mf.Attrs{"type": "submit"}}, mf.Text(fmt.Sprintf("%d more", moreCount))),
+		))
+	}
+	return div("h-28 w-full border border-solid border-base-300 text-left", children...)
+}
+
+func eventsForCalendarDay(day int) []calendarEvent {
+	events := []calendarEvent{}
+	for _, event := range calendarEvents {
+		if event.Day == day {
+			events = append(events, event)
+		}
+	}
+	return events
+}
+
+func calendarThemeClass(theme string) string {
+	switch theme {
+	case "BLUE":
+		return "bg-blue-200 dark:bg-blue-600 dark:text-blue-100"
+	case "GREEN":
+		return "bg-green-200 dark:bg-green-600 dark:text-green-100"
+	case "PURPLE":
+		return "bg-purple-200 dark:bg-purple-600 dark:text-purple-100"
+	case "ORANGE":
+		return "bg-orange-200 dark:bg-orange-600 dark:text-orange-100"
+	case "PINK":
+		return "bg-pink-200 dark:bg-pink-600 dark:text-pink-100"
 	default:
-		return []string{"No scheduled events"}
+		return ""
 	}
 }
 

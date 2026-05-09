@@ -19,7 +19,7 @@ func TestDashboardRendersDashWindTemplateSections(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rr.Code)
 	}
 	body := rr.Body.String()
-	for _, want := range []string{"DashWind", "fa-solid fa-house", "font-awesome/6.5.2/css/all.min.css", "New Users", "Total Sales", "User Signup Source", "Amount to be Collected", "Cash in hand", "Refresh Data", "Share", "Email Digests", "Download", "drawer lg:drawer-open dashwind-shell", "hx-post=\"/dashboard/period\""} {
+	for _, want := range []string{"DashWind", "fa-solid fa-house", "fa-user-plus", "fa-ellipsis-vertical", "font-awesome/6.5.2/css/all.min.css", "New Users", "Total Sales", "Pipeline", "Progress", "data-mrn-chart", "data-mrn-chart-config", "6366f1", "User Signup Source", "Amount to be Collected", "Cash in hand", "Refresh Data", "Share", "Email Digests", "Download", "drawer lg:drawer-open dashwind-shell", "hx-post=\"/dashboard/period\""} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected dashboard to contain %q, got %q", want, body)
 		}
@@ -60,7 +60,7 @@ func TestLeadsAddAndDeleteActionsUpdateFragment(t *testing.T) {
 		t.Fatalf("expected add 200, got %d", addRR.Code)
 	}
 	addBody := addRR.Body.String()
-	for _, want := range []string{"Demo Lead 6", "Added a demo lead", `id="dashwind-main"`} {
+	for _, want := range []string{"Demo Lead 6", "Added a demo lead", `id="dashwind-main"`, "fa-trash"} {
 		if !strings.Contains(addBody, want) {
 			t.Fatalf("expected add response to contain %q, got %q", want, addBody)
 		}
@@ -92,6 +92,7 @@ func TestTemplateRouteGroupsRenderDashWindPages(t *testing.T) {
 		want []string
 	}{
 		{path: "/integration", want: []string{"Slack", "Salesforce", "toggle toggle-success toggle-lg", "Slack logo", `hx-post="/integration/toggle"`}},
+		{path: "/calendar", want: []string{"May 2026", "Beta", "Current Month", "Add New Event", "Meeting with Alex", "2 more", "bg-blue-200 dark:bg-blue-600 dark:text-blue-100"}},
 		{path: "/settings-billing", want: []string{"Billing History", "#4567", "Product usage invoices"}},
 		{path: "/login", want: []string{"Login", "Email Id", "Password", "DashWind user page preview"}},
 		{path: "/components", want: []string{"Components", "dashwind.Shell", "ActionFormWithOptions", "Documentation", "Getting Started"}},
@@ -142,7 +143,7 @@ func TestIntegrationToggleAndCalendarDayActionsUpdateFragments(t *testing.T) {
 		t.Fatalf("expected calendar day 200, got %d", calendarRR.Code)
 	}
 	calendarBody := calendarRR.Body.String()
-	for _, want := range []string{`id="dashwind-main"`, "May 20 selected", "May 20 details", "Product webinar", "hx-post=\"/calendar/day\""} {
+	for _, want := range []string{`id="dashwind-main"`, "May 20 selected", "May 2026", "Current Month", "Add New Event", `aria-label="Select May 20"`, "ring-2 ring-primary", "hx-post=\"/calendar/day\""} {
 		if !strings.Contains(calendarBody, want) {
 			t.Fatalf("expected calendar response to contain %q, got %q", want, calendarBody)
 		}

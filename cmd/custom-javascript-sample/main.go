@@ -6,6 +6,7 @@ import (
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	dw "github.com/YoshihideShirai/marionette/frontend/dashwind"
 )
 
 type formula struct {
@@ -43,6 +44,7 @@ func main() {
 
 func buildApp() *mb.App {
 	app := mb.New()
+	dw.Use(app, dw.Options{Theme: "corporate"})
 	app.AddScript(mathJaxCHTMLURL)
 	app.AddJavaScript(customJavaScript())
 	app.AddStyle(customStyles())
@@ -65,28 +67,41 @@ func buildApp() *mb.App {
 
 func page(ctx *mb.Context) mf.Node {
 	current := formulas[ctx.GetGlobalInt("formulaIndex")%len(formulas)]
-	return mf.Container(mf.ContainerProps{MaxWidth: "3xl", Centered: true},
-		mf.Stack(mf.StackProps{Direction: "column", Gap: "6"},
-			mf.PageHeader(mf.PageHeaderProps{
-				Title:       "Custom JavaScript Sample",
-				Description: "External MathJax plus app-level custom JavaScript.",
-			}),
-			mf.Alert(mf.AlertProps{
-				Title:       "What this demonstrates",
-				Description: "MathJax is registered with AddScript. The status line and MathJax re-rendering are handled by AddJavaScript.",
-				Props:       mf.ComponentProps{Variant: "info"},
-			}),
-			mf.Region(mf.RegionProps{ID: "formula-panel"}, formulaPanel(current)),
-			mf.Card(mf.CardProps{
-				Title:       "Inline JavaScript hook",
-				Description: "This status is written by custom JavaScript after the page loads.",
-			}, mf.Raw(`<p id="custom-js-status" class="custom-js-status">Waiting for custom JavaScript...</p>`)),
-		),
+	body := mf.DivProps(mf.ElementProps{Class: "space-y-6"},
+		dw.PageHeader(dw.PageHeaderProps{
+			Title:       "Custom JavaScript Sample",
+			Description: "External MathJax plus app-level custom JavaScript.",
+			Actions:     mf.Button("View source", mf.ComponentProps{Class: "btn-outline btn-sm"}),
+		}),
+		dw.MetricGrid(dw.MetricGridProps{Items: []dw.Metric{
+			{Title: "Script", Value: "MathJax", Description: "Loaded with AddScript", Trend: "External dependency", TrendTone: dw.ToneNeutral, Icon: metricIcon("M")},
+			{Title: "Hook", Value: "1", Description: "AddJavaScript block", Trend: "afterSwap aware", TrendTone: dw.ToneSuccess, Icon: metricIcon("J")},
+			{Title: "Panels", Value: fmt.Sprintf("%d", len(formulas)), Description: "Formula examples", Trend: "Cycles by action", TrendTone: dw.ToneSuccess, Icon: metricIcon("F")},
+			{Title: "Swap", Value: "htmx", Description: "#formula-panel", Trend: "Partial render", TrendTone: dw.ToneNeutral, Icon: metricIcon("H")},
+		}}),
+		mf.Split(mf.SplitProps{
+			Main: mf.Region(mf.RegionProps{ID: "formula-panel"}, formulaPanel(current)),
+			Aside: mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+				dw.CardPanel(dw.CardPanelProps{
+					Title:       "What this demonstrates",
+					Description: "MathJax is registered with AddScript. The status line and MathJax re-rendering are handled by AddJavaScript.",
+				},
+					mf.Badge(mf.BadgeProps{Label: "Browser hook", Props: mf.ComponentProps{Class: "badge-info"}}),
+				),
+				dw.CardPanel(dw.CardPanelProps{
+					Title:       "Inline JavaScript hook",
+					Description: "This status is written by custom JavaScript after the page loads.",
+				}, mf.Raw(`<p id="custom-js-status" class="custom-js-status">Waiting for custom JavaScript...</p>`)),
+			),
+			AsideWidth: "sm",
+			Gap:        "6",
+		}),
 	)
+	return appShell(body)
 }
 
 func formulaPanel(f formula) mf.Node {
-	return mf.Card(mf.CardProps{
+	return dw.CardPanel(dw.CardPanelProps{
 		Title:       f.Title,
 		Description: f.Note,
 		Actions: mf.ActionForm(mf.ActionFormProps{
@@ -97,6 +112,23 @@ func formulaPanel(f formula) mf.Node {
 	},
 		mf.Raw(fmt.Sprintf(`<div class="math-sample-equation" data-mathjax>\[%s\]</div>`, f.Tex)),
 	)
+}
+
+func appShell(body mf.Node) mf.Node {
+	return dw.Shell(dw.ShellProps{
+		Brand:             dw.Brand{Title: "Formula Lab", Subtitle: "Custom JS sample", Mark: "F"},
+		CurrentPath:       "/",
+		SearchPlaceholder: "Search formulas",
+		Navigation: []dw.NavGroup{{
+			Label: "Sample",
+			Items: []dw.NavItem{{Path: "/", Label: "MathJax", Icon: "M"}, {Path: "#", Label: "Hooks", Icon: "J", Badge: "1"}},
+		}},
+		User: dw.UserMenu{Name: "Demo User", Email: "math@example.com", Initials: "DU"},
+	}, body)
+}
+
+func metricIcon(label string) mf.Node {
+	return mf.DivProps(mf.ElementProps{Class: "grid h-10 w-10 place-items-center rounded-box bg-primary/10 font-bold text-primary"}, mf.Text(label))
 }
 
 func customJavaScript() string {

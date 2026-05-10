@@ -58,6 +58,21 @@ dw.Use(app, dw.Options{})
 
 More runnable demos are available in the [Demo Gallery](https://yoshihideshirai.github.io/marionette/en/demos/).
 
+## Go app templates
+
+Starter layouts for new Marionette apps live in [`templates/apps`](templates/apps):
+
+```bash
+go run ./templates/apps/minimal
+go run ./templates/apps/crud-list
+go run ./templates/apps/dashboard
+go run ./templates/apps/settings-form
+go run ./templates/apps/master-detail
+```
+
+Use them as copyable DashWind-based starting points for single pages, CRUD
+lists, dashboards, settings forms, and master-detail flows.
+
 ## Documentation
 
 The README is intentionally small. Use the documentation site for tutorials,

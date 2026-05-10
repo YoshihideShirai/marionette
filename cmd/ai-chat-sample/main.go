@@ -36,7 +36,8 @@ func buildApp() *mb.App {
 	app.DisableCharts()
 	app.EnableSSE()
 	app.AddStyle(`
-		#marionette-root { min-height: 100vh; width: 100%; }
+		#marionette-root { min-height: 100vh; width: 100%; max-width: none; padding: 0; }
+		#marionette-root > * { animation: none; }
 		.ai-chat-message { scroll-margin-block: 1rem; }
 		.ai-chat-token { white-space: pre-wrap; }
 		.ai-chat-composer textarea:focus { outline: none; box-shadow: none; }
@@ -123,17 +124,23 @@ func chatPanel(ctx *mb.Context) mf.Node {
 	}
 	children = append(children, promptForm())
 
-	return mf.Region(mf.RegionProps{ID: "chat-panel", Props: mf.ComponentProps{Class: "flex min-h-screen flex-col bg-base-100"}}, children...)
+	return mf.Region(mf.RegionProps{ID: "chat-panel", Props: mf.ComponentProps{Class: "flex min-h-screen flex-col bg-base-200"}}, children...)
 }
 
 func topBar() mf.Node {
-	return mf.DivProps(mf.ElementProps{Class: "sticky top-0 z-10 border-b border-base-200 bg-base-100/95 px-4 py-3 backdrop-blur"},
+	return mf.DivProps(mf.ElementProps{Class: "sticky top-0 z-10 border-b border-base-300 bg-base-100/95 px-4 py-3 shadow-sm backdrop-blur"},
 		mf.DivProps(mf.ElementProps{Class: "mx-auto flex w-full max-w-5xl items-center justify-between gap-3"},
-			mf.DivProps(mf.ElementProps{Class: "min-w-0"},
-				mf.H1Props(mf.ElementProps{Class: "truncate text-base font-semibold"}, mf.Text("Marionette AI")),
-				mf.PProps(mf.ElementProps{Class: "text-xs text-base-content/60"}, mf.Text("AI Chat")),
+			mf.DivProps(mf.ElementProps{Class: "flex min-w-0 items-center gap-3"},
+				mf.DivProps(mf.ElementProps{Class: "grid h-10 w-10 shrink-0 place-items-center rounded-box bg-neutral text-sm font-bold text-neutral-content"}, mf.Text("AI")),
+				mf.DivProps(mf.ElementProps{Class: "min-w-0"},
+					mf.H1Props(mf.ElementProps{Class: "truncate text-base font-semibold"}, mf.Text("Marionette AI")),
+					mf.PProps(mf.ElementProps{Class: "text-xs text-base-content/60"}, mf.Text("AI Chat")),
+				),
 			),
-			resetForm(),
+			mf.DivProps(mf.ElementProps{Class: "flex items-center gap-2"},
+				mf.Badge(mf.BadgeProps{Label: "SSE", Props: mf.ComponentProps{Class: "badge-info hidden sm:inline-flex"}}),
+				resetForm(),
+			),
 		),
 	)
 }
@@ -217,9 +224,9 @@ func promptForm() mf.Node {
 		Action: "/chat/send",
 		Target: "#chat-panel",
 		Swap:   "outerHTML",
-		Props:  mf.ComponentProps{Class: "ai-chat-composer sticky bottom-0 mx-auto w-full max-w-3xl bg-base-100 px-4 pb-5 pt-2"},
+		Props:  mf.ComponentProps{Class: "ai-chat-composer sticky bottom-0 mx-auto w-full max-w-3xl bg-base-200 px-4 pb-5 pt-2"},
 	},
-		mf.DivProps(mf.ElementProps{Class: "rounded-[1.75rem] border border-base-300 bg-base-100 p-2 shadow-sm"},
+		mf.DivProps(mf.ElementProps{Class: "rounded-[1.75rem] border border-base-300 bg-base-100 p-2 shadow-lg shadow-base-300/40"},
 			mf.Element("textarea", mf.ElementProps{
 				ID:    "chat-prompt",
 				Class: "min-h-16 w-full resize-none border-0 bg-transparent px-3 py-2 text-sm leading-6",

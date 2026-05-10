@@ -57,6 +57,20 @@ dw.Use(app, dw.Options{})
 
 その他の実行可能なデモは [デモギャラリー](https://yoshihideshirai.github.io/marionette/ja/demos/) にまとめています。
 
+## Go アプリテンプレート
+
+新しい Marionette アプリのスターターレイアウトは [`templates/apps`](templates/apps) にあります:
+
+```bash
+go run ./templates/apps/minimal
+go run ./templates/apps/crud-list
+go run ./templates/apps/dashboard
+go run ./templates/apps/settings-form
+go run ./templates/apps/master-detail
+```
+
+単一ページ、CRUD リスト、ダッシュボード、設定フォーム、マスター詳細画面の DashWind ベースの出発点としてコピーして使えます。
+
 ## ドキュメント
 
 README は意図的に小さく保っています。チュートリアル、API の詳細、コンポーネント例はドキュメントサイトを参照してください:

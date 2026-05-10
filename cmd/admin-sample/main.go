@@ -8,6 +8,7 @@ import (
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
+	dw "github.com/YoshihideShirai/marionette/frontend/dashwind"
 )
 
 type order struct {
@@ -39,6 +40,7 @@ func main() {
 
 func buildApp() *mb.App {
 	app := mb.New()
+	dw.Use(app, dw.Options{Theme: "corporate", DisableDefaultCSS: true})
 	app.SetGlobal("orders", seedOrders)
 	app.SetGlobal("selectedStatus", "all")
 	app.SetGlobal("loggedIn", false)
@@ -237,7 +239,7 @@ func dashboardBody(ctx *mb.Context, currentPage string) mf.Node {
 	flash := ctx.GetGlobal("flash").(string)
 	currentOrderID := stateString(ctx, "currentOrderID")
 	children := []mf.Node{
-		mf.PageHeader(mf.PageHeaderProps{
+		dw.PageHeader(dw.PageHeaderProps{
 			Title:       pageTitle(currentPage),
 			Description: pageDescription(currentPage),
 			Actions:     mf.ActionForm(mf.ActionFormProps{Action: "/auth/logout", Target: "#app-body", Swap: "outerHTML"}, mf.IconButton(mf.IconButtonProps{Type: "submit", Label: "Sign out", IconSVG: template.HTML(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-[1.2em]"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`), Props: mf.ComponentProps{Variant: "outline", Size: "sm"}})),
@@ -278,10 +280,9 @@ func pageDescription(currentPage string) string {
 }
 
 func filterPanel(selectedStatus string) mf.Node {
-	return mf.Card(mf.CardProps{
+	return dw.CardPanel(dw.CardPanelProps{
 		Title:       "Filters",
 		Description: "Narrow the deal list without leaving the current view.",
-		Props:       mf.ComponentProps{Class: "border border-base-300 shadow-none"},
 	},
 		mf.ActionForm(mf.ActionFormProps{Action: "/orders/filter", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "mx-auto grid w-full max-w-sm gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"}},
 			mf.FormRow(mf.FormRowProps{ID: "status", Label: "Status", Control: mf.Select(mf.SelectFieldProps{ID: "status", Name: "status", Options: statusOptions(selectedStatus)})}),
@@ -292,13 +293,13 @@ func filterPanel(selectedStatus string) mf.Node {
 
 func loginPage(authError string) mf.Node {
 	children := []mf.Node{
-		mf.PageHeader(mf.PageHeaderProps{Title: "Admin Login", Description: "Sign in via an external identity provider."}),
+		dw.PageHeader(dw.PageHeaderProps{Title: "Admin Login", Description: "Sign in via an external identity provider."}),
 	}
 	if authError != "" {
 		children = append(children, mf.Alert(mf.AlertProps{Title: "Login failed", Description: authError, Props: mf.ComponentProps{Variant: "error"}}))
 	}
 	children = append(children,
-		mf.Card(mf.CardProps{Title: "Secure workspace", Description: "Use Demo SSO to enter the admin console.", Props: mf.ComponentProps{Class: "border border-base-300"}}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+		dw.CardPanel(dw.CardPanelProps{Title: "Secure workspace", Description: "Use Demo SSO to enter the admin console."}, mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
 			mf.Hero("Revenue Ops Console", "A focused sample dashboard with drawer navigation, filters, charts, and action forms.", mf.Badge(mf.BadgeProps{Label: "Demo", Props: mf.ComponentProps{Class: "badge-primary"}})),
 			mf.ActionForm(mf.ActionFormProps{Action: "/auth/login", Target: "#app-body", Swap: "outerHTML", Props: mf.ComponentProps{Class: "space-y-3"}},
 				mf.HiddenField("provider", "demo-sso"),
@@ -314,11 +315,11 @@ func loginPage(authError string) mf.Node {
 }
 
 func summaryCards(orders []order) mf.Node {
-	return mf.Grid(mf.GridProps{Columns: "md:grid-cols-3", Gap: "4"},
-		mf.Stat("Deals", fmt.Sprintf("%d", len(orders)), "Visible in current filter"),
-		mf.Stat("Value", "$"+formatNumber(totalAmount(orders)), "Projected ARR"),
-		mf.Stat("High risk", fmt.Sprintf("%d", highRiskCount(orders)), "Needs review"),
-	)
+	return dw.MetricGrid(dw.MetricGridProps{Items: []dw.Metric{
+		{Title: "Deals", Value: fmt.Sprintf("%d", len(orders)), Description: "Visible in current filter", Trend: "Filtered by status", TrendTone: dw.ToneNeutral, Icon: metricIcon("D")},
+		{Title: "Value", Value: "$" + formatNumber(totalAmount(orders)), Description: "Projected ARR", Trend: "Pipeline value", TrendTone: dw.ToneSuccess, Icon: metricIcon("$")},
+		{Title: "High risk", Value: fmt.Sprintf("%d", highRiskCount(orders)), Description: "Needs review", Trend: "Escalate quickly", TrendTone: dw.ToneWarning, Icon: metricIcon("R")},
+	}})
 }
 
 func totalAmount(orders []order) int {
@@ -419,10 +420,9 @@ func orderActionPanel(o order) mf.Node {
 		variant = "success"
 		description = "Return this deal to the active workflow."
 	}
-	return mf.Card(mf.CardProps{
+	return dw.CardPanel(dw.CardPanelProps{
 		Title:       "Workflow action",
 		Description: description,
-		Props:       mf.ComponentProps{Class: "border border-base-300 shadow-none"},
 	},
 		mf.ActionForm(mf.ActionFormProps{Action: "/orders/toggle-status", Target: "#main-content", Swap: "outerHTML", Props: mf.ComponentProps{Class: "grid gap-3"}},
 			mf.TextField(mf.TextFieldProps{ID: "detail-id-" + o.ID, Name: "id", Value: o.ID, Type: "hidden"}),
@@ -486,7 +486,7 @@ func pipelineHealth(orders []order) mf.Node {
 	if len(orders) > 0 {
 		value = float64(active) / float64(len(orders)) * 100
 	}
-	return mf.Section(mf.SectionProps{Title: "Pipeline health", Description: "Active deals compared with the currently visible pipeline."}, mf.Progress(mf.ProgressProps{Value: value, Max: 100, Label: "Active ratio", ShowValue: true, Props: mf.ComponentProps{Variant: "success"}}))
+	return dw.CardPanel(dw.CardPanelProps{Title: "Pipeline health", Description: "Active deals compared with the currently visible pipeline."}, mf.Progress(mf.ProgressProps{Value: value, Max: 100, Label: "Active ratio", ShowValue: true, Props: mf.ComponentProps{Variant: "success"}}))
 }
 
 func pipelineChart(orders []order) mf.Node {
@@ -499,7 +499,7 @@ func pipelineChart(orders []order) mf.Node {
 	for _, status := range statusOrder {
 		values = append(values, counts[status])
 	}
-	return mf.Section(mf.SectionProps{Title: "Deals by status", Description: "Volume by current workflow stage."}, mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: statusOrder, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}}))
+	return dw.CardPanel(dw.CardPanelProps{Title: "Deals by status", Description: "Volume by current workflow stage."}, mf.Chart(mf.ChartProps{Type: mf.ChartTypeBar, Labels: statusOrder, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values}}, Options: mf.ChartOptions{BeginAtZero: true, HideLegend: true}}))
 }
 
 func riskChart(orders []order) mf.Node {
@@ -509,7 +509,7 @@ func riskChart(orders []order) mf.Node {
 		counts[o.Risk]++
 	}
 	values := []float64{counts["Low"], counts["Medium"], counts["High"]}
-	return mf.Section(mf.SectionProps{Title: "Risk distribution", Description: "Open risk signals across visible deals."}, mf.Chart(mf.ChartProps{Type: mf.ChartTypeDoughnut, Labels: labels, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values, BackgroundColor: "rgba(59,130,246,0.35)", BorderColor: "#2563eb"}}, Options: mf.ChartOptions{HideLegend: false}}))
+	return dw.CardPanel(dw.CardPanelProps{Title: "Risk distribution", Description: "Open risk signals across visible deals."}, mf.Chart(mf.ChartProps{Type: mf.ChartTypeDoughnut, Labels: labels, Height: 260, Datasets: []mf.ChartDataset{{Label: "Deals", Data: values, BackgroundColor: "rgba(59,130,246,0.35)", BorderColor: "#2563eb"}}, Options: mf.ChartOptions{HideLegend: false}}))
 }
 
 func ordersTable(orders []order) mf.Node {
@@ -526,9 +526,13 @@ func ordersTable(orders []order) mf.Node {
 		risk := mf.Badge(mf.BadgeProps{Label: o.Risk, Props: mf.ComponentProps{Class: badgeClass(o.Risk)}})
 		rows = append(rows, mf.TableRowValues(dealLink, o.Customer, o.Plan, "$"+formatNumber(o.Amount), risk, o.Status, action))
 	}
-	return mf.Section(mf.SectionProps{Title: "Deals", Description: "Inline actions update the visible fragment."},
+	return dw.CardPanel(dw.CardPanelProps{Title: "Deals", Description: "Inline actions update the visible fragment."},
 		mf.Table(mf.TableProps{Columns: []mf.TableColumn{{Label: "Deal"}, {Label: "Customer"}, {Label: "Plan"}, {Label: "ARR"}, {Label: "Risk"}, {Label: "Status"}, {Label: "Action"}}, Rows: rows, EmptyTitle: "No deals", EmptyDescription: "Try another status filter."}),
 	)
+}
+
+func metricIcon(label string) mf.Node {
+	return mf.DivProps(mf.ElementProps{Class: "grid h-10 w-10 place-items-center rounded-box bg-primary/10 font-bold text-primary"}, mf.Text(label))
 }
 
 func findOrder(orders []order, id string) (order, bool) {

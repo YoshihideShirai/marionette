@@ -210,6 +210,12 @@ func (c *Context) writeSessionCookie() {
 // Handler transforms state into a UI node in response to a user event.
 type Handler func(*Context) frontend.Node
 
+// Stream yields server-sent HTML fragments for incremental, server-driven UI updates.
+type Stream func(yield func(frontend.Node) bool)
+
+// StreamHandler transforms request state into an incremental stream.
+type StreamHandler func(*Context) Stream
+
 // PageOptions configures the full-page HTML shell for a page route.
 type PageOptions struct {
 	Title string
@@ -249,6 +255,7 @@ type App struct {
 	state        map[string]any
 	pages        map[string]pageRoute
 	actions      map[string]Handler
+	streams      map[string]StreamHandler
 	assets       []assetRoute
 	cookieSecure bool
 	shellAssets  frontend.ShellAssets
@@ -261,6 +268,7 @@ func New() *App {
 		state:        map[string]any{},
 		pages:        map[string]pageRoute{},
 		actions:      map[string]Handler{},
+		streams:      map[string]StreamHandler{},
 		assets:       []assetRoute{},
 		cookieSecure: false,
 		shellAssets:  frontend.ShellAssets{},
@@ -474,6 +482,12 @@ func (a *App) Action(name string, fn Handler) {
 	a.actions[normalizeActionPath(name)] = fn
 }
 
+// StreamAction registers a GET endpoint that writes server-sent HTML fragments.
+// Each yielded node is rendered and sent as a JSON SSE message with an html field.
+func (a *App) StreamAction(name string, fn StreamHandler) {
+	a.streams[normalizeActionPath(name)] = fn
+}
+
 // Render defines the main root view for initial load.
 func (a *App) Render(fn Handler, options ...PageOption) {
 	a.Page("/", fn, options...)
@@ -501,6 +515,17 @@ func (a *App) Handler() http.Handler {
 			}
 			ctx := a.newContext(w, r)
 			a.renderAndWritePage(w, localRoute.handler(ctx), localRoute.options)
+		})
+	}
+	for path, fn := range a.streams {
+		localFn := fn
+		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet {
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+			ctx := a.newContext(w, r)
+			writeEventStream(w, localFn(ctx))
 		})
 	}
 	for path, fn := range a.actions {
@@ -637,6 +662,41 @@ func applyPageOptions(options []PageOption) PageOptions {
 func (a *App) Run(addr string) error {
 	fmt.Printf("marionette listening at http://%s\n", addr)
 	return http.ListenAndServe(addr, a.Handler())
+}
+
+func writeEventStream(w http.ResponseWriter, stream Stream) {
+	w.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	flusher, _ := w.(http.Flusher)
+	if stream == nil {
+		fmt.Fprint(w, "event: done\ndata: {}\n\n")
+		if flusher != nil {
+			flusher.Flush()
+		}
+		return
+	}
+	stream(func(node frontend.Node) bool {
+		htmlOut, err := node.Render()
+		if err != nil {
+			encoded, _ := json.Marshal(map[string]string{"error": err.Error()})
+			fmt.Fprintf(w, "event: error\ndata: %s\n\n", encoded)
+			if flusher != nil {
+				flusher.Flush()
+			}
+			return false
+		}
+		encoded, _ := json.Marshal(map[string]string{"html": string(htmlOut)})
+		fmt.Fprintf(w, "event: html\ndata: %s\n\n", encoded)
+		if flusher != nil {
+			flusher.Flush()
+		}
+		return true
+	})
+	fmt.Fprint(w, "event: done\ndata: {}\n\n")
+	if flusher != nil {
+		flusher.Flush()
+	}
 }
 
 func renderAndWriteFragment(w http.ResponseWriter, node frontend.Node) {

@@ -12,17 +12,17 @@ func TestTextStreamAdvancesByConfiguredChunks(t *testing.T) {
 	}
 
 	first := ctx.AdvanceTextStream("reply")
-	if !first.Active || first.Done || first.Content != "one two" || first.Cursor != 2 || first.Total != 5 {
+	if !first.Active || first.Done || first.Content != "one two" || first.Delta != "one two" || first.Cursor != 2 || first.Total != 5 {
 		t.Fatalf("unexpected first step: %+v", first)
 	}
 
 	second := ctx.AdvanceTextStream("reply")
-	if !second.Active || second.Done || second.Content != "one two three four" || second.Cursor != 4 || second.Total != 5 {
+	if !second.Active || second.Done || second.Content != "one two three four" || second.Delta != " three four" || second.Cursor != 4 || second.Total != 5 {
 		t.Fatalf("unexpected second step: %+v", second)
 	}
 
 	final := ctx.AdvanceTextStream("reply")
-	if !final.Active || !final.Done || final.Content != "one two three four five" || final.Cursor != 5 || final.Total != 5 {
+	if !final.Active || !final.Done || final.Content != "one two three four five" || final.Delta != " five" || final.Cursor != 5 || final.Total != 5 {
 		t.Fatalf("unexpected final step: %+v", final)
 	}
 	if ctx.TextStreamActive("reply") {

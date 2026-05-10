@@ -20,13 +20,13 @@ func TestRootPageRendersAIChatSample(t *testing.T) {
 	body := rr.Body.String()
 	for _, want := range []string{
 		"AI Chat Sample",
-		"server-driven state, htmx partial updates, and simulated streaming replies",
+		"server-driven state, htmx partial updates, and token-by-token SSE rendering",
 		"Demo conversation",
 		"Marionette AI",
 		`id="chat-panel"`,
 		`hx-post="/chat/send"`,
 		`hx-target="#chat-panel"`,
-		"Streaming mock replies render chunk by chunk",
+		"SSE mock replies append token by token",
 		"Reset conversation",
 		"Integration note",
 	} {
@@ -52,10 +52,10 @@ func TestChatSendActionAppendsUserAndStartsStreamingAssistantMessage(t *testing.
 		`id="chat-panel"`,
 		"You",
 		"Explain htmx streaming",
-		"Streaming response…",
-		"Streaming",
-		`hx-post="/chat/stream"`,
-		`hx-trigger="load delay:350ms"`,
+		"SSE streaming",
+		`id="message-content-3"`,
+		`id="message-cursor-3"`,
+		`data-marionette-sse-url="/chat/stream"`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected send fragment to contain %q, got %q", want, body)
@@ -74,31 +74,27 @@ func TestChatStreamActionProgressivelyRevealsAssistantMessage(t *testing.T) {
 	sendReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	handler.ServeHTTP(httptest.NewRecorder(), sendReq)
 
-	first := postStream(t, handler)
+	body := getStream(t, handler)
 	for _, want := range []string{
-		"In Marionette, ActionForm Target and",
-		"▌",
-		`hx-post="/chat/stream"`,
+		"event: html",
+		"event: done",
+		"In",
+		"Marionette",
+		"beforeend:#message-content-3",
+		"Complete",
+		" StreamAction",
+		" SSE",
+		" endpoint",
+		" token",
+		" client-side",
+		" state.",
 	} {
-		if !strings.Contains(first, want) {
-			t.Fatalf("expected first stream fragment to contain %q, got %q", want, first)
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected SSE stream to contain %q, got %q", want, body)
 		}
 	}
-
-	latest := first
-	for i := 0; i < 12 && strings.Contains(latest, `hx-post="/chat/stream"`); i++ {
-		latest = postStream(t, handler)
-	}
-	for _, want := range []string{
-		"This sample combines those partial updates with a polling trigger",
-		"assistant reply appears chunk by chunk.",
-	} {
-		if !strings.Contains(latest, want) {
-			t.Fatalf("expected final stream fragment to contain %q, got %q", want, latest)
-		}
-	}
-	if strings.Contains(latest, "▌") || strings.Contains(latest, `hx-post="/chat/stream"`) {
-		t.Fatalf("expected completed stream without cursor or stream trigger, got %q", latest)
+	if strings.Contains(body, `hx-post="/chat/stream"`) {
+		t.Fatalf("expected SSE stream not to use polling trigger, got %q", body)
 	}
 }
 
@@ -140,14 +136,14 @@ func TestChatResetActionRestoresWelcomeMessage(t *testing.T) {
 	if !strings.Contains(body, "Hello. This is an AI chat sample demo.") {
 		t.Fatalf("expected reset fragment to contain welcome message, got %q", body)
 	}
-	if strings.Contains(body, "quarterly forecast") || strings.Contains(body, "Streaming response") || strings.Contains(body, `hx-post="/chat/stream"`) {
+	if strings.Contains(body, "quarterly forecast") || strings.Contains(body, "Streaming response") || strings.Contains(body, `data-marionette-sse-url="/chat/stream"`) {
 		t.Fatalf("expected reset fragment to remove previous conversation and stream trigger, got %q", body)
 	}
 }
 
-func postStream(t *testing.T, handler http.Handler) string {
+func getStream(t *testing.T, handler http.Handler) string {
 	t.Helper()
-	req := httptest.NewRequest(http.MethodPost, "/chat/stream", nil)
+	req := httptest.NewRequest(http.MethodGet, "/chat/stream", nil)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 	if rr.Code != http.StatusOK {

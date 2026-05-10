@@ -1,7 +1,11 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import adminSample from '../../../../../assets/admin-sample.png';
+import aiChatSample from '../../../../../assets/ai-chat-sample.png';
+import customJavascriptSample from '../../../../../assets/custom-javascript-sample.png';
 import dashwindDemo from '../../../../../assets/dashwind-demo.png';
+import marionetteDemo from '../../../../../assets/marionette-demo.png';
+import simpleSample from '../../../../../assets/simple-sample.png';
 
 const demos = [
   {
@@ -32,6 +36,8 @@ const demos = [
     command: 'go run ./cmd/marionette',
     url: 'http://127.0.0.1:8080',
     sources: [{ label: 'cmd/marionette', href: 'https://github.com/YoshihideShirai/marionette/tree/main/cmd/marionette' }],
+    image: marionetteDemo,
+    imageAlt: 'Full Marionette demo screenshot',
   },
   {
     title: 'Minimal sample',
@@ -39,6 +45,8 @@ const demos = [
     command: 'go run ./cmd/simple-sample',
     url: 'http://127.0.0.1:8081',
     sources: [{ label: 'cmd/simple-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/simple-sample/main.go' }],
+    image: simpleSample,
+    imageAlt: 'Minimal sample screenshot',
   },
   {
     title: 'AI chat sample',
@@ -46,6 +54,17 @@ const demos = [
     command: 'go run ./cmd/ai-chat-sample',
     url: 'http://127.0.0.1:8084',
     sources: [{ label: 'cmd/ai-chat-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/ai-chat-sample/main.go' }],
+    image: aiChatSample,
+    imageAlt: 'AI chat sample screenshot',
+  },
+  {
+    title: 'Custom JavaScript sample',
+    description: 'External MathJax plus app-level JavaScript hooks for pages that need a small browser-side enhancement.',
+    command: 'go run ./cmd/custom-javascript-sample',
+    url: 'http://127.0.0.1:8082',
+    sources: [{ label: 'cmd/custom-javascript-sample/main.go', href: 'https://github.com/YoshihideShirai/marionette/blob/main/cmd/custom-javascript-sample/main.go' }],
+    image: customJavascriptSample,
+    imageAlt: 'Custom JavaScript sample screenshot',
   },
   {
     title: 'Desktop WebView sample',

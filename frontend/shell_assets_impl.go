@@ -17,6 +17,7 @@ type ShellAssets struct {
 	JavaScripts          []template.JS
 	DisableHTMX          bool
 	DisableCharts        bool
+	EnableSSE            bool
 }
 
 func (a *ShellAssets) UseStyleTemplate(tpl StyleTemplate) {
@@ -45,3 +46,6 @@ func (a *ShellAssets) EnableHTMX(enable bool) { a.DisableHTMX = !enable }
 
 // EnableCharts controls whether the default Chart.js runtime and chart bootstrap are included in full-page shells.
 func (a *ShellAssets) EnableCharts(enable bool) { a.DisableCharts = !enable }
+
+// EnableServerSentEvents controls whether the default SSE connector runtime is included in full-page shells.
+func (a *ShellAssets) EnableServerSentEvents(enable bool) { a.EnableSSE = enable }

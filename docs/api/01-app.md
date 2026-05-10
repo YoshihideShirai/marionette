@@ -140,6 +140,12 @@ func main() {
 - Inline JavaScript is emitted after custom external scripts, so it can use
   libraries registered with `AddScript`.
 
+
+### `EnableSSE()` / `EnableServerSentEvents(enable bool)`
+- Includes Marionette's built-in EventSource connector runtime in full-page shells.
+- The connector automatically opens `data-marionette-sse-url` elements, reads `html` SSE events emitted by `StreamAction`, and applies `hx-swap-oob` fragments.
+- This is opt-in so apps that do not use SSE keep their default shell small.
+
 ### `Handler() http.Handler`
 - Builds and returns `*http.ServeMux` with all registered routes.
 - `Page` routes:

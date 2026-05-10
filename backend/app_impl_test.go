@@ -743,6 +743,33 @@ func TestRouteBehavior(t *testing.T) {
 			wantContains: "plain",
 		},
 		{
+			name: "stream action yields server-sent html events",
+			setup: func(app *App) {
+				app.StreamAction("events", func(ctx *Context) Stream {
+					return func(yield func(frontend.Node) bool) {
+						yield(frontend.Raw(`<span hx-swap-oob="beforeend:#log">Hello</span>`))
+						yield(frontend.Text(" world"))
+					}
+				})
+			},
+			method:       http.MethodGet,
+			path:         "/events",
+			wantStatus:   http.StatusOK,
+			wantContains: "event: done",
+		},
+		{
+			name: "post to stream action is rejected",
+			setup: func(app *App) {
+				app.StreamAction("events", func(ctx *Context) Stream {
+					return nil
+				})
+			},
+			method:       http.MethodPost,
+			path:         "/events",
+			wantStatus:   http.StatusMethodNotAllowed,
+			wantContains: "method not allowed",
+		},
+		{
 			name: "post to page route is rejected",
 			setup: func(app *App) {
 				app.Page("/page", func(ctx *Context) frontend.Node {

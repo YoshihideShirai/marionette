@@ -18,6 +18,7 @@ type TextStreamOptions struct {
 // TextStreamStep is the result of advancing a server-side text stream.
 type TextStreamStep struct {
 	Content string
+	Delta   string
 	Done    bool
 	Active  bool
 	Cursor  int
@@ -76,7 +77,8 @@ func (c *Context) AdvanceTextStream(name string) TextStreamStep {
 
 		done := next >= len(chunks)
 		step = TextStreamStep{
-			Content: strings.Join(chunks[:next], " "),
+			Content: strings.Join(chunks[:next], ""),
+			Delta:   strings.Join(chunks[state.Cursor:next], ""),
 			Done:    done,
 			Active:  true,
 			Cursor:  next,
@@ -120,9 +122,17 @@ func textStreamKey(name string) string {
 }
 
 func splitTextStreamChunks(text string) []string {
-	chunks := strings.Fields(text)
-	if len(chunks) == 0 {
+	fields := strings.Fields(text)
+	if len(fields) == 0 {
 		return []string{text}
+	}
+	chunks := make([]string, len(fields))
+	for i, field := range fields {
+		if i == 0 {
+			chunks[i] = field
+			continue
+		}
+		chunks[i] = " " + field
 	}
 	return chunks
 }

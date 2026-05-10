@@ -36,9 +36,10 @@ func buildApp() *mb.App {
 	app.DisableCharts()
 	app.EnableSSE()
 	app.AddStyle(`
-		#marionette-root { width: min(100%, 72rem); }
+		#marionette-root { min-height: 100vh; width: 100%; }
 		.ai-chat-message { scroll-margin-block: 1rem; }
 		.ai-chat-token { white-space: pre-wrap; }
+		.ai-chat-composer textarea:focus { outline: none; box-shadow: none; }
 	`)
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return page(ctx)
@@ -99,14 +100,7 @@ func buildApp() *mb.App {
 }
 
 func page(ctx *mb.Context) mf.Node {
-	return mf.Container(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
-		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
-			mf.DivProps(mf.ElementProps{Class: "flex items-center justify-between"},
-				mf.H1Props(mf.ElementProps{Class: "text-2xl font-bold"}, mf.Text("AI Chat")),
-			),
-			chatPanel(ctx),
-		),
-	)
+	return chatPanel(ctx)
 }
 
 func chatPanel(ctx *mb.Context) mf.Node {
@@ -114,6 +108,7 @@ func chatPanel(ctx *mb.Context) mf.Node {
 	errorMessage, _ := ctx.GetGlobal("chatError").(string)
 
 	children := []mf.Node{
+		topBar(),
 		conversation(messages),
 	}
 	if hasStreamingMessage(messages) {
@@ -126,12 +121,20 @@ func chatPanel(ctx *mb.Context) mf.Node {
 			Props:       mf.ComponentProps{Class: "alert-warning"},
 		}))
 	}
-	children = append(children, promptForm(), resetForm())
+	children = append(children, promptForm())
 
-	return mf.Region(mf.RegionProps{ID: "chat-panel"},
-		mf.Card(mf.CardProps{
-			Props: mf.ComponentProps{Class: "border border-base-300"},
-		}, children...),
+	return mf.Region(mf.RegionProps{ID: "chat-panel", Props: mf.ComponentProps{Class: "flex min-h-screen flex-col bg-base-100"}}, children...)
+}
+
+func topBar() mf.Node {
+	return mf.DivProps(mf.ElementProps{Class: "sticky top-0 z-10 border-b border-base-200 bg-base-100/95 px-4 py-3 backdrop-blur"},
+		mf.DivProps(mf.ElementProps{Class: "mx-auto flex w-full max-w-5xl items-center justify-between gap-3"},
+			mf.DivProps(mf.ElementProps{Class: "min-w-0"},
+				mf.H1Props(mf.ElementProps{Class: "truncate text-base font-semibold"}, mf.Text("Marionette AI")),
+				mf.PProps(mf.ElementProps{Class: "text-xs text-base-content/60"}, mf.Text("AI Chat")),
+			),
+			resetForm(),
+		),
 	)
 }
 
@@ -140,30 +143,19 @@ func conversation(messages []chatMessage) mf.Node {
 	for _, msg := range messages {
 		items = append(items, messageBubble(msg))
 	}
-	return mf.DivProps(mf.ElementProps{Class: "card-body max-h-[34rem] overflow-y-auto space-y-4 bg-base-200/60"}, items...)
+	return mf.DivProps(mf.ElementProps{Class: "mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8"}, items...)
 }
 
 func messageBubble(msg chatMessage) mf.Node {
-	alignClass := "chat-start"
-	bubbleClass := "chat-bubble chat-bubble-secondary"
-	if msg.Role == "user" {
-		alignClass = "chat-end"
-		bubbleClass = "chat-bubble chat-bubble-primary"
-	}
-
-	headerChildren := []mf.Node{mf.Text(msg.Name)}
-
 	contentID := fmt.Sprintf("message-content-%d", msg.ID)
 	cursorID := fmt.Sprintf("message-cursor-%d", msg.ID)
 	statusID := fmt.Sprintf("message-status-%d", msg.ID)
+	statusText := ""
 	if msg.Streaming {
-		status := "SSE streaming"
+		statusText = "SSE streaming"
 		if msg.Thinking {
-			status = "Thinking"
+			statusText = "Thinking"
 		}
-		headerChildren = append(headerChildren,
-			mf.SpanProps(mf.ElementProps{ID: statusID, Class: "badge badge-info badge-xs ml-2"}, mf.Text(status)),
-		)
 	}
 
 	bubbleChildren := []mf.Node{
@@ -188,9 +180,23 @@ func messageBubble(msg chatMessage) mf.Node {
 		bubbleChildren = append(bubbleChildren, mf.SpanProps(mf.ElementProps{ID: cursorID, Class: cursorClass}, mf.Text(cursorText)))
 	}
 
-	return mf.DivProps(mf.ElementProps{ID: fmt.Sprintf("message-%d", msg.ID), Class: "ai-chat-message chat " + alignClass},
-		mf.DivProps(mf.ElementProps{Class: "chat-header text-xs opacity-70"}, headerChildren...),
-		mf.DivProps(mf.ElementProps{Class: bubbleClass}, bubbleChildren...),
+	statusNode := mf.SpanProps(mf.ElementProps{ID: statusID, Class: "sr-only"}, mf.Text(statusText))
+	if msg.Role == "user" {
+		return mf.DivProps(mf.ElementProps{ID: fmt.Sprintf("message-%d", msg.ID), Class: "ai-chat-message flex justify-end"},
+			mf.DivProps(mf.ElementProps{Class: "max-w-[80%] rounded-3xl bg-base-200 px-4 py-2.5 text-sm leading-relaxed text-base-content sm:max-w-[70%]"},
+				bubbleChildren...,
+			),
+			statusNode,
+		)
+	}
+
+	return mf.DivProps(mf.ElementProps{ID: fmt.Sprintf("message-%d", msg.ID), Class: "ai-chat-message flex gap-4"},
+		mf.DivProps(mf.ElementProps{Class: "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral text-xs font-semibold text-neutral-content"}, mf.Text("AI")),
+		mf.DivProps(mf.ElementProps{Class: "min-w-0 flex-1 space-y-1"},
+			mf.DivProps(mf.ElementProps{Class: "text-sm font-medium text-base-content"}, mf.Text(msg.Name)),
+			mf.DivProps(mf.ElementProps{Class: "text-sm leading-7 text-base-content"}, bubbleChildren...),
+			statusNode,
+		),
 	)
 }
 
@@ -211,22 +217,26 @@ func promptForm() mf.Node {
 		Action: "/chat/send",
 		Target: "#chat-panel",
 		Swap:   "outerHTML",
-		Props:  mf.ComponentProps{Class: "card-body gap-4 border-t border-base-300"},
+		Props:  mf.ComponentProps{Class: "ai-chat-composer sticky bottom-0 mx-auto w-full max-w-3xl bg-base-100 px-4 pb-5 pt-2"},
 	},
-		mf.FormRow(mf.FormRowProps{
-			ID:       "chat-prompt",
-			Label:    "Message",
-			Required: true,
-			Control: mf.Textarea(mf.TextareaProps{
-				ID:          "chat-prompt",
-				Name:        "prompt",
-				Placeholder: "Ask something...",
-				Rows:        3,
-				Required:    true,
+		mf.DivProps(mf.ElementProps{Class: "rounded-[1.75rem] border border-base-300 bg-base-100 p-2 shadow-sm"},
+			mf.Element("textarea", mf.ElementProps{
+				ID:    "chat-prompt",
+				Class: "min-h-16 w-full resize-none border-0 bg-transparent px-3 py-2 text-sm leading-6",
+				Attrs: mf.Attrs{
+					"name":        "prompt",
+					"placeholder": "Message Marionette AI",
+					"rows":        "2",
+					"required":    "required",
+					"aria-label":  "Message",
+				},
 			}),
-		}),
-		mf.Actions(mf.ActionsProps{Props: mf.ComponentProps{Class: "justify-end"}},
-			mf.SubmitButton("Send message", mf.ComponentProps{Class: "btn-primary"}),
+			mf.DivProps(mf.ElementProps{Class: "flex items-center justify-end px-1"},
+				mf.Element("button", mf.ElementProps{
+					Class: "btn btn-neutral btn-sm rounded-full px-5",
+					Attrs: mf.Attrs{"type": "submit"},
+				}, mf.Text("Send")),
+			),
 		),
 	)
 }
@@ -236,9 +246,12 @@ func resetForm() mf.Node {
 		Action: "/chat/reset",
 		Target: "#chat-panel",
 		Swap:   "outerHTML",
-		Props:  mf.ComponentProps{Class: "card-body pt-0 items-end"},
+		Props:  mf.ComponentProps{Class: "m-0"},
 	},
-		mf.SubmitButton("Reset conversation", mf.ComponentProps{Class: "btn-ghost btn-sm"}),
+		mf.Element("button", mf.ElementProps{
+			Class: "btn btn-ghost btn-sm rounded-full",
+			Attrs: mf.Attrs{"type": "submit"},
+		}, mf.Text("Reset conversation")),
 	)
 }
 

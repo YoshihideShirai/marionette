@@ -47,7 +47,6 @@ func TestChatSendActionAppendsUserAndStartsStreamingAssistantMessage(t *testing.
 	body := rr.Body.String()
 	for _, want := range []string{
 		`id="chat-panel"`,
-		"You",
 		"Explain htmx streaming",
 		"Thinking",
 		`id="message-content-3"`,

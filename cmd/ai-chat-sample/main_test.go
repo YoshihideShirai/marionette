@@ -19,16 +19,13 @@ func TestRootPageRendersAIChatSample(t *testing.T) {
 	}
 	body := rr.Body.String()
 	for _, want := range []string{
-		"AI Chat Sample",
-		"server-driven state, htmx partial updates, and token-by-token SSE rendering",
-		"Demo conversation",
+		"AI Chat",
 		"Marionette AI",
+		"Hello. Ask me anything.",
 		`id="chat-panel"`,
 		`hx-post="/chat/send"`,
 		`hx-target="#chat-panel"`,
-		"SSE mock replies append token by token",
 		"Reset conversation",
-		"Integration note",
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("expected root page to contain %q, got %q", want, body)
@@ -52,8 +49,9 @@ func TestChatSendActionAppendsUserAndStartsStreamingAssistantMessage(t *testing.
 		`id="chat-panel"`,
 		"You",
 		"Explain htmx streaming",
-		"SSE streaming",
+		"Thinking",
 		`id="message-content-3"`,
+		`id="message-thinking-3"`,
 		`id="message-cursor-3"`,
 		`data-marionette-sse-url="/chat/stream"`,
 	} {
@@ -81,6 +79,8 @@ func TestChatStreamActionProgressivelyRevealsAssistantMessage(t *testing.T) {
 		"In",
 		"Marionette",
 		"beforeend:#message-content-3",
+		"message-thinking-3",
+		"SSE streaming",
 		"Complete",
 		" StreamAction",
 		" SSE",
@@ -133,7 +133,7 @@ func TestChatResetActionRestoresWelcomeMessage(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rr.Code)
 	}
 	body := rr.Body.String()
-	if !strings.Contains(body, "Hello. This is an AI chat sample demo.") {
+	if !strings.Contains(body, "Hello. Ask me anything.") {
 		t.Fatalf("expected reset fragment to contain welcome message, got %q", body)
 	}
 	if strings.Contains(body, "quarterly forecast") || strings.Contains(body, "Streaming response") || strings.Contains(body, `data-marionette-sse-url="/chat/stream"`) {

@@ -4,10 +4,13 @@ import (
 	"fmt"
 	stdhtml "html"
 	"strings"
+	"time"
 
 	mb "github.com/YoshihideShirai/marionette/backend"
 	mf "github.com/YoshihideShirai/marionette/frontend"
 )
+
+const thinkingDelay = 650 * time.Millisecond
 
 type chatMessage struct {
 	ID        int
@@ -15,6 +18,7 @@ type chatMessage struct {
 	Name      string
 	Content   string
 	Streaming bool
+	Thinking  bool
 }
 
 func main() {
@@ -38,7 +42,7 @@ func buildApp() *mb.App {
 	`)
 	app.Page("/", func(ctx *mb.Context) mf.Node {
 		return page(ctx)
-	}, mb.WithTitle("AI Chat Sample"))
+	}, mb.WithTitle("AI Chat"))
 
 	app.Action("chat/send", func(ctx *mb.Context) mf.Node {
 		prompt := strings.TrimSpace(ctx.FormValue("prompt"))
@@ -59,7 +63,7 @@ func buildApp() *mb.App {
 			messages := cloneMessages(old).([]chatMessage)
 			messages = append(messages,
 				chatMessage{ID: userID, Role: "user", Name: "You", Content: prompt},
-				chatMessage{ID: assistantID, Role: "assistant", Name: "Marionette AI", Streaming: true},
+				chatMessage{ID: assistantID, Role: "assistant", Name: "Marionette AI", Streaming: true, Thinking: true},
 			)
 			return messages
 		})
@@ -69,11 +73,14 @@ func buildApp() *mb.App {
 	app.StreamAction("chat/stream", func(ctx *mb.Context) mb.Stream {
 		return func(yield func(mf.Node) bool) {
 			for {
-				messageID, step := advanceStream(ctx)
+				messageID, step, wasThinking := advanceStream(ctx)
 				if !step.Active || messageID == 0 {
 					return
 				}
-				if !yield(streamDelta(messageID, step)) || step.Done {
+				if wasThinking {
+					time.Sleep(thinkingDelay)
+				}
+				if !yield(streamDelta(messageID, step, wasThinking)) || step.Done {
 					return
 				}
 			}
@@ -92,16 +99,12 @@ func buildApp() *mb.App {
 }
 
 func page(ctx *mb.Context) mf.Node {
-	return mf.Container(mf.ContainerProps{MaxWidth: "6xl", Centered: true},
-		mf.Stack(mf.StackProps{Direction: "column", Gap: "6"},
-			mf.PageHeader(mf.PageHeaderProps{
-				Title:       "AI Chat Sample",
-				Description: "A Go-only demo for building a chat UI with server-driven state, htmx partial updates, and token-by-token SSE rendering. It uses a sample reply generator instead of calling an external AI API.",
-			}),
-			mf.Grid(mf.GridProps{Columns: "3", Gap: "lg"},
-				mf.DivProps(mf.ElementProps{Class: "lg:col-span-2"}, chatPanel(ctx)),
-				sidebar(),
+	return mf.Container(mf.ContainerProps{MaxWidth: "4xl", Centered: true},
+		mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
+			mf.DivProps(mf.ElementProps{Class: "flex items-center justify-between"},
+				mf.H1Props(mf.ElementProps{Class: "text-2xl font-bold"}, mf.Text("AI Chat")),
 			),
+			chatPanel(ctx),
 		),
 	)
 }
@@ -127,9 +130,7 @@ func chatPanel(ctx *mb.Context) mf.Node {
 
 	return mf.Region(mf.RegionProps{ID: "chat-panel"},
 		mf.Card(mf.CardProps{
-			Title:       "Demo conversation",
-			Description: "The server owns the conversation state, swaps this card after actions, then streams token fragments over SSE into the active assistant bubble.",
-			Props:       mf.ComponentProps{Class: "border border-base-300"},
+			Props: mf.ComponentProps{Class: "border border-base-300"},
 		}, children...),
 	)
 }
@@ -156,16 +157,35 @@ func messageBubble(msg chatMessage) mf.Node {
 	cursorID := fmt.Sprintf("message-cursor-%d", msg.ID)
 	statusID := fmt.Sprintf("message-status-%d", msg.ID)
 	if msg.Streaming {
+		status := "SSE streaming"
+		if msg.Thinking {
+			status = "Thinking"
+		}
 		headerChildren = append(headerChildren,
-			mf.SpanProps(mf.ElementProps{ID: statusID, Class: "badge badge-info badge-xs ml-2"}, mf.Text("SSE streaming")),
+			mf.SpanProps(mf.ElementProps{ID: statusID, Class: "badge badge-info badge-xs ml-2"}, mf.Text(status)),
 		)
 	}
 
 	bubbleChildren := []mf.Node{
 		mf.SpanProps(mf.ElementProps{ID: contentID, Class: "ai-chat-token"}, mf.Text(msg.Content)),
 	}
+	if msg.Thinking {
+		thinkingID := fmt.Sprintf("message-thinking-%d", msg.ID)
+		bubbleChildren = append(bubbleChildren,
+			mf.SpanProps(mf.ElementProps{ID: thinkingID, Class: "inline-flex items-center gap-2 opacity-70"},
+				mf.Text("Thinking"),
+				mf.SpanProps(mf.ElementProps{Class: "loading loading-dots loading-xs"}, mf.Text("")),
+			),
+		)
+	}
 	if msg.Streaming {
-		bubbleChildren = append(bubbleChildren, mf.SpanProps(mf.ElementProps{ID: cursorID, Class: "opacity-70"}, mf.Text("▌")))
+		cursorClass := "opacity-70"
+		cursorText := "▌"
+		if msg.Thinking {
+			cursorClass = "hidden"
+			cursorText = ""
+		}
+		bubbleChildren = append(bubbleChildren, mf.SpanProps(mf.ElementProps{ID: cursorID, Class: cursorClass}, mf.Text(cursorText)))
 	}
 
 	return mf.DivProps(mf.ElementProps{ID: fmt.Sprintf("message-%d", msg.ID), Class: "ai-chat-message chat " + alignClass},
@@ -194,15 +214,14 @@ func promptForm() mf.Node {
 		Props:  mf.ComponentProps{Class: "card-body gap-4 border-t border-base-300"},
 	},
 		mf.FormRow(mf.FormRowProps{
-			ID:          "chat-prompt",
-			Label:       "Message",
-			Description: "Examples: Build a sales summary UI / Explain htmx streaming",
-			Required:    true,
+			ID:       "chat-prompt",
+			Label:    "Message",
+			Required: true,
 			Control: mf.Textarea(mf.TextareaProps{
 				ID:          "chat-prompt",
 				Name:        "prompt",
-				Placeholder: "Type what you want to ask the AI",
-				Rows:        4,
+				Placeholder: "Ask something...",
+				Rows:        3,
 				Required:    true,
 			}),
 		}),
@@ -223,36 +242,12 @@ func resetForm() mf.Node {
 	)
 }
 
-func sidebar() mf.Node {
-	return mf.Stack(mf.StackProps{Direction: "column", Gap: "4"},
-		mf.Card(mf.CardProps{
-			Title:       "What this demonstrates",
-			Description: "Build an AI-chat-style operations UI with standard Marionette components.",
-			Props:       mf.ComponentProps{Class: "border border-base-300"},
-		},
-			mf.DivProps(mf.ElementProps{Class: "card-body pt-0"},
-				mf.UlProps(mf.ElementProps{Class: "list-disc space-y-2 pl-5 text-sm text-base-content/80"},
-					mf.Li(mf.Text("SSE mock replies append token by token")),
-					mf.Li(mf.Text("Conversation history is stored in Go app state")),
-					mf.Li(mf.Text("Form submissions update only the card with htmx; SSE updates only the message spans")),
-					mf.Li(mf.Text("Runs locally without an external API key")),
-				),
-			),
-		),
-		mf.Alert(mf.AlertProps{
-			Title:       "Integration note",
-			Description: "For production, feed real LLM chunks through StreamAction and the text stream APIs, then load API keys from environment variables or secret management.",
-			Props:       mf.ComponentProps{Class: "alert-info"},
-		}),
-	)
-}
-
 func welcomeMessage() chatMessage {
 	return chatMessage{
 		ID:      1,
 		Role:    "assistant",
 		Name:    "Marionette AI",
-		Content: "Hello. This is an AI chat sample demo. Send a message to update server-side state, stream a mock reply, and re-render only the conversation card.",
+		Content: "Hello. Ask me anything.",
 	}
 }
 
@@ -270,38 +265,45 @@ func demoReply(prompt string) string {
 	}
 }
 
-func advanceStream(ctx *mb.Context) (int, mb.TextStreamStep) {
+func advanceStream(ctx *mb.Context) (int, mb.TextStreamStep, bool) {
 	step := ctx.AdvanceTextStream("chat-reply")
 	if !step.Active {
-		return 0, step
+		return 0, step, false
 	}
 
 	messageID := 0
+	wasThinking := false
 	ctx.UpdateGlobal("messages", func(old any) any {
 		messages := cloneMessages(old).([]chatMessage)
 		for i := range messages {
 			if messages[i].Streaming {
 				messageID = messages[i].ID
+				wasThinking = messages[i].Thinking
 				messages[i].Content = step.Content
 				messages[i].Streaming = !step.Done
+				messages[i].Thinking = false
 				break
 			}
 		}
 		return messages
 	})
-	return messageID, step
+	return messageID, step, wasThinking
 }
 
-func streamDelta(messageID int, step mb.TextStreamStep) mf.Node {
+func streamDelta(messageID int, step mb.TextStreamStep, wasThinking bool) mf.Node {
 	chunk := stdhtml.EscapeString(step.Delta)
 	contentID := fmt.Sprintf("message-content-%d", messageID)
 	cursorID := fmt.Sprintf("message-cursor-%d", messageID)
 	statusID := fmt.Sprintf("message-status-%d", messageID)
-	status := ""
-	if step.Done {
-		status = fmt.Sprintf(`<span id="%s" class="badge badge-success badge-xs ml-2" hx-swap-oob="outerHTML">Complete</span><span id="%s" hx-swap-oob="outerHTML"></span>`, statusID, cursorID)
+	updates := ""
+	if wasThinking {
+		thinkingID := fmt.Sprintf("message-thinking-%d", messageID)
+		updates += fmt.Sprintf(`<span id="%s" hx-swap-oob="outerHTML"></span><span id="%s" class="opacity-70" hx-swap-oob="outerHTML">▌</span><span id="%s" class="badge badge-info badge-xs ml-2" hx-swap-oob="outerHTML">SSE streaming</span>`, thinkingID, cursorID, statusID)
 	}
-	return mf.Raw(fmt.Sprintf(`<span hx-swap-oob="beforeend:#%s">%s</span>%s`, contentID, chunk, status))
+	if step.Done {
+		updates += fmt.Sprintf(`<span id="%s" class="badge badge-success badge-xs ml-2" hx-swap-oob="outerHTML">Complete</span><span id="%s" hx-swap-oob="outerHTML"></span>`, statusID, cursorID)
+	}
+	return mf.Raw(fmt.Sprintf(`<span hx-swap-oob="beforeend:#%s">%s</span>%s`, contentID, chunk, updates))
 }
 
 func hasStreamingMessage(messages []chatMessage) bool {

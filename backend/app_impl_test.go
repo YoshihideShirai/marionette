@@ -206,6 +206,25 @@ func TestPageCanDisableChartsWhenNoChartComponentsAreUsed(t *testing.T) {
 	}
 }
 
+func TestPageCanEnableSSEConnectorRuntime(t *testing.T) {
+	app := New()
+	app.EnableSSE()
+	app.Page("/", func(ctx *Context) frontend.Node {
+		return frontend.Container(frontend.ContainerProps{}, frontend.Text("Streaming"))
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	app.Handler().ServeHTTP(rr, req)
+
+	body := rr.Body.String()
+	for _, want := range []string{"data-marionette-sse-url", "window.mrnConnectSSE", "EventSource"} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("expected SSE connector runtime %q, got %q", want, body)
+		}
+	}
+}
+
 func TestPageIncludesCustomScripts(t *testing.T) {
 	app := New()
 	app.AddScript("https://cdn.example.com/widget.js")

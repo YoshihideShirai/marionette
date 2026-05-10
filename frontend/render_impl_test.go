@@ -92,6 +92,30 @@ func TestShellIncludesDefaultFeatureScripts(t *testing.T) {
 	}
 }
 
+func TestShellCanIncludeSSEBootstrapScript(t *testing.T) {
+	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{EnableSSE: true})
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, want := range []string{"data-marionette-sse-url", "window.mrnConnectSSE", "EventSource", "hx-swap-oob"} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected SSE bootstrap %q in shell output, got %q", want, out)
+		}
+	}
+}
+
+func TestShellOmitsSSEBootstrapScriptByDefault(t *testing.T) {
+	out, err := shell(template.HTML(`<div id="app"></div>`))
+	if err != nil {
+		t.Fatalf("shell render failed: %v", err)
+	}
+	for _, notWant := range []string{"data-marionette-sse-url", "window.mrnConnectSSE"} {
+		if strings.Contains(out, notWant) {
+			t.Fatalf("did not expect SSE bootstrap %q by default, got %q", notWant, out)
+		}
+	}
+}
+
 func TestShellDisableHTMXKeepsCharts(t *testing.T) {
 	out, err := shellWithOptions(template.HTML(`<div id="app"></div>`), shellOptions{DisableHTMX: true})
 	if err != nil {

@@ -76,6 +76,63 @@ const ThemeBootstrapJS = `(function() {
   }
 })();`
 
+const SSEBootstrapJS = `(function () {
+  function applyOutOfBand(html) {
+    var template = document.createElement("template");
+    template.innerHTML = html;
+    template.content.querySelectorAll("[hx-swap-oob]").forEach(function (node) {
+      var spec = node.getAttribute("hx-swap-oob") || "outerHTML";
+      var mode = "outerHTML";
+      var selector = "";
+      if (spec === "true") {
+        selector = node.id ? "#" + node.id : "";
+      } else {
+        var splitAt = spec.indexOf(":");
+        if (splitAt >= 0) {
+          mode = spec.slice(0, splitAt);
+          selector = spec.slice(splitAt + 1);
+        } else {
+          mode = spec;
+          selector = node.id ? "#" + node.id : "";
+        }
+      }
+      var target = selector ? document.querySelector(selector) : null;
+      if (!target) return;
+      node.removeAttribute("hx-swap-oob");
+      if (mode === "beforeend") {
+        target.insertAdjacentHTML("beforeend", node.innerHTML);
+      } else if (mode === "delete") {
+        target.remove();
+      } else {
+        target.outerHTML = node.outerHTML;
+      }
+    });
+  }
+
+  function connect(scope) {
+    (scope || document).querySelectorAll("[data-marionette-sse-url]").forEach(function (node) {
+      if (node.dataset.marionetteSseConnected === "true") return;
+      node.dataset.marionetteSseConnected = "true";
+      var source = new EventSource(node.dataset.marionetteSseUrl);
+      source.addEventListener("html", function (event) {
+        var payload = JSON.parse(event.data);
+        if (payload.html) applyOutOfBand(payload.html);
+      });
+      source.addEventListener("done", function () {
+        source.close();
+        node.remove();
+      });
+      source.addEventListener("error", function () {
+        source.close();
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () { connect(document); });
+  document.addEventListener("htmx:afterSwap", function (event) { connect(event.target || document); });
+  window.mrnConnectSSE = connect;
+})();`
+
 const ChartBootstrapJS = `(function() {
   var charts = new WeakMap();
   var observed = new WeakSet();

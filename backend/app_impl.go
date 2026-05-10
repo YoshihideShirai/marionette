@@ -344,6 +344,17 @@ func (a *App) EnableCharts(enable bool) {
 // DisableCharts prevents the default Chart.js runtime and chart bootstrap from being included in full-page shells.
 func (a *App) DisableCharts() { a.EnableCharts(false) }
 
+// EnableServerSentEvents controls whether the default EventSource connector runtime is included in full-page shells.
+// The connector listens for elements with data-marionette-sse-url and applies hx-swap-oob fragments from StreamAction events.
+func (a *App) EnableServerSentEvents(enable bool) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.shellAssets.EnableServerSentEvents(enable)
+}
+
+// EnableSSE includes Marionette's default EventSource connector runtime in full-page shells.
+func (a *App) EnableSSE() { a.EnableServerSentEvents(true) }
+
 // UseStyleTemplate replaces framework stylesheet/script imports.
 // Call AddStylesheet/AddScript after this if you want extra imports.
 func (a *App) UseStyleTemplate(tpl frontend.StyleTemplate) {
@@ -646,6 +657,7 @@ func (a *App) shellOptions(pageOptions PageOptions) shellOptions {
 		JavaScripts:          append([]template.JS(nil), a.shellAssets.JavaScripts...),
 		DisableHTMX:          a.shellAssets.DisableHTMX,
 		DisableCharts:        a.shellAssets.DisableCharts,
+		EnableSSE:            a.shellAssets.EnableSSE,
 	}
 }
 

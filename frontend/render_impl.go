@@ -102,6 +102,7 @@ type shellOptions struct {
 	Scripts              []string
 	JavaScripts          []template.JS
 	DisableHTMX          bool
+	EnableSSE            bool
 	AssetPolicy          assets.AssetPolicy
 	// DisableCharts keeps Chart.js out of pages that do not need charts.
 	// TODO: replace this opt-out with render-context feature tracking when Chart nodes can mark Chart.js as required.
@@ -139,6 +140,9 @@ func shellWithOptions(content template.HTML, options shellOptions) (string, erro
 	javaScripts := []template.JS{template.JS(assets.ThemeBootstrapJS)}
 	if !options.DisableCharts {
 		javaScripts = append(javaScripts, template.JS(assets.ChartBootstrapJS))
+	}
+	if options.EnableSSE {
+		javaScripts = append(javaScripts, template.JS(assets.SSEBootstrapJS))
 	}
 	javaScripts = append(javaScripts, options.JavaScripts...)
 

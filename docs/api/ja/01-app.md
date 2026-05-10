@@ -126,6 +126,12 @@ func main() {
 - 空または空白のみの値は無視されます。
 - inline JavaScript は custom external scripts の後に出力されるため、`AddScript` で登録した libraries を利用できます。
 
+
+### `EnableSSE()` / `EnableServerSentEvents(enable bool)`
+- Marionette 組み込みの EventSource connector runtime を full-page shell に含めます。
+- connector は `data-marionette-sse-url` 要素を自動で開き、`StreamAction` が送信する `html` SSE event を読み取り、`hx-swap-oob` fragments を適用します。
+- SSE を使わない app の default shell を小さく保つため opt-in です。
+
 ### `Handler() http.Handler`
 - 登録済み routes をすべて含む `*http.ServeMux` を構築して返します。
 - `Page` routes:

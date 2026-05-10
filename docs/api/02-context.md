@@ -87,7 +87,7 @@ ctx.SetGlobal("count", count+1) // use UpdateGlobal or IncrementGlobalInt instea
 
 ### Text stream APIs
 
-Text stream helpers keep chunked text progress in application state so an htmx action can reveal a long response over multiple fragment requests. They are useful for AI-chat-style demos and can be paired with `frontend.StreamTrigger`.
+Text stream helpers keep chunked text progress in application state so an htmx action can reveal a long response over multiple fragment requests. They are useful for AI-chat-style demos and can be paired with `App.EnableSSE()` plus a hidden element that declares `data-marionette-sse-url`.
 
 #### `StartTextStream(options TextStreamOptions)`
 - Starts or replaces a named text stream.

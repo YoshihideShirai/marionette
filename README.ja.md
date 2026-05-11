@@ -126,3 +126,5 @@ GitHub Pages workflow は `docs/site-astro/` を GitHub Actions 経由で公開�
 - リトライ: 一時的な失敗には自動リトライを 1 回適用します（合計最大 2 回試行）。
 - タイムアウト: ジョブの実行予算は 5 秒です。処理がこの予算を超えた場合は失敗として扱います。
 - 失敗時の扱い: エラーを toast に表示し、同じ条件または調整した条件でオペレーターが再実行できるようにします。
+
+詳細な job model、UI pattern、timeout / retry / cache TTL、本番向け永続化判断は [長時間ジョブ設計ガイド](docs/development/ja/09-long-running-jobs.md) を参照してください。

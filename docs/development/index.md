@@ -12,6 +12,8 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Project Structure Guide](01-project-structure.md): Choose a user-app layout for pages, actions, state, UI helpers, and assets.
 - [Routing / Pages / Actions Guide](02-routing-pages-actions.md): Decide how to split URLs, screens, partial updates, and action handlers.
 - [UI Component Selection Guide](04-ui-components.md): Choose between existing components, low-level HTML, DaisyUI helpers, and new components.
+- [Forms / Validation Guide](05-forms-validation.md): Design form state, server-side validation, validation redisplay, and success responses.
+- [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Separate user-facing and logged errors, and choose inline errors, alerts, toasts, flash, and retry paths.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
 
@@ -22,6 +24,8 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Form APIs](../api/04-form-apis.md): Use this when composing form rows, inputs, validation errors, and selection controls.
 - [Data display component APIs](../api/05-component-apis-data-display.md): Review tables, stats, avatars, progress, and other display components.
 - [Overlay / Feedback APIs](../api/05-component-apis-overlay-feedback.md): Review modals, drawers, toasts, alerts, and other feedback components.
+- [Forms / Validation Guide](05-forms-validation.md): Use this when implementing submit flows, server-side validation, or form error redisplay.
+- [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Use this when designing errors, flash messages, toasts, alerts, long-running work, or retry UX.
 - [DashWind API](../api/08-dashwind.md): Use this when building DashWind-style dashboards or admin layouts.
 
 ### Check before implementation

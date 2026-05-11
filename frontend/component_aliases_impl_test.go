@@ -82,13 +82,13 @@ func TestSimpleAliasesRenderExpectedMarkup(t *testing.T) {
 			name:      "Alert aliases daisyui.Alert",
 			alias:     Alert(AlertProps{Title: "Heads up", Description: "Saved", Props: ComponentProps{Class: "alert-info"}}),
 			canonical: daisyui.Alert("Heads up", "Saved", ComponentProps{Class: "alert-info"}),
-			want:      []string{`class="alert alert-info"`, `role="alert"`, `<span>Heads up Saved</span>`},
+			want:      []string{`class="alert alert-info"`, `role="alert"`, `<h3 class="font-bold">Heads up</h3>`, `<div class="text-xs">Saved</div>`},
 		},
 		{
 			name:      "Toast aliases daisyui.Toast",
 			alias:     Toast(ToastProps{Title: "Notice", Description: "Queued", Props: ComponentProps{Class: "toast-end"}}),
 			canonical: daisyui.Toast("Notice", "Queued", ComponentProps{Class: "toast-end"}),
-			want:      []string{`class="toast toast-end"`, `class="alert"`, `role="alert"`, `<span>Notice Queued</span>`},
+			want:      []string{`class="toast toast-end"`, `class="alert"`, `role="alert"`, `<h3 class="font-bold">Notice</h3>`, `<div class="text-xs">Queued</div>`},
 		},
 		{
 			name:      "Skeleton aliases daisyui.Skeleton",

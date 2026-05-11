@@ -659,10 +659,20 @@ func TestVariantComponentsRenderBoundaryAttributes(t *testing.T) {
 
 func TestCoreComponentsRenderExpectedRolesAndClasses(t *testing.T) {
 	alert := renderComponentForTest(t, Alert("Heads up", "Check settings", shared.ComponentProps{Class: "alert-warning"}))
-	assertContainsAll(t, alert, []string{`role="alert"`, `class="alert alert-warning"`, `Heads up Check settings`})
+	assertContainsAll(t, alert, []string{`role="alert"`, `class="alert alert-warning"`, `<h3 class="font-bold">Heads up</h3>`, `<div class="text-xs">Check settings</div>`})
 
-	toast := renderComponentForTest(t, Toast("Saved", "Profile updated", shared.ComponentProps{Class: "toast-end"}))
-	assertContainsAll(t, toast, []string{`class="toast toast-end"`, `class="alert"`, `role="alert"`, `Saved Profile updated`})
+	richAlert := renderComponentForTest(t, AlertWithContent(shared.AlertContentProps{
+		Icon:    TextNode("!"),
+		Actions: Button("See", shared.ComponentProps{Class: "btn-sm"}),
+		Props:   shared.ComponentProps{Class: "alert-vertical sm:alert-horizontal", Variant: "info"},
+	}, textNode("div", nil, "Custom alert body")))
+	assertContainsAll(t, richAlert, []string{`class="alert alert-info alert-vertical sm:alert-horizontal"`, `>!</span>`, `Custom alert body`, `<button class="btn btn-sm">See</button>`})
+
+	toast := renderComponentForTest(t, Toast("Saved", "Profile updated", shared.ComponentProps{Class: "toast-end", Variant: "success"}))
+	assertContainsAll(t, toast, []string{`class="toast toast-end"`, `class="alert alert-success"`, `role="alert"`, `<h3 class="font-bold">Saved</h3>`, `<div class="text-xs">Profile updated</div>`})
+
+	richToast := renderComponentForTest(t, ToastWithContent(shared.ComponentProps{Class: "toast-top toast-start"}, Alert("Queued", "Import started", shared.ComponentProps{Variant: "info"}), Alert("Done", "Import finished", shared.ComponentProps{Variant: "success"})))
+	assertContainsAll(t, richToast, []string{`class="toast toast-top toast-start"`, `class="alert alert-info"`, `class="alert alert-success"`, `Queued`, `Done`})
 
 	modal := renderComponentForTest(t, Modal(shared.ModalProps{
 		Title:   "Confirm delete",

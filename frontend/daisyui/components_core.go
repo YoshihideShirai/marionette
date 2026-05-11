@@ -43,9 +43,56 @@ func Button(label string, props shared.ComponentProps) shared.Node {
 }
 
 func Alert(title, description string, props shared.ComponentProps) shared.Node {
-	return node("div", map[string]string{"class": strings.TrimSpace("alert " + props.Class), "role": "alert"},
-		textNode("span", nil, strings.TrimSpace(title+" "+description)),
-	)
+	return AlertWithContent(shared.AlertContentProps{Title: title, Description: description, Props: props})
+}
+
+func AlertWithContent(props shared.AlertContentProps, children ...shared.Node) shared.Node {
+	alertChildren := make([]shared.Node, 0, len(children)+3)
+	if props.Icon != nil {
+		alertChildren = append(alertChildren, props.Icon)
+	}
+	if len(children) > 0 {
+		alertChildren = append(alertChildren, children...)
+	} else if body := alertBody(props.Title, props.Description); body != nil {
+		alertChildren = append(alertChildren, body)
+	}
+	if props.Actions != nil {
+		alertChildren = append(alertChildren, props.Actions)
+	}
+	return node("div", map[string]string{"class": alertClass(props.Props), "role": "alert"}, alertChildren...)
+}
+
+func alertBody(title, description string) shared.Node {
+	bodyChildren := []shared.Node{}
+	if strings.TrimSpace(title) != "" {
+		bodyChildren = append(bodyChildren, textNode("h3", map[string]string{"class": "font-bold"}, title))
+	}
+	if strings.TrimSpace(description) != "" {
+		bodyChildren = append(bodyChildren, textNode("div", map[string]string{"class": "text-xs"}, description))
+	}
+	if len(bodyChildren) == 0 {
+		return nil
+	}
+	return node("div", nil, bodyChildren...)
+}
+
+func alertClass(props shared.ComponentProps) string {
+	return joinClass("alert", alertVariantClass(props.Variant), props.Class)
+}
+
+func alertVariantClass(variant string) string {
+	switch strings.ToLower(strings.TrimSpace(variant)) {
+	case "info":
+		return "alert-info"
+	case "success":
+		return "alert-success"
+	case "warning":
+		return "alert-warning"
+	case "error", "danger":
+		return "alert-error"
+	default:
+		return ""
+	}
 }
 
 func Card(title, description string, actions shared.Node, children []shared.Node, props shared.ComponentProps) shared.Node {
@@ -80,9 +127,11 @@ func Input(name, value string, props shared.ComponentProps) shared.Node {
 }
 
 func Toast(title, description string, props shared.ComponentProps) shared.Node {
-	return node("div", map[string]string{"class": strings.TrimSpace("toast " + props.Class)},
-		node("div", map[string]string{"class": "alert", "role": "alert"}, textNode("span", nil, strings.TrimSpace(title+" "+description))),
-	)
+	return ToastWithContent(props, Alert(title, description, shared.ComponentProps{Variant: props.Variant}))
+}
+
+func ToastWithContent(props shared.ComponentProps, children ...shared.Node) shared.Node {
+	return node("div", map[string]string{"class": joinClass("toast", props.Class)}, children...)
 }
 
 func Modal(props shared.ModalProps) shared.Node {

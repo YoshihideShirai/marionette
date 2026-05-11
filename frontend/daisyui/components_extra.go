@@ -686,7 +686,7 @@ func RatingWithVariants(name string, max int, checked int, size string, half boo
 }
 
 func ToastWithPlacement(children []shared.Node, horizontal, vertical string, className string) shared.Node {
-	classes := []string{"toast"}
+	classes := []string{}
 	if horizontal != "" {
 		classes = append(classes, "toast-"+horizontal)
 	}
@@ -696,7 +696,7 @@ func ToastWithPlacement(children []shared.Node, horizontal, vertical string, cla
 	if className != "" {
 		classes = append(classes, className)
 	}
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: children}
+	return ToastWithContent(shared.ComponentProps{Class: strings.Join(classes, " ")}, children...)
 }
 
 func TooltipWithVariants(text string, child shared.Node, placement string, color string, open bool) shared.Node {

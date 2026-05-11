@@ -299,6 +299,14 @@ type AlertProps struct {
 	Props       ComponentProps
 }
 
+type AlertContentProps struct {
+	Title       string
+	Description string
+	Icon        Node
+	Actions     Node
+	Props       ComponentProps
+}
+
 type ToastProps struct {
 	Title       string
 	Description string

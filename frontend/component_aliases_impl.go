@@ -1,6 +1,8 @@
 package frontend
 
 import (
+	"strings"
+
 	rdf "github.com/rocketlaunchr/dataframe-go"
 
 	components "github.com/YoshihideShirai/marionette/frontend/components"
@@ -19,8 +21,36 @@ func Modal(props ModalProps) Node                       { return daisy.Modal(pro
 func ModalWithVariants(props ModalProps, variant ModalVariantProps) Node {
 	return daisy.ModalWithVariants(props, variant)
 }
-func Toast(props ToastProps) Node       { return daisy.Toast(props.Title, props.Description, props.Props) }
-func Alert(props AlertProps) Node       { return daisy.Alert(props.Title, props.Description, props.Props) }
+func Toast(props ToastProps) Node {
+	alertProps := AlertContentProps{
+		Title:       props.Title,
+		Description: props.Description,
+		Icon:        textIcon(props.Icon),
+		Props:       ComponentProps{Variant: props.Props.Variant},
+	}
+	return daisy.ToastWithContent(props.Props, daisy.AlertWithContent(alertProps))
+}
+func ToastWithContent(props ComponentProps, children ...Node) Node {
+	return daisy.ToastWithContent(props, children...)
+}
+func Alert(props AlertProps) Node {
+	return daisy.AlertWithContent(AlertContentProps{
+		Title:       props.Title,
+		Description: props.Description,
+		Icon:        textIcon(props.Icon),
+		Props:       props.Props,
+	})
+}
+func AlertWithContent(props AlertContentProps, children ...Node) Node {
+	return daisy.AlertWithContent(props, children...)
+}
+
+func textIcon(icon string) Node {
+	if strings.TrimSpace(icon) == "" {
+		return nil
+	}
+	return daisy.TextNode(strings.TrimSpace(icon))
+}
 func Skeleton(props SkeletonProps) Node { return daisy.Skeleton(props.Rows, props.Props) }
 func Progress(props ProgressProps) Node { return daisy.Progress(props) }
 func EmptyState(props EmptyStateProps) Node {

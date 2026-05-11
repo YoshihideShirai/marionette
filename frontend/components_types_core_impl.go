@@ -34,6 +34,8 @@ type EmptyStateProps = shared.EmptyStateProps
 
 type AlertProps = shared.AlertProps
 
+type AlertContentProps = shared.AlertContentProps
+
 type ToastProps = shared.ToastProps
 
 type SkeletonProps = shared.SkeletonProps

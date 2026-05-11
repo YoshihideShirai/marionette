@@ -16,7 +16,7 @@ func RegisterDashwindResourcePageExample(app *mb.App) {
 			Description:   "Conventional resource page with header actions, filters, table, and row actions.",
 			Rows:          rows,
 			PrimaryAction: dw.Action{Label: "New account", Href: "#", Class: "btn-primary btn-sm"},
-			Search:        mf.InputElement(mf.ElementProps{Attrs: mf.Attrs{"name": "q", "type": "search", "placeholder": "Search accounts", "class": "input input-bordered w-full"}}),
+			Search:        mf.InputElement(mf.ElementProps{Attrs: mf.Attrs{"name": "q", "type": "search", "placeholder": "Search accounts", "class": "input w-full"}}),
 			Columns: []dw.Column[dashwindAccountRow]{
 				{Header: "Account", Cell: func(row dashwindAccountRow) mf.Node { return mf.Text(row.Name) }},
 				{Header: "Plan", Cell: func(row dashwindAccountRow) mf.Node { return mf.Badge(mf.BadgeProps{Label: row.Plan}) }},

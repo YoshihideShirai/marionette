@@ -260,7 +260,7 @@ func renderPresetField(field Field) mf.Node {
 	}
 	id := "dashwind-field-" + name
 	inputType := defaultString(field.Type, "text")
-	inputClass := "input input-bordered w-full"
+	inputClass := "input w-full"
 	if strings.TrimSpace(field.Error) != "" {
 		inputClass += " input-error"
 	}
@@ -269,7 +269,7 @@ func renderPresetField(field Field) mf.Node {
 		attrs["required"] = "required"
 		attrs["aria-required"] = "true"
 	}
-	children := []mf.Node{mf.LabelElementProps(mf.ElementProps{Class: "label pb-1", Attrs: mf.Attrs{"for": id}}, span("label-text", field.Label))}
+	children := []mf.Node{mf.LabelElementProps(mf.ElementProps{Class: "label pb-1", Attrs: mf.Attrs{"for": id}}, mf.Text(field.Label))}
 	children = append(children, mf.InputElement(mf.ElementProps{Attrs: attrs}))
 	if strings.TrimSpace(field.Help) != "" {
 		children = append(children, paragraph("mt-1 text-xs text-base-content/60", field.Help))
@@ -277,7 +277,7 @@ func renderPresetField(field Field) mf.Node {
 	if strings.TrimSpace(field.Error) != "" {
 		children = append(children, paragraph("mt-1 text-xs font-medium text-error", field.Error))
 	}
-	return div("form-control w-full", children...)
+	return div("w-full space-y-1", children...)
 }
 
 func slugifyFieldName(label string) string {
@@ -832,7 +832,7 @@ func shellContentClass(props ShellProps) string {
 }
 
 func searchInput(placeholder string) mf.Node {
-	return mf.LabelElementProps(mf.ElementProps{Class: "input input-bordered flex items-center gap-2"},
+	return mf.LabelElementProps(mf.ElementProps{Class: "input flex items-center gap-2"},
 		span("opacity-60", "⌕"),
 		mf.InputElement(mf.ElementProps{Class: "grow", Attrs: mf.Attrs{"type": "search", "placeholder": placeholder}}),
 	)

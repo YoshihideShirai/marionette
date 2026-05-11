@@ -85,7 +85,7 @@ func TestSwitchWithVariantsAndRadioGroupWithVariants(t *testing.T) {
 		`class="toggle toggle-primary toggle-sm custom-switch"`,
 		`checked`,
 		`disabled`,
-		`<span class="label-text">Notify me</span>`,
+		`<span class="label">Notify me</span>`,
 	} {
 		if !strings.Contains(switchHTML, want) {
 			t.Fatalf("expected switch HTML to contain %q in %q", want, switchHTML)

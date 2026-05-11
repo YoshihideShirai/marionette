@@ -551,8 +551,8 @@ func InputWithVariants(name, value, color, size, style string, props shared.Comp
 	if color != "" {
 		classes = append(classes, "input-"+color)
 	}
-	if size != "" {
-		classes = append(classes, "input-"+size)
+	if sizeClass := daisySizeClass("input", size); sizeClass != "" {
+		classes = append(classes, sizeClass)
 	}
 	if style != "" && style != "bordered" {
 		classes = append(classes, "input-"+style)
@@ -566,8 +566,8 @@ func SelectWithVariants(name string, options []shared.SelectOption, color, size,
 	if color != "" {
 		classes = append(classes, "select-"+color)
 	}
-	if size != "" {
-		classes = append(classes, "select-"+size)
+	if sizeClass := daisySizeClass("select", size); sizeClass != "" {
+		classes = append(classes, sizeClass)
 	}
 	if style != "" && style != "bordered" {
 		classes = append(classes, "select-"+style)
@@ -581,8 +581,8 @@ func TextareaWithVariants(name, value, color, size, style string, options shared
 	if color != "" {
 		classes = append(classes, "textarea-"+color)
 	}
-	if size != "" {
-		classes = append(classes, "textarea-"+size)
+	if sizeClass := daisySizeClass("textarea", size); sizeClass != "" {
+		classes = append(classes, sizeClass)
 	}
 	if style != "" && style != "bordered" {
 		classes = append(classes, "textarea-"+style)
@@ -618,8 +618,8 @@ func CheckboxWithVariants(name, value, label, color, size string, checked bool, 
 	if color != "" {
 		classes = append(classes, "checkbox-"+color)
 	}
-	if size != "" {
-		classes = append(classes, "checkbox-"+size)
+	if sizeClass := daisySizeClass("checkbox", size); sizeClass != "" {
+		classes = append(classes, sizeClass)
 	}
 	props.Class = strings.TrimSpace(strings.Join(append(classes, props.Class), " "))
 	return Checkbox(shared.CheckboxComponentProps{Name: name, Value: value, Label: label, Checked: checked, Props: props})
@@ -630,8 +630,8 @@ func RadioGroupWithVariants(name, color, size string, items []shared.RadioItem, 
 	if color != "" {
 		inputClass += " radio-" + color
 	}
-	if size != "" {
-		inputClass += " radio-" + size
+	if sizeClass := daisySizeClass("radio", size); sizeClass != "" {
+		inputClass += " " + sizeClass
 	}
 	children := make([]shared.Node, 0, len(items))
 	for _, item := range items {
@@ -639,7 +639,7 @@ func RadioGroupWithVariants(name, color, size string, items []shared.RadioItem, 
 		if item.Checked {
 			attrs["checked"] = "checked"
 		}
-		if item.Disabled {
+		if props.Disabled || item.Disabled {
 			attrs["disabled"] = "disabled"
 		}
 		children = append(children,
@@ -686,7 +686,7 @@ func RatingWithVariants(name string, max int, checked int, size string, half boo
 }
 
 func ToastWithPlacement(children []shared.Node, horizontal, vertical string, className string) shared.Node {
-	classes := []string{"toast"}
+	classes := []string{}
 	if horizontal != "" {
 		classes = append(classes, "toast-"+horizontal)
 	}
@@ -696,7 +696,7 @@ func ToastWithPlacement(children []shared.Node, horizontal, vertical string, cla
 	if className != "" {
 		classes = append(classes, className)
 	}
-	return lowhtml.ElementNode{Tag: "div", Attrs: map[string]string{"class": strings.Join(classes, " ")}, Children: children}
+	return ToastWithContent(shared.ComponentProps{Class: strings.Join(classes, " ")}, children...)
 }
 
 func TooltipWithVariants(text string, child shared.Node, placement string, color string, open bool) shared.Node {

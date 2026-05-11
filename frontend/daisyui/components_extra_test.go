@@ -322,8 +322,13 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 		},
 		{
 			name: "input disabled carries name value and class",
-			node: Input("email", "alice@example.test", shared.ComponentProps{Class: "input-bordered", Disabled: true}),
-			want: []string{`class="input w-full input-bordered"`, `disabled="disabled"`, `name="email"`, `value="alice@example.test"`},
+			node: Input("email", "alice@example.test", shared.ComponentProps{Disabled: true}),
+			want: []string{`class="input w-full"`, `disabled="disabled"`, `name="email"`, `value="alice@example.test"`},
+		},
+		{
+			name: "input size prop renders xl class",
+			node: Input("email", "alice@example.test", shared.ComponentProps{Size: "xl"}),
+			want: []string{`class="input w-full input-xl"`},
 		},
 		{
 			name: "select marks only selected option",
@@ -331,9 +336,19 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`<select class="select select-sm" name="status">`, `<option value="draft">Draft</option>`, `<option selected="selected" value="published">Published</option>`},
 		},
 		{
+			name: "select size prop renders md class",
+			node: Select("status", []shared.SelectOption{{Label: "Draft", Value: "draft"}}, shared.ComponentProps{Size: "md"}),
+			want: []string{`<select class="select select-md" name="status">`},
+		},
+		{
 			name: "textarea positive rows and required are rendered",
 			node: Textarea("bio", "hello", shared.TextareaOptions{Placeholder: "About you", Rows: 4, Required: true, Props: shared.ComponentProps{Class: "textarea-primary"}}),
 			want: []string{`class="textarea w-full textarea-primary"`, `name="bio"`, `placeholder="About you"`, `required="required"`, `rows="4"`, `>hello</textarea>`},
+		},
+		{
+			name: "textarea size prop renders xs class",
+			node: Textarea("bio", "hello", shared.TextareaOptions{Props: shared.ComponentProps{Size: "xs"}}),
+			want: []string{`class="textarea w-full textarea-xs"`},
 		},
 		{
 			name:      "textarea default rows omits rows attribute",
@@ -347,6 +362,16 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`<input checked="checked" class="checkbox checkbox-success" name="agree" type="checkbox" value="yes"></input>`, `<span class="label">Agree</span>`},
 		},
 		{
+			name: "checkbox size prop renders md class",
+			node: Checkbox(shared.CheckboxComponentProps{Name: "agree", Value: "yes", Label: "Agree", Props: shared.ComponentProps{Size: "md"}}),
+			want: []string{`class="checkbox checkbox-md"`},
+		},
+		{
+			name: "checkbox disabled prop renders disabled attribute",
+			node: Checkbox(shared.CheckboxComponentProps{Name: "agree", Value: "yes", Label: "Agree", Props: shared.ComponentProps{Disabled: true}}),
+			want: []string{`class="checkbox" disabled="disabled" name="agree" type="checkbox" value="yes"`},
+		},
+		{
 			name:      "checkbox unchecked omits checked",
 			node:      Checkbox(shared.CheckboxComponentProps{Name: "agree", Value: "yes", Label: "Agree"}),
 			want:      []string{`class="checkbox"`, `name="agree"`, `type="checkbox"`, `value="yes"`},
@@ -358,9 +383,34 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`<div class="space-y-2 rounded">`, `class="radio" name="plan" type="radio" value="free"`, `checked="checked" class="radio" name="plan" type="radio" value="pro"`},
 		},
 		{
+			name: "radio group size prop renders xl class",
+			node: RadioGroup(shared.RadioGroupComponentProps{Name: "plan", Items: []shared.RadioItem{{Label: "Free", Value: "free"}}, Props: shared.ComponentProps{Size: "xl"}}),
+			want: []string{`class="radio radio-xl" name="plan" type="radio" value="free"`},
+		},
+		{
+			name: "radio group disabled prop disables all items",
+			node: RadioGroup(shared.RadioGroupComponentProps{Name: "plan", Items: []shared.RadioItem{{Label: "Free", Value: "free"}, {Label: "Pro", Value: "pro"}}, Props: shared.ComponentProps{Disabled: true}}),
+			want: []string{`class="radio" disabled="disabled" name="plan" type="radio" value="free"`, `class="radio" disabled="disabled" name="plan" type="radio" value="pro"`},
+		},
+		{
+			name: "radio group item disabled prop disables one item",
+			node: RadioGroup(shared.RadioGroupComponentProps{Name: "plan", Items: []shared.RadioItem{{Label: "Free", Value: "free"}, {Label: "Pro", Value: "pro", Disabled: true}}}),
+			want: []string{`class="radio" disabled="disabled" name="plan" type="radio" value="pro"`},
+		},
+		{
 			name: "switch checked emits checkbox type and checked",
 			node: Switch(shared.SwitchComponentProps{Name: "enabled", Value: "1", Label: "Enabled", Checked: true, Props: shared.ComponentProps{Class: "toggle-primary"}}),
 			want: []string{`<input checked="checked" class="toggle toggle-primary" name="enabled" type="checkbox" value="1"></input>`, `<span class="label">Enabled</span>`},
+		},
+		{
+			name: "switch size prop renders xs class",
+			node: Switch(shared.SwitchComponentProps{Name: "enabled", Value: "1", Label: "Enabled", Props: shared.ComponentProps{Size: "xs"}}),
+			want: []string{`class="toggle toggle-xs"`},
+		},
+		{
+			name: "switch disabled prop renders disabled attribute",
+			node: Switch(shared.SwitchComponentProps{Name: "enabled", Value: "1", Label: "Enabled", Props: shared.ComponentProps{Disabled: true}}),
+			want: []string{`class="toggle" disabled="disabled" name="enabled" type="checkbox" value="1"`},
 		},
 	}
 
@@ -524,15 +574,36 @@ func TestVariantComponentsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`class="input w-full input-success input-lg input-ghost"`, `disabled="disabled"`, `name="email"`, `value="a@example.test"`},
 		},
 		{
+			name: "input variants accept xl size",
+			node: InputWithVariants("email", "a@example.test", "success", "xl", "", shared.ComponentProps{}),
+			want: []string{`class="input w-full input-success input-xl"`},
+		},
+		{
+			name:      "input variants omit unknown size token",
+			node:      InputWithVariants("email", "a@example.test", "success", "huge", "", shared.ComponentProps{}),
+			want:      []string{`class="input w-full input-success"`},
+			wantNever: []string{`input-huge`, `huge`},
+		},
+		{
 			name: "select variants preserve selected option",
 			node: SelectWithVariants("role", []shared.SelectOption{{Label: "Admin", Value: "admin", Selected: true}}, "primary", "sm", "ghost", shared.ComponentProps{}),
 			want: []string{`class="select select-primary select-sm select-ghost"`, `<option selected="selected" value="admin">Admin</option>`},
+		},
+		{
+			name: "select variants accept md size",
+			node: SelectWithVariants("role", []shared.SelectOption{{Label: "Admin", Value: "admin"}}, "primary", "md", "", shared.ComponentProps{}),
+			want: []string{`class="select select-primary select-md"`},
 		},
 		{
 			name:      "textarea variants omit default rows",
 			node:      TextareaWithVariants("notes", "body", "warning", "lg", "ghost", shared.TextareaOptions{}),
 			want:      []string{`class="textarea w-full textarea-warning textarea-lg textarea-ghost"`, `name="notes"`, `>body</textarea>`},
 			wantNever: []string{`rows=`},
+		},
+		{
+			name: "textarea variants accept xs size",
+			node: TextareaWithVariants("notes", "body", "warning", "xs", "", shared.TextareaOptions{}),
+			want: []string{`class="textarea w-full textarea-warning textarea-xs"`},
 		},
 		{
 			name:      "progress variant indeterminate omits value and defaults max",
@@ -546,9 +617,29 @@ func TestVariantComponentsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`checked="checked"`, `class="checkbox checkbox-success checkbox-sm extra"`, `type="checkbox"`},
 		},
 		{
+			name: "checkbox variants accept xl size",
+			node: CheckboxWithVariants("terms", "yes", "Terms", "success", "xl", true, shared.ComponentProps{}),
+			want: []string{`class="checkbox checkbox-success checkbox-xl"`},
+		},
+		{
+			name: "checkbox variants preserve disabled prop",
+			node: CheckboxWithVariants("terms", "yes", "Terms", "success", "sm", false, shared.ComponentProps{Disabled: true}),
+			want: []string{`class="checkbox checkbox-success checkbox-sm" disabled="disabled" name="terms" type="checkbox" value="yes"`},
+		},
+		{
 			name: "radio variants carry disabled and checked states",
 			node: RadioGroupWithVariants("tier", "primary", "lg", []shared.RadioItem{{Label: "Team", Value: "team", Checked: true}, {Label: "Enterprise", Value: "enterprise", Disabled: true}}, shared.ComponentProps{}),
 			want: []string{`checked="checked" class="radio radio-primary radio-lg" name="tier" type="radio" value="team"`, `class="radio radio-primary radio-lg" disabled="disabled" name="tier" type="radio" value="enterprise"`},
+		},
+		{
+			name: "radio variants accept md size",
+			node: RadioGroupWithVariants("tier", "primary", "md", []shared.RadioItem{{Label: "Team", Value: "team"}}, shared.ComponentProps{}),
+			want: []string{`class="radio radio-primary radio-md" name="tier" type="radio" value="team"`},
+		},
+		{
+			name: "radio variants disabled prop disables all items",
+			node: RadioGroupWithVariants("tier", "primary", "md", []shared.RadioItem{{Label: "Team", Value: "team"}, {Label: "Enterprise", Value: "enterprise"}}, shared.ComponentProps{Disabled: true}),
+			want: []string{`class="radio radio-primary radio-md" disabled="disabled" name="tier" type="radio" value="team"`, `class="radio radio-primary radio-md" disabled="disabled" name="tier" type="radio" value="enterprise"`},
 		},
 		{
 			name: "tabs variants emit roles and active selected state",
@@ -568,10 +659,20 @@ func TestVariantComponentsRenderBoundaryAttributes(t *testing.T) {
 
 func TestCoreComponentsRenderExpectedRolesAndClasses(t *testing.T) {
 	alert := renderComponentForTest(t, Alert("Heads up", "Check settings", shared.ComponentProps{Class: "alert-warning"}))
-	assertContainsAll(t, alert, []string{`role="alert"`, `class="alert alert-warning"`, `Heads up Check settings`})
+	assertContainsAll(t, alert, []string{`role="alert"`, `class="alert alert-warning"`, `<h3 class="font-bold">Heads up</h3>`, `<div class="text-xs">Check settings</div>`})
 
-	toast := renderComponentForTest(t, Toast("Saved", "Profile updated", shared.ComponentProps{Class: "toast-end"}))
-	assertContainsAll(t, toast, []string{`class="toast toast-end"`, `class="alert"`, `role="alert"`, `Saved Profile updated`})
+	richAlert := renderComponentForTest(t, AlertWithContent(shared.AlertContentProps{
+		Icon:    TextNode("!"),
+		Actions: Button("See", shared.ComponentProps{Class: "btn-sm"}),
+		Props:   shared.ComponentProps{Class: "alert-vertical sm:alert-horizontal", Variant: "info"},
+	}, textNode("div", nil, "Custom alert body")))
+	assertContainsAll(t, richAlert, []string{`class="alert alert-info alert-vertical sm:alert-horizontal"`, `>!</span>`, `Custom alert body`, `<button class="btn btn-sm">See</button>`})
+
+	toast := renderComponentForTest(t, Toast("Saved", "Profile updated", shared.ComponentProps{Class: "toast-end", Variant: "success"}))
+	assertContainsAll(t, toast, []string{`class="toast toast-end"`, `class="alert alert-success"`, `role="alert"`, `<h3 class="font-bold">Saved</h3>`, `<div class="text-xs">Profile updated</div>`})
+
+	richToast := renderComponentForTest(t, ToastWithContent(shared.ComponentProps{Class: "toast-top toast-start"}, Alert("Queued", "Import started", shared.ComponentProps{Variant: "info"}), Alert("Done", "Import finished", shared.ComponentProps{Variant: "success"})))
+	assertContainsAll(t, richToast, []string{`class="toast toast-top toast-start"`, `class="alert alert-info"`, `class="alert alert-success"`, `Queued`, `Done`})
 
 	modal := renderComponentForTest(t, Modal(shared.ModalProps{
 		Title:   "Confirm delete",
@@ -627,7 +728,7 @@ func TestFormComponentsRenderHTMXAttributes(t *testing.T) {
 
 func TestFormFieldRendersRequiredHintAndError(t *testing.T) {
 	got := renderComponentForTest(t, FormField(
-		Input("email", "", shared.ComponentProps{Class: "input-bordered"}),
+		Input("email", "", shared.ComponentProps{}),
 		shared.FormFieldProps{Label: "Email", Required: true, Hint: "We never share it.", Error: "Email is required"},
 	))
 	assertContainsAll(t, got, []string{`class="fieldset w-full"`, `class="fieldset-legend"`, `Email *`, `We never share it.`, `class="label text-error"`, `Email is required`})

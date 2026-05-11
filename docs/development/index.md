@@ -11,6 +11,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [README.md](../../README.md): Review Marionette's purpose, core ideas, demos, and the documentation entry points.
 - [Project Structure Guide](01-project-structure.md): Choose a user-app layout for pages, actions, state, UI helpers, and assets.
 - [Routing / Pages / Actions Guide](02-routing-pages-actions.md): Decide how to split URLs, screens, partial updates, and action handlers.
+- [UI Component Selection Guide](04-ui-components.md): Choose between existing components, low-level HTML, DaisyUI helpers, and new components.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
 
@@ -76,7 +77,7 @@ Build UI with existing `frontend` APIs and DaisyUI-based components first. Befor
 - Information display: Card, Alert, Badge, Stats, Timeline, and similar components.
 - Business UI: Table, DataFrame, Chart, FormRow, and input components.
 
-For selection criteria, accessibility, and visual consistency, see the [UI Component Guidelines](../ui-component-guidelines.md). If you are adding a new built-in component, confirm the implementation location in [frontend/ARCHITECTURE.md](../../frontend/ARCHITECTURE.md).
+For practical selection criteria by screen pattern, see the [UI Component Selection Guide](04-ui-components.md). For accessibility and visual consistency details, see the [UI Component Guidelines](../ui-component-guidelines.md). If you are adding a new built-in component, confirm the implementation location in [frontend/ARCHITECTURE.md](../../frontend/ARCHITECTURE.md).
 
 ### 5. Build forms and validation
 

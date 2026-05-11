@@ -15,6 +15,7 @@
 - [Forms / Validation ガイド](05-forms-validation.md): form state、サーバー側バリデーション、エラー再表示、成功時の戻り方を設計します。
 - [データテーブル / チャート設計ガイド](06-data-tables-charts.md): 一覧テーブル、共有 query state、ページング、ソート、チャート連動 filter を設計します。
 - [Errors / Flash / Feedback ガイド](08-errors-flash-feedback.md): ユーザー向けエラーとログ、inline error、alert、toast、flash、再実行導線を使い分けます。
+- [長時間ジョブ設計ガイド](09-long-running-jobs.md): job model、progress / toast / empty_state、timeout、retry、cache TTL、永続化判断を設計します。
 - [Security / Authorization ガイド](10-security-authz.md): 認証済みユーザー、サーバー側認可チェック、危険操作の確認 UI、監査ログを設計します。
 - [State Management ガイド](../../state-management.ja.md): ページ、アクション、状態を Go 側に集約する基本方針を確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): `backend` / `frontend` / `html` など主要 API の入口です。
@@ -29,6 +30,7 @@
 - [Forms / Validation ガイド](05-forms-validation.md): submit flow、サーバー側バリデーション、form error の再表示を実装するときに参照します。
 - [データテーブル / チャート設計ガイド](06-data-tables-charts.md): 検索、ページング、ソート付き一覧やテーブル / チャート連動 dashboard を実装するときに参照します。
 - [Errors / Flash / Feedback ガイド](08-errors-flash-feedback.md): error、flash message、toast、alert、長時間処理、再実行 UX を設計するときに参照します。
+- [長時間ジョブ設計ガイド](09-long-running-jobs.md): Heavy Job Template を本番向けに発展させるときに参照します。
 - [Security / Authorization ガイド](10-security-authz.md): 認証由来の Context、Page / Action の認可チェック、危険操作の確認 UI、監査ログを設計するときに参照します。
 - [DashWind API](../../api/ja/08-dashwind.md): DashWind ベースのダッシュボードや管理画面レイアウトを使うときに参照します。
 

@@ -130,3 +130,5 @@ The GitHub Pages workflow publishes `docs/site-astro/` via GitHub Actions.
 - Retry: one automatic retry is applied for transient failures (max 2 attempts total).
 - Timeout: job budget is 5 seconds; if processing exceeds this budget, mark as failed.
 - Failure handling: surface error in toast and allow operator to rerun with same or adjusted parameters.
+
+For detailed job models, UI patterns, timeout / retry / cache TTL, and production storage decisions, see the [Long-running Jobs Design Guide](docs/development/09-long-running-jobs.md).

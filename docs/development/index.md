@@ -15,6 +15,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Forms / Validation Guide](05-forms-validation.md): Design form state, server-side validation, validation redisplay, and success responses.
 - [Data Tables / Charts Guide](06-data-tables-charts.md): Design list tables, shared query state, paging, sorting, and chart-linked filtering.
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Separate user-facing and logged errors, and choose inline errors, alerts, toasts, flash, and retry paths.
+- [Long-running Jobs Design Guide](09-long-running-jobs.md): Design job models, progress / toast / empty_state usage, timeout, retry, cache TTL, and production storage decisions.
 - [Security / Authorization Guide](10-security-authz.md): Handle authenticated users, server-side authorization checks, dangerous-operation confirmations, and audit logs.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
@@ -29,6 +30,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Forms / Validation Guide](05-forms-validation.md): Use this when implementing submit flows, server-side validation, or form error redisplay.
 - [Data Tables / Charts Guide](06-data-tables-charts.md): Use this when implementing searchable, pageable, sortable tables or linked table/chart dashboards.
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Use this when designing errors, flash messages, toasts, alerts, long-running work, or retry UX.
+- [Long-running Jobs Design Guide](09-long-running-jobs.md): Use this when expanding the Heavy Job Template for production use.
 - [Security / Authorization Guide](10-security-authz.md): Use this when designing authentication-derived context, Page / Action authorization checks, dangerous-operation confirmations, or audit logs.
 - [DashWind API](../api/08-dashwind.md): Use this when building DashWind-style dashboards or admin layouts.
 

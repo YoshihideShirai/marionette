@@ -11,6 +11,7 @@
 - [README.ja.md](../../../README.ja.md): Marionette の目的、基本思想、デモ、ドキュメント全体への入口を確認します。
 - [プロジェクト構成ガイド](01-project-structure.md): Page、Action、State、UI helper、asset のユーザーアプリ側配置を決めます。
 - [Routing / Pages / Actions ガイド](02-routing-pages-actions.md): URL、業務画面、partial update、Action handler の分割基準を決めます。
+- [UI コンポーネント選定ガイド](04-ui-components.md): 既存コンポーネント、低レベル HTML、DaisyUI helper、新規コンポーネントの使い分けを決めます。
 - [State Management ガイド](../../state-management.ja.md): ページ、アクション、状態を Go 側に集約する基本方針を確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): `backend` / `frontend` / `html` など主要 API の入口です。
 
@@ -76,7 +77,7 @@ UI は、まず既存の `frontend` API と DaisyUI ベースのコンポーネ�
 - 情報表示: Card、Alert、Badge、Stats、Timeline など。
 - 業務 UI: Table、DataFrame、Chart、FormRow、Input 系コンポーネントなど。
 
-選定基準、アクセシビリティ、見た目の一貫性は [UI Component Guidelines](../../ui-component-guidelines.md) を参照します。新しいコンポーネントを本体に追加する場合は、実装先を [frontend/ARCHITECTURE.md](../../../frontend/ARCHITECTURE.md) で確認します。
+画面パターン別の実践的な選定基準は [UI コンポーネント選定ガイド](04-ui-components.md) を参照します。アクセシビリティ、見た目の一貫性は [UI Component Guidelines](../../ui-component-guidelines.md) を参照します。新しいコンポーネントを本体に追加する場合は、実装先を [frontend/ARCHITECTURE.md](../../../frontend/ARCHITECTURE.md) で確認します。
 
 ### 5. フォーム・バリデーションを組み立てる
 

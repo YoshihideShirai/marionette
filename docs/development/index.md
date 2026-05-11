@@ -10,6 +10,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 
 - [README.md](../../README.md): Review Marionette's purpose, core ideas, demos, and the documentation entry points.
 - [Project Structure Guide](01-project-structure.md): Choose a user-app layout for pages, actions, state, UI helpers, and assets.
+- [Routing / Pages / Actions Guide](02-routing-pages-actions.md): Decide how to split URLs, screens, partial updates, and action handlers.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
 
@@ -47,7 +48,7 @@ When changing Marionette's built-in components, the responsibility boundaries un
 
 ### 2. Design pages and actions
 
-In Marionette, it is usually easiest to treat screen reads as pages and user-triggered changes as actions.
+For detailed criteria, see the [Routing / Pages / Actions Guide](02-routing-pages-actions.md). In Marionette, it is usually easiest to treat screen reads as pages and user-triggered changes as actions.
 
 - A page restores state from the request, loads data, and returns HTML composed with `frontend` components.
 - An action handles form submissions, button clicks, filter changes, and similar events. It owns validation, state updates, persistence, and partial-update responses.

@@ -10,6 +10,7 @@
 
 - [README.ja.md](../../../README.ja.md): Marionette の目的、基本思想、デモ、ドキュメント全体への入口を確認します。
 - [プロジェクト構成ガイド](01-project-structure.md): Page、Action、State、UI helper、asset のユーザーアプリ側配置を決めます。
+- [Routing / Pages / Actions ガイド](02-routing-pages-actions.md): URL、業務画面、partial update、Action handler の分割基準を決めます。
 - [State Management ガイド](../../state-management.ja.md): ページ、アクション、状態を Go 側に集約する基本方針を確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): `backend` / `frontend` / `html` など主要 API の入口です。
 
@@ -47,7 +48,7 @@ Marionette 本体のコンポーネントを変更する場合は、`frontend` �
 
 ### 2. Page / Action を設計する
 
-Marionette では、画面の読み取りは Page、ユーザー操作による変更は Action として考えると整理しやすくなります。
+詳しい分割基準は [Routing / Pages / Actions ガイド](02-routing-pages-actions.md) を参照してください。Marionette では、画面の読み取りは Page、ユーザー操作による変更は Action として考えると整理しやすくなります。
 
 - Page はリクエストから状態を復元し、データ取得を行い、`frontend` コンポーネントで HTML を返します。
 - Action はフォーム送信、ボタンクリック、フィルタ変更などを受け取り、検証、状態更新、永続化、部分更新レスポンスを担当します。

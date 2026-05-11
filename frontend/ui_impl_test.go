@@ -214,21 +214,21 @@ func TestInputSelectTextareaClassVariants(t *testing.T) {
 		want      []string
 		wantNever []string
 	}{
-		{name: "input default is bordered", className: inputClass(ComponentProps{}), want: []string{"input", "w-full", "input-bordered"}, wantNever: []string{"input-ghost"}},
+		{name: "input default uses v5 base", className: inputClass(ComponentProps{}), want: []string{"input", "w-full"}, wantNever: []string{"input-ghost", "input-bordered"}},
 		{name: "input ghost variant", className: inputClass(ComponentProps{Variant: "ghost"}), want: []string{"input-ghost"}, wantNever: []string{"input-bordered"}},
 		{name: "input sm size", className: inputClass(ComponentProps{Size: "sm"}), want: []string{"input-sm"}},
 		{name: "input lg size", className: inputClass(ComponentProps{Size: "lg"}), want: []string{"input-lg"}},
-		{name: "input unknown size", className: inputClass(ComponentProps{Size: "huge"}), want: []string{"input-bordered"}, wantNever: []string{"input-sm", "input-lg", "huge"}},
-		{name: "select default is bordered", className: selectClass(ComponentProps{}), want: []string{"select", "w-full", "select-bordered"}, wantNever: []string{"select-ghost"}},
+		{name: "input unknown size", className: inputClass(ComponentProps{Size: "huge"}), want: []string{"input", "w-full"}, wantNever: []string{"input-sm", "input-lg", "huge", "input-bordered"}},
+		{name: "select default uses v5 base", className: selectClass(ComponentProps{}), want: []string{"select", "w-full"}, wantNever: []string{"select-ghost", "select-bordered"}},
 		{name: "select ghost variant", className: selectClass(ComponentProps{Variant: "ghost"}), want: []string{"select-ghost"}, wantNever: []string{"select-bordered"}},
 		{name: "select sm size", className: selectClass(ComponentProps{Size: "sm"}), want: []string{"select-sm"}},
 		{name: "select lg size", className: selectClass(ComponentProps{Size: "lg"}), want: []string{"select-lg"}},
-		{name: "select unknown size", className: selectClass(ComponentProps{Size: "huge"}), want: []string{"select-bordered"}, wantNever: []string{"select-sm", "select-lg", "huge"}},
-		{name: "textarea default is bordered", className: textareaClass(ComponentProps{}), want: []string{"textarea", "w-full", "textarea-bordered"}, wantNever: []string{"textarea-ghost"}},
+		{name: "select unknown size", className: selectClass(ComponentProps{Size: "huge"}), want: []string{"select", "w-full"}, wantNever: []string{"select-sm", "select-lg", "huge", "select-bordered"}},
+		{name: "textarea default uses v5 base", className: textareaClass(ComponentProps{}), want: []string{"textarea", "w-full"}, wantNever: []string{"textarea-ghost", "textarea-bordered"}},
 		{name: "textarea ghost variant", className: textareaClass(ComponentProps{Variant: "ghost"}), want: []string{"textarea-ghost"}, wantNever: []string{"textarea-bordered"}},
 		{name: "textarea sm size", className: textareaClass(ComponentProps{Size: "sm"}), want: []string{"textarea-sm"}},
 		{name: "textarea lg size", className: textareaClass(ComponentProps{Size: "lg"}), want: []string{"textarea-lg"}},
-		{name: "textarea unknown size", className: textareaClass(ComponentProps{Size: "huge"}), want: []string{"textarea-bordered"}, wantNever: []string{"textarea-sm", "textarea-lg", "huge"}},
+		{name: "textarea unknown size", className: textareaClass(ComponentProps{Size: "huge"}), want: []string{"textarea", "w-full"}, wantNever: []string{"textarea-sm", "textarea-lg", "huge", "textarea-bordered"}},
 	}
 
 	for _, tt := range tests {

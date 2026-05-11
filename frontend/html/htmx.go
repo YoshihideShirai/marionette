@@ -90,7 +90,7 @@ func (f *Form) Render() (template.HTML, error) {
 // Input creates a primitive text input node.
 func Input(name, value string, className ...string) Node {
 	return ElementNode{Tag: "input", Attrs: map[string]string{
-		"class": joinClass(append([]string{"input input-bordered w-full"}, className...)...),
+		"class": joinClass(append([]string{"input w-full"}, className...)...),
 		"name":  name,
 		"type":  "text",
 		"value": value,
@@ -100,7 +100,7 @@ func Input(name, value string, className ...string) Node {
 // FileUpload creates a primitive file input node.
 func FileUpload(name string, required bool, className ...string) Node {
 	attrs := map[string]string{
-		"class": joinClass(append([]string{"input input-bordered w-full"}, className...)...),
+		"class": joinClass(append([]string{"input w-full"}, className...)...),
 		"name":  name,
 		"type":  "file",
 		"value": "",

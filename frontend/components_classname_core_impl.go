@@ -36,7 +36,7 @@ func linkClass(props ComponentProps, hasIcon, iconOnly bool) string {
 }
 
 func inputClass(props ComponentProps) string {
-	variantClass := "input-bordered"
+	variantClass := ""
 	if props.Variant == "ghost" {
 		variantClass = "input-ghost"
 	}
@@ -48,7 +48,7 @@ func inputClass(props ComponentProps) string {
 }
 
 func selectClass(props ComponentProps) string {
-	variantClass := "select-bordered"
+	variantClass := ""
 	if props.Variant == "ghost" {
 		variantClass = "select-ghost"
 	}
@@ -60,7 +60,7 @@ func selectClass(props ComponentProps) string {
 }
 
 func textareaClass(props ComponentProps) string {
-	variantClass := "textarea-bordered"
+	variantClass := ""
 	if props.Variant == "ghost" {
 		variantClass = "textarea-ghost"
 	}

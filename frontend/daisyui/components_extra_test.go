@@ -322,8 +322,8 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 		},
 		{
 			name: "input disabled carries name value and class",
-			node: Input("email", "alice@example.test", shared.ComponentProps{Class: "input-bordered", Disabled: true}),
-			want: []string{`class="input w-full input-bordered"`, `disabled="disabled"`, `name="email"`, `value="alice@example.test"`},
+			node: Input("email", "alice@example.test", shared.ComponentProps{Disabled: true}),
+			want: []string{`class="input w-full"`, `disabled="disabled"`, `name="email"`, `value="alice@example.test"`},
 		},
 		{
 			name: "select marks only selected option",
@@ -627,7 +627,7 @@ func TestFormComponentsRenderHTMXAttributes(t *testing.T) {
 
 func TestFormFieldRendersRequiredHintAndError(t *testing.T) {
 	got := renderComponentForTest(t, FormField(
-		Input("email", "", shared.ComponentProps{Class: "input-bordered"}),
+		Input("email", "", shared.ComponentProps{}),
 		shared.FormFieldProps{Label: "Email", Required: true, Hint: "We never share it.", Error: "Email is required"},
 	))
 	assertContainsAll(t, got, []string{`class="fieldset w-full"`, `class="fieldset-legend"`, `Email *`, `We never share it.`, `class="label text-error"`, `Email is required`})

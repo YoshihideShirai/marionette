@@ -129,7 +129,7 @@ func FormRow(props FormRowProps) Node {
 	if strings.TrimSpace(props.Error) != "" {
 		children = append(children, FieldError(FieldErrorProps{ID: errorID, Message: props.Error}))
 	}
-	return element{Tag: "div", Attrs: map[string]string{"class": "ui-form-row form-control gap-1.5"}, Children: children}
+	return element{Tag: "div", Attrs: map[string]string{"class": "ui-form-row flex flex-col gap-1.5"}, Children: children}
 }
 
 func FieldError(props FieldErrorProps) Node {
@@ -427,7 +427,7 @@ func describedBy(id, description, errMsg string) string {
 }
 
 func formInputClass(errMsg string) string {
-	base := "input input-bordered w-full text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-60 disabled:cursor-not-allowed read-only:bg-base-200"
+	base := "input w-full text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-60 disabled:cursor-not-allowed read-only:bg-base-200"
 	if strings.TrimSpace(errMsg) != "" {
 		return base + " input-error"
 	}
@@ -435,7 +435,7 @@ func formInputClass(errMsg string) string {
 }
 
 func formSelectClass(errMsg string) string {
-	base := "select select-bordered w-full text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-60 disabled:cursor-not-allowed"
+	base := "select w-full text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-60 disabled:cursor-not-allowed"
 	if strings.TrimSpace(errMsg) != "" {
 		return base + " select-error"
 	}

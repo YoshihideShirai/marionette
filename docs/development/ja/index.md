@@ -9,6 +9,7 @@
 ### まず読む
 
 - [README.ja.md](../../../README.ja.md): Marionette の目的、基本思想、デモ、ドキュメント全体への入口を確認します。
+- [プロジェクト構成ガイド](01-project-structure.md): Page、Action、State、UI helper、asset のユーザーアプリ側配置を決めます。
 - [State Management ガイド](../../state-management.ja.md): ページ、アクション、状態を Go 側に集約する基本方針を確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): `backend` / `frontend` / `html` など主要 API の入口です。
 

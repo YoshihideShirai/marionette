@@ -13,6 +13,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Routing / Pages / Actions Guide](02-routing-pages-actions.md): Decide how to split URLs, screens, partial updates, and action handlers.
 - [UI Component Selection Guide](04-ui-components.md): Choose between existing components, low-level HTML, DaisyUI helpers, and new components.
 - [Forms / Validation Guide](05-forms-validation.md): Design form state, server-side validation, validation redisplay, and success responses.
+- [Data Tables / Charts Guide](06-data-tables-charts.md): Design list tables, shared query state, paging, sorting, and chart-linked filtering.
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Separate user-facing and logged errors, and choose inline errors, alerts, toasts, flash, and retry paths.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
@@ -25,6 +26,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Data display component APIs](../api/05-component-apis-data-display.md): Review tables, stats, avatars, progress, and other display components.
 - [Overlay / Feedback APIs](../api/05-component-apis-overlay-feedback.md): Review modals, drawers, toasts, alerts, and other feedback components.
 - [Forms / Validation Guide](05-forms-validation.md): Use this when implementing submit flows, server-side validation, or form error redisplay.
+- [Data Tables / Charts Guide](06-data-tables-charts.md): Use this when implementing searchable, pageable, sortable tables or linked table/chart dashboards.
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Use this when designing errors, flash messages, toasts, alerts, long-running work, or retry UX.
 - [DashWind API](../api/08-dashwind.md): Use this when building DashWind-style dashboards or admin layouts.
 

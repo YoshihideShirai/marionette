@@ -13,6 +13,7 @@
 - [Routing / Pages / Actions ガイド](02-routing-pages-actions.md): URL、業務画面、partial update、Action handler の分割基準を決めます。
 - [UI コンポーネント選定ガイド](04-ui-components.md): 既存コンポーネント、低レベル HTML、DaisyUI helper、新規コンポーネントの使い分けを決めます。
 - [Forms / Validation ガイド](05-forms-validation.md): form state、サーバー側バリデーション、エラー再表示、成功時の戻り方を設計します。
+- [データテーブル / チャート設計ガイド](06-data-tables-charts.md): 一覧テーブル、共有 query state、ページング、ソート、チャート連動 filter を設計します。
 - [Errors / Flash / Feedback ガイド](08-errors-flash-feedback.md): ユーザー向けエラーとログ、inline error、alert、toast、flash、再実行導線を使い分けます。
 - [State Management ガイド](../../state-management.ja.md): ページ、アクション、状態を Go 側に集約する基本方針を確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): `backend` / `frontend` / `html` など主要 API の入口です。
@@ -25,6 +26,7 @@
 - [データ表示コンポーネント API](../../api/ja/05-component-apis-data-display.md): テーブル、統計、アバター、プログレスなどの表示部品を確認します。
 - [Overlay / Feedback API](../../api/ja/05-component-apis-overlay-feedback.md): モーダル、ドロワー、トースト、アラートなどの通知・フィードバック部品を確認します。
 - [Forms / Validation ガイド](05-forms-validation.md): submit flow、サーバー側バリデーション、form error の再表示を実装するときに参照します。
+- [データテーブル / チャート設計ガイド](06-data-tables-charts.md): 検索、ページング、ソート付き一覧やテーブル / チャート連動 dashboard を実装するときに参照します。
 - [Errors / Flash / Feedback ガイド](08-errors-flash-feedback.md): error、flash message、toast、alert、長時間処理、再実行 UX を設計するときに参照します。
 - [DashWind API](../../api/ja/08-dashwind.md): DashWind ベースのダッシュボードや管理画面レイアウトを使うときに参照します。
 

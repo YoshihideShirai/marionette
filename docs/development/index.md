@@ -15,6 +15,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Forms / Validation Guide](05-forms-validation.md): Design form state, server-side validation, validation redisplay, and success responses.
 - [Data Tables / Charts Guide](06-data-tables-charts.md): Design list tables, shared query state, paging, sorting, and chart-linked filtering.
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Separate user-facing and logged errors, and choose inline errors, alerts, toasts, flash, and retry paths.
+- [Security / Authorization Guide](10-security-authz.md): Handle authenticated users, server-side authorization checks, dangerous-operation confirmations, and audit logs.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
 
@@ -28,6 +29,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Forms / Validation Guide](05-forms-validation.md): Use this when implementing submit flows, server-side validation, or form error redisplay.
 - [Data Tables / Charts Guide](06-data-tables-charts.md): Use this when implementing searchable, pageable, sortable tables or linked table/chart dashboards.
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Use this when designing errors, flash messages, toasts, alerts, long-running work, or retry UX.
+- [Security / Authorization Guide](10-security-authz.md): Use this when designing authentication-derived context, Page / Action authorization checks, dangerous-operation confirmations, or audit logs.
 - [DashWind API](../api/08-dashwind.md): Use this when building DashWind-style dashboards or admin layouts.
 
 ### Check before implementation
@@ -36,6 +38,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [UI Component Guidelines](../ui-component-guidelines.md): Confirm that new UI follows the existing accessibility, visual, state, and component-selection guidance.
 - [State Management Guide](../state-management.md): Decide where URL, session, form input, and temporary UI state should live.
 - [API documentation](../api/): Check whether existing APIs already cover the use case so you can avoid unnecessary wrappers or duplicate implementations.
+- [Security / Authorization Guide](10-security-authz.md): Confirm that UI visibility controls are backed by server-side authorization and audit logging.
 
 ## Standard development flow
 
@@ -118,7 +121,19 @@ Show errors and notifications at a level that helps users understand what to do 
 
 For available components, see the [Overlay / Feedback APIs](../api/05-component-apis-overlay-feedback.md) and [Flash APIs](../api/06-flash-apis.md). Also check the [UI Component Guidelines](../ui-component-guidelines.md) for notification styling and accessibility.
 
-### 8. Prepare tests and debugging
+### 8. Add security and authorization checks
+
+Security-sensitive screens should validate both display access and operation execution on the server side.
+
+- Restore the authenticated actor from session or token middleware and make it available through `Context`.
+- Check route, tenant, organization, project, and target-resource permissions before rendering Pages.
+- Re-check actor, action, and target authorization inside Actions even when the UI hides unavailable buttons.
+- Add confirmation UI for dangerous operations such as deletion, approval, and re-run.
+- Record audit logs for important operation attempts, including denied and failed attempts.
+
+See the [Security / Authorization Guide](10-security-authz.md) for detailed criteria and audit-log fields.
+
+### 9. Prepare tests and debugging
 
 Marionette apps become safer to change when page rendering and action state updates are easy to verify with Go tests.
 
@@ -138,3 +153,4 @@ When changing built-in UI implementation, follow the compatibility policy in [fr
 - You decided whether table and chart filters should be represented as shared state.
 - Any added UI follows the [UI Component Guidelines](../ui-component-guidelines.md) and [frontend/ARCHITECTURE.md](../../frontend/ARCHITECTURE.md).
 - You identified which pages, actions, and component output need tests.
+- Sensitive Pages and Actions include authorization checks and audit logs.

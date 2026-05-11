@@ -9,6 +9,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 ### Read first
 
 - [README.md](../../README.md): Review Marionette's purpose, core ideas, demos, and the documentation entry points.
+- [Project Structure Guide](01-project-structure.md): Choose a user-app layout for pages, actions, state, UI helpers, and assets.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
 

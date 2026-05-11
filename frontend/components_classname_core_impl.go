@@ -147,36 +147,15 @@ func buttonSizeClass(size string) string {
 }
 
 func inputSizeClass(size string) string {
-	switch size {
-	case "sm":
-		return "input-sm"
-	case "lg":
-		return "input-lg"
-	default:
-		return ""
-	}
+	return daisySizeClass("input", size)
 }
 
 func selectSizeClass(size string) string {
-	switch size {
-	case "sm":
-		return "select-sm"
-	case "lg":
-		return "select-lg"
-	default:
-		return ""
-	}
+	return daisySizeClass("select", size)
 }
 
 func textareaSizeClass(size string) string {
-	switch size {
-	case "sm":
-		return "textarea-sm"
-	case "lg":
-		return "textarea-lg"
-	default:
-		return ""
-	}
+	return daisySizeClass("textarea", size)
 }
 
 func checkboxClass(props ComponentProps) string {
@@ -211,14 +190,7 @@ func checkboxVariantClass(variant string) string {
 }
 
 func checkboxSizeClass(size string) string {
-	switch size {
-	case "sm":
-		return "checkbox-sm"
-	case "lg":
-		return "checkbox-lg"
-	default:
-		return ""
-	}
+	return daisySizeClass("checkbox", size)
 }
 
 func radioClass(props ComponentProps) string {
@@ -253,14 +225,7 @@ func radioVariantClass(variant string) string {
 }
 
 func radioSizeClass(size string) string {
-	switch size {
-	case "sm":
-		return "radio-sm"
-	case "lg":
-		return "radio-lg"
-	default:
-		return ""
-	}
+	return daisySizeClass("radio", size)
 }
 
 func switchClass(props ComponentProps) string {
@@ -295,11 +260,13 @@ func toggleVariantClass(variant string) string {
 }
 
 func toggleSizeClass(size string) string {
-	switch size {
-	case "sm":
-		return "toggle-sm"
-	case "lg":
-		return "toggle-lg"
+	return daisySizeClass("toggle", size)
+}
+
+func daisySizeClass(prefix, size string) string {
+	switch strings.TrimSpace(size) {
+	case "xs", "sm", "md", "lg", "xl":
+		return prefix + "-" + strings.TrimSpace(size)
 	default:
 		return ""
 	}

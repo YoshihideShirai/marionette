@@ -16,6 +16,23 @@ func textNode(tag string, attrs map[string]string, text string) shared.Node {
 	return lowhtml.ElementNode{Tag: tag, Attrs: attrs, Text: text}
 }
 
+func joinClass(parts ...string) string {
+	classes := make([]string, 0, len(parts))
+	for _, part := range parts {
+		classes = append(classes, strings.Fields(part)...)
+	}
+	return strings.Join(classes, " ")
+}
+
+func daisySizeClass(prefix, size string) string {
+	switch strings.TrimSpace(size) {
+	case "xs", "sm", "md", "lg", "xl":
+		return prefix + "-" + strings.TrimSpace(size)
+	default:
+		return ""
+	}
+}
+
 func Button(label string, props shared.ComponentProps) shared.Node {
 	className := strings.TrimSpace("btn " + props.Class)
 	attrs := map[string]string{"class": className}
@@ -54,7 +71,7 @@ func Input(name, value string, props shared.ComponentProps) shared.Node {
 	attrs := map[string]string{
 		"name":  name,
 		"value": value,
-		"class": strings.TrimSpace("input w-full " + props.Class),
+		"class": joinClass("input", "w-full", daisySizeClass("input", props.Size), props.Class),
 	}
 	if props.Disabled {
 		attrs["disabled"] = "disabled"
@@ -94,7 +111,7 @@ func Select(name string, options []shared.SelectOption, props shared.ComponentPr
 	}
 	return node("select", map[string]string{
 		"name":  name,
-		"class": strings.TrimSpace("select " + props.Class),
+		"class": joinClass("select", daisySizeClass("select", props.Size), props.Class),
 	}, children...)
 }
 
@@ -204,7 +221,7 @@ func progressSizeClass(size string) string {
 }
 
 func Checkbox(props shared.CheckboxComponentProps) shared.Node {
-	inputAttrs := map[string]string{"type": "checkbox", "class": strings.TrimSpace("checkbox " + props.Props.Class), "name": props.Name, "value": props.Value}
+	inputAttrs := map[string]string{"type": "checkbox", "class": joinClass("checkbox", daisySizeClass("checkbox", props.Props.Size), props.Props.Class), "name": props.Name, "value": props.Value}
 	if props.Checked {
 		inputAttrs["checked"] = "checked"
 	}
@@ -214,7 +231,7 @@ func Checkbox(props shared.CheckboxComponentProps) shared.Node {
 func RadioGroup(props shared.RadioGroupComponentProps) shared.Node {
 	items := make([]shared.Node, 0, len(props.Items))
 	for _, item := range props.Items {
-		attrs := map[string]string{"type": "radio", "name": props.Name, "value": item.Value, "class": "radio"}
+		attrs := map[string]string{"type": "radio", "name": props.Name, "value": item.Value, "class": joinClass("radio", daisySizeClass("radio", props.Props.Size))}
 		if item.Checked {
 			attrs["checked"] = "checked"
 		}
@@ -224,7 +241,7 @@ func RadioGroup(props shared.RadioGroupComponentProps) shared.Node {
 }
 
 func Switch(props shared.SwitchComponentProps) shared.Node {
-	attrs := map[string]string{"type": "checkbox", "class": strings.TrimSpace("toggle " + props.Props.Class), "name": props.Name, "value": props.Value}
+	attrs := map[string]string{"type": "checkbox", "class": joinClass("toggle", daisySizeClass("toggle", props.Props.Size), props.Props.Class), "name": props.Name, "value": props.Value}
 	if props.Checked {
 		attrs["checked"] = "checked"
 	}
@@ -511,7 +528,7 @@ func FormField(control shared.Node, props shared.FormFieldProps) shared.Node {
 func Textarea(name, value string, options shared.TextareaOptions) shared.Node {
 	attrs := map[string]string{
 		"name":  name,
-		"class": strings.TrimSpace("textarea w-full " + options.Props.Class),
+		"class": joinClass("textarea", "w-full", daisySizeClass("textarea", options.Props.Size), options.Props.Class),
 	}
 	if options.Rows > 0 {
 		attrs["rows"] = strconv.Itoa(options.Rows)

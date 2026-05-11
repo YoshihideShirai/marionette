@@ -17,6 +17,7 @@
 - [Errors / Flash / Feedback ガイド](08-errors-flash-feedback.md): ユーザー向けエラーとログ、inline error、alert、toast、flash、再実行導線を使い分けます。
 - [長時間ジョブ設計ガイド](09-long-running-jobs.md): job model、progress / toast / empty_state、timeout、retry、cache TTL、永続化判断を設計します。
 - [Security / Authorization ガイド](10-security-authz.md): 認証済みユーザー、サーバー側認可チェック、危険操作の確認 UI、監査ログを設計します。
+- [AI Assisted Development ガイド](12-ai-assisted-development.md): AI に画面、Action、フォーム、テーブル・チャート連動の実装を依頼するときのテンプレートを確認します。
 - [State Management ガイド](../../state-management.ja.md): ページ、アクション、状態を Go 側に集約する基本方針を確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): `backend` / `frontend` / `html` など主要 API の入口です。
 
@@ -41,6 +42,7 @@
 - [State Management ガイド](../../state-management.ja.md): URL、セッション、フォーム入力、一時的な UI 状態をどこに置くか確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): 既存 API で実現できるかを確認し、不要なラッパーや重複実装を避けます。
 - [Security / Authorization ガイド](10-security-authz.md): UI の表示制御がサーバー側認可と監査ログで裏付けられているか確認します。
+- [AI Assisted Development ガイド](12-ai-assisted-development.md): AI に依頼する前に、対象 URL、Page、Action、State、partial update、エラー表示の契約を整理します。
 
 ## 標準的な開発フロー
 

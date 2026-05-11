@@ -15,6 +15,7 @@
 - [Forms / Validation ガイド](05-forms-validation.md): form state、サーバー側バリデーション、エラー再表示、成功時の戻り方を設計します。
 - [データテーブル / チャート設計ガイド](06-data-tables-charts.md): 一覧テーブル、共有 query state、ページング、ソート、チャート連動 filter を設計します。
 - [Errors / Flash / Feedback ガイド](08-errors-flash-feedback.md): ユーザー向けエラーとログ、inline error、alert、toast、flash、再実行導線を使い分けます。
+- [Security / Authorization ガイド](10-security-authz.md): 認証済みユーザー、サーバー側認可チェック、危険操作の確認 UI、監査ログを設計します。
 - [State Management ガイド](../../state-management.ja.md): ページ、アクション、状態を Go 側に集約する基本方針を確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): `backend` / `frontend` / `html` など主要 API の入口です。
 
@@ -28,6 +29,7 @@
 - [Forms / Validation ガイド](05-forms-validation.md): submit flow、サーバー側バリデーション、form error の再表示を実装するときに参照します。
 - [データテーブル / チャート設計ガイド](06-data-tables-charts.md): 検索、ページング、ソート付き一覧やテーブル / チャート連動 dashboard を実装するときに参照します。
 - [Errors / Flash / Feedback ガイド](08-errors-flash-feedback.md): error、flash message、toast、alert、長時間処理、再実行 UX を設計するときに参照します。
+- [Security / Authorization ガイド](10-security-authz.md): 認証由来の Context、Page / Action の認可チェック、危険操作の確認 UI、監査ログを設計するときに参照します。
 - [DashWind API](../../api/ja/08-dashwind.md): DashWind ベースのダッシュボードや管理画面レイアウトを使うときに参照します。
 
 ### 実装前に確認する
@@ -36,6 +38,7 @@
 - [UI Component Guidelines](../../ui-component-guidelines.md): 新規 UI のアクセシビリティ、見た目、状態表現、コンポーネント選定が既存方針とずれていないか確認します。
 - [State Management ガイド](../../state-management.ja.md): URL、セッション、フォーム入力、一時的な UI 状態をどこに置くか確認します。
 - [API ドキュメント（日本語版）](../../api/ja/): 既存 API で実現できるかを確認し、不要なラッパーや重複実装を避けます。
+- [Security / Authorization ガイド](10-security-authz.md): UI の表示制御がサーバー側認可と監査ログで裏付けられているか確認します。
 
 ## 標準的な開発フロー
 
@@ -118,7 +121,19 @@ UI は、まず既存の `frontend` API と DaisyUI ベースのコンポーネ�
 
 表示部品は [Overlay / Feedback API](../../api/ja/05-component-apis-overlay-feedback.md) と [Flash API](../../api/06-flash-apis.md) を参照してください。通知の見た目やアクセシビリティは [UI Component Guidelines](../../ui-component-guidelines.md) も確認します。
 
-### 8. テスト・デバッグを用意する
+### 8. セキュリティ・認可チェックを追加する
+
+セキュリティ上重要な画面では、表示アクセスと操作実行の両方をサーバー側で検証します。
+
+- session や token の middleware から認証済み actor を復元し、`Context` で参照できるようにする。
+- Page を描画する前に、route、tenant、organization、project、target resource の権限を確認する。
+- UI で操作ボタンを隠していても、Action 内で actor、action、target の認可を再確認する。
+- 削除、承認、再実行などの危険操作には確認 UI を用意する。
+- 重要操作の試行について、拒否や失敗も含めて監査ログに残す。
+
+詳細な基準と監査ログ項目は [Security / Authorization ガイド](10-security-authz.md) を参照します。
+
+### 9. テスト・デバッグを用意する
 
 Marionette アプリでは、画面生成と Action の状態更新を Go のテストで確認しやすくしておくと、UI の変更が安全になります。
 
@@ -138,3 +153,4 @@ Marionette アプリでは、画面生成と Action の状態更新を Go のテ
 - テーブル・チャートのフィルタ条件を共有 state として扱うか判断した。
 - 追加する UI が [UI Component Guidelines](../../ui-component-guidelines.md) と [frontend/ARCHITECTURE.md](../../../frontend/ARCHITECTURE.md) に沿っている。
 - テスト対象の Page、Action、コンポーネント出力を決めた。
+- センシティブな Page / Action に認可チェックと監査ログを含めた。

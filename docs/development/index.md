@@ -17,6 +17,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Separate user-facing and logged errors, and choose inline errors, alerts, toasts, flash, and retry paths.
 - [Long-running Jobs Design Guide](09-long-running-jobs.md): Design job models, progress / toast / empty_state usage, timeout, retry, cache TTL, and production storage decisions.
 - [Security / Authorization Guide](10-security-authz.md): Handle authenticated users, server-side authorization checks, dangerous-operation confirmations, and audit logs.
+- [AI Assisted Development Guide](12-ai-assisted-development.md): Use request templates for AI-assisted screen, Action, form, and table-chart changes.
 - [State Management Guide](../state-management.md): Understand the basic policy for keeping pages, actions, and state on the Go side.
 - [API documentation](../api/): Start here for the main `backend`, `frontend`, and `html` APIs.
 
@@ -32,6 +33,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [Errors / Flash / Feedback Guide](08-errors-flash-feedback.md): Use this when designing errors, flash messages, toasts, alerts, long-running work, or retry UX.
 - [Long-running Jobs Design Guide](09-long-running-jobs.md): Use this when expanding the Heavy Job Template for production use.
 - [Security / Authorization Guide](10-security-authz.md): Use this when designing authentication-derived context, Page / Action authorization checks, dangerous-operation confirmations, or audit logs.
+- [AI Assisted Development Guide](12-ai-assisted-development.md): Use this when preparing AI requests for screens, Actions, forms, or table-chart coordination.
 - [DashWind API](../api/08-dashwind.md): Use this when building DashWind-style dashboards or admin layouts.
 
 ### Check before implementation
@@ -41,6 +43,7 @@ This guide is the entry point for the standard workflow for building admin UIs a
 - [State Management Guide](../state-management.md): Decide where URL, session, form input, and temporary UI state should live.
 - [API documentation](../api/): Check whether existing APIs already cover the use case so you can avoid unnecessary wrappers or duplicate implementations.
 - [Security / Authorization Guide](10-security-authz.md): Confirm that UI visibility controls are backed by server-side authorization and audit logging.
+- [AI Assisted Development Guide](12-ai-assisted-development.md): Prepare the target URL, Page, Action, State, partial-update, and error-display contract before asking AI for implementation help.
 
 ## Standard development flow
 

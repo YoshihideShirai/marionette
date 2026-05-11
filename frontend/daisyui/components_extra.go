@@ -639,7 +639,7 @@ func RadioGroupWithVariants(name, color, size string, items []shared.RadioItem, 
 		if item.Checked {
 			attrs["checked"] = "checked"
 		}
-		if item.Disabled {
+		if props.Disabled || item.Disabled {
 			attrs["disabled"] = "disabled"
 		}
 		children = append(children,

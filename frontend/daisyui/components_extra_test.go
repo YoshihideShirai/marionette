@@ -367,6 +367,11 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`class="checkbox checkbox-md"`},
 		},
 		{
+			name: "checkbox disabled prop renders disabled attribute",
+			node: Checkbox(shared.CheckboxComponentProps{Name: "agree", Value: "yes", Label: "Agree", Props: shared.ComponentProps{Disabled: true}}),
+			want: []string{`class="checkbox" disabled="disabled" name="agree" type="checkbox" value="yes"`},
+		},
+		{
 			name:      "checkbox unchecked omits checked",
 			node:      Checkbox(shared.CheckboxComponentProps{Name: "agree", Value: "yes", Label: "Agree"}),
 			want:      []string{`class="checkbox"`, `name="agree"`, `type="checkbox"`, `value="yes"`},
@@ -383,6 +388,16 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`class="radio radio-xl" name="plan" type="radio" value="free"`},
 		},
 		{
+			name: "radio group disabled prop disables all items",
+			node: RadioGroup(shared.RadioGroupComponentProps{Name: "plan", Items: []shared.RadioItem{{Label: "Free", Value: "free"}, {Label: "Pro", Value: "pro"}}, Props: shared.ComponentProps{Disabled: true}}),
+			want: []string{`class="radio" disabled="disabled" name="plan" type="radio" value="free"`, `class="radio" disabled="disabled" name="plan" type="radio" value="pro"`},
+		},
+		{
+			name: "radio group item disabled prop disables one item",
+			node: RadioGroup(shared.RadioGroupComponentProps{Name: "plan", Items: []shared.RadioItem{{Label: "Free", Value: "free"}, {Label: "Pro", Value: "pro", Disabled: true}}}),
+			want: []string{`class="radio" disabled="disabled" name="plan" type="radio" value="pro"`},
+		},
+		{
 			name: "switch checked emits checkbox type and checked",
 			node: Switch(shared.SwitchComponentProps{Name: "enabled", Value: "1", Label: "Enabled", Checked: true, Props: shared.ComponentProps{Class: "toggle-primary"}}),
 			want: []string{`<input checked="checked" class="toggle toggle-primary" name="enabled" type="checkbox" value="1"></input>`, `<span class="label">Enabled</span>`},
@@ -391,6 +406,11 @@ func TestCoreFormControlPropsRenderBoundaryAttributes(t *testing.T) {
 			name: "switch size prop renders xs class",
 			node: Switch(shared.SwitchComponentProps{Name: "enabled", Value: "1", Label: "Enabled", Props: shared.ComponentProps{Size: "xs"}}),
 			want: []string{`class="toggle toggle-xs"`},
+		},
+		{
+			name: "switch disabled prop renders disabled attribute",
+			node: Switch(shared.SwitchComponentProps{Name: "enabled", Value: "1", Label: "Enabled", Props: shared.ComponentProps{Disabled: true}}),
+			want: []string{`class="toggle" disabled="disabled" name="enabled" type="checkbox" value="1"`},
 		},
 	}
 
@@ -602,6 +622,11 @@ func TestVariantComponentsRenderBoundaryAttributes(t *testing.T) {
 			want: []string{`class="checkbox checkbox-success checkbox-xl"`},
 		},
 		{
+			name: "checkbox variants preserve disabled prop",
+			node: CheckboxWithVariants("terms", "yes", "Terms", "success", "sm", false, shared.ComponentProps{Disabled: true}),
+			want: []string{`class="checkbox checkbox-success checkbox-sm" disabled="disabled" name="terms" type="checkbox" value="yes"`},
+		},
+		{
 			name: "radio variants carry disabled and checked states",
 			node: RadioGroupWithVariants("tier", "primary", "lg", []shared.RadioItem{{Label: "Team", Value: "team", Checked: true}, {Label: "Enterprise", Value: "enterprise", Disabled: true}}, shared.ComponentProps{}),
 			want: []string{`checked="checked" class="radio radio-primary radio-lg" name="tier" type="radio" value="team"`, `class="radio radio-primary radio-lg" disabled="disabled" name="tier" type="radio" value="enterprise"`},
@@ -610,6 +635,11 @@ func TestVariantComponentsRenderBoundaryAttributes(t *testing.T) {
 			name: "radio variants accept md size",
 			node: RadioGroupWithVariants("tier", "primary", "md", []shared.RadioItem{{Label: "Team", Value: "team"}}, shared.ComponentProps{}),
 			want: []string{`class="radio radio-primary radio-md" name="tier" type="radio" value="team"`},
+		},
+		{
+			name: "radio variants disabled prop disables all items",
+			node: RadioGroupWithVariants("tier", "primary", "md", []shared.RadioItem{{Label: "Team", Value: "team"}, {Label: "Enterprise", Value: "enterprise"}}, shared.ComponentProps{Disabled: true}),
+			want: []string{`class="radio radio-primary radio-md" disabled="disabled" name="tier" type="radio" value="team"`, `class="radio radio-primary radio-md" disabled="disabled" name="tier" type="radio" value="enterprise"`},
 		},
 		{
 			name: "tabs variants emit roles and active selected state",

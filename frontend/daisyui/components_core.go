@@ -225,6 +225,9 @@ func Checkbox(props shared.CheckboxComponentProps) shared.Node {
 	if props.Checked {
 		inputAttrs["checked"] = "checked"
 	}
+	if props.Props.Disabled {
+		inputAttrs["disabled"] = "disabled"
+	}
 	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", inputAttrs), textNode("span", map[string]string{"class": "label"}, props.Label))
 }
 
@@ -235,6 +238,9 @@ func RadioGroup(props shared.RadioGroupComponentProps) shared.Node {
 		if item.Checked {
 			attrs["checked"] = "checked"
 		}
+		if props.Props.Disabled || item.Disabled {
+			attrs["disabled"] = "disabled"
+		}
 		items = append(items, node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label"}, item.Label)))
 	}
 	return node("div", map[string]string{"class": strings.TrimSpace("space-y-2 " + props.Props.Class)}, items...)
@@ -244,6 +250,9 @@ func Switch(props shared.SwitchComponentProps) shared.Node {
 	attrs := map[string]string{"type": "checkbox", "class": joinClass("toggle", daisySizeClass("toggle", props.Props.Size), props.Props.Class), "name": props.Name, "value": props.Value}
 	if props.Checked {
 		attrs["checked"] = "checked"
+	}
+	if props.Props.Disabled {
+		attrs["disabled"] = "disabled"
 	}
 	return node("label", map[string]string{"class": "label cursor-pointer gap-2"}, node("input", attrs), textNode("span", map[string]string{"class": "label"}, props.Label))
 }

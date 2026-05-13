@@ -11,7 +11,7 @@ const coverageScope = summary.coverage.packageCount
 ---
 <BaseLayout title="Marionette レポート" lang="ja" languageSwitcherPath="/marionette/en/reports/">
   <h1>メトリクスレポート</h1>
-  <p class="lead">GitHub Pages のデプロイ時に生成した cloc によるステップ数と Go 単体テストのカバレッジを確認できます。</p>
+  <p class="lead">GitHub Pages のデプロイ時に生成した、テストコードを除くフレームワーク部分のみの cloc ステップ数と Go 単体テストのカバレッジを確認できます。</p>
 
   <section class="report-meta" aria-label="レポート情報">
     <span>生成日時: <strong>{generatedAt}</strong></span>
@@ -20,19 +20,19 @@ const coverageScope = summary.coverage.packageCount
 
   <section class="metric-grid" aria-label="サマリー">
     <article class="metric-card">
-      <span class="metric-label">コード行数</span>
+      <span class="metric-label">フレームワークコード行数</span>
       <strong>{formatNumber(summary.cloc.code)}</strong>
       <span>{formatNumber(summary.cloc.files)} files</span>
     </article>
     <article class="metric-card">
       <span class="metric-label">コメント行</span>
       <strong>{formatNumber(summary.cloc.comment)}</strong>
-      <span>cloc 集計</span>
+      <span>フレームワーク cloc 集計</span>
     </article>
     <article class="metric-card">
       <span class="metric-label">空行</span>
       <strong>{formatNumber(summary.cloc.blank)}</strong>
-      <span>cloc 集計</span>
+      <span>フレームワーク cloc 集計</span>
     </article>
     <article class="metric-card">
       <span class="metric-label">UT カバレッジ</span>
@@ -46,7 +46,7 @@ const coverageScope = summary.coverage.packageCount
     <div class="doc-card-grid">
       <a class="doc-card" href={summary.links.coverageHtml}><strong>Coverage HTML</strong><span>Go の関数・ステートメント単位のカバレッジをブラウザで確認します。</span></a>
       <a class="doc-card" href={summary.links.coverageText}><strong>Coverage text</strong><span><code>go tool cover -func</code> のテキスト出力です。</span></a>
-      <a class="doc-card" href={summary.links.clocText}><strong>cloc text</strong><span>言語別の行数集計をテキストで確認します。</span></a>
+      <a class="doc-card" href={summary.links.clocText}><strong>cloc text</strong><span>テストコードを除いたフレームワーク部分のみの行数集計をテキストで確認します。</span></a>
       <a class="doc-card" href={summary.links.clocJson}><strong>cloc JSON</strong><span>自動処理向けの cloc JSON 出力です。</span></a>
     </div>
   </section>

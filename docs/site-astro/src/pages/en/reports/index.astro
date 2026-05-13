@@ -11,7 +11,7 @@ const coverageScope = summary.coverage.packageCount
 ---
 <BaseLayout title="Marionette Reports" lang="en" languageSwitcherPath="/marionette/ja/reports/">
   <h1>Metrics Reports</h1>
-  <p class="lead">Review cloc source line counts and Go unit test coverage generated during the GitHub Pages deployment.</p>
+  <p class="lead">Review framework-only cloc source line counts, excluding test code, and Go unit test coverage generated during the GitHub Pages deployment.</p>
 
   <section class="report-meta" aria-label="Report information">
     <span>Generated: <strong>{generatedAt}</strong></span>
@@ -20,19 +20,19 @@ const coverageScope = summary.coverage.packageCount
 
   <section class="metric-grid" aria-label="Summary">
     <article class="metric-card">
-      <span class="metric-label">Code lines</span>
+      <span class="metric-label">Framework code lines</span>
       <strong>{formatNumber(summary.cloc.code)}</strong>
       <span>{formatNumber(summary.cloc.files)} files</span>
     </article>
     <article class="metric-card">
       <span class="metric-label">Comment lines</span>
       <strong>{formatNumber(summary.cloc.comment)}</strong>
-      <span>cloc total</span>
+      <span>framework cloc total</span>
     </article>
     <article class="metric-card">
       <span class="metric-label">Blank lines</span>
       <strong>{formatNumber(summary.cloc.blank)}</strong>
-      <span>cloc total</span>
+      <span>framework cloc total</span>
     </article>
     <article class="metric-card">
       <span class="metric-label">UT coverage</span>
@@ -46,7 +46,7 @@ const coverageScope = summary.coverage.packageCount
     <div class="doc-card-grid">
       <a class="doc-card" href={summary.links.coverageHtml}><strong>Coverage HTML</strong><span>Browse Go function and statement coverage.</span></a>
       <a class="doc-card" href={summary.links.coverageText}><strong>Coverage text</strong><span>Text output from <code>go tool cover -func</code>.</span></a>
-      <a class="doc-card" href={summary.links.clocText}><strong>cloc text</strong><span>Language-by-language line-count summary.</span></a>
+      <a class="doc-card" href={summary.links.clocText}><strong>cloc text</strong><span>Framework-only line-count summary excluding test code.</span></a>
       <a class="doc-card" href={summary.links.clocJson}><strong>cloc JSON</strong><span>Machine-readable cloc output for automation.</span></a>
     </div>
   </section>

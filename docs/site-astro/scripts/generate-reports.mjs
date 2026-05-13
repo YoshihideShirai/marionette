@@ -8,6 +8,12 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const siteRoot = path.resolve(scriptDir, '..');
 const repoRoot = path.resolve(siteRoot, '..', '..');
 const reportsDir = path.join(siteRoot, 'public', 'reports');
+const frameworkSourcePaths = ['backend', 'desktop', 'frontend', 'internal/componenttmpl'];
+const clocExcludeArgs = [
+  '--fullpath',
+  '--exclude-dir=testdata',
+  '--not-match-f=(^|/)([^/]+_test\\.go|[^/]+\\.test\\.[^/]+)$',
+];
 
 mkdirSync(reportsDir, { recursive: true });
 
@@ -39,24 +45,21 @@ const coverageHtmlPath = path.join(reportsDir, 'coverage.html');
 const coverageTextPath = path.join(reportsDir, 'coverage.txt');
 
 run('cloc', [
-  '.',
-  '--exclude-dir=.git,node_modules,dist,.astro,reports',
+  ...frameworkSourcePaths,
+  ...clocExcludeArgs,
   '--json',
   `--out=${clocJsonPath}`,
 ]);
 run('cloc', [
-  '.',
-  '--exclude-dir=.git,node_modules,dist,.astro,reports',
+  ...frameworkSourcePaths,
+  ...clocExcludeArgs,
   `--out=${clocTextPath}`,
 ]);
 
 const modulePath = run('go', ['list', '-m'], { capture: true });
-const frameworkPackagePrefixes = [
-  `${modulePath}/backend`,
-  `${modulePath}/desktop`,
-  `${modulePath}/frontend`,
-  `${modulePath}/internal/componenttmpl`,
-];
+const frameworkPackagePrefixes = frameworkSourcePaths.map((sourcePath) =>
+  `${modulePath}/${sourcePath.replaceAll(path.sep, '/')}`,
+);
 const isFrameworkPackage = (pkg) =>
   frameworkPackagePrefixes.some((prefix) => pkg === prefix || pkg.startsWith(`${prefix}/`));
 const packages = run('go', ['list', './...'], { capture: true })

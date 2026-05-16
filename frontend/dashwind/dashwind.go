@@ -62,7 +62,8 @@ type NavGroup struct {
 	Class string
 }
 
-// UserMenu configures the user affordance rendered in the topbar action area.
+// UserMenu is retained for compatibility with older ShellProps values.
+// DashWind no longer renders a default user affordance in the topbar.
 type UserMenu struct {
 	Name        string
 	Email       string
@@ -634,8 +635,6 @@ func topbar(props ShellProps, drawerID string) mf.Node {
 	if len(actions) == 0 {
 		actions = []mf.Node{
 			mf.ThemeToggleButton(mf.ComponentProps{Class: "btn-circle"}),
-			daisy.ButtonContentWithAttrs(mf.ComponentProps{Class: "btn-ghost btn-circle indicator"}, map[string]string{"type": "button", "aria-label": "notifications"}, span("indicator-item badge badge-primary badge-xs", ""), mf.Text("🔔")),
-			renderUserMenu(props.User),
 		}
 	}
 	return daisy.NavbarWithProps(daisy.NavbarProps{Class: defaultString(props.NavbarClass, "sticky top-0 z-30 border-b border-base-300 bg-base-100/90 backdrop-blur")},

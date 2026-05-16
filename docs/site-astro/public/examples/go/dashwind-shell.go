@@ -16,7 +16,6 @@ func RegisterDashwindShellExample(app *mb.App) {
 				{Path: "/customers", Label: "Customers", Icon: "☷", Badge: "12"},
 			}}},
 			SearchPlaceholder: "Search dashboard",
-			User:              dw.UserMenu{Name: "Ada Lovelace", Email: "ada@example.com", Initials: "AL"},
-		}, dw.CardPanel(dw.CardPanelProps{Title: "Shell content", Description: "Responsive drawer, topbar, search, actions, and user menu."}, mf.Text("Ready for htmx fragments.")))
+		}, dw.CardPanel(dw.CardPanelProps{Title: "Shell content", Description: "Responsive drawer, topbar, search, and actions."}, mf.Text("Ready for htmx fragments.")))
 	})
 }

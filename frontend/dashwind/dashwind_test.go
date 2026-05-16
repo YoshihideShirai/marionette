@@ -71,6 +71,11 @@ func TestShellGolden(t *testing.T) {
 			t.Fatalf("expected golden shell to contain %q, got %q", want, got)
 		}
 	}
+	for _, unwanted := range []string{`aria-label="notifications"`, "🔔", `class="avatar placeholder"`, "Ada Lovelace", "ada@example.com"} {
+		if strings.Contains(got, unwanted) {
+			t.Fatalf("expected golden shell to omit %q, got %q", unwanted, got)
+		}
+	}
 }
 
 func TestRenderNavigationMarksCurrentPathActive(t *testing.T) {
